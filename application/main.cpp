@@ -15,10 +15,10 @@ using namespace GodotObjectCompiler;
 int main() {
     IParser* parser = new TreeSitterParser();
 
-    String content = read_file("/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h");
+    String content = read_file("./test_files/simple_class_header.h");
     Namespace* ns = (Namespace*) parser->parse(content);
 
     DB db = DB::init(ns);
-    db.write_to_file("db.txt");
+    db.write_to_config("db.txt");
     return 0;
 };

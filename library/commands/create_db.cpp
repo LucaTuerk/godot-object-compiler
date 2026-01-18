@@ -12,6 +12,6 @@ int GodotObjectCompiler::create_db(const Vector<String>& files, const String& db
         }
     }
 
-    db.write_to_file(db_path);
+    db.write_to_config(db_path);
     return 0;
 }

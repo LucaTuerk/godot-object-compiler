@@ -1,8 +1,8 @@
 #include "access_specifier.h"
 
 namespace GodotObjectCompiler {
-	void AccessSpecifier::dump_properties(Config &config) {
-		Node::dump_properties(config);
-		config.set("type", type);
+	void AccessSpecifier::write_to(IWriter *writer) {
+		Node::write_to(writer);
+		writer->write("type", type);
 	}
 }

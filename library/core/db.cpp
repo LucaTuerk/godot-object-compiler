@@ -9,27 +9,27 @@ namespace GodotObjectCompiler {
         return result;
     }
 
-    DB DB::read_from_file(const String& path) {
+    DB DB::read_from_config(const String& path) {
         auto _path = path;
         return DB();
     }
 
-    void dump_node(Config& config, Node* node) {
-        config.switch_section(node->get_id());
-        node->dump_properties(config);
+    void dump_node(IWriter* writer, Node* node) {
+    	writer->write_to_section(node->get_id());
+        node->write_to(writer);
 
         if( Context* context = dynamic_cast<Context*>(node) ) {
             for( size_t i = 0; i < context->get_child_count(); ++i) {
-                dump_node(config, context->get_child(i));
+                dump_node(writer, context->get_child(i));
             }
         }
     }
 
-    void DB::write_to_file(const String& path) const {
+    void DB::write_to_config(const String& path) const {
         auto _path = path;
 
         Config config;
-        dump_node(config, _root);
+        dump_node(&config, _root);
         config.write_to_file(_path);
     }
 

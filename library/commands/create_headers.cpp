@@ -1,7 +1,7 @@
 #include "library/commands/create_headers.h"
 
 int GodotObjectCompiler::create_headers(const Vector<String>& files, const String& generated_path, const String& db_path, IGenerator* generator) {
-    DB db = DB::read_from_file(db_path);
+    DB db = DB::read_from_config(db_path);
 
     // Implementation of create_headers function
     auto _files = files;
