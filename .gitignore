@@ -1,0 +1,9 @@
+goc
+libgoc.a
+.cache
+.idea
+.zed
+.sconsign.dblite
+compile_commands.json
+*.txt
+*.o
