@@ -4,6 +4,8 @@
 namespace GodotObjectCompiler {
 
 	class VirtualHandler : public INodeHandler {
+		NODE_HANDLER(VirtualHandler)
+
 	public:
 		~VirtualHandler() override = default;
 		bool handles_node(TSNode &node, const String &type) override;

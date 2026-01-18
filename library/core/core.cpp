@@ -45,3 +45,9 @@ String generate_random_string(size_t length) {
 bool string_contains(const String &str, const String &str2) {
 	return str.find(str2) != String::npos;
 }
+void print_ln(const String &str) {
+	std::cout << str << std::endl;
+}
+void print_err(const String &str) {
+	std::cerr << str << std::endl;
+}

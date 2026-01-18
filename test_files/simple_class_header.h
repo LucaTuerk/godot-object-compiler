@@ -1,4 +1,14 @@
 
-class A {};
+namespace NamespaceA {
+	class ClassA {};
 
-class B {};
+	class ClassB {};
+
+	class ClassC {
+		class InnerClass {};
+	};
+
+	struct StructA {
+		struct InnerStruct {};
+	};
+}

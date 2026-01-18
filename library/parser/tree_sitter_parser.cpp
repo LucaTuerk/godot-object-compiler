@@ -10,9 +10,9 @@
 #include "tree_sitter_parser/handlers/virtual_handler.h"
 #include "tree_sitter_parser/node_handler.h"
 
+#include <fcntl.h>
 #include <tree_sitter/api.h>
 #include <tree_sitter/tree-sitter-cpp.h>
-#include <cstdio>
 
 namespace GodotObjectCompiler {
 
@@ -23,17 +23,11 @@ namespace GodotObjectCompiler {
         printf("%s\n", ts_node_type(node));
     }
 
-	TreeSitterParser::TreeSitterParser() {
-		register_handler<NamespaceHandler>();
-    	register_handler<ClassHandler>();
-    	register_handler<StructHandler>();
-    	register_handler<VirtualHandler>();
-    	register_handler<AccessSpecifierHandler>();
-    	register_handler<StorageClassHandler>();
-    	register_handler<GenericStepInto>();
-	}
-
 	Node * TreeSitterParser::parse(const String& input) {
+		using NodeID = const void*;
+
+    	Dictionary<NodeID, Context*> before_node;
+
     	context = ParserContext(input);
         if (!context.is_valid()) {
             return NodeDB::get_instance()->create<Namespace>();
@@ -45,6 +39,7 @@ namespace GodotObjectCompiler {
     		do {
     			context.node = ts_tree_cursor_current_node(&context.cursor);
 				if (ts_node_is_null(context.node)) {
+					print_err("Cursor is pointing at null node.");
 					break;
 				}
 
@@ -56,11 +51,14 @@ namespace GodotObjectCompiler {
 
     			for ( INodeHandler* handler : _handlers) {
     				if (handler->handles_node(context.node, type)) {
-						const Context * tmp = context.current_node;
+						Context * tmp = context.current_node;
+
     					step = handler->handle(context);
+
 						if (tmp != context.current_node) {
-							
+							before_node[context.node.id] = tmp;
     					}
+
     					break;
     				}
     			}
@@ -86,19 +84,26 @@ namespace GodotObjectCompiler {
 
     		} while (do_continue);
 
-    		if (!ts_tree_cursor_goto_parent(&context.cursor)) {
-    			break;
-    		}
+    		bool has_reached_root = false;
 
-    		if (!ts_tree_cursor_goto_next_sibling(&context.cursor)) {
-    			break;
-    		}
+    		do {
+    			if (!ts_tree_cursor_goto_parent(&context.cursor)) {
+    				has_reached_root = true;
+    			}
 
-    		context.current_node = context.current_node->get_parent();
+    			if (auto itr = before_node.find(context.node.id); itr != before_node.end()) {
+    				context.current_node = itr->second;
+    			}
+    		} while (!has_reached_root && !ts_tree_cursor_goto_next_sibling(&context.cursor));
 
 			if (context.current_node == nullptr) {
+				print_err("Reached topmost node early.");
 				break;
 			}
+
+    		if (has_reached_root) {
+    			break;
+    		}
     	}
 
         return context.global_namespace;

@@ -1,13 +1,13 @@
 #include "main.h"
+#include "../library/core/io/config.h"
 #include "library/core/core.h"
 #include "library/core/db.h"
-#include "library/core/config.h"
 #include "library/parser/parser.h"
 #include "library/parser/tree_sitter_parser.h"
-#include "library/tree/namespace.h"
 #include "library/tree/class.h"
 #include "library/tree/function.h"
 #include "library/tree/identifier.h"
+#include "library/tree/namespace.h"
 #include "library/tree/node.h"
 
 using namespace GodotObjectCompiler;

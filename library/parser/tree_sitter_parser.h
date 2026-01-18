@@ -14,23 +14,24 @@ namespace GodotObjectCompiler {
 
     class TreeSitterParser : public IParser {
         public:
-            TreeSitterParser();
+            TreeSitterParser() = default;
             ~TreeSitterParser() = default;
 
     		Node* parse(const String& input) override;
 
     		template<typename T>
-    		void register_handler();
+    		static bool register_handler();
 
         private:
-			Vector<INodeHandler*> _handlers;
+			static inline Vector<INodeHandler*> _handlers{};
             ParserContext context;
 
     };
 
 	template <typename T>
-	void TreeSitterParser::register_handler() {
+	bool TreeSitterParser::register_handler() {
 		_handlers.push_back(new T());
+		return true;
 	}
 
 } //namespace GodotObjectCompiler

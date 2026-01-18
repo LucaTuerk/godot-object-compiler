@@ -8,6 +8,8 @@
 namespace GodotObjectCompiler {
 
 class ClassHandler : public INodeHandler {
+	NODE_HANDLER(ClassHandler)
+
 public:
 	~ClassHandler() override = default;
 	bool handles_node(TSNode &node, const String& type) override;
