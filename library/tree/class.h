@@ -1,9 +1,9 @@
 #pragma once
 
-#include "node.h"
+#include "namespace.h"
 
 namespace GodotObjectCompiler {
-    class Class : public Context {
+    class Class : public Namespace {
         NODE_TYPE(Class)
     };
 }

@@ -1,4 +1,4 @@
-#include "library/core/config.h"
+#include "library/core/io/config.h"
 #include <fstream>
 
 namespace GodotObjectCompiler {

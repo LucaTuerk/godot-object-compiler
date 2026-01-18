@@ -1,5 +1,6 @@
 #include "library/core/db.h"
-#include "library/core/config.h"
+#include "io/config.h"
+#include "library/tree/namespace.h"
 #include "library/tree/node.h"
 
 namespace GodotObjectCompiler {
@@ -11,10 +12,27 @@ namespace GodotObjectCompiler {
 
     DB DB::read_from_config(const String& path) {
         auto _path = path;
-        return DB();
+    	Config config;
+    	config.read_from_file(_path);
+        DB db = DB();
+    	return db;
     }
 
-    void dump_node(IWriter* writer, Node* node) {
+	Node *DB::create(const String &type) {
+    	auto itr = _node_constructors.find(type);
+
+		if (itr == _node_constructors.end()) {
+			return nullptr;
+		}
+
+    	return itr->second();
+	}
+
+	bool DB::register_node_constructor(const String &name, NodeCreatorFunc constructor) {
+    	return _node_constructors.insert({name, constructor}).second;
+	}
+
+	void dump_node(IWriter* writer, Node* node) {
     	writer->write_to_section(node->get_id());
         node->write_to(writer);
 

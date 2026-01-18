@@ -1,6 +1,8 @@
 #include "node.h"
-#include "library/core/config.h"
+#include "../core/io/config.h"
 #include "library/core/core.h"
+
+#include <strings.h>
 
 namespace GodotObjectCompiler {
 
@@ -21,11 +23,31 @@ namespace GodotObjectCompiler {
         return _id;
     }
 
-    Context* Node::get_parent() const {
+	Index Node::get_index() const {
+    	return _index;
+	}
+
+	Context * Node::get_parent() const {
         return _parent;
     }
 
-    void Node::write_to(IWriter *writer) {
+	Node *Node::get_sibling(int p_offset) const {
+		if (_parent == nullptr) {
+			return nullptr;
+		}
+
+		return _parent->get_child(_index + p_offset);
+    }
+
+	Node *Node::get_next_sibling() const {
+    	return get_sibling(+1);
+	}
+
+	Node *Node::get_previous_sibling() const {
+    	return get_sibling(-1);
+	}
+
+	void Node::write_to(IWriter *writer) {
         writer->write("_class", get_type());
         writer->write("_id", get_id());
         writer->write("_parent", _parent ? _parent->get_id() : INVALID_ID);
@@ -43,6 +65,7 @@ namespace GodotObjectCompiler {
 
     void Context::add_child(Node* p_child) {
         p_child->_parent = this;
+    	p_child->_index = _children.size();
         _children.push_back(p_child);
     }
 
@@ -50,7 +73,11 @@ namespace GodotObjectCompiler {
         return _children.size();
     }
 
-    Node* Context::get_child(Size p_idx) const {
+    Node* Context::get_child(Index p_idx) const {
+    	if (p_idx >= _children.size()) {
+    		return nullptr;
+    	}
+
         return _children[p_idx];
     }
 

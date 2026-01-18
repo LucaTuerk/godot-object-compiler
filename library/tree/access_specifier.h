@@ -1,5 +1,5 @@
 #pragma once
-#include "library/core/config.h"
+#include "../core/io/config.h"
 #include "node.h"
 
 namespace GodotObjectCompiler {
