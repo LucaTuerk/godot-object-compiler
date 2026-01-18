@@ -7,7 +7,7 @@ namespace GodotObjectCompiler {
         NODE_TYPE(Identifier)
 
         public:
-            virtual void dump_properties(Config& config) override;
+            virtual void write_to(IWriter *writer) override;
 
         public:
             String name;

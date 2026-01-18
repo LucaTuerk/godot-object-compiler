@@ -1,7 +1,7 @@
 #pragma once
 
 #include "library/core/core.h"
-#include "library/core/config.h"
+#include "library/core/reader_writer.h"
 
 #define NODE_TYPE(type) \
     public: \
@@ -20,7 +20,9 @@ namespace GodotObjectCompiler {
 
             Node() = default;
             virtual ~Node() = default;
-            virtual void dump_properties(Config& config);
+
+            virtual void write_to(IWriter *writer);
+    		virtual void read_from(IReader *reader);
 
             UID get_id() const;
             Context* get_parent() const;
@@ -46,7 +48,7 @@ namespace GodotObjectCompiler {
             template <class T>
             T* create_child();
 
-            virtual void dump_properties(Config& config) override;
+            virtual void write_to(IWriter *writer) override;
 
         private:
             Vector<Node*> _children;

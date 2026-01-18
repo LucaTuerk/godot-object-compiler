@@ -16,6 +16,6 @@ namespace GodotObjectCompiler {
 
 		Type type = PUBLIC;
 
-		void dump_properties(Config &config) override;
+		void write_to(IWriter *writer) override;
 	};
 	} //namespace GodotObjectCompiler

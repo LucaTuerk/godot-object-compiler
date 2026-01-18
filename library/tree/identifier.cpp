@@ -1,8 +1,8 @@
 #include "library/tree/identifier.h"
 
 namespace GodotObjectCompiler {
-    void Identifier::dump_properties(Config& config) {
-        Node::dump_properties(config);
-        config.set("name", name);
+    void Identifier::write_to(IWriter *writer) {
+        Node::write_to(writer);
+        writer->write("name", name);
     }
 }

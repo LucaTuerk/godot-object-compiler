@@ -25,13 +25,17 @@ namespace GodotObjectCompiler {
         return _parent;
     }
 
-    void Node::dump_properties(Config& config) {
-        config.set("_class", get_type());
-        config.set("_id", get_id());
-        config.set("_parent", _parent ? _parent->get_id() : INVALID_ID);
+    void Node::write_to(IWriter *writer) {
+        writer->write("_class", get_type());
+        writer->write("_id", get_id());
+        writer->write("_parent", _parent ? _parent->get_id() : INVALID_ID);
     }
 
-    Context::~Context() {
+	void Node::read_from(IReader *reader) {
+    	_id = reader->read<String, UID>("_id");
+	}
+
+	Context::~Context() {
         for (auto child : _children) {
             delete child;
         }
@@ -50,7 +54,7 @@ namespace GodotObjectCompiler {
         return _children[p_idx];
     }
 
-    void Context::dump_properties(Config& config) {
-        Node::dump_properties(config);
+    void Context::write_to(IWriter *writer) {
+        Node::write_to(writer);
     }
 }
