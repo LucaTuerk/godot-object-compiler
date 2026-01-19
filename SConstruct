@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from typing import TYPE_CHECKING
 from tools.create_all_h import create_all_h
+import os
 
 this_dir = Dir('.').srcnode().abspath
 
@@ -130,17 +131,16 @@ env.Tool("compilation_db")
 env.CompilationDatabase()
 
 library_files = glob.glob("library/**/*.cpp", recursive=True)
-env.Library("goc", library_files, CPPPATH=["."], LINKFLAGS=["-g"])
-
+application_files = glob.glob("application/**/*.cpp", recursive=True)
 library_folders = glob.glob("library/**/",recursive=True)
 application_folders = glob.glob("application/**/",recursive=True)
+
+env.Library("goc", library_files, CPPPATH=["."], LINKFLAGS=["-g"])
 for folder in library_folders:
     create_all_h(this_dir + '/' + folder)
 
 for folder in application_folders:
     create_all_h(this_dir + '/' + folder)
-
-application_files = glob.glob("application/**/*.cpp", recursive=True)
 env.Program(
     "goc",
     application_files,
@@ -149,3 +149,5 @@ env.Program(
     LIBPATH=["."],
     LINKFLAGS=["-g"],
 )
+
+

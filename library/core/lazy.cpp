@@ -1,4 +1,3 @@
 #include "lazy.h"
 
-namespace GodotObjectCompiler {
-} //namespace GodotObjectCompiler
+namespace GodotObjectCompiler {}  // namespace GodotObjectCompiler

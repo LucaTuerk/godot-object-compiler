@@ -3,7 +3,7 @@
 #include "node.h"
 
 namespace GodotObjectCompiler {
-    class Field : public NamedContext {
-        NODE_TYPE(Field)
-    };
-}
+  class Field : public NamedContext {
+    NODE_TYPE(Field);
+  };
+}  // namespace GodotObjectCompiler

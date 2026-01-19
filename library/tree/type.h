@@ -3,19 +3,19 @@
 #include "node.h"
 
 namespace GodotObjectCompiler {
-    class Reference : public Node {
-        NODE_TYPE(Reference)
-    };
+  class Reference : public Node {
+    NODE_TYPE(Reference);
+  };
 
-    class Pointer : public Node {
-        NODE_TYPE(Pointer)
-    };
+  class Pointer : public Node {
+    NODE_TYPE(Pointer);
+  };
 
-    class Type : public NamedContext {
-        NODE_TYPE(Type)
-    };
+  class Type : public NamedContext {
+    NODE_TYPE(Type);
+  };
 
-	class PlaceholderType : public Node {
-		NODE_TYPE(PlaceholderType)
-	};
-} //namespace GodotObjectCompiler
+  class PlaceholderType : public Node {
+    NODE_TYPE(PlaceholderType);
+  };
+}  // namespace GodotObjectCompiler

@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "../library/parser/tree_sitter_parser/handlers/all.h"
+#include "../library/parser/handlers/all.h"
 #define Hallo Hallo
 
 #define GODOT_CLASS(...)
