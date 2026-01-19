@@ -3,11 +3,11 @@
 
 namespace GodotObjectCompiler {
 
-class StructHandler : public INodeHandler {
-	NODE_HANDLER(StructHandler)
-	
+class TypeQualifierHandler : public INodeHandler{
+	NODE_HANDLER(TypeQualifierHandler)
+
 public:
-	~StructHandler() override = default;
+	~TypeQualifierHandler() override = default;
 	bool handles_node(TSNode &node, const String &type) override;
 	NextStep handle(ParserContext &context) override;
 };

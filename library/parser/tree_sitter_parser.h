@@ -2,7 +2,7 @@
 
 #include "library/parser/parser.h"
 #include "library/parser/tree_sitter_parser/parser_context.h"
-#include "library/tree/node.h"
+#include "library/tree/all.h"
 #include <tree_sitter/api.h>
 
 class TSParser;
@@ -14,7 +14,6 @@ namespace GodotObjectCompiler {
 
     class TreeSitterParser : public IParser {
         public:
-            TreeSitterParser() = default;
             ~TreeSitterParser() = default;
 
     		Node* parse(const String& input) override;

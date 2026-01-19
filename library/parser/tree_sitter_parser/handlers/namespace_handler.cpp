@@ -1,5 +1,7 @@
+
 #include "library/parser/tree_sitter_parser/handlers/namespace_handler.h"
 #include "library/core/core.h"
+#include "library/parser/tree_sitter_parser/node_handler.h"
 
 namespace GodotObjectCompiler {
 
@@ -8,7 +10,7 @@ namespace GodotObjectCompiler {
 	}
 
 	NextStep NamespaceHandler::handle(ParserContext& context) {
-		context.create_namespace();
+		context.current_node = context.create_namespace();
 		return STEP_INTO;
 	}
 
