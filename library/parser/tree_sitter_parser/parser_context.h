@@ -22,8 +22,10 @@ namespace GodotObjectCompiler {
         Namespace* create_namespace();
         Class* create_class();
         Struct* create_struct();
+    	Function* create_function();
+		Field *create_field();
 
-    	bool is_valid() const;
+		bool is_valid() const;
 
     	ParserContext() = default;
     	explicit ParserContext(const String& input);

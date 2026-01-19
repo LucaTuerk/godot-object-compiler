@@ -12,8 +12,6 @@ namespace GodotObjectCompiler {
 
 	NextStep ClassHandler::handle(ParserContext &context) {
 		context.current_node = context.create_class();
-		AccessSpecifier* as = context.current_node->create_child<AccessSpecifier>();
-		as->type = AccessSpecifier::PRIVATE;
 		return STEP_INTO;
 	}
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "library/tree/node.h"
+#include "node.h"
 
 namespace GodotObjectCompiler {
     class Virtual : public Node {
@@ -11,11 +12,23 @@ namespace GodotObjectCompiler {
         NODE_TYPE(Static)
     };
 
-    class Const : public Node {
+	class Override : public Node {
+		NODE_TYPE(Override)
+	};
+
+	class TypeQualifier : public Node {
+		NODE_TYPE(TypeQualifier)
+	};
+
+    class Const : public TypeQualifier {
         NODE_TYPE(Const)
     };
 
-    class Override : public Node {
-        NODE_TYPE(Override)
-    };
+	class Mutable : public TypeQualifier {
+		NODE_TYPE(Mutable)
+	};
+
+	class Volatile : public TypeQualifier {
+		NODE_TYPE(Volatile)
+	};
 }

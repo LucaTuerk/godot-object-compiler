@@ -1,3 +1,4 @@
+#pragma once
 #include "library/parser/tree_sitter_parser/node_handler.h"
 
 namespace GodotObjectCompiler {

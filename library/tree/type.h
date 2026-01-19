@@ -11,7 +11,11 @@ namespace GodotObjectCompiler {
         NODE_TYPE(Pointer)
     };
 
-    class Type : public Context {
+    class Type : public NamedContext {
         NODE_TYPE(Type)
     };
-}
+
+	class PlaceholderType : public Node {
+		NODE_TYPE(PlaceholderType)
+	};
+} //namespace GodotObjectCompiler

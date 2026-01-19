@@ -1,7 +1,3 @@
-//
-// Created by luca on 17.01.26.
-//
-
 #pragma once
 #include "../node_handler.h"
 

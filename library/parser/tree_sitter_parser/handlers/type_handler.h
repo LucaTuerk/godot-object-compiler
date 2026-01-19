@@ -3,11 +3,16 @@
 
 namespace GodotObjectCompiler {
 
-class StructHandler : public INodeHandler {
-	NODE_HANDLER(StructHandler)
-	
+INTO(trailing_return_type);
+INTO(type_descriptor);
+
+SIMPLE_GENERATE(placeholder_type_specifier, PlaceholderType, STEP_OVER);
+
+class TypeHandler : public INodeHandler {
+	NODE_HANDLER(TypeHandler)
+
 public:
-	~StructHandler() override = default;
+	~TypeHandler() override = default;
 	bool handles_node(TSNode &node, const String &type) override;
 	NextStep handle(ParserContext &context) override;
 };

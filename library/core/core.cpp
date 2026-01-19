@@ -45,6 +45,25 @@ String generate_random_string(size_t length) {
 bool string_contains(const String &str, const String &str2) {
 	return str.find(str2) != String::npos;
 }
+
+bool string_suffix(const String &str, const String &suffix) {
+	return str.rfind(suffix) == str.size() - suffix.size();
+}
+
+bool string_only_contains(const String& str, char symbol) {
+	if (str.length() == 0 ) {
+		return false;
+	}
+
+	for (char c : str) {
+		if (c != symbol) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void print_ln(const String &str) {
 	std::cout << str << std::endl;
 }

@@ -8,8 +8,6 @@ namespace GodotObjectCompiler {
 
 	NextStep StructHandler::handle(ParserContext &context) {
 		context.current_node = context.create_struct();
-		AccessSpecifier* as = context.current_node->create_child<AccessSpecifier>();
-		as->type = AccessSpecifier::PUBLIC;
 		return STEP_INTO;
 	}
 

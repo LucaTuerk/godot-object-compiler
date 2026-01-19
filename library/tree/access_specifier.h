@@ -8,6 +8,8 @@ namespace GodotObjectCompiler {
 		NODE_TYPE(AccessSpecifier)
 
 	public:
+		bool copy_to(Node *other) const override;
+
 		enum Type {
 			PUBLIC,
 			PRIVATE,
@@ -15,6 +17,8 @@ namespace GodotObjectCompiler {
 		};
 
 		Type type = PUBLIC;
+
+		String to_string() const override;
 
 		void write_to(IWriter *writer) override;
 	};

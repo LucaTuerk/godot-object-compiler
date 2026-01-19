@@ -3,13 +3,15 @@
 #include "node.h"
 
 namespace GodotObjectCompiler {
-    class Identifier : public Node {
-        NODE_TYPE(Identifier)
+class Identifier : public Node {
+	NODE_TYPE(Identifier)
+	public:
+		bool copy_to(Node *other) const override;
 
-        public:
-            virtual void write_to(IWriter *writer) override;
+		String to_string() const override;
+		virtual void write_to(IWriter *writer) override;
 
-        public:
-            String name;
-    };
-}
+	public:
+		String name;
+	};
+} //namespace GodotObjectCompiler
