@@ -8,51 +8,53 @@
 
 namespace GodotObjectCompiler {
 
-Vector<Namespace *> Namespace::_namespaces_lazy_get() {
-	Vector<Namespace *> reversed;
-	Context *current = get_parent();
+  Vector<Namespace*> Namespace::_namespaces_lazy_get() {
+    Vector<Namespace*> reversed;
+    Context* current = get_parent();
 
-	while (current) {
-		if (current->is<Namespace>()) {
-			reversed.push_back(current->as<Namespace>());
-		}
-		current = current->get_parent();
-	}
+    while (current) {
+      if (current->is<Namespace>()) {
+        reversed.push_back(current->as<Namespace>());
+      }
+      current = current->get_parent();
+    }
 
-	Vector<Namespace *> result;
-	for (auto itr = reversed.rbegin(); itr != reversed.rend(); ++itr) {
-		result.push_back(*itr);
-	}
+    Vector<Namespace*> result;
+    for (auto itr = reversed.rbegin(); itr != reversed.rend(); ++itr) {
+      result.push_back(*itr);
+    }
 
-	return result;
-}
+    return result;
+  }
 
-Vector<Field *> Namespace::_fields_lazy_get() {
-	Vector<Field *> fields;
-	Body* body = find_child<Body>();
-	const Vector<Node*>& children = body ? body->get_children() : get_children();
+  Vector<Field*> Namespace::_fields_lazy_get() {
+    Vector<Field*> fields;
+    Body* body = find_child<Body>();
+    const Vector<Node*>& children =
+        body ? body->get_children() : get_children();
 
-	for (Node *child : children) {
-		if (child->is<Field>()) {
-			fields.push_back(child->as<Field>());
-		}
-	}
+    for (Node* child : children) {
+      if (child->is<Field>()) {
+        fields.push_back(child->as<Field>());
+      }
+    }
 
-	return fields;
-}
+    return fields;
+  }
 
-Vector<Function *> Namespace::_functions_lazy_get() {
-	Vector<Function *> functions;
-	Body* body = find_child<Body>();
-	const Vector<Node*>& children = body ? body->get_children() : get_children();
+  Vector<Function*> Namespace::_functions_lazy_get() {
+    Vector<Function*> functions;
+    Body* body = find_child<Body>();
+    const Vector<Node*>& children =
+        body ? body->get_children() : get_children();
 
-	for (Node *child : children) {
-		if (child->is<Function>()) {
-			functions.push_back(child->as<Function>());
-		}
-	}
+    for (Node* child : children) {
+      if (child->is<Function>()) {
+        functions.push_back(child->as<Function>());
+      }
+    }
 
-	return functions;
-}
+    return functions;
+  }
 
-} //namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

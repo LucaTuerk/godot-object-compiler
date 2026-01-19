@@ -1,20 +1,19 @@
 #pragma once
 
-#include <string>
-#include <sstream>
-#include <vector>
-#include <iterator>
-#include <fstream>
-#include <map>
-#include <unordered_map>
-#include <typeinfo>
-#include <typeindex>
 #include <algorithm>
-
+#include <fstream>
+#include <iterator>
+#include <map>
+#include <sstream>
+#include <string>
+#include <typeindex>
+#include <typeinfo>
+#include <unordered_map>
+#include <vector>
 
 using String = std::string;
 
-template<typename T>
+template <typename T>
 using Vector = std::vector<T>;
 
 using Size = std::size_t;
@@ -25,7 +24,7 @@ using SignedIndex = int32_t;
 static const UID INVALID_ID = 0;
 static const Index INVALID_INDEX = -1;
 
-template<typename K, typename V>
+template <typename K, typename V>
 using Dictionary = std::map<K, V>;
 
 using TypeInfo = std::type_info;

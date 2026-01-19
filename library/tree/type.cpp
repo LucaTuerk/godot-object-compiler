@@ -1,4 +1,3 @@
 #include "type.h"
 
-namespace GodotObjectCompiler {
-} //namespace GodotObjectCompiler
+namespace GodotObjectCompiler {}  // namespace GodotObjectCompiler

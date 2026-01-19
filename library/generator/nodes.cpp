@@ -4,5 +4,4 @@
 
 #include "nodes.h"
 
-namespace GodotObjectCompiler {
-} //namespace GodotObjectCompiler
+namespace GodotObjectCompiler {}  // namespace GodotObjectCompiler
