@@ -108,7 +108,6 @@ namespace GodotObjectCompiler {
     Node* get_previous_sibling() const;
 
    private:
-    Context* _clone_parent = nullptr;
     Context* _parent = nullptr;
     UID _id = INVALID_ID;
     Index _index = INVALID_INDEX;
