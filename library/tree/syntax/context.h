@@ -3,7 +3,9 @@
 #include "node.h"
 
 namespace GodotObjectCompiler {
+
   class Namespace;
+  class Body;
 
   enum StemExplorationType {
     DIRECT_PARENTS,
@@ -70,11 +72,17 @@ namespace GodotObjectCompiler {
     void write_to(IStructuredWriter* writer) override;
   };
 
+  class Body : public Context {
+    NODE_TYPE(Body);
+  };
+
   class NamedContext : public Context {
     NODE_TYPE(NamedContext)
     bool copy_to(Node* other) const override;
 
    private:
+
+    LAZY(NamedContext, Body*, body);
     LAZY(NamedContext, String, name);
     LAZY(NamedContext, String, qualified_name);
   };
@@ -92,6 +100,7 @@ namespace GodotObjectCompiler {
 
     return nullptr;
   }
+
   template <class T>
   T* Node::find_previous_sibling() {
     Node* current = get_previous_sibling();

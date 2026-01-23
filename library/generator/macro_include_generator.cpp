@@ -77,9 +77,9 @@ namespace GodotObjectCompiler {
     for (const String& hint_name : property_hint_names) {
       String function_name = macro_case_to_pascal_case(string_replace(hint_name, "PROPERTY", ""));
 
-      lines->add_child(Writer::FuncImpl("constexpr Hint", function_name,
-                                        {Writer::Param("const char*", "hint_string", Writer::StringLiteral(""))}, "",
-                                        {Writer::Return("Hint::_VAL")}));
+      lines->add_child(Writer::FuncImpl("constexpr", "Hint", function_name,
+          {Writer::Param("const char*", "hint_string", Writer::StringLiteral(""))}, "",
+          {Writer::Return("Hint::_VAL")}));
     }
 
     for (const String& usage_name : property_usage_names) {
@@ -96,17 +96,17 @@ namespace GodotObjectCompiler {
           params->add_child(Writer::Text(godot_property_prototype_args[index]));
         }
         lines->add_child(
-            Writer::FuncImpl("constexpr bool", "godot_property_prototype", {params}, "", {Writer::Return("true")}));
+            Writer::FuncImpl("constexpr", "bool", "godot_property_prototype", {params}, "", {Writer::Return("true")}));
       } while (next_permutation(indices.begin(), indices.end()));
     }
 
     result->add_child(Writer::Namespace("GodotObjectCompiler", Writer::Namespace("Generated", lines)));
 
     result->add_child(Writer::NewLine());
-    result->add_child(Writer::MacroFunctionDefine(
-        "GODOT_PROPERTY", {Writer::Text("...")},
+    result->add_child(Writer::MacroFunctionDefine("GODOT_PROPERTY", {Writer::Text("...")},
         {Writer::LineOfCode({Writer::Text("static_assert(_godot_property_prototype(__VA_ARGS__))")})}));
 
     return result;
   }
+
 }  // namespace GodotObjectCompiler

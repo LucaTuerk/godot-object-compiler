@@ -8,6 +8,7 @@
 #include "output.h"
 
 namespace GodotObjectCompiler {
+
   void OutputFile::print() {
     StreamWriter writer;
     write_output(&writer);
@@ -22,4 +23,5 @@ namespace GodotObjectCompiler {
       }
     }
   }
+
 }  // namespace GodotObjectCompiler

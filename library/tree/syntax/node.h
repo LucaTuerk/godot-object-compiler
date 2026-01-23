@@ -6,16 +6,22 @@
 #include "library/node_db.h"
 
 namespace GodotObjectCompiler {
+
   class Include;
   class Context;
   class Node;
 
   class Node {
    public:
+
     virtual String get_type() const { return "Node"; }
+
     virtual String to_string() const { return get_type(); }
+
     virtual bool copy_to(Node* other) const { return true; }
+
     virtual Node* create() { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
+
     static String get_type_static() { return "Node"; }
 
     Node() = default;
@@ -56,6 +62,7 @@ namespace GodotObjectCompiler {
     const T* const_as() const;
 
    private:
+
     mutable Node* _root = nullptr;
     Context* _parent = nullptr;
     UID _id = INVALID_ID;
@@ -72,6 +79,7 @@ namespace GodotObjectCompiler {
   T* node_new(Args&&... args) {
     return ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
   }
+
 }  // namespace GodotObjectCompiler
 
 template <class T>
@@ -96,6 +104,7 @@ GodotObjectCompiler::Node* GodotObjectCompiler::default_construct() {
 
 #define NODE_TYPE(type)                                                                                \
  public:                                                                                               \
+                                                                                                       \
   type() = default;                                                                                    \
   virtual String get_type() const override { return #type; }                                           \
   static String get_type_static() { return #type; }                                                    \

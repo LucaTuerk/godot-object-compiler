@@ -6,11 +6,14 @@
 #include "library/core/core.h"
 
 namespace GodotObjectCompiler {
+
   class IStringWriter;
+
   namespace Writer {
 
     class IOutputNode {
      public:
+
       virtual void get_output(IStringWriter* writer) = 0;
     };
 
@@ -19,13 +22,16 @@ namespace GodotObjectCompiler {
       LAZY(IndentNode, Size, total_amount);
 
      public:
+
       explicit IndentNode(Size amount) : amount(amount) {}
+
       void get_output(IStringWriter* writer) override;
       Size amount = 0;
     };
 
     class EnclosingNode : public Context, public IOutputNode {
       NODE_TYPE(EnclosingNode)
+
       EnclosingNode(String before, String after) : before(std::move(before)), after(std::move(after)) {}
 
       void get_output(IStringWriter* writer) override;
@@ -36,6 +42,7 @@ namespace GodotObjectCompiler {
 
     class ListNode : public Context, public IOutputNode {
       NODE_TYPE(ListNode)
+
       ListNode(String delimiter, bool before_first, bool after_last)
           : delimiter(std::move(delimiter)), before_first(before_first), after_last(after_last) {}
 
@@ -50,7 +57,9 @@ namespace GodotObjectCompiler {
       NODE_TYPE(SnippetNode);
 
      public:
+
       explicit SnippetNode(const String& content) : content(content) {}
+
       void get_output(IStringWriter* writer) override;
       String content;
     };
@@ -76,15 +85,21 @@ namespace GodotObjectCompiler {
     SnippetNode* Semicolon();
     SnippetNode* NewLine();
     ListNode* FuncCall(const String& function_name, std::initializer_list<IOutputNode*>&& parameters);
-    ListNode* FuncImpl(const String& return_type, const String& function_name,
-                       std::initializer_list<IOutputNode*>&& params, const String& modifiers,
-                       std::initializer_list<IOutputNode*>&& lines);
+
+    ListNode* FuncImpl(const String& modifiers_front, const String& return_type, const String& function_name,
+        std::initializer_list<IOutputNode*>&& params, const String& modifiers,
+        std::initializer_list<IOutputNode*>&& lines);
+
+    ListNode* FuncDef(const String& modifiers_front, const String& return_type, const String& function_name,
+
+        std::initializer_list<IOutputNode*>&& params, const String& modifiers);
+
     ListNode* ConstRef(const String& type);
     ListNode* MemberFuncDef(const String& type, const String& name, std::initializer_list<IOutputNode*>&& parameters,
-                            const String& modifiers);
+        const String& modifiers);
     ListNode* MemberFuncImpl(const String& return_type, const String& class_name, const String& name,
-                             std::initializer_list<IOutputNode*>&& params, const String& modifiers,
-                             std::initializer_list<IOutputNode*>&& lines);
+        std::initializer_list<IOutputNode*>&& params, const String& modifiers,
+        std::initializer_list<IOutputNode*>&& lines);
     ListNode* DeclAssign(const String& type, const String& name, IOutputNode* value);
     ListNode* Assign(const String& variable_name, IOutputNode* value);
     ListNode* Return(const String& name);
@@ -95,8 +110,8 @@ namespace GodotObjectCompiler {
     ListNode* Enum(const String& name, IOutputNode* content);
 
     ListNode* MacroDefine(const String& name, IOutputNode* content);
-    ListNode* MacroFunctionDefine(const String& name, std::initializer_list<IOutputNode*> params,
-                                  std::initializer_list<IOutputNode*> lines);
+    ListNode* MacroFunctionDefine(
+        const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*> lines);
 
   }  // namespace Writer
 }  // namespace GodotObjectCompiler

@@ -7,6 +7,7 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(PreprocessorHandler);
 
    public:
+
     bool handles_node(TSNode& node, const String& type) override;
     NextStep handle(ParserContext& context) override;
   };

@@ -8,6 +8,7 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(EnumHandler)  // enum_specifier
 
    public:
+
     bool handles_node(TSNode& node, const String& type) override;
     NextStep handle(ParserContext& context) override;
   };

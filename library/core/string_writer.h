@@ -8,11 +8,13 @@ namespace GodotObjectCompiler {
 
   class StreamWriter : public IStringWriter {
    public:
+
     void write(const String& value) override;
     String get_string() override;
     Size current_length() override;
 
    private:
+
     std::stringstream _stream;
     Size _current_length = 0;
   };

@@ -16,4 +16,5 @@ namespace GodotObjectCompiler {
   class EnumValue : public NamedContext {
     NODE_TYPE(EnumValue);
   };
+
 }  // namespace GodotObjectCompiler

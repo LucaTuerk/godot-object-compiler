@@ -27,4 +27,5 @@ namespace GodotObjectCompiler {
     print(" [ms]\t");
     print_ln(_step);
   }
+
 }  // namespace GodotObjectCompiler

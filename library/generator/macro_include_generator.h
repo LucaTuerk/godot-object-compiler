@@ -7,6 +7,7 @@ namespace GodotObjectCompiler {
     GENERATOR(MacroIncludeGenerator);
 
    public:
+
     Context* generate(Context* tree, Node* entry_point) override;
   };
 

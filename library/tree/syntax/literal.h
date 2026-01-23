@@ -5,6 +5,7 @@ namespace GodotObjectCompiler {
 
   class Literal : public Node {
     NODE_TYPE(Literal)
+
     explicit Literal(const String& content) : content(content) {}
 
     String to_string() const override;

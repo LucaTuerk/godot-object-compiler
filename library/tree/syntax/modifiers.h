@@ -3,6 +3,7 @@
 #include "node.h"
 
 namespace GodotObjectCompiler {
+
   class Virtual : public Node {
     NODE_TYPE(Virtual);
   };
@@ -34,4 +35,5 @@ namespace GodotObjectCompiler {
   class Volatile : public TypeQualifier {
     NODE_TYPE(Volatile);
   };
+
 }  // namespace GodotObjectCompiler

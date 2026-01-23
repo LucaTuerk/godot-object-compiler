@@ -6,6 +6,7 @@ namespace GodotObjectCompiler {
 
   class ExecutionContext {
    public:
+
     static ExecutionContext* instance() {
       static ExecutionContext singleton = ExecutionContext();
       return &singleton;
@@ -30,6 +31,7 @@ namespace GodotObjectCompiler {
     bool is_file_included(const String& include_path);
 
    private:
+
     void set_file_included(const String& include_path);
 
     bool is_cached(const String& path);

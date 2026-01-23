@@ -9,6 +9,7 @@ namespace GodotObjectCompiler {
 
   class OutputFile : public Context {
     NODE_TYPE(OutputFile);
+
     explicit OutputFile(String path) : path(std::move(path)) {}
 
     void print();

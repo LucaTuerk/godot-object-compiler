@@ -38,8 +38,9 @@ namespace GodotObjectCompiler {
     _creation_funcs[class_name] = creator;
     return true;
   }
-  bool AttributeDB::register_attribute_params(const String& class_name, const String& override_name,
-                                              std::initializer_list<AttributeParameterType>&& args) {
+
+  bool AttributeDB::register_attribute_params(
+      const String& class_name, const String& override_name, std::initializer_list<AttributeParameterType>&& args) {
     _parameter_type[class_name][override_name] = std::move(args);
     return true;
   }

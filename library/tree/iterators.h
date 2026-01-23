@@ -3,10 +3,13 @@
 #include "syntax/context.h"
 
 namespace GodotObjectCompiler {
+
   class Context;
+
   template <typename T>
   class BranchIterator {
    public:
+
     BranchIterator() = default;
     BranchIterator(Context* root, BranchExplorationType);
 
@@ -21,6 +24,7 @@ namespace GodotObjectCompiler {
     BranchIterator end();
 
    private:
+
     bool forward_step();
     bool downward_step();
     bool upward_step();
@@ -50,6 +54,7 @@ namespace GodotObjectCompiler {
     }
     return (current_parent == other.current_parent) && (itr == other.itr);
   }
+
   template <typename T>
   bool BranchIterator<T>::operator!=(const BranchIterator& end) const {
     return !(*this == end);

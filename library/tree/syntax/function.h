@@ -2,8 +2,10 @@
 
 #include "context.h"
 #include "library/core/lazy.h"
+#include "literal.h"
 
 namespace GodotObjectCompiler {
+
   class Type;
 
   class Parameters : public Context {
@@ -16,6 +18,9 @@ namespace GodotObjectCompiler {
 
   class Parameter : public NamedContext {
     NODE_TYPE(Parameter);
+
+    LAZY(Parameter, Type*, type)
+    LAZY(Parameter, Literal*, default_value);
   };
 
   class Function : public NamedContext {
@@ -32,6 +37,7 @@ namespace GodotObjectCompiler {
     LAZY(Function, bool, is_const);
 
    public:
+
     bool copy_to(Node* other) const override;
   };
 

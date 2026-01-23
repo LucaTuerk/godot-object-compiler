@@ -5,6 +5,7 @@ namespace GodotObjectCompiler {
 
   class IStringWriter {
    public:
+
     virtual ~IStringWriter() = default;
     virtual void write(const String& value) = 0;
     virtual String get_string() = 0;
@@ -13,6 +14,7 @@ namespace GodotObjectCompiler {
 
   class IStructuredWriter {
    public:
+
     virtual ~IStructuredWriter() {}
 
     template <typename K, typename V>
@@ -24,12 +26,14 @@ namespace GodotObjectCompiler {
     virtual void write_to_file(const String& path) = 0;
 
    protected:
+
     virtual void _write_to_section(const String& section) = 0;
     virtual void _write(const String& key, const String& value) = 0;
   };
 
   class IStructuredReader {
    public:
+
     virtual ~IStructuredReader() {}
 
     template <typename K, typename V>
@@ -41,6 +45,7 @@ namespace GodotObjectCompiler {
     virtual void read_from_file(const String& path) = 0;
 
    protected:
+
     virtual void _read_from_section(const String& section) = 0;
     virtual String _read(const String& key) = 0;
   };

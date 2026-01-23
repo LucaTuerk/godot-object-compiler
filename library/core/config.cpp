@@ -5,6 +5,7 @@
 #include "library/core/config.h"
 
 namespace GodotObjectCompiler {
+
   Config::Config() { write_to_section<String>(""); }
 
   const Vector<String>& Config::get_sections() { return _sections; }
@@ -80,4 +81,5 @@ namespace GodotObjectCompiler {
       }
     }
   }
+
 }  // namespace GodotObjectCompiler

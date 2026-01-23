@@ -2,11 +2,13 @@
 #include "core.h"
 
 namespace GodotObjectCompiler {
+
   class Node;
   class Namespace;
 
   class DB {
    public:
+
     static DB init(Namespace* root = nullptr);
     static DB read_from_config(const String& path);
 
@@ -14,6 +16,8 @@ namespace GodotObjectCompiler {
     Namespace* get_root() const;
 
    private:
+
     Namespace* _root = nullptr;
   };
+
 }  // namespace GodotObjectCompiler

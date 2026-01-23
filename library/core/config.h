@@ -7,8 +7,10 @@
 #include "reader_writer.h"
 
 namespace GodotObjectCompiler {
+
   class Config : public IStructuredWriter, public IStructuredReader {
    public:
+
     Config();
     ~Config() = default;
 
@@ -18,12 +20,14 @@ namespace GodotObjectCompiler {
     void read_from_file(const String& path) override;
 
    protected:
+
     void _write_to_section(const String& section) override;
     void _write(const String& key, const String& value) override;
     void _read_from_section(const String& section) override;
     String _read(const String& key) override;
 
    private:
+
     Size _find_section_index(const String& key);
 
     Size _current_section;

@@ -12,6 +12,8 @@ namespace GodotObjectCompiler {
     void write_to(IStructuredWriter* writer) override;
 
     enum Type { PUBLIC, PRIVATE, PROTECTED };
+
     Type type = PUBLIC;
   };
+
 }  // namespace GodotObjectCompiler

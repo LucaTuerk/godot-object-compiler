@@ -275,4 +275,5 @@ namespace GodotObjectCompiler {
     }
     return local_input;
   }
+
 }  // namespace GodotObjectCompiler

@@ -28,4 +28,8 @@ namespace GodotObjectCompiler {
     return true;
   }
 
+  Type* Parameter::_type_lazy_get() { return find_child<Type>(); }
+
+  Literal* Parameter::_default_value_lazy_get() { return find_child<Literal>(); }
+
 }  // namespace GodotObjectCompiler

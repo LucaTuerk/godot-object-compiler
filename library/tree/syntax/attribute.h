@@ -8,6 +8,7 @@
 #define ATTRIBUTE_TYPE(node_type, target_type, target)                                                 \
   NODE_TYPE(node_type)                                                                                 \
  protected:                                                                                            \
+                                                                                                       \
   bool _verify_target_class(Node* p_resolved) const override { return p_resolved->is<target_type>(); } \
                                                                                                        \
   Target _get_target() const override { return target; }                                               \
@@ -27,6 +28,7 @@ namespace GodotObjectCompiler {
 
   class Attribute : public NamedContext {
    public:
+
     enum Target {
       NEXT,        // attribute applies to next sibling in the context
       CONTAINING,  // attribute applies to the containing context
@@ -37,6 +39,7 @@ namespace GodotObjectCompiler {
     bool verify_target(Node* p_resolved) const;
 
    protected:
+
     virtual Target _get_target() const = 0;
     virtual bool _verify_target_class(Node* p_resolved) const = 0;
     virtual bool _verify_target(Node* p_resolved) const;
@@ -51,16 +54,18 @@ namespace GodotObjectCompiler {
 
   class AttributeDB {
    public:
+
     static AttributeDB* instance() {
       static AttributeDB singleton;
       return &singleton;
     }
+
     using CreationFunc = Attribute* (*)();
 
     bool register_attribute(const String& class_name, const String& macro, CreationFunc creator);
 
-    bool register_attribute_params(const String& class_name, const String& override_name,
-                                   std::initializer_list<AttributeParameterType>&& args);
+    bool register_attribute_params(
+        const String& class_name, const String& override_name, std::initializer_list<AttributeParameterType>&& args);
 
     bool is_known_macro(const String& macro);
 
@@ -71,6 +76,7 @@ namespace GodotObjectCompiler {
     Dictionary<String, Vector<AttributeParameterType>> const* get_parameter_types(const String& macro);
 
    private:
+
     Dictionary<String, CreationFunc> _creation_funcs;
     Dictionary<String, String> _macro_aliases;
     Dictionary<String, Dictionary<String, Vector<AttributeParameterType>>> _parameter_type;
@@ -96,4 +102,5 @@ namespace GodotObjectCompiler {
   class HintAttribute : public Attribute {
     ATTRIBUTE_TYPE(HintAttribute, Attribute, NONE)
   };
+
 }  // namespace GodotObjectCompiler

@@ -7,6 +7,7 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(StructHandler)
 
    public:
+
     ~StructHandler() override = default;
     bool handles_node(TSNode& node, const String& type) override;
     NextStep handle(ParserContext& context) override;

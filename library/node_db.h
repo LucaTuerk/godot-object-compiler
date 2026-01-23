@@ -2,11 +2,13 @@
 #include "core/core.h"
 
 namespace GodotObjectCompiler {
+
   class Node;
   class ExecutionContext;
 
   class NodeDB {
    public:
+
     UID request_id_change(UID from, UID to);
 
     template <typename T, typename... Args>
@@ -28,6 +30,7 @@ namespace GodotObjectCompiler {
     static Node* create(const String& type);
 
    private:
+
     NodeDB() = default;
     ~NodeDB();
 
@@ -81,4 +84,5 @@ namespace GodotObjectCompiler {
   Vector<Node*>& NodeDB::get_of_type() {
     return _type_nodes[typeid(T)];
   }
+
 }  // namespace GodotObjectCompiler

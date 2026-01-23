@@ -3,6 +3,7 @@
 #include "context.h"
 
 namespace GodotObjectCompiler {
+
   class Reference : public Node {
     NODE_TYPE(Reference);
   };
@@ -20,4 +21,5 @@ namespace GodotObjectCompiler {
   class PlaceholderType : public Node {
     NODE_TYPE(PlaceholderType);
   };
+
 }  // namespace GodotObjectCompiler

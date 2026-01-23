@@ -6,6 +6,7 @@
 #include "namespace.h"
 
 namespace GodotObjectCompiler {
+
   class Field;
   class Function;
   class Attribute;
@@ -22,11 +23,8 @@ namespace GodotObjectCompiler {
     LAZY(Class, Vector<Attribute*>, attributes);
 
    public:
-    bool copy_to(Node* other) const override;
-  };
 
-  class Body : public Context {
-    NODE_TYPE(Body);
+    bool copy_to(Node* other) const override;
   };
 
 }  // namespace GodotObjectCompiler

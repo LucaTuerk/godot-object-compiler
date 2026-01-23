@@ -88,4 +88,5 @@ namespace GodotObjectCompiler {
   }
 
   Namespace* DB::get_root() const { return _root; }
+
 }  // namespace GodotObjectCompiler

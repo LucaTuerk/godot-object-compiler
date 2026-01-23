@@ -1,6 +1,7 @@
 #include "enum.h"
 
 namespace GodotObjectCompiler {
+
   Vector<String> Enum::_value_names_lazy_get() {
     Vector<String> result;
 

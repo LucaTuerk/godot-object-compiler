@@ -25,4 +25,5 @@ namespace GodotObjectCompiler {
 
     return STEP_INTO;
   }
+
 }  // namespace GodotObjectCompiler

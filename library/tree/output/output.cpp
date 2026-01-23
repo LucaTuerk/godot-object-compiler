@@ -102,6 +102,7 @@ namespace GodotObjectCompiler {
     IndentNode* Indent(Size indent, std::initializer_list<IOutputNode*>&& children) {
       ADD_CHILDREN_AND_RET(create<IndentNode>(indent));
     }
+
     EnclosingNode* Brackets(std::initializer_list<IOutputNode*>&& children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("(", ")"));
     }
@@ -160,6 +161,7 @@ namespace GodotObjectCompiler {
     }
 
     SnippetNode* Semicolon() { return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(";"); }
+
     SnippetNode* NewLine() { return ExecutionContext::instance()->get_node_db()->create<SnippetNode>("\n"); }
 
     ListNode* ParamDecl(const String& type, const String& name) {
@@ -169,21 +171,32 @@ namespace GodotObjectCompiler {
       });
     }
 
-    ListNode* FuncImpl(const String& return_type, const String& function_name,
-                       std::initializer_list<IOutputNode*>&& params, const String& modifiers,
-                       std::initializer_list<IOutputNode*>&& lines) {
+    ListNode* FuncDef(const String& modifiers_front, const String& return_type, const String& function_name,
+        std::initializer_list<IOutputNode*>&& params, const String& modifiers) {
       return Spaces({Text(return_type),
-                     NoSep({
-                         Text(function_name),
-                         Brackets({Params(std::move(params))}),
-                     }),
-                     Text(modifiers),
-                     Braces({
-                         NewLine(),
-                         Indent(2, {Lines(std::move(lines))}),
-                     }),
-                     NewLine()});
+          NoSep({
+              Text(function_name),
+              Brackets({Params(std::move(params))}),
+          }),
+          Text(modifiers), Semicolon(), NewLine()});
     }
+
+    ListNode* FuncImpl(const String& modifiers_front, const String& return_type, const String& function_name,
+        std::initializer_list<IOutputNode*>&& params, const String& modifiers,
+        std::initializer_list<IOutputNode*>&& lines) {
+      return Spaces({Text(return_type),
+          NoSep({
+              Text(function_name),
+              Brackets({Params(std::move(params))}),
+          }),
+          Text(modifiers),
+          Braces({
+              NewLine(),
+              Indent(2, {Lines(std::move(lines))}),
+          }),
+          NewLine()});
+    }
+
     ListNode* DeclAssign(const String& type, const String& name, IOutputNode* value) {
       return LineOfCode({Spaces({Text(type), Text(name), Text("="), value})});
     }
@@ -199,7 +212,7 @@ namespace GodotObjectCompiler {
     }
 
     ListNode* MemberFuncDef(const String& type, const String& name, std::initializer_list<IOutputNode*>&& parameters,
-                            const String& modifiers) {
+        const String& modifiers) {
       return Spaces({Text(type), NoSep({
                                      Text(name),
                                      Brackets({Params(std::move(parameters))}),
@@ -211,9 +224,9 @@ namespace GodotObjectCompiler {
     ListNode* ConstRef(const String& type) { return Spaces({Text("const"), NoSep({Text(type), Text("&")})}); }
 
     ListNode* MemberFuncImpl(const String& return_type, const String& class_name, const String& name,
-                             std::initializer_list<IOutputNode*>&& params, const String& modifiers,
-                             std::initializer_list<IOutputNode*>&& lines) {
-      return FuncImpl(return_type, class_name + "::" + name, std::move(params), modifiers, std::move(lines));
+        std::initializer_list<IOutputNode*>&& params, const String& modifiers,
+        std::initializer_list<IOutputNode*>&& lines) {
+      return FuncImpl("", return_type, class_name + "::" + name, std::move(params), modifiers, std::move(lines));
     }
 
     SnippetNode* Param(const String& name) {
@@ -226,16 +239,17 @@ namespace GodotObjectCompiler {
 
     ListNode* Enum(const String& name, IOutputNode* content) {
       return Spaces({Text("enum"), Text(name),
-                     Braces({
-                         NewLine(),
-                         Indent(2, {content}),
-                     }),
-                     Semicolon()});
+          Braces({
+              NewLine(),
+              Indent(2, {content}),
+          }),
+          Semicolon()});
     }
 
     ListNode* MacroDefine(const String& name, IOutputNode* content) { return Lines({}); }
-    ListNode* MacroFunctionDefine(const String& name, std::initializer_list<IOutputNode*> params,
-                                  std::initializer_list<IOutputNode*> lines) {
+
+    ListNode* MacroFunctionDefine(
+        const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*> lines) {
       return Spaces({
           Text("#define"),
           NoSep({
@@ -248,20 +262,20 @@ namespace GodotObjectCompiler {
 
     ListNode* Class(const String& name, IOutputNode* content) {
       return Spaces({Text("class"), Text(name),
-                     Braces({
-                         NewLine(),
-                         Indent(2, {content}),
-                     }),
-                     Semicolon()});
+          Braces({
+              NewLine(),
+              Indent(2, {content}),
+          }),
+          Semicolon()});
     }
 
     ListNode* Class(const String& name, String base, IOutputNode* content) {
       return Spaces({Text("class"), Text(name), Text(": public"), Text(base),
-                     Braces({
-                         NewLine(),
-                         Indent(2, {content}),
-                     }),
-                     Semicolon()});
+          Braces({
+              NewLine(),
+              Indent(2, {content}),
+          }),
+          Semicolon()});
     }
 
   }  // namespace Writer
