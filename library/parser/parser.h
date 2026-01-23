@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../tree/syntax/node.h"
 #include "library/core/core.h"
 #include "library/parser/parser_context.h"
-#include "library/tree/node.h"
 
 namespace GodotObjectCompiler {
   class INodeHandler;
@@ -10,6 +10,7 @@ namespace GodotObjectCompiler {
 
   class IParser {
    public:
+    virtual ~IParser() = default;
     virtual Node* parse(const String& input) = 0;
   };
 
@@ -18,11 +19,14 @@ namespace GodotObjectCompiler {
     ~TreeSitterParser() = default;
 
     Node* parse(const String& input) override;
+    Node* parse(const String& input, std::vector<INodeHandler*> handlers);
 
     template <typename T>
     static bool register_handler();
 
    private:
+    String strip_known_macro_contents(const String& input, Dictionary<Size, String>& parameters);
+
     static inline Vector<INodeHandler*> _handlers{};
     ParserContext context{};
   };

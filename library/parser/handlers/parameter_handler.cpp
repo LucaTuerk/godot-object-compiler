@@ -7,7 +7,7 @@
 namespace GodotObjectCompiler {
 
   bool ParameterHandler::handles_node(TSNode& node, const String& type) {
-    return type == "parameter_declaration";
+    return type == "parameter_declaration" || type == "optional_parameter_declaration";
   }
 
   NextStep ParameterHandler::handle(ParserContext& context) {

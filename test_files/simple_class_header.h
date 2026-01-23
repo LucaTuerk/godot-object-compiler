@@ -1,29 +1,38 @@
-#pragma once
-#include <vector>
-#include "../library/parser/handlers/all.h"
-#define Hallo Hallo
 
-#define GODOT_CLASS(...)
+class B : public Texture2D {
+  GODOT_PROPERTY()
+  int property4;
+};
 
-namespace NamespaceA {
-	template <typename T>
-	using Vector = std::vector<T>;
+namespace Haah {
+  namespace gasd {
+    class G {
+      int hallo;
+      class huhu {
+        struct {
+          hihi
+        };
+      };
+    };
+    class Aha {};
+  }  // namespace gasd
+  class A : public Camera3D {
+    GODOT_GENERATED_BODY();
 
-	namespace B {
-		class A {};
-	}
+   public:
+    GODOT_PROPERTY();
+    int property1;
 
-	class InnerStruct : public B::A {
-		GODOT_CLASS(B::A, "Hallo")
+    GODOT_PROPERTY();
+    int property2;
+    class Hää {};
 
-		auto function2123(int a, void*) const -> const int**&;
-		const std::vector<int>& vec;
-		const Vector<int>& vec2;
-		mutable int field;
-		int function();
-		int&& function1(const int&& huh, std::vector<int>&& vec);
-		void _search_box_text_changed(const String &p_query);
+    GODOT_PROPERTY();
+    Ref<A> property3;
+  };
+  namespace Hash {
+    struct WieAuchImmer {};
+  }  // namespace Hash
+}  // namespace Haah
 
-		int test();
-	};
-}
+class C : public Texture2D {};

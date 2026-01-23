@@ -11,6 +11,13 @@ namespace GodotObjectCompiler {
   }
 
   NextStep ClassHandler::handle(ParserContext& context) {
+    bool success = true;
+    context.get_descendant_by_type("field_declaration_list", success);
+
+    if (!success) {
+      // This is probably a forward declare. Skip.
+      return STEP_OVER;
+    }
     context.current_node = context.create_class();
     return STEP_INTO;
   }

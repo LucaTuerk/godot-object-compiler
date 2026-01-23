@@ -6,14 +6,14 @@ namespace GodotObjectCompiler {
 
   // DO NOT IMPLEMENT
   SKIP(template_declaration);
+  SKIP(conditional_expression);
+  SKIP(compound_statement);
 
   // MAYBE IMPLEMENT
+  SKIP(call_expression);
   SKIP(preproc_call);
   SKIP(preproc_def);
+  SKIP(preproc_ifdef);
   SKIP(preproc_function_def);
-
-  // TO BE IMPLEMENTED
-  SKIP(enum_specifier);
-  SKIP(preproc_include);
 
 }  // namespace GodotObjectCompiler

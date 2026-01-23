@@ -4,6 +4,8 @@
 
 #include "storage_class_handler.h"
 
+#include "library/core/helpers.h"
+
 namespace GodotObjectCompiler {
 
   bool StorageClassHandler::handles_node(TSNode& node, const String& type) {
@@ -11,9 +13,15 @@ namespace GodotObjectCompiler {
   }
 
   NextStep StorageClassHandler::handle(ParserContext& context) {
-    if (context.copy_node_content(context.node) == "static") {
+    auto content = context.copy_node_content(context.node);
+    if (content == "static") {
       context.current_node->create_child<Static>();
     }
+
+    if (content == "inline") {
+      context.current_node->create_child<Inline>();
+    }
+
     return STEP_OVER;
   }
 

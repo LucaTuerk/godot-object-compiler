@@ -1,9 +1,15 @@
 #pragma once
 
 #include <algorithm>
+#include <chrono>
 #include <fstream>
+#include <functional>
+#include <iostream>
 #include <iterator>
+#include <limits>
+#include <list>
 #include <map>
+#include <set>
 #include <sstream>
 #include <string>
 #include <typeindex>
@@ -11,11 +17,34 @@
 #include <unordered_map>
 #include <vector>
 
+// This is the ugly file
+
 using String = std::string;
+
+template <typename T>
+using Limits = std::numeric_limits<T>;
+
+template <typename T>
+using Predicate = std::function<bool(T*)>;
+
+template <typename T>
+using Creator = std::function<T*()>;
 
 template <typename T>
 using Vector = std::vector<T>;
 
+template <typename T>
+using List = std::list<T>;
+
+template <typename T>
+using HashSet = std::set<T>;
+
+template <typename T>
+using Hasher = std::hash<T>;
+
+using TimePoint = std::chrono::steady_clock::time_point;
+
+using Hash = std::size_t;
 using Size = std::size_t;
 using UID = std::size_t;
 using Index = std::size_t;
@@ -30,13 +59,17 @@ using Dictionary = std::map<K, V>;
 using TypeInfo = std::type_info;
 using TypeIndex = std::type_index;
 
-String read_file(const String& path);
-void write_file(const String& path, const String& content);
-String generate_random_string(size_t length);
+template <typename T>
+void print(const T& message) {
+  std::cout << message;
+}
 
-bool string_contains(const String& str, const String& str2);
-bool string_suffix(const String& str, const String& str2);
-bool string_only_contains(const String& str, char symbol);
+template <typename T>
+void print_ln(const T& message) {
+  std::cout << message << std::endl;
+}
 
-void print_ln(const String& str);
-void print_err(const String& str);
+template <typename T>
+void print_err(const T& message) {
+  std::cerr << message << std::endl;
+}

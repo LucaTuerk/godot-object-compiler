@@ -1,7 +1,8 @@
 #include "pointer_ref_handler.h"
 
+#include "library/core/helpers.h"
 #include "library/parser/node_handler.h"
-#include "library/tree/type.h"
+#include "library/tree/syntax/type.h"
 
 namespace GodotObjectCompiler {
 

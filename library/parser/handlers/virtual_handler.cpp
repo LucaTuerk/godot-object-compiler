@@ -4,13 +4,13 @@
 
 #include "virtual_handler.h"
 
-#include "library/tree/modifiers.h"
+#include "library/core/helpers.h"
+#include "library/tree/syntax/modifiers.h"
 
 namespace GodotObjectCompiler {
 
   bool VirtualHandler::handles_node(TSNode& node, const String& type) {
-    return string_contains(type, "virtual") ||
-           string_contains(type, "virtual_specifier");
+    return string_contains(type, "virtual") || string_contains(type, "virtual_specifier");
   }
 
   NextStep VirtualHandler::handle(ParserContext& context) {
