@@ -7,6 +7,7 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(IdentifierHandler)
 
    public:
+
     IdentifierHandler();
     ~IdentifierHandler() override = default;
     bool handles_node(TSNode& node, const String& type) override;
@@ -15,6 +16,7 @@ namespace GodotObjectCompiler {
     NextStep handle_known_attribute(ParserContext& context, const String& macro);
 
    private:
+
     HashSet<String> _known_attributes;
   };
 

@@ -2,10 +2,12 @@
 
 #define LAZY(classname, type, name)                                                   \
  private:                                                                             \
+                                                                                      \
   type _##name##_lazy_get();                                                          \
   mutable Lazy<type, classname> _##name##_lazy{this, &classname::_##name##_lazy_get}; \
                                                                                       \
  public:                                                                              \
+                                                                                      \
   type const& name() const { return _##name##_lazy.get(); }                           \
                                                                                       \
  private:
@@ -17,7 +19,9 @@ namespace GodotObjectCompiler {
 
   class Lazy {
    public:
+
     using Getter = T (C::*)();
+
     Lazy(C* obj, Getter getter) : _obj(obj), _getter(getter) {}
 
     void operator=(T const& data) {
@@ -28,6 +32,7 @@ namespace GodotObjectCompiler {
     T const& get() const;
 
    private:
+
     C* _obj;
     Getter _getter;
     mutable std::atomic<bool> _has_data = false;

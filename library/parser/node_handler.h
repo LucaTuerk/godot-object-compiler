@@ -11,15 +11,18 @@
 #define NODE_HANDLER(name) static inline bool __registered___##name##___ = TreeSitterParser::register_handler<name>();
 
 namespace GodotObjectCompiler {
+
   enum NextStep { UNDECIDED, STEP_INTO, STEP_OVER, STEP_OUT, STEP_OVER_SPECIFIC };
 
   class INodeHandler {
    public:
+
     virtual ~INodeHandler() = default;
 
     virtual bool handles_node(TSNode& node, const String& type) = 0;
     virtual NextStep handle(ParserContext& context) = 0;
   };
+
 }  // namespace GodotObjectCompiler
 
 #define SKIP(name)                                                                         \
@@ -27,6 +30,7 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(___##name##___SKIP)                                                       \
                                                                                            \
    public:                                                                                 \
+                                                                                           \
     ~___##name##___SKIP() override = default;                                              \
     bool handles_node(TSNode& node, const String& type) override { return type == #name; } \
     NextStep handle(ParserContext& context) override { return STEP_OVER; }                 \
@@ -37,6 +41,7 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(___##name##___SKIP)                                                       \
                                                                                            \
    public:                                                                                 \
+                                                                                           \
     ~___##name##___SKIP() override = default;                                              \
     bool handles_node(TSNode& node, const String& type) override { return type == #name; } \
     NextStep handle(ParserContext& context) override { return STEP_INTO; }                 \
@@ -47,6 +52,7 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(___##name##___##type##___SIMPLE_GENERATE)                                 \
                                                                                            \
    public:                                                                                 \
+                                                                                           \
     ~___##name##___##type##___SIMPLE_GENERATE() override = default;                        \
     bool handles_node(TSNode& node, const String& type) override { return type == #name; } \
     NextStep handle(ParserContext& context) override {                                     \

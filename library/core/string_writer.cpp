@@ -17,4 +17,5 @@ namespace GodotObjectCompiler {
   String StreamWriter::get_string() { return _stream.str(); }
 
   Size StreamWriter::current_length() { return _current_length; }
+
 }  // namespace GodotObjectCompiler

@@ -13,6 +13,8 @@
 #include "library/generator/generated_class_generator.h"
 #include "library/parser/parser.h"
 #include "library/tree/iterators.h"
+#include "library/tree/output/output.h"
+#include "library/tree/output/output_transformator.h"
 #include "library/tree/predicates.h"
 
 using namespace GodotObjectCompiler;
@@ -25,6 +27,31 @@ int main() {
       "simple_class_header.h"};
 
   constexpr std::array<Size, 3> column_size = {10, 30, 10};
+
+  Context* ns = node_new<Namespace>();
+  ns->create_child<Identifier>("A");
+  ns = ns->create_child<Body>();
+  Function* func = ns->create_child<Function>();
+  Type* type = func->create_child<Type>();
+  type->create_child<Identifier>("void");
+  func->create_child<Identifier>("Class::set_value");
+  Parameters* params = func->create_child<Parameters>();
+  Parameter* param = params->create_child<Parameter>();
+  Type* param_type = param->create_child<Type>();
+  param_type->create_child<Const>();
+  param_type->create_child<Identifier>("Ref<Some>");
+  param_type->create_child<Reference>();
+  param->create_child<Identifier>("p_value");
+  Body* func_body = func->create_child<Body>();
+  func_body->add_child(Writer::Text("value = p_value;\n"));
+
+  OutputTransformator transformator;
+  Writer::IOutputNode* output = transformator.transform(ns);
+  StreamWriter writer;
+  output->get_output(&writer);
+  print_ln(writer.get_string());
+
+  return 0;
 
   for (const String& path : paths) {
     Timer timer{"Handling " + path};
@@ -65,6 +92,7 @@ int main() {
   }
   return 0;
 };
+
 //
 // {
 //   Timer search_timer{"Find A"};

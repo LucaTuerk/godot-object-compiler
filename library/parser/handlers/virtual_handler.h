@@ -7,6 +7,7 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(VirtualHandler)
 
    public:
+
     ~VirtualHandler() override = default;
     bool handles_node(TSNode& node, const String& type) override;
     NextStep handle(ParserContext& context) override;

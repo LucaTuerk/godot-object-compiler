@@ -3,14 +3,18 @@
 #include "../tree/syntax/namespace.h"
 
 namespace GodotObjectCompiler {
+
   class IGenerator {
    public:
+
     virtual Context* generate(Context* tree, Node* entry_point) = 0;
   };
+
 }  // namespace GodotObjectCompiler
 
 #define GENERATOR(type)                             \
  public:                                            \
+                                                    \
   static String get_type_static() { return #type; } \
                                                     \
  private:

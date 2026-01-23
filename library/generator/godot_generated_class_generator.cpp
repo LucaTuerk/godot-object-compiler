@@ -14,7 +14,7 @@ namespace GodotObjectCompiler {
 
     GEN_ERROR_COND(!_class, "Entry Point is not a Class. Abort!")
     GEN_ERROR_COND(!_class->has_generated_class_attribute(),
-                   "The generation target class does not have a GodotGeneratedClass attribute. Abort!");
+        "The generation target class does not have a GodotGeneratedClass attribute. Abort!");
 
     Context* result = node_new<Context>();
     Context* generated_body = result->create_child<OutputFile>();
@@ -34,10 +34,8 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  GeneratorError* GodotGeneratedClassGenerator::generate_property_bindings(Class* _class,
-                                                                           GodotPropertyAttribute* property,
-                                                                           Context* generated_body,
-                                                                           Context* generated_header) {
+  GeneratorError* GodotGeneratedClassGenerator::generate_property_bindings(
+      Class* _class, GodotPropertyAttribute* property, Context* generated_body, Context* generated_header) {
     Node* target = property->resolve_target();
 
     if (Field* target_field = target->as<Field>()) {
@@ -54,14 +52,14 @@ namespace GodotObjectCompiler {
 
       generated_body->add_child(Writer::MemberFuncDef(type_name, getter_name, {}, "const"));
       generated_body->add_child(Writer::MemberFuncDef("void", setter_name,
-                                                      {
-                                                          Writer::ConstRefParam(type_name, "p_" + property_name),
-                                                      },
-                                                      "const"));
+          {
+              Writer::ConstRefParam(type_name, "p_" + property_name),
+          },
+          "const"));
       generated_header->add_child(
           Writer::MemberFuncImpl(type_name, _class->name(), getter_name, {}, "const", {Writer::Return(property_name)}));
-      generated_header->add_child(Writer::MemberFuncImpl(
-          "void", _class->name(), setter_name, {Writer::ConstRefParam(type_name, "p_" + property_name)}, "",
+      generated_header->add_child(Writer::MemberFuncImpl("void", _class->name(), setter_name,
+          {Writer::ConstRefParam(type_name, "p_" + property_name)}, "",
           {Writer::Assign(property_name, Writer::Text("p_" + property_name))}));
     }
 

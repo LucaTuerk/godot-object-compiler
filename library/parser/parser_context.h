@@ -7,6 +7,7 @@
 #include "library/core/core.h"
 
 namespace GodotObjectCompiler {
+
   class Node;
   class Namespace;
   class Class;
@@ -46,6 +47,8 @@ namespace GodotObjectCompiler {
     ~ParserContext();
 
    private:
+
     bool _invalid = true;
   };
+
 }  // namespace GodotObjectCompiler

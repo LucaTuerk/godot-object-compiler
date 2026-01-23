@@ -7,6 +7,7 @@ namespace GodotObjectCompiler {
   class ErrorHandler : public INodeHandler {
     NODE_HANDLER(ErrorHandler)
    public:
+
     bool handles_node(TSNode& node, const String& type) override;
     NextStep handle(ParserContext& context) override;
   };

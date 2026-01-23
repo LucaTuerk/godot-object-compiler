@@ -4,6 +4,7 @@
 #include "type.h"
 
 namespace GodotObjectCompiler {
+
   class Field : public NamedContext {
     NODE_TYPE(Field);
 
@@ -13,4 +14,5 @@ namespace GodotObjectCompiler {
     LAZY(Field, bool, is_volatile);
     LAZY(Field, bool, is_static);
   };
+
 }  // namespace GodotObjectCompiler

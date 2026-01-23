@@ -20,4 +20,5 @@ namespace GodotObjectCompiler {
     Node::read_from(reader);
     reader->read<String, String>("preprocessor_name");
   }
+
 }  // namespace GodotObjectCompiler

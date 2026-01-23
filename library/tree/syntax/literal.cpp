@@ -5,6 +5,7 @@
 #include "literal.h"
 
 namespace GodotObjectCompiler {
+
   String Literal::to_string() const { return "Literal: " + content; }
 
   bool Literal::copy_to(Node* other) const {
@@ -22,4 +23,5 @@ namespace GodotObjectCompiler {
     Node::read_from(reader);
     content = reader->read<String, String>("literal_content");
   }
+
 }  // namespace GodotObjectCompiler

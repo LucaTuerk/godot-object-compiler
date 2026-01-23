@@ -5,17 +5,20 @@
 #include "library/parser/parser_context.h"
 
 namespace GodotObjectCompiler {
+
   class INodeHandler;
   class ParserContext;
 
   class IParser {
    public:
+
     virtual ~IParser() = default;
     virtual Node* parse(const String& input) = 0;
   };
 
   class TreeSitterParser : public IParser {
    public:
+
     ~TreeSitterParser() = default;
 
     Node* parse(const String& input) override;
@@ -25,6 +28,7 @@ namespace GodotObjectCompiler {
     static bool register_handler();
 
    private:
+
     String strip_known_macro_contents(const String& input, Dictionary<Size, String>& parameters);
 
     static inline Vector<INodeHandler*> _handlers{};
@@ -36,4 +40,5 @@ namespace GodotObjectCompiler {
     _handlers.push_back(new T());
     return true;
   }
+
 }  // namespace GodotObjectCompiler

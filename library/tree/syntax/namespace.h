@@ -4,9 +4,11 @@
 #include "library/core/lazy.h"
 
 namespace GodotObjectCompiler {
+
   class Field;
   class Function;
   class Class;
+  class Body;
 
   class Namespace : public NamedContext {
     NODE_TYPE(Namespace);
@@ -19,4 +21,5 @@ namespace GodotObjectCompiler {
     LAZY(Namespace, Vector<Field*>, fields);
     LAZY(Namespace, Vector<Function*>, functions);
   };
+
 }  // namespace GodotObjectCompiler

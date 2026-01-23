@@ -3,6 +3,7 @@
 #include "library/execution_context.h"
 
 namespace GodotObjectCompiler {
+
   String Parser::Helpers::remove_macros(const String& input) {
     String output = input;
 
@@ -12,4 +13,5 @@ namespace GodotObjectCompiler {
 
     return output;
   }
+
 }  // namespace GodotObjectCompiler

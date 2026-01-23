@@ -10,10 +10,11 @@ namespace GodotObjectCompiler {
     GENERATOR(GodotGeneratedClassGenerator);
 
    public:
+
     Context* generate(Context* tree, Node* entry_point) override;
 
-    GeneratorError* generate_property_bindings(Class* _class, GodotPropertyAttribute* property, Context* generated_body,
-                                               Context* generated_header);
+    GeneratorError* generate_property_bindings(
+        Class* _class, GodotPropertyAttribute* property, Context* generated_body, Context* generated_header);
   };
 
 }  // namespace GodotObjectCompiler
