@@ -1,80 +1,91 @@
 #include "main.h"
 
+#include <chrono>
+#include <iostream>
+
+#include "../library/core/config.h"
+#include "../library/tree/output/output_file.h"
+#include "../library/tree/syntax/all.h"
 #include "library/core/core.h"
-#include "library/core/db.h"
-#include "library/core/io/config.h"
+#include "library/core/helpers.h"
+#include "library/core/timer.h"
+#include "library/execution_context.h"
+#include "library/generator/generated_class_generator.h"
 #include "library/parser/parser.h"
-#include "library/tree/all.h"
-#include "library/writer/nodes/output.h"
-#include "library/writer/nodes/string_writer.h"
+#include "library/tree/iterators.h"
+#include "library/tree/predicates.h"
 
 using namespace GodotObjectCompiler;
 
 int main() {
-  // IParser* parser = new TreeSitterParser();
-  //
-  // String content = read_file(
-  //     "/home/luca/Repositories/godot/editor/gui/editor_quick_open_dialog.h");
-  // // String content =
-  // // read_file("/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h");
-  // Namespace* ns = (Namespace*)parser->parse(content);
-  //
-  // DB db = DB::init(ns);
-  // db.write_to_config("db.txt");
-  //
-  // Class* cl = ns->find_decendant<Class>();
-  //
-  // print_ln(cl->clone()->pretty_print());
-  // print_ln(cl->qualified_name());
-  //
-  // //
-  // // if (cl != nullptr) {
-  // // 	Vector<Namespace*> namespaces = cl->namespaces();
-  // // 	String name = cl->name();
-  // // 	String qualified = cl->qualified_name();
-  // // 	Vector<Function*> functions = cl->functions();
-  // // 	Vector<Field*> fields = cl->fields();
-  // // 	Vector<Field*> fields2 = cl->fields();
-  // //
-  // // 	for (auto field : functions) {
-  // // 		print_ln(field->qualified_name());
-  // // 	}
-  // // }
-  //
-  // print_ln(ns->pretty_print());
+  Vector<String> paths = {
+      "/home/luca/Repositories/godot-object-compiler/test_files/"
+      "simple_class_header.h",
+      "/home/luca/Repositories/godot-object-compiler/test_files/"
+      "simple_class_header.h"};
 
-  StringWriter writer = StringWriter();
+  constexpr std::array<Size, 3> column_size = {10, 30, 10};
 
-  using namespace Writer;
-  auto test = Braces({
-    Indent(2, {
-      Lines({
-        Text("Hallo Welt!"),
-        Indent(4,{
-          Lines({
-            FuncCall("main_func", {Param("a"), FuncCall("main_func", {Param("a"), Param("x"), Param("&p")}), Param("&p")}),
-            StringLiteral("This is a StringLiteral"),
-            Chevrons({
-              Text("int"),
-            }),
-            NoSep(
-              {
-              Text("call_func"),
-              Brackets({
-              Writer::Params({
-                Spaces({Text("int"), Text("a")}),
-                Spaces({Text("int"), Text("b")}),
-              }),
-            }),
-              Semicolon()}),
-          })
-        })
-      })
-    })
-  });
+  for (const String& path : paths) {
+    Timer timer{"Handling " + path};
+    ExecutionContext* context = ExecutionContext::instance();
+    context->init();
+    context->set_remove_macros(read_lines(".goc/macro_remove.txt"));
+    context->set_include_paths(read_lines(".goc/include_paths.txt"));
 
-  test->get_output(&writer);
-  print_ln(writer.get_string());
+    TreeSitterParser* parser = new TreeSitterParser();
 
+    Namespace* ns = nullptr;
+    {
+      Timer parse_timer{"Parse \"" + path + "\""};
+      ns = parser->parse(read_file(path))->as<Namespace>();
+    }
+
+    Namespace* target = default_construct<Namespace>()->as<Namespace>();
+    {
+      Timer merge_timer{"Merge Includes \"" + path + "\""};
+      // ns->merge_includes(target);
+    }
+
+    GodotGeneratedClassGenerator generator;
+
+    for (Class* _class : BranchIterator<Class>(ns, BFS)) {
+      print_ln(_class->name());
+    }
+
+    Vector<Class*> classes = ns->classes_recursive();
+    for (Class* cl : classes) {
+      Context* generated = generator.generate(ns, cl);
+      for (Node* child : generated->get_children()) {
+        if (OutputFile* output = child->as<OutputFile>()) {
+          output->print();
+        }
+      }
+    }
+  }
   return 0;
 };
+//
+// {
+//   Timer search_timer{"Find A"};
+//   Class* A = target->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
+//   if (A) {
+//     auto bases = A->base_classes();
+//     for (auto base : bases) {
+//       print(base->qualified_name() + " ");
+//     }
+//     print_ln("");
+//   }
+// }
+//
+// {
+//   Timer search_timer{"Find C"};
+//   Class* C = target->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("C"));
+//   if (C) {
+//     auto bases = C->base_classes();
+//     for (auto base : bases) {
+//       print(base->qualified_name() + " ");
+//     }
+//     print_ln("");
+//   }
+// }

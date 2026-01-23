@@ -1,14 +1,13 @@
 #pragma once
 
-#define LAZY(classname, type, name)                         \
- private:                                                   \
-  type _##name##_lazy_get();                                \
-  mutable Lazy<type, classname> _##name##_lazy{             \
-      this, &classname::_##name##_lazy_get};                \
-                                                            \
- public:                                                    \
-  type const& name() const { return _##name##_lazy.get(); } \
-                                                            \
+#define LAZY(classname, type, name)                                                   \
+ private:                                                                             \
+  type _##name##_lazy_get();                                                          \
+  mutable Lazy<type, classname> _##name##_lazy{this, &classname::_##name##_lazy_get}; \
+                                                                                      \
+ public:                                                                              \
+  type const& name() const { return _##name##_lazy.get(); }                           \
+                                                                                      \
  private:
 #include <atomic>
 

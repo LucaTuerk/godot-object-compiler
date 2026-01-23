@@ -6,9 +6,7 @@
 
 namespace GodotObjectCompiler {
 
-  bool TypeQualifierHandler::handles_node(TSNode& node, const String& type) {
-    return type == "type_qualifier";
-  }
+  bool TypeQualifierHandler::handles_node(TSNode& node, const String& type) { return type == "type_qualifier"; }
 
   NextStep TypeQualifierHandler::handle(ParserContext& context) {
     String content = context.copy_node_content(context.node);

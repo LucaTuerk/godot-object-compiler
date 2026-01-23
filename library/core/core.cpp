@@ -24,14 +24,24 @@ String read_file(const String& path) {
   return str;
 }
 
+Vector<String> read_lines(const String& path) {
+  Vector<String> result;
+  std::ifstream ifs{path};
+
+  for (std::string line; std::getline(ifs, line);) {
+    result.emplace_back(line);
+  }
+
+  return result;
+}
+
 void write_file(const String& path, const String& content) {
   std::ofstream ofs(path.c_str(), std::ios::out | std::ios::binary);
   ofs.write(content.c_str(), content.size());
 }
 
 String generate_random_string(size_t length) {
-  const std::string characters =
-      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const std::string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   std::random_device random_device;
   std::mt19937 generator(random_device());
   std::uniform_int_distribution<> distribution(0, characters.size() - 1);
@@ -43,13 +53,10 @@ String generate_random_string(size_t length) {
 
   return random_string;
 }
-bool string_contains(const String& str, const String& str2) {
-  return str.find(str2) != String::npos;
-}
 
-bool string_suffix(const String& str, const String& suffix) {
-  return str.rfind(suffix) == str.size() - suffix.size();
-}
+bool string_contains(const String& str, const String& str2) { return str.find(str2) != String::npos; }
+
+bool string_suffix(const String& str, const String& suffix) { return str.rfind(suffix) == str.size() - suffix.size(); }
 
 bool string_only_contains(const String& str, char symbol) {
   if (str.length() == 0) {
@@ -65,5 +72,24 @@ bool string_only_contains(const String& str, char symbol) {
   return true;
 }
 
-void print_ln(const String& str) { std::cout << str << std::endl; }
-void print_err(const String& str) { std::cerr << str << std::endl; }
+Vector<String> string_split(const String& str, const String& delimiter) {
+  Vector<String> result;
+
+  Size start = 0;
+  Size end = 0;
+  Size length = str.length();
+
+  do {
+    end = str.find(delimiter, start);
+    result.emplace_back(str.substr(start, end - start));
+    start = end + delimiter.length();
+  } while (end < length);
+
+  if (result.empty()) {
+    result.emplace_back(str);
+  }
+
+  return result;
+}
+
+void print_columns(const std::array<Size, 3>& column_size, std::vector<String>&& content) {}

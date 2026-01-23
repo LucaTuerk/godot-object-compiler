@@ -3,10 +3,11 @@
 #include <tree_sitter/api.h>
 #include <tree_sitter/tree-sitter-cpp.h>
 
+#include "../tree/syntax/node.h"
 #include "library/core/core.h"
 
 namespace GodotObjectCompiler {
-  class Context;
+  class Node;
   class Namespace;
   class Class;
   class Struct;
@@ -14,6 +15,8 @@ namespace GodotObjectCompiler {
   class Field;
 
   struct ParserContext {
+    using NodeID = const void*;
+
     String buffer;
     Context* current_node;
     TSParser* parser;
@@ -21,9 +24,13 @@ namespace GodotObjectCompiler {
     TSTreeCursor cursor;
     TSNode node;
     Namespace* global_namespace;
+    Dictionary<Size, String> stripped_parameters;
+    NodeID specific_step_id;
 
     String get_child_content(const TSNode& p_node, String p_child_name);
     TSNode get_child_node(const TSNode& p_node, String p_field_name);
+    TSNode get_child_node_by_type(const String& type, bool& success);
+    TSNode get_descendant_by_type(const String& type, bool& success);
     String copy_node_content(const TSNode& p_node);
 
     Namespace* create_namespace();

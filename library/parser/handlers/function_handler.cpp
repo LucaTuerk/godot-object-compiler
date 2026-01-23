@@ -3,7 +3,7 @@
 namespace GodotObjectCompiler {
 
   bool FieldHandler::handles_node(TSNode& node, const String& type) {
-    return type == "field_declaration" || type == "declaration";
+    return type == "field_declaration" || type == "declaration" || type == "function_definition";
   }
 
   bool has_decendant_of_type(TSNode node, const String& type) {
@@ -27,6 +27,7 @@ namespace GodotObjectCompiler {
       context.current_node = context.create_function();
     } else if (has_decendant_of_type(context.node, "class_specifier")) {
     } else if (has_decendant_of_type(context.node, "struct_specifier")) {
+    } else if (has_decendant_of_type(context.node, "enum_specifier")) {
     } else {
       context.current_node = context.create_field();
     }
