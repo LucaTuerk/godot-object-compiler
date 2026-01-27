@@ -9,7 +9,7 @@ namespace GodotObjectCompiler {
     explicit Literal(const String& content) : content(content) {}
 
     String to_string() const override;
-    bool copy_to(Node* other) const override;
+    bool copy_to(Ref<Node> other) const override;
     void write_to(IStructuredWriter* writer) override;
     void read_from(IStructuredReader* reader) override;
 

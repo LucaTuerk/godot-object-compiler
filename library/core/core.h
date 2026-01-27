@@ -9,6 +9,7 @@
 #include <limits>
 #include <list>
 #include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <string>
@@ -24,11 +25,6 @@ using String = std::string;
 template <typename T>
 using Limits = std::numeric_limits<T>;
 
-template <typename T>
-using Predicate = std::function<bool(T*)>;
-
-template <typename T>
-using Creator = std::function<T*()>;
 
 template <typename T>
 using Vector = std::vector<T>;
@@ -41,6 +37,23 @@ using HashSet = std::set<T>;
 
 template <typename T>
 using Hasher = std::hash<T>;
+
+template <typename T>
+using Ref = std::shared_ptr<T>;
+
+template <typename T>
+using WeakRef = std::weak_ptr<T>;
+
+template <typename T, typename... Args>
+Ref<T> make_ref(Args&& ...args) {
+  return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+template <typename T>
+using Predicate = std::function<bool(Ref<T>)>;
+
+template <typename T>
+using Creator = std::function<Ref<T>()>;
 
 using TimePoint = std::chrono::steady_clock::time_point;
 

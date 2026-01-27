@@ -8,7 +8,7 @@ namespace GodotObjectCompiler {
   class Field : public NamedContext {
     NODE_TYPE(Field);
 
-    LAZY(Field, Type*, type);
+    LAZY(Field, Ref<Type>, type);
     LAZY(Field, bool, is_const)
     LAZY(Field, bool, is_mutable);
     LAZY(Field, bool, is_volatile);

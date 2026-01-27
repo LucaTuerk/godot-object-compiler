@@ -31,45 +31,45 @@ int main() {
   generate_type_db.run(context);
 
   MacroIncludeGenerator macro_include_generator;
-  Context* macro_include_content = node_new<Context>();
+  Ref<Context> macro_include_content = node_new<Context>();
   macro_include_generator.generate(nullptr, macro_include_content);
 
   FileWriter marco_writer{path_concat(context.generated_root, "macros.h")};
   OutputTransformator transformator;
-  Writer::IOutputNode* macro_output = transformator.transform(macro_include_content);
+  Ref<Writer::IOutputNode> macro_output = transformator.transform(macro_include_content);
   macro_output->get_output(&marco_writer);
 
   Generate generate;
   generate.run(context);
 
   //
-  // Context* ns = node_new<Namespace>();
+  // Ref<Context> ns = node_new<Namespace>();
   // ns->create_child<Identifier>("A");
-  // Body* body = ns->create_child<Body>();
-  // Function* func = body->create_child<Function>();
-  // Type* type = func->create_child<Type>();
+  // Ref<Body> body = ns->create_child<Body>();
+  // Ref<Function> func = body->create_child<Function>();
+  // Ref<Type> type = func->create_child<Type>();
   // type->create_child<Identifier>("void");
   // func->create_child<Identifier>("Class::set_value");
-  // Parameters* params = func->create_child<Parameters>();
-  // Parameter* param = params->create_child<Parameter>();
-  // Type* param_type = param->create_child<Type>();
+  // Ref<Parameters> params = func->create_child<Parameters>();
+  // Ref<Parameter> param = params->create_child<Parameter>();
+  // Ref<Type> param_type = param->create_child<Type>();
   // param_type->create_child<Const>();
   // param_type->create_child<Identifier>("Ref<Some>");
   // param_type->create_child<Reference>();
   // param->create_child<Identifier>("p_value");
-  // Body* func_body = func->create_child<Body>();
+  // Ref<Body> func_body = func->create_child<Body>();
   // func_body->add_child(Writer::Text("value = p_value;\n"));
   //
-  // Function* get = body->create_child<Function>();
-  // Type* type_get = get->create_child<Type>();
+  // Ref<Function> get = body->create_child<Function>();
+  // Ref<Type> type_get = get->create_child<Type>();
   // type_get->create_child<Identifier>("Ref<Some>");
   // get->create_child<Identifier>("Class::get_value");
-  // Parameters* params_get = get->create_child<Parameters>();
-  // Body* get_body = get->create_child<Body>();
+  // Ref<Parameters> params_get = get->create_child<Parameters>();
+  // Ref<Body> get_body = get->create_child<Body>();
   // get_body->add_child(Writer::Return("value"));
   //
   // OutputTransformator transformator;
-  // Writer::IOutputNode* output = transformator.transform(ns);
+  // Ref<Writer::IOutputNode> output = transformator.transform(ns);
   // StreamWriter writer;
   // output->get_output(&writer);
   // print_ln(writer.get_string());
@@ -85,13 +85,13 @@ int main() {
     //
     // TreeSitterParser* parser = new TreeSitterParser();
     //
-    // Namespace* ns = nullptr;
+    // Ref<Namespace> ns = nullptr;
     // {
     //   Timer parse_timer{"Parse \"" + path + "\""};
     //   ns = parser->parse(read_file(path))->as<Namespace>();
     // }
     //
-    // Namespace* target = default_construct<Namespace>()->as<Namespace>();
+    // Ref<Namespace> target = default_construct<Namespace>()->as<Namespace>();
     // {
     //   Timer merge_timer{"Merge Includes \"" + path + "\""};
     //   // ns->merge_includes(target);
@@ -99,14 +99,14 @@ int main() {
     //
     // // GodotGeneratedClassGenerator generator;
     // //
-    // // for (Class* _class : BranchIterator<Class>(ns, BFS)) {
+    // // for (Ref<Class> _class : BranchIterator<Class>(ns, BFS)) {
     // //   print_ln(_class->name());
     // // }
     //
-    // Vector<Class*> classes = ns->classes_recursive();
-    // for (Class* cl : classes) {
-    //   Context* generated = generator.generate(ns, cl);
-    //   for (Node* child : *generated) {
+    // Vector<Ref<Class>> classes = ns->classes_recursive();
+    // for (Ref<Class> cl : classes) {
+    //   Ref<Context> generated = generator.generate(ns, cl);
+    //   for (Ref<Node> child : *generated) {
     //     if (OutputFile* output = child->as<OutputFile>()) {
     //       output->print();
     //     }
@@ -120,7 +120,7 @@ int main() {
 //
 // {
 //   Timer search_timer{"Find A"};
-//   Class* A = target->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
+//   Ref<Class> A = target->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
 //   if (A) {
 //     auto bases = A->base_classes();
 //     for (auto base : bases) {
@@ -132,7 +132,7 @@ int main() {
 //
 // {
 //   Timer search_timer{"Find C"};
-//   Class* C = target->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("C"));
+//   Ref<Class> C = target->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("C"));
 //   if (C) {
 //     auto bases = C->base_classes();
 //     for (auto base : bases) {

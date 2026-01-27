@@ -9,8 +9,8 @@ namespace GodotObjectCompiler {
     GENERATOR(GodotEnumGenerator)
    public:
 
-    GeneratorError* do_generate(Class* target_class, GodotEnumAttribute* attribute, Context* generated_body,
-        Context* generated_sources, Context* generated_global) override;
+    Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<GodotEnumAttribute> attribute, Ref<Context> generated_body,
+        Ref<Context> generated_sources, Ref<Context> generated_global) override;
   };
 
   REGISTER_CLASS_GENERATOR(GodotEnumGenerator)

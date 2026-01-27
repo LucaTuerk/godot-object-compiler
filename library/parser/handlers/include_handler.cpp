@@ -12,9 +12,9 @@ namespace GodotObjectCompiler {
     }
 
     if (success) {
-      Include* include = context.current_node->create_child<Include>(context.copy_node_content(content), false);
+      Ref<Include> include = context.current_node->create_child<Include>(context.copy_node_content(content), false);
     } else if (system_success) {
-      Include* include = context.current_node->create_child<Include>(context.copy_node_content(content), true);
+      Ref<Include> include = context.current_node->create_child<Include>(context.copy_node_content(content), true);
     } else {
       print_err("Could not find string_literal node");
     }

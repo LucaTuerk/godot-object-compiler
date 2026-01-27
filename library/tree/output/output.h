@@ -27,7 +27,7 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* writer) override;
 
-      bool copy_to(Node* other) const override;
+      bool copy_to(Ref<Node> other) const override;
 
       Size amount = 0;
     };
@@ -38,7 +38,7 @@ namespace GodotObjectCompiler {
       EnclosingNode(String before, String after) : before(std::move(before)), after(std::move(after)) {}
 
       void get_output(IStringWriter* writer) override;
-      bool copy_to(Node* other) const override;
+      bool copy_to(Ref<Node> other) const override;
 
       String before;
       String after;
@@ -52,7 +52,7 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* writer) override;
 
-      bool copy_to(Node* other) const override;
+      bool copy_to(Ref<Node> other) const override;
 
       String delimiter;
       bool before_first = false;
@@ -66,7 +66,7 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* writer) override;
 
-      bool copy_to(Node* other) const override;
+      bool copy_to(Ref<Node> other) const override;
 
       String search;
       String replace;
@@ -79,64 +79,62 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* writer) override;
 
-      bool copy_to(Node* other) const override;
+      bool copy_to(Ref<Node> other) const override;
 
       String content;
     };
 
-    void NamespaceOpen(Context*& target, const String& name);
+    Ref<IndentNode> Indent(Size indent, std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<EnclosingNode> Brackets(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<EnclosingNode> SquareBrackets(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<EnclosingNode> Braces(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<EnclosingNode> Chevrons(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<ListNode> Lines(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<ReplaceNode> EscapedLines(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<ListNode> Spaces(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<ListNode> NoSep(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<ListNode> Params(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<ListNode> ConstRefParam(const String& type, const String& name, Ref<IOutputNode> default_val = nullptr);
+    Ref<ListNode> Param(const String& type, const String& name, Ref<IOutputNode> default_val = nullptr);
+    Ref<ListNode> LineOfCode(std::initializer_list<Ref<IOutputNode>>&& children);
+    Ref<ListNode> ParamDecl(const String& type, const String& name);
+    Ref<SnippetNode> Text(const String& content);
+    Ref<SnippetNode> StringLiteral(const String& content);
+    Ref<SnippetNode> Semicolon();
+    Ref<SnippetNode> NewLine();
+    Ref<ListNode> FuncCall(const String& function_name, std::initializer_list<Ref<IOutputNode>>&& parameters);
 
-    IndentNode* Indent(Size indent, std::initializer_list<IOutputNode*>&& children);
-    EnclosingNode* Brackets(std::initializer_list<IOutputNode*>&& children);
-    EnclosingNode* SquareBrackets(std::initializer_list<IOutputNode*>&& children);
-    EnclosingNode* Braces(std::initializer_list<IOutputNode*>&& children);
-    EnclosingNode* Chevrons(std::initializer_list<IOutputNode*>&& children);
-    ListNode* Lines(std::initializer_list<IOutputNode*>&& children);
-    ReplaceNode* EscapedLines(std::initializer_list<IOutputNode*>&& children);
-    ListNode* Spaces(std::initializer_list<IOutputNode*>&& children);
-    ListNode* NoSep(std::initializer_list<IOutputNode*>&& children);
-    ListNode* Params(std::initializer_list<IOutputNode*>&& children);
-    ListNode* ConstRefParam(const String& type, const String& name, IOutputNode* default_val = nullptr);
-    ListNode* Param(const String& type, const String& name, IOutputNode* default_val = nullptr);
-    ListNode* LineOfCode(std::initializer_list<IOutputNode*>&& children);
-    ListNode* ParamDecl(const String& type, const String& name);
-    SnippetNode* Text(const String& content);
-    SnippetNode* StringLiteral(const String& content);
-    SnippetNode* Semicolon();
-    SnippetNode* NewLine();
-    ListNode* FuncCall(const String& function_name, std::initializer_list<IOutputNode*>&& parameters);
+    Ref<ListNode> FuncImpl(const String& modifiers_front, const String& return_type, const String& function_name,
+        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers,
+        std::initializer_list<Ref<IOutputNode>>&& lines);
 
-    ListNode* FuncImpl(const String& modifiers_front, const String& return_type, const String& function_name,
-        std::initializer_list<IOutputNode*>&& params, const String& modifiers,
-        std::initializer_list<IOutputNode*>&& lines);
+    Ref<ListNode> FuncDef(const String& modifiers_front, const String& return_type, const String& function_name,
 
-    ListNode* FuncDef(const String& modifiers_front, const String& return_type, const String& function_name,
+        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers);
 
-        std::initializer_list<IOutputNode*>&& params, const String& modifiers);
-
-    ListNode* ConstRef(const String& type);
-    ListNode* MemberFuncDef(const String& type, const String& name, std::initializer_list<IOutputNode*>&& parameters,
+    Ref<ListNode> ConstRef(const String& type);
+    Ref<ListNode> MemberFuncDef(const String& type, const String& name, std::initializer_list<Ref<IOutputNode>>&& parameters,
         const String& modifiers);
-    ListNode* MemberFuncImpl(const String& return_type, const String& class_name, const String& name,
-        std::initializer_list<IOutputNode*>&& params, const String& modifiers,
-        std::initializer_list<IOutputNode*>&& lines);
-    ListNode* DeclAssign(const String& type, const String& name, IOutputNode* value);
-    ListNode* Assign(const String& variable_name, IOutputNode* value);
-    ListNode* Return(const String& name);
-    SnippetNode* Param(const String& name);
-    SnippetNode* Include(const String& path);
-    ListNode* Namespace(const String& name, IOutputNode* content);
-    ListNode* Class(const String& name, IOutputNode* content);
-    ListNode* Class(const String& name, const String& base, IOutputNode* content);
-    ListNode* Enum(const String& name, IOutputNode* content);
-    ListNode* MacroDefine(const String& name, IOutputNode* content);
-    ListNode* MacroFunctionDefine(
-        const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*> lines);
+    Ref<ListNode> MemberFuncImpl(const String& return_type, const String& class_name, const String& name,
+        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers,
+        std::initializer_list<Ref<IOutputNode>>&& lines);
+    Ref<ListNode> DeclAssign(const String& type, const String& name, Ref<IOutputNode> value);
+    Ref<ListNode> Assign(const String& variable_name, Ref<IOutputNode> value);
+    Ref<ListNode> Return(const String& name);
+    Ref<SnippetNode> Param(const String& name);
+    Ref<SnippetNode> Include(const String& path);
+    Ref<ListNode> Namespace(const String& name, Ref<IOutputNode> content);
+    Ref<ListNode> Class(const String& name, Ref<IOutputNode> content);
+    Ref<ListNode> Class(const String& name, const String& base, Ref<IOutputNode> content);
+    Ref<ListNode> Enum(const String& name, Ref<IOutputNode> content);
+    Ref<ListNode> MacroDefine(const String& name, Ref<IOutputNode> content);
+    Ref<ListNode> MacroFunctionDefine(
+        const String& name, std::initializer_list<Ref<IOutputNode>> params, std::initializer_list<Ref<IOutputNode>> lines);
 
-    ListNode* Define(const String& name, std::initializer_list<IOutputNode*> params, const String& content);
-    ListNode* Define(
-        const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*>&& lines);
-    SnippetNode* PragmaOnce();
+    Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params, const String& content);
+    Ref<ListNode> Define(
+        const String& name, std::initializer_list<Ref<IOutputNode>> params, std::initializer_list<Ref<IOutputNode>>&& lines);
+    Ref<SnippetNode> PragmaOnce();
 
   }  // namespace Writer
 }  // namespace GodotObjectCompiler

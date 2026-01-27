@@ -33,10 +33,10 @@ namespace GodotObjectCompiler {
     ts_tree_cursor_delete(&cursor);
   }
 
-  Node* TreeSitterParser::parse(const String& input) {
+  Ref<Node> TreeSitterParser::parse(const String& input) {
     using NodeID = const void*;
 
-    Dictionary<NodeID, Context*> before_node;
+    Dictionary<NodeID, Ref<Context>> before_node;
     Dictionary<Size, String> stripped_parameters;
 
     String local_input = Parser::Helpers::remove_macros(input);
@@ -67,7 +67,7 @@ namespace GodotObjectCompiler {
 
         for (INodeHandler* handler : _handlers) {
           if (handler->handles_node(context.node, type)) {
-            Context* tmp = context.current_node;
+            Ref<Context> tmp = context.current_node;
 
             step = handler->handle(context);
 
@@ -130,10 +130,10 @@ namespace GodotObjectCompiler {
     return context.global_namespace;
   }
 
-  Node* TreeSitterParser::parse(const String& input, std::vector<INodeHandler*> handlers) {
+  Ref<Node> TreeSitterParser::parse(const String& input, std::vector<INodeHandler*> handlers) {
     using NodeID = const void*;
 
-    Dictionary<NodeID, Context*> before_node;
+    Dictionary<NodeID, Ref<Context>> before_node;
     Dictionary<Size, String> stripped_parameters;
 
     String local_input = strip_known_macro_contents(input, stripped_parameters);
@@ -163,7 +163,7 @@ namespace GodotObjectCompiler {
 
         for (INodeHandler* handler : handlers) {
           if (handler->handles_node(context.node, type)) {
-            Context* tmp = context.current_node;
+            Ref<Context> tmp = context.current_node;
 
             step = handler->handle(context);
 

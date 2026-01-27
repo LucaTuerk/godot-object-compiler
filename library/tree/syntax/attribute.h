@@ -5,7 +5,7 @@
   NODE_TYPE(node_type)                                                                                         \
  protected:                                                                                                    \
                                                                                                                \
-  virtual bool _verify_target_class(Node* p_resolved) const override { return p_resolved->is<target_type>(); } \
+  virtual bool _verify_target_class(Ref<Node> p_resolved) const override { return p_resolved->is<target_type>(); } \
                                                                                                                \
   virtual Target _get_target() const override { return target; }                                               \
                                                                                                                \
@@ -22,8 +22,8 @@ namespace GodotObjectCompiler {
       NONE,
     };
 
-    Node* resolve_target() const;
-    bool verify_target(Node* p_resolved) const;
+    Ref<Node> resolve_target() const;
+    bool verify_target(Ref<Node> p_resolved) const;
 
     Size start;
     Size end;
@@ -32,8 +32,8 @@ namespace GodotObjectCompiler {
    protected:
 
     virtual Target _get_target() const = 0;
-    virtual bool _verify_target_class(Node* p_resolved) const = 0;
-    virtual bool _verify_target(Node* p_resolved) const;
+    virtual bool _verify_target_class(Ref<Node> p_resolved) const = 0;
+    virtual bool _verify_target(Ref<Node> p_resolved) const;
   };
 
 }  // namespace GodotObjectCompiler

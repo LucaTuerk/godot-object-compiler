@@ -11,16 +11,16 @@
 
 namespace GodotObjectCompiler {
 
-  Type* GodotGeneratorUtils::const_ref(const String& type_name) {
+  Ref<Type> GodotGeneratorUtils::const_ref(const String& type_name) {
     return build<Type>().with_children({build<Const>(), build<Identifier>(type_name), build<Reference>()});
   }
 
-  Function* GodotGeneratorUtils::bind_method(
+  Ref<Function> GodotGeneratorUtils::bind_method(
       const String& class_name, const String& method_name, const Vector<String>& parameter_names) {
     // clang-format off
-    Arguments* arguments;
+    Ref<Arguments> arguments;
 
-    Function* result =  build<Function>().with_children({
+    Ref<Function> result =  build<Function>().with_children({
     build<Identifier>("ClassDB::bind_method"),
     build<Arguments>().with_children({
       build<Function>().with_children({
@@ -46,12 +46,12 @@ namespace GodotObjectCompiler {
 
 
 
-  Function* GodotGeneratorUtils::bind_static_method(
+  Ref<Function> GodotGeneratorUtils::bind_static_method(
       const String& class_name, const String& method_name, const Vector<String>& parameter_names) {
     // clang-format off
-    Arguments* arguments = node_new<Arguments>();
+    Ref<Arguments> arguments = node_new<Arguments>();
 
-    Function* result =  build<Function>().with_children({
+    Ref<Function> result =  build<Function>().with_children({
     build<Identifier>("ClassDB::bind_static_method"),
     build<Arguments>().with_children({
       build<Argument>().with_child(Writer::StringLiteral(class_name)),
@@ -76,11 +76,11 @@ namespace GodotObjectCompiler {
     // clang-format on
   }
 
-  Body* GodotGeneratorUtils::get_or_create_bind_methods_body(
-      Class* target_class, Context* generated_body, Context* generated_sources) {
-    Function* bind_methods = generated_sources->find_child(
+  Ref<Body> GodotGeneratorUtils::get_or_create_bind_methods_body(
+      Ref<Class> target_class, Ref<Context> generated_body, Ref<Context> generated_sources) {
+    Ref<Function> bind_methods = generated_sources->find_child(
         0, NamedContextPredicates::name<Function>((target_class->name() + "::_bind_methods").c_str()));
-    Body* bind_methods_body;
+    Ref<Body> bind_methods_body;
 
     if (!bind_methods) {
       // clang-format off

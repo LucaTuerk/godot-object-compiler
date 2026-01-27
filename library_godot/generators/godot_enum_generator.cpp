@@ -6,16 +6,16 @@
 
 namespace GodotObjectCompiler {
 
-  GeneratorError* GodotEnumGenerator::do_generate(Class* target_class, GodotEnumAttribute* attribute,
-      Context* generated_body, Context* generated_sources, Context* generated_global) {
+  Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> target_class, Ref<GodotEnumAttribute> attribute,
+      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
 
-    Node* target_node = attribute->resolve_target();
+    Ref<Node> target_node = attribute->resolve_target();
     GEN_ERROR_COND(!target_node, "Could not find target for Enum marco.");
 
-    Enum* target_enum = target_node->as<Enum>();
+    Ref<Enum> target_enum = target_node->as<Enum>();
     GEN_ERROR_COND(!target_enum, "Resolved target for enum macro is not an enum");
 
-    Body* bind_methods_body = GodotGeneratorUtils::get_or_create_bind_methods_body(target_class,generated_body,generated_sources);
+    Ref<Body> bind_methods_body = GodotGeneratorUtils::get_or_create_bind_methods_body(target_class,generated_body,generated_sources);
 
     for (const String& name : target_enum->value_names()) {
       // clang-format off

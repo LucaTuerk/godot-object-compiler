@@ -12,7 +12,7 @@ namespace GodotObjectCompiler {
 
   NextStep AccessSpecifierHandler::handle(ParserContext& context) {
     const String value = context.copy_node_content(context.node);
-    AccessSpecifier* as = context.current_node->create_child<AccessSpecifier>();
+    Ref<AccessSpecifier> as = context.current_node->create_child<AccessSpecifier>();
 
     if (value == "public") {
       as->type = AccessSpecifier::PUBLIC;

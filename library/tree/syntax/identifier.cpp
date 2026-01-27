@@ -2,7 +2,7 @@
 
 namespace GodotObjectCompiler {
 
-  bool Identifier::copy_to(Node* other) const {
+  bool Identifier::copy_to(Ref<Node> other) const {
     COPY_GUARD(Identifier, Node);
     target->name = name;
     return true;

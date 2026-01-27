@@ -4,7 +4,7 @@
 
 #define CREATE_NAMED(type)                               \
   type* result = current_node->create_child<type>();     \
-  Identifier* name = result->create_child<Identifier>(); \
+  Ref<Identifier> name = result->create_child<Identifier>(); \
   name->name = get_child_content(node, "name");          \
   return result
 
@@ -61,28 +61,28 @@ namespace GodotObjectCompiler {
     return buffer.substr(ts_node_start_byte(p_node), ts_node_end_byte(p_node) - ts_node_start_byte(p_node));
   }
 
-  Namespace* ParserContext::create_namespace() {
-    Namespace* result = current_node->create_child<Namespace>();
+  Ref<Namespace> ParserContext::create_namespace() {
+    Ref<Namespace> result = current_node->create_child<Namespace>();
     return result;
   }
 
-  Class* ParserContext::create_class() {
-    Class* result = current_node->create_child<Class>();
+  Ref<Class> ParserContext::create_class() {
+    Ref<Class> result = current_node->create_child<Class>();
     return result;
   }
 
-  Struct* ParserContext::create_struct() {
-    Struct* result = current_node->create_child<Struct>();
+  Ref<Struct> ParserContext::create_struct() {
+    Ref<Struct> result = current_node->create_child<Struct>();
     return result;
   }
 
-  Function* ParserContext::create_function() {
-    Function* result = current_node->create_child<Function>();
+  Ref<Function> ParserContext::create_function() {
+    Ref<Function> result = current_node->create_child<Function>();
     return result;
   }
 
-  Field* ParserContext::create_field() {
-    Field* result = current_node->create_child<Field>();
+  Ref<Field> ParserContext::create_field() {
+    Ref<Field> result = current_node->create_child<Field>();
     return result;
   }
 

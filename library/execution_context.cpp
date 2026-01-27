@@ -48,7 +48,7 @@ namespace GodotObjectCompiler {
 
   const Vector<String>& ExecutionContext::get_include_paths() { return _include_paths; }
 
-  Node* ExecutionContext::get_include(const String& included_from_path, const String& path) {
+  Ref<Node> ExecutionContext::get_include(const String& included_from_path, const String& path) {
     String absolute = get_absolute_include_path(included_from_path, path);
 
     if (absolute.empty()) {
@@ -62,7 +62,7 @@ namespace GodotObjectCompiler {
     }
     set_file_included(absolute);
 
-    Node* root = nullptr;
+    Ref<Node> root = nullptr;
     Hash absolute_hash = get_path_hash(absolute);
     if (auto incl = _included_nodes.find(absolute_hash); incl != _included_nodes.end()) {
       return incl->second->clone();
@@ -77,7 +77,7 @@ namespace GodotObjectCompiler {
     } else {
       Timer timer{"Parse \"" + absolute + "\""};
       TreeSitterParser parser;
-      Namespace* parsed = parser.parse(read_file(absolute))->as<Namespace>();
+      Ref<Namespace> parsed = parser.parse(read_file(absolute))->as<Namespace>();
       DB db = DB::init(parsed);
       db.write_to_config(cache_path);
       root = parsed;

@@ -20,7 +20,7 @@ namespace GodotObjectCompiler {
   NextStep PointerRefHandler::handle(ParserContext& context) {
     String type = ts_node_type(context.node);
 
-    Context* type_node = context.current_node->find_child<Type>();
+    Ref<Context> type_node = context.current_node->find_child<Type>();
     if (!type_node) {
       type_node = context.current_node;
     }

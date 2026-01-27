@@ -15,13 +15,13 @@ namespace GodotObjectCompiler {
 
     /* collections */
     LAZY(Class, Vector<String>, direct_bases_names);
-    LAZY(Class, Vector<Class*>, base_classes);
+    LAZY(Class, Vector<Ref<Class>>, base_classes);
     LAZY(Class, bool, has_generated_class_attribute);
-    LAZY(Class, Vector<Attribute*>, attributes);
+    LAZY(Class, Vector<Ref<Attribute>>, attributes);
 
    public:
 
-    bool copy_to(Node* other) const override;
+    bool copy_to(Ref<Node> other) const override;
   };
 
 }  // namespace GodotObjectCompiler

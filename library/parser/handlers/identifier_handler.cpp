@@ -25,13 +25,13 @@ namespace GodotObjectCompiler {
   }
 
   NextStep IdentifierHandler::handle(ParserContext& context) {
-    Context* target = context.current_node;
+    Ref<Context> target = context.current_node;
 
-    if (dynamic_cast<Field*>(context.current_node) && context.current_node->get_child_count() == 0) {
+    if (context.current_node->is<Field>() && context.current_node->get_child_count() == 0) {
       target = context.current_node->create_child<Type>();
     }
 
-    Identifier* identifier = target->create_child<Identifier>();
+    Ref<Identifier> identifier = target->create_child<Identifier>();
     identifier->name = context.copy_node_content(context.node);
 
     if (AttributeDB::instance()->is_known_macro(identifier->name)) {
@@ -42,12 +42,12 @@ namespace GodotObjectCompiler {
   }
 
   NextStep IdentifierHandler::handle_known_attribute(ParserContext& context, const String& macro) {
-    if (!dynamic_cast<Function*>(context.current_node)) {
+    if (!context.current_node->is<Function>()) {
       return STEP_OVER;
     }
 
-    if (Context* parent = context.current_node->get_parent(); parent) {
-      Attribute* attribute = AttributeDB::instance()->create_for_macro(macro);
+    if (Ref<Context> parent = context.current_node->get_parent(); parent) {
+      Ref<Attribute> attribute = AttributeDB::instance()->create_for_macro(macro);
       parent->replace_child(context.current_node, attribute, true);
 
       context.current_node = attribute;

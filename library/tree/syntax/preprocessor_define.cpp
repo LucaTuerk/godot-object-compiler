@@ -5,7 +5,7 @@ namespace GodotObjectCompiler {
 
   String PreprocessorDefine::to_string() const { return "PreprocessorDefine: " + name; }
 
-  bool PreprocessorDefine::copy_to(Node* other) const {
+  bool PreprocessorDefine::copy_to(Ref<Node> other) const {
     COPY_GUARD(PreprocessorDefine, Node);
     target->name = name;
     return true;

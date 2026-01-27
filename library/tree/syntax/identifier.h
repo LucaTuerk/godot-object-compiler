@@ -11,7 +11,7 @@ namespace GodotObjectCompiler {
 
     explicit Identifier(const String& name) : name(name) {}
 
-    bool copy_to(Node* other) const override;
+    bool copy_to(Ref<Node> other) const override;
     String to_string() const override;
     void write_to(IStructuredWriter* writer) override;
     void read_from(IStructuredReader* reader) override;

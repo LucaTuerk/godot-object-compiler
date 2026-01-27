@@ -34,7 +34,7 @@ namespace GodotObjectCompiler {
     }
   }
 
-  Node* NodeDB::create(const String& type) {
+  Ref<Node> NodeDB::create(const String& type) {
     auto itr = _node_constructors.find(type);
 
     if (itr == _node_constructors.end()) {

@@ -19,12 +19,12 @@ namespace GodotObjectCompiler {
     using NodeID = const void*;
 
     String buffer;
-    Context* current_node;
+    Ref<Context> current_node;
     TSParser* parser;
     TSTree* tree;
     TSTreeCursor cursor;
     TSNode node;
-    Namespace* global_namespace;
+    Ref<Namespace> global_namespace;
     Dictionary<Size, String> stripped_parameters;
     NodeID specific_step_id;
 
@@ -34,11 +34,11 @@ namespace GodotObjectCompiler {
     TSNode get_descendant_by_type(const String& type, bool& success);
     String copy_node_content(const TSNode& p_node);
 
-    Namespace* create_namespace();
-    Class* create_class();
-    Struct* create_struct();
-    Function* create_function();
-    Field* create_field();
+    Ref<Namespace> create_namespace();
+    Ref<Class> create_class();
+    Ref<Struct> create_struct();
+    Ref<Function> create_function();
+    Ref<Field> create_field();
 
     bool is_valid() const;
 

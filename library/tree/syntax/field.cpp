@@ -4,7 +4,7 @@
 
 namespace GodotObjectCompiler {
 
-  Type* Field::_type_lazy_get() { return find_descendant<Type>(); }
+  Ref<Type> Field::_type_lazy_get() { return find_descendant<Type>(); }
 
   bool Field::_is_const_lazy_get() { return find_descendant<Const>() != nullptr; }
 

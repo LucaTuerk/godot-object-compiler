@@ -38,8 +38,8 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  Context* MacroIncludeGenerator::generate(Context* tree, Node* entry_point) {
-    Context* entry = entry_point->as<Context>();
+  Ref<Context> MacroIncludeGenerator::generate(Ref<Context> tree, Ref<Node> entry_point) {
+    Ref<Context> entry = entry_point->as<Context>();
 
     entry->add_child(Writer::PragmaOnce());
     entry->add_child(Writer::Define("GOC_BODY_COMBINE_INNER",
@@ -56,11 +56,11 @@ namespace GodotObjectCompiler {
     entry->add_child(Writer::Define("GODOT_ENUM", {Writer::Text("...")}, ""));
     return entry;
     //
-    // Context* result = node_new<OutputFile>();
+    // Ref<Context> result = node_new<OutputFile>();
     //
-    // Enum* variant_type = tree->find_descendant<Enum>(BFS, VariantTypePredicate);
-    // Enum* property_hint = tree->find_descendant<Enum>(BFS, PropertyHintPredicate);
-    // Enum* property_usage_flags = tree->find_descendant<Enum>(BFS, PropertyUsageFlagsPredicate);
+    // Ref<Enum> variant_type = tree->find_descendant<Enum>(BFS, VariantTypePredicate);
+    // Ref<Enum> property_hint = tree->find_descendant<Enum>(BFS, PropertyHintPredicate);
+    // Ref<Enum> property_usage_flags = tree->find_descendant<Enum>(BFS, PropertyUsageFlagsPredicate);
     //
     // bool valid = true;
     // if (!variant_type) {
@@ -86,7 +86,7 @@ namespace GodotObjectCompiler {
     // const Vector<String>& property_hint_names = property_hint->value_names();
     // const Vector<String>& property_usage_names = property_usage_flags->value_names();
     //
-    // Writer::ListNode* lines = Writer::Lines({});
+    // Ref<Writer::ListNode> lines = Writer::Lines({});
     //
     // lines->add_child(Writer::Define("GOC_BODY_COMBINE_INNER",
     //     {Writer::Text("A"), Writer::Text("B"), Writer::Text("C"), Writer::Text("D")}, "A##B##C##D"));
@@ -118,7 +118,7 @@ namespace GodotObjectCompiler {
     //
     // for (Vector<Size>& indices : subsets) {
     //   do {
-    //     Writer::ListNode* params = Writer::Params({});
+    //     Ref<Writer::ListNode> params = Writer::Params({});
     //     for (Size& index : indices) {
     //       params->add_child(Writer::Text(godot_property_prototype_args[index]));
     //     }

@@ -21,7 +21,7 @@ namespace GodotObjectCompiler {
     void write_output(IStringWriter* writer);
 
     String path;
-    Writer::IOutputNode* transformed;
+    Ref<Writer::IOutputNode> transformed;
   };
 
 }  // namespace GodotObjectCompiler

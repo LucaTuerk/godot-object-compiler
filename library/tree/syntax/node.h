@@ -11,23 +11,23 @@ namespace GodotObjectCompiler {
   class Context;
   class Node;
 
-  class Node {
+  class Node : public std::enable_shared_from_this<Node> {
    public:
 
     virtual String get_type() const { return "Node"; }
 
     virtual String to_string() const { return get_type(); }
 
-    virtual bool copy_to(Node* other) const { return true; }
+    virtual bool copy_to(Ref<Node> other) const { return true; }
 
-    virtual Node* create() { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
+    virtual Ref<Node> create() { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
 
     static String get_type_static() { return "Node"; }
 
     Node() = default;
     virtual ~Node() = default;
 
-    Node* clone();
+    Ref<Node> clone();
 
     virtual void write_to(IStructuredWriter* writer);
     virtual void read_from(IStructuredReader* reader);
@@ -37,39 +37,39 @@ namespace GodotObjectCompiler {
     UID get_id() const;
     Index get_index() const;
     Index get_depth() const;
-    Context* get_parent() const;
-    Node* get_root();
+    Ref<Context> get_parent() const;
+    Ref<Node> get_root();
 
-    void reparent(Context* new_parent);
+    void reparent(Ref<Context> new_parent);
 
-    Node* get_sibling(int p_offset) const;
-    Node* get_next_sibling() const;
-    Node* get_previous_sibling() const;
+    Ref<Node> get_sibling(int p_offset) const;
+    Ref<Node> get_next_sibling() const;
+    Ref<Node> get_previous_sibling() const;
 
     template <typename T>
-    static bool default_node_predicate(T*) {
+    static bool default_node_predicate(Ref<T>) {
       return true;
     }
 
     template <class T>
-    T* find_parent(Predicate<T> predicate = default_node_predicate<T>) const;
+    Ref<T> find_parent(Predicate<T> predicate = default_node_predicate<T>) const;
 
     template <class T>
-    T* find_previous_sibling();
+    Ref<T> find_previous_sibling();
 
     template <class T>
     bool is() const;
 
     template <class T>
-    T* as();
+    Ref<T> as();
 
     template <class T>
-    const T* const_as() const;
+    Ref<const T> const_as() const;
 
    private:
 
-    mutable Node* _root = nullptr;
-    Context* _parent = nullptr;
+    mutable Ref<Node> _root = nullptr;
+    Ref<Context> _parent = nullptr;
     UID _id = INVALID_ID;
     Index _index = INVALID_INDEX;
 
@@ -78,10 +78,10 @@ namespace GodotObjectCompiler {
   };
 
   template <typename T>
-  Node* default_construct();
+  Ref<Node> default_construct();
 
   template <typename T, typename... Args>
-  T* node_new(Args&&... args) {
+  Ref<T> node_new(Args&&... args) {
     return ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
   }
 
@@ -89,21 +89,21 @@ namespace GodotObjectCompiler {
 
 template <class T>
 bool GodotObjectCompiler::Node::is() const {
-  return dynamic_cast<const T*>(this) != nullptr;
+  return std::dynamic_pointer_cast<const T>(shared_from_this()) != nullptr;
 }
 
 template <class T>
-T* GodotObjectCompiler::Node::as() {
-  return dynamic_cast<T*>(this);
+Ref<T> GodotObjectCompiler::Node::as() {
+  return std::dynamic_pointer_cast<T>(shared_from_this());
 }
 
 template <class T>
-const T* GodotObjectCompiler::Node::const_as() const {
-  return dynamic_cast<const T*>(this);
+Ref<const T> GodotObjectCompiler::Node::const_as() const {
+  return std::dynamic_pointer_cast<const T>(shared_from_this());
 }
 
 template <typename T>
-GodotObjectCompiler::Node* GodotObjectCompiler::default_construct() {
+Ref<GodotObjectCompiler::Node> GodotObjectCompiler::default_construct() {
   return ExecutionContext::instance()->get_node_db()->create<T>();
 }
 
@@ -113,8 +113,8 @@ GodotObjectCompiler::Node* GodotObjectCompiler::default_construct() {
   type() = default;                                                                                    \
   virtual String get_type() const override { return #type; }                                           \
   static String get_type_static() { return #type; }                                                    \
-  static Node* create_static() { return ExecutionContext::instance()->get_node_db()->create<type>(); } \
-  virtual Node* create() override { return type::create_static(); }                                    \
+  static Ref<Node> create_static() { return ExecutionContext::instance()->get_node_db()->create<type>(); } \
+  virtual Ref<Node> create() override { return type::create_static(); }                                    \
   static inline bool __registered__##type##__ =                                                        \
       NodeDB::register_node_constructor(#type, &GodotObjectCompiler::default_construct<type>);
 

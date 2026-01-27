@@ -8,20 +8,20 @@
 
 namespace GodotObjectCompiler {
 
-  void dump_node(IStructuredWriter* writer, Node* node) {
+  void dump_node(IStructuredWriter* writer, Ref<Node> node) {
     writer->write_to_section(node->get_id());
     node->write_to(writer);
 
-    if (Context* context = dynamic_cast<Context*>(node); context && !context->is<Include>()) {
-      for (Node* child : context->get_children()) {
+    if (Ref<Context> context = node->as<Context>(); context && !context->is<Include>()) {
+      for (Ref<Node> child : context->get_children()) {
         dump_node(writer, child);
       }
     }
   }
 
-  DB DB::init(Namespace* root) {
+  DB DB::init(Ref<Namespace> root) {
     DB result;
-    result._root = root ? root : new Namespace();
+    result._root = root ? root : node_new<Namespace>();
     return result;
   }
 
@@ -56,7 +56,7 @@ namespace GodotObjectCompiler {
         continue;
       }
 
-      Node* node = NodeDB::create(node_class);
+      Ref<Node> node = NodeDB::create(node_class);
       if (node) {
         node->read_from(&config);
       }
@@ -71,8 +71,8 @@ namespace GodotObjectCompiler {
       UID uid = config.read<String, UID>("_id");
       UID parent_uid = config.read<String, UID>("_parent");
 
-      Node* self = ExecutionContext::instance()->get_node_db()->get<Node>(uid);
-      Context* parent = ExecutionContext::instance()->get_node_db()->get<Context>(parent_uid);
+      Ref<Node> self = ExecutionContext::instance()->get_node_db()->get<Node>(uid);
+      Ref<Context> parent = ExecutionContext::instance()->get_node_db()->get<Context>(parent_uid);
 
       if (db._root == nullptr && parent_uid == INVALID_ID) {
         db._root = self->as<Namespace>();
@@ -88,7 +88,7 @@ namespace GodotObjectCompiler {
     return db;
   }
 
-  Namespace* DB::get_root() const { return _root; }
+  Ref<Namespace> DB::get_root() const { return _root; }
 
   TypeDB* TypeDB::instance() {
     static TypeDB instance;
@@ -101,7 +101,7 @@ namespace GodotObjectCompiler {
     return path_concat(_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
   }
 
-  void TypeDB::save_type_data(Namespace* root) {
+  void TypeDB::save_type_data(Ref<Namespace> root) {
     String qualified_name = root->qualified_name();
     DB db = DB::init(root);
     auto path = _get_cache_file_path(qualified_name);
@@ -112,7 +112,7 @@ namespace GodotObjectCompiler {
     db.write_to_config(path);
   }
 
-  Node* TypeDB::get_type_data(const String& qualified_name) {
+  Ref<Node> TypeDB::get_type_data(const String& qualified_name) {
     if (auto itr = _cache.find(qualified_name); itr != _cache.end()) {
       return itr->second;
     }
@@ -121,7 +121,7 @@ namespace GodotObjectCompiler {
 
     if (file_exists(cache_file_path)) {
       DB db = DB::read_from_config(cache_file_path);
-      Node* root = db.get_root();
+      Ref<Node> root = db.get_root();
       _cache[qualified_name] = db.get_root();
       return root;
     }

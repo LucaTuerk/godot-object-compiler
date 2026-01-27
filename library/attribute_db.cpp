@@ -19,7 +19,7 @@ namespace GodotObjectCompiler {
 
   bool AttributeDB::is_known_macro(const String& macro) { return _macro_aliases.find(macro) != _macro_aliases.end(); }
 
-  Attribute* AttributeDB::create_for_macro(const String& macro) {
+  Ref<Attribute> AttributeDB::create_for_macro(const String& macro) {
     auto name_itr = _macro_aliases.find(macro);
     if (name_itr == _macro_aliases.end()) {
       return nullptr;
@@ -76,7 +76,7 @@ namespace GodotObjectCompiler {
     return {};
   }
 
-  bool AttributeDB::register_class_generator(const String& generator_name, ClassGenerator* generator) {
+  bool AttributeDB::register_class_generator(const String& generator_name, Ref<ClassGenerator> generator) {
     if (_registered_generator_names.find(generator_name) == _registered_generator_names.end()) {
       _registered_generator_names.insert(generator_name);
       _class_generators.push_back(generator);
@@ -85,6 +85,6 @@ namespace GodotObjectCompiler {
     return false;
   }
 
-  const Vector<ClassGenerator*>& AttributeDB::class_generators() const { return _class_generators; }
+  const Vector<Ref<ClassGenerator>>& AttributeDB::class_generators() const { return _class_generators; }
 
 }  // namespace GodotObjectCompiler

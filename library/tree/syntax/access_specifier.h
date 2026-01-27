@@ -7,7 +7,7 @@ namespace GodotObjectCompiler {
   class AccessSpecifier : public Node {
     NODE_TYPE(AccessSpecifier);
 
-    bool copy_to(Node* other) const override;
+    bool copy_to(Ref<Node> other) const override;
     String to_string() const override;
     void write_to(IStructuredWriter* writer) override;
 

@@ -11,12 +11,12 @@ namespace GodotObjectCompiler {
    public:
 
     BranchIterator() = default;
-    BranchIterator(Context* root, BranchExplorationType);
+    BranchIterator(Ref<Context> root, BranchExplorationType);
 
     bool operator==(const BranchIterator& other) const;
     bool operator!=(const BranchIterator& end) const;
-    T*& operator*();
-    T** operator->() const;
+    Ref<T>& operator*();
+    Ref<T>* operator->() const;
     BranchIterator& operator++();
     BranchIterator operator++(int);
 
@@ -30,18 +30,18 @@ namespace GodotObjectCompiler {
     bool upward_step();
 
     bool is_done = true;
-    T* last_valid = nullptr;
+    Ref<T> last_valid = nullptr;
 
     BranchExplorationType type;
 
-    Context* root = nullptr;
-    Context* current_parent = nullptr;
-    Node* last_node = nullptr;
+    Ref<Context> root = nullptr;
+    Ref<Context> current_parent = nullptr;
+    Ref<Node> last_node = nullptr;
     Context::ChildIterator itr{};
   };
 
   template <typename T>
-  BranchIterator<T>::BranchIterator(Context* _root, BranchExplorationType _type) {
+  BranchIterator<T>::BranchIterator(Ref<Context> _root, BranchExplorationType _type) {
     root = _root;
     type = _type;
     is_done = false;
@@ -61,12 +61,12 @@ namespace GodotObjectCompiler {
   }
 
   template <typename T>
-  T*& BranchIterator<T>::operator*() {
+  Ref<T>& BranchIterator<T>::operator*() {
     return last_valid;
   }
 
   template <typename T>
-  T** BranchIterator<T>::operator->() const {
+  Ref<T>* BranchIterator<T>::operator->() const {
     return &last_valid;
   }
 
@@ -84,7 +84,7 @@ namespace GodotObjectCompiler {
       if (itr != current_parent->end()) {
         last_node = (*itr);
         // print_ln(last_node->to_string());
-        T* node = (*itr)->as<T>();
+        Ref<T> node = (*itr)->as<T>();
         if (node) {
           last_valid = node;
           return *this;
@@ -140,7 +140,7 @@ namespace GodotObjectCompiler {
       return false;
     }
 
-    Context* ctx = last_node->as<Context>();
+    Ref<Context> ctx = last_node->as<Context>();
     if (!ctx) {
       return false;
     }
@@ -159,7 +159,7 @@ namespace GodotObjectCompiler {
     }
 
     do {
-      Context* prev = current_parent;
+      Ref<Context> prev = current_parent;
       current_parent = current_parent->get_parent();
       itr = std::find(current_parent->begin(), current_parent->end(), prev);
 
