@@ -9,8 +9,8 @@ namespace GodotObjectCompiler {
   class GodotClassGenerator : public IClassGenerator<GodotClassAttribute> {
     GENERATOR(GodotClassGenerator);
 
-     GeneratorError* do_generate(Class* target_class, GodotClassAttribute* attribute, Context* generated_body,
-        Context* generated_sources, Context* generated_global) override;
+     Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<GodotClassAttribute> attribute, Ref<Context> generated_body,
+        Ref<Context> generated_sources, Ref<Context> generated_global) override;
   };
 
 }  // namespace GodotoObjectCompiler

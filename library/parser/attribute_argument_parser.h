@@ -11,7 +11,7 @@ namespace GodotObjectCompiler {
    public:
 
     void setup_for_macro(const String& macro_name);
-    Node* parse(const String& input) override;
+    Ref<Node> parse(const String& input) override;
 
    private:
 

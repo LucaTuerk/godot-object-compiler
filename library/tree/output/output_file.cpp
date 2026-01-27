@@ -18,7 +18,7 @@ namespace GodotObjectCompiler {
 
   void OutputFile::write_output(IStringWriter* writer) {
     if (!transformed) {
-      transformed = OutputTransformator().transform(this);
+      transformed = OutputTransformator().transform(shared_from_this());
       if (!transformed) {
         return;
       }

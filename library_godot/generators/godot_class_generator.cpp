@@ -6,8 +6,8 @@
 
 namespace GodotObjectCompiler {
 
-  GeneratorError* GodotClassGenerator::do_generate(Class* target_class, GodotClassAttribute* attribute,
-      Context* generated_body, Context* generated_sources, Context* generated_global) {
+  Ref<GeneratorError> GodotClassGenerator::do_generate(Ref<Class> target_class, Ref<GodotClassAttribute> attribute,
+      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
     GEN_ERROR_COND(
         attribute->resolve_target() != target_class, "Resolved class is not the provided target class. Abort!");
 
@@ -16,7 +16,7 @@ namespace GodotObjectCompiler {
         "Target class does not name base classes and thus cannot inherit from a Godot object type. Abort!");
 
     // clang-format off
-    Function* gd_class = build<Function>().with_children({
+    Ref<Function> gd_class = build<Function>().with_children({
       build<Identifier>("GDCLASS"),
       build<Arguments>().with_children({
         build<Argument>().with_child(Writer::Text(target_class->name())),

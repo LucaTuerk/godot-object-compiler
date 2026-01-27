@@ -41,12 +41,12 @@ namespace GodotObjectCompiler {
         times.write<String, Size>(file, current_modified);
         times.write_to_file(time_path);
 
-        Node* generated = parser.parse(read_file(file));
-        Namespace* ns = generated->as<Namespace>();
+        Ref<Node> generated = parser.parse(read_file(file));
+        Ref<Namespace> ns = generated->as<Namespace>();
 
         if (ns) {
-          Vector<Class*> classes = ns->classes_recursive();
-          for (Class* cls : classes) {
+          Vector<Ref<Class>> classes = ns->classes_recursive();
+          for (Ref<Class> cls : classes) {
             type_db->save_type_data(cls);
           }
         }

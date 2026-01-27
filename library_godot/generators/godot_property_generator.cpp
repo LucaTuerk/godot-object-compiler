@@ -10,17 +10,17 @@
 
 namespace GodotObjectCompiler {
 
-  GeneratorError* GodotPropertyGenerator::do_generate(Class* target_class, GodotPropertyAttribute* attribute,
-      Context* generated_body, Context* generated_sources, Context* generated_global) {
+  Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> target_class, Ref<GodotPropertyAttribute> attribute,
+      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
     using namespace GodotGeneratorUtils;
 
-    Node* target = attribute->resolve_target();
-    Body* bind_methods_body = get_or_create_bind_methods_body(target_class, generated_body, generated_sources);
+    Ref<Node> target = attribute->resolve_target();
+    Ref<Body> bind_methods_body = get_or_create_bind_methods_body(target_class, generated_body, generated_sources);
     GEN_ERROR_COND(!bind_methods_body, "Failed to find or generate the _bind_methods function body.");
 
-    if (const Field* target_field = target->as<Field>()) {
+    if (const Ref<Field> target_field = target->as<Field>()) {
       const String property_name = target_field->name();
-      const Type* field_type = target_field->type();
+      const Ref<Type> field_type = target_field->type();
 
       GEN_ERROR_COND(target_field->is_const(), "Target field is a Constant. Abort!");
       GEN_ERROR_COND(target_field->is_static(), "Target field is a static Field. Abort!");
@@ -34,14 +34,14 @@ namespace GodotObjectCompiler {
       bind_methods_body->add_child(bind_method(target_class->name(), setter_name, {property_name}));
 
       // clang-format off
-      Function* get_def = build<Function>().with_children({
+      Ref<Function> get_def = build<Function>().with_children({
         const_ref(type_name),
         build<Identifier>(getter_name),
         build<Parameters>(),
         build<Const>()
       }).with_child(Writer::Semicolon());
 
-      Function* get_impl = build<Function>().with_children({
+      Ref<Function> get_impl = build<Function>().with_children({
         const_ref(type_name),
         build<Identifier>(target_class->name()  + "::" + getter_name),
         build<Parameters>(),
@@ -51,7 +51,7 @@ namespace GodotObjectCompiler {
           )
       });
 
-      Function* set_def = build<Function>().with_children({
+      Ref<Function> set_def = build<Function>().with_children({
       build<Type>().with_child<Identifier>("void"),
         build<Identifier>(setter_name),
         build<Parameters>().with_child(
@@ -61,7 +61,7 @@ namespace GodotObjectCompiler {
         }))
       }).with_child(Writer::Semicolon());
 
-      Function* set_impl = build<Function>().with_children({
+      Ref<Function> set_impl = build<Function>().with_children({
         build<Type>().with_child<Identifier>("void"),
         build<Identifier>(target_class->name()  + "::" + setter_name),
         build<Parameters>()
@@ -75,7 +75,7 @@ namespace GodotObjectCompiler {
         build<Body>().with_child(Writer::Assign(property_name, Writer::Text("p_" + property_name))),
       });
 
-      Function* add_property = build<Function>().with_children({
+      Ref<Function> add_property = build<Function>().with_children({
         build<Identifier>("ADD_PROPERTY"),
         build<Arguments>().with_children({
           build<Argument>().with_children({

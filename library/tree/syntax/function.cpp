@@ -5,11 +5,11 @@
 
 namespace GodotObjectCompiler {
 
-  Type* Function::_type_lazy_get() { return find_child<Type>(); }
+  Ref<Type> Function::_type_lazy_get() { return find_child<Type>(); }
 
-  Parameters* Function::_parameters_lazy_get() { return find_child<Parameters>(); }
+  Ref<Parameters> Function::_parameters_lazy_get() { return find_child<Parameters>(); }
 
-  Arguments* Function::_arguments_lazy_get() { return find_child<Arguments>(); }
+  Ref<Arguments> Function::_arguments_lazy_get() { return find_child<Arguments>(); }
 
   bool Function::_is_virtual_lazy_get() { return find_child<Virtual>() != nullptr; }
 
@@ -19,7 +19,7 @@ namespace GodotObjectCompiler {
 
   bool Function::_is_const_lazy_get() { return find_child<Const>() != nullptr; }
 
-  bool Function::copy_to(Node* other) const {
+  bool Function::copy_to(Ref<Node> other) const {
     COPY_GUARD(Function, NamedContext);
     // COPY_LAZY(type);
     // COPY_LAZY(parameters);
@@ -30,8 +30,8 @@ namespace GodotObjectCompiler {
     return true;
   }
 
-  Type* Parameter::_type_lazy_get() { return find_child<Type>(); }
+  Ref<Type> Parameter::_type_lazy_get() { return find_child<Type>(); }
 
-  Literal* Parameter::_default_value_lazy_get() { return find_child<Literal>(); }
+  Ref<Literal> Parameter::_default_value_lazy_get() { return find_child<Literal>(); }
 
 }  // namespace GodotObjectCompiler

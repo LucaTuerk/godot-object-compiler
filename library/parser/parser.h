@@ -13,7 +13,7 @@ namespace GodotObjectCompiler {
    public:
 
     virtual ~IParser() = default;
-    virtual Node* parse(const String& input) = 0;
+    virtual Ref<Node> parse(const String& input) = 0;
   };
 
   class TreeSitterParser : public IParser {
@@ -21,8 +21,8 @@ namespace GodotObjectCompiler {
 
     ~TreeSitterParser() = default;
 
-    Node* parse(const String& input) override;
-    Node* parse(const String& input, std::vector<INodeHandler*> handlers);
+    Ref<Node> parse(const String& input) override;
+    Ref<Node> parse(const String& input, std::vector<INodeHandler*> handlers);
 
     template <typename T>
     static bool register_handler();

@@ -27,17 +27,17 @@ namespace GodotObjectCompiler {
   class Parameter : public NamedContext {
     NODE_TYPE(Parameter);
 
-    LAZY(Parameter, Type*, type)
-    LAZY(Parameter, Literal*, default_value);
+    LAZY(Parameter, Ref<Type>, type)
+    LAZY(Parameter, Ref<Literal>, default_value);
   };
 
   class Function : public NamedContext {
     NODE_TYPE(Function);
 
     /* child nodes */
-    LAZY(Function, Type*, type);
-    LAZY(Function, Parameters*, parameters);
-    LAZY(Function, Arguments*, arguments);
+    LAZY(Function, Ref<Type>, type);
+    LAZY(Function, Ref<Parameters>, parameters);
+    LAZY(Function, Ref<Arguments>, arguments);
 
     /* info */
     LAZY(Function, bool, is_virtual);
@@ -47,7 +47,7 @@ namespace GodotObjectCompiler {
 
    public:
 
-    bool copy_to(Node* other) const override;
+    bool copy_to(Ref<Node> other) const override;
   };
 
 }  // namespace GodotObjectCompiler

@@ -5,11 +5,11 @@ namespace GodotObjectCompiler {
   Vector<String> Enum::_value_names_lazy_get() {
     Vector<String> result;
 
-    EnumValues* values = find_child<EnumValues>();
+    Ref<EnumValues> values = find_child<EnumValues>();
 
     if (values) {
-      for (Node* child : values->get_children()) {
-        if (const EnumValue* value = child->as<EnumValue>()) {
+      for (Ref<Node> child : values->get_children()) {
+        if (const Ref<EnumValue> value = child->as<EnumValue>()) {
           auto name = value->name();
           if (!name.empty()) {
             result.push_back(name);

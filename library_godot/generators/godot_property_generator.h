@@ -12,8 +12,8 @@ namespace GodotObjectCompiler {
 
    public:
 
-    GeneratorError* do_generate(Class* target_class, GodotPropertyAttribute* attribute, Context* generated_body,
-        Context* generated_sources, Context* generated_global) override;
+    Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<GodotPropertyAttribute> attribute, Ref<Context> generated_body,
+        Ref<Context> generated_sources, Ref<Context> generated_global) override;
 
   };
 

@@ -8,7 +8,7 @@ namespace GodotObjectCompiler {
 
   String Literal::to_string() const { return "Literal: " + content; }
 
-  bool Literal::copy_to(Node* other) const {
+  bool Literal::copy_to(Ref<Node> other) const {
     COPY_GUARD(Literal, Node);
     target->content = content;
     return true;

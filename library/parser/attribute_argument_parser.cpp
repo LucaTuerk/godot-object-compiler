@@ -12,8 +12,8 @@ namespace GodotObjectCompiler {
     parameters = AttributeDB::instance()->get_parameter_types(macro_name);
   }
 
-  Node* AttributeArgumentParser::parse(const String& input) {
-    Parameters* result = ExecutionContext::instance()->get_node_db()->create<Parameters>();
+  Ref<Node> AttributeArgumentParser::parse(const String& input) {
+    Ref<Parameters> result = ExecutionContext::instance()->get_node_db()->create<Parameters>();
 
     for (const String& argument : string_split(input, ",")) {
       if (!argument.empty()) {

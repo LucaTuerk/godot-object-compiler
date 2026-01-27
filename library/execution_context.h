@@ -24,7 +24,7 @@ namespace GodotObjectCompiler {
 
     const Vector<String>& get_include_paths();
 
-    Node* get_include(const String& included_from_path, const String& path);
+    Ref<Node> get_include(const String& included_from_path, const String& path);
 
     void set_include_paths(const Vector<String>& value);
 
@@ -42,7 +42,7 @@ namespace GodotObjectCompiler {
 
     ExecutionContext();
 
-    Dictionary<Hash, Node*> _included_nodes;
+    Dictionary<Hash, Ref<Node>> _included_nodes;
 
     /** NODES **/
     NodeDB _node_db;

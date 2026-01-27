@@ -5,7 +5,7 @@ namespace GodotObjectCompiler {
 
   String ParserError::to_string() const { return "!! ERROR !!: \n" + offending; };
 
-  bool ParserError::copy_to(Node* other) const {
+  bool ParserError::copy_to(Ref<Node> other) const {
     COPY_GUARD(ParserError, Node);
     target->offending = offending;
     return true;

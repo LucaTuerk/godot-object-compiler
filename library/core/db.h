@@ -10,15 +10,15 @@ namespace GodotObjectCompiler {
   class DB {
    public:
 
-    static DB init(Namespace* root = nullptr);
+    static DB init(Ref<Namespace> root = nullptr);
     static DB read_from_config(const String& path);
 
     void write_to_config(const String& path) const;
-    Namespace* get_root() const;
+    Ref<Namespace> get_root() const;
 
    private:
 
-    Namespace* _root = nullptr;
+    Ref<Namespace> _root = nullptr;
   };
 
   class TypeDB {
@@ -26,13 +26,13 @@ namespace GodotObjectCompiler {
 
     static TypeDB* instance();
     void set_cache_directory(const String& path);
-    void save_type_data(Namespace* root);
-    Node* get_type_data(const String& qualified_name);
+    void save_type_data(Ref<Namespace> root);
+    Ref<Node> get_type_data(const String& qualified_name);
 
    private:
 
     [[nodiscard]] String _get_cache_file_path(const String& qualified_name) const;
-    Dictionary<String, Node*> _cache;
+    Dictionary<String, Ref<Node>> _cache;
     String _cache_directory;
   };
 

@@ -26,7 +26,7 @@ namespace GodotObjectCompiler {
     writer->write("is_system_include", is_system_include);
   }
 
-  bool Include::copy_to(Node* other) const {
+  bool Include::copy_to(Ref<Node> other) const {
     // intentionally copying from node as we do to want to copy the children
     COPY_GUARD(Include, Node)  // NOLINT(*-parent-virtual-call)
     target->include_path = include_path;
@@ -35,7 +35,7 @@ namespace GodotObjectCompiler {
   }
 
   Include::Error Include::_evaluate_lazy_get() {
-    Node* result = ExecutionContext::instance()->get_include("", include_path);
+    Ref<Node> result = ExecutionContext::instance()->get_include("", include_path);
     if (result) {
       add_child(result);
       return OK;

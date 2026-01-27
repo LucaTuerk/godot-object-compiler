@@ -36,7 +36,7 @@ namespace GodotObjectCompiler {
       return &singleton;
     }
 
-    using CreationFunc = Attribute* (*)();
+    using CreationFunc = Ref<Attribute> (*)();
 
     bool register_attribute(const String& class_name, const String& macro, CreationFunc creator);
 
@@ -45,7 +45,7 @@ namespace GodotObjectCompiler {
 
     bool is_known_macro(const String& macro);
 
-    Attribute* create_for_macro(const String& macro);
+    Ref<Attribute> create_for_macro(const String& macro);
 
     Vector<String> get_all_macros();
 
@@ -55,14 +55,14 @@ namespace GodotObjectCompiler {
 
     Vector<IAttributeParameters*> get_parameters(const String& macro);
 
-    bool register_class_generator(const String& generator_name, ClassGenerator* generator);
+    bool register_class_generator(const String& generator_name, Ref<ClassGenerator> generator);
 
-    const Vector<ClassGenerator*>& class_generators() const;
+    const Vector<Ref<ClassGenerator>>& class_generators() const;
 
    private:
 
     HashSet<String> _registered_generator_names;
-    Vector<ClassGenerator*> _class_generators;
+    Vector<Ref<ClassGenerator>> _class_generators;
 
     Dictionary<String, HashSet<String>> _registered_parameters;
     Dictionary<String, Vector<IAttributeParameters*>> _parameters;
@@ -75,7 +75,7 @@ namespace GodotObjectCompiler {
 }  // namespace GodotObjectCompiler
 
 #define ATTRIBUTE_REGISTER_DEFAULT_MACRO(macro)                                            \
-  static Attribute* attribute_create_static() { return create_static()->as<Attribute>(); } \
+  static Ref<Attribute> attribute_create_static() { return create_static()->as<Attribute>(); } \
   static inline bool attribute_registered =                                                \
       AttributeDB::instance()->register_attribute(get_type_static(), #macro, &attribute_create_static);
 

@@ -13,7 +13,7 @@ namespace GodotObjectCompiler {
   Index Node::get_index() const { return _index; }
 
   Index Node::get_depth() const {
-    const Node* current = this;
+    Ref<const Node> current = shared_from_this();
     Size i = 0;
 
     do {
@@ -26,28 +26,28 @@ namespace GodotObjectCompiler {
     return i;
   }
 
-  Context* Node::get_parent() const { return _parent; }
+  Ref<Context> Node::get_parent() const { return _parent; }
 
-  Node* Node::get_root() {
+  Ref<Node> Node::get_root() {
     if (!_root) {
-      Node* current = this;
+      Ref<Node> current = shared_from_this();
       while (current) {
         _root = current;
         current = current->get_parent();
       }
     }
 
-    return _root ? _root : this;
+    return _root ? _root : shared_from_this();
   }
 
-  void Node::reparent(Context* new_parent) {
+  void Node::reparent(Ref<Context> new_parent) {
     if (_parent) {
-      _parent->remove_child(this);
+      _parent->remove_child(shared_from_this());
     }
-    new_parent->add_child(this);
+    new_parent->add_child(shared_from_this());
   }
 
-  Node* Node::get_sibling(int p_offset) const {
+  Ref<Node> Node::get_sibling(int p_offset) const {
     if (_parent == nullptr) {
       return nullptr;
     }
@@ -55,12 +55,12 @@ namespace GodotObjectCompiler {
     return _parent->get_child_strict((SignedIndex)_index + p_offset);
   }
 
-  Node* Node::get_next_sibling() const { return get_sibling(+1); }
+  Ref<Node> Node::get_next_sibling() const { return get_sibling(+1); }
 
-  Node* Node::get_previous_sibling() const { return get_sibling(-1); }
+  Ref<Node> Node::get_previous_sibling() const { return get_sibling(-1); }
 
-  Node* Node::clone() {
-    Node* new_node = create();
+  Ref<Node> Node::clone() {
+    Ref<Node> new_node = create();
     if (copy_to(new_node)) {
       return new_node;
     } else {
@@ -96,7 +96,7 @@ namespace GodotObjectCompiler {
 
     result += to_string() + "\n";
 
-    if (const auto context = dynamic_cast<const Context*>(this)) {
+    if (const auto context = std::dynamic_pointer_cast<const Context>(shared_from_this())) {
       for (Index i = 0; i < context->get_child_count(); i++) {
         auto child = context->get_child(i);
         auto include = child->as<Include>();

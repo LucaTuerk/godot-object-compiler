@@ -9,29 +9,29 @@ namespace GodotObjectCompiler {
   class IGenerator {
    public:
 
-    virtual Context* generate(Context* tree, Node* entry_point) = 0;
+    virtual Ref<Context> generate(Ref<Context> tree, Ref<Node> entry_point) = 0;
   };
 
   class ClassGenerator {
    public:
 
-    bool handles(Class* target_class, Attribute* attribute);
-    GeneratorError* generate(Class* target_class, Attribute* attribute, Context* generated_body,
-        Context* generated_sources, Context* generated_global);
+    bool handles(Ref<Class> target_class, Ref<Attribute> attribute);
+    Ref<GeneratorError> generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
+        Ref<Context> generated_sources, Ref<Context> generated_global);
 
    protected:
 
-    virtual bool _handles(Class* target_class, Attribute* attribute) = 0;
-    virtual GeneratorError* _generate(Class* target_class, Attribute* attribute, Context* generated_body,
-        Context* generated_sources, Context* generated_global) = 0;
+    virtual bool _handles(Ref<Class> target_class, Ref<Attribute> attribute) = 0;
+    virtual Ref<GeneratorError> _generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
+        Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
   };
 
-  inline bool ClassGenerator::handles(Class* target_class, Attribute* attribute) {
+  inline bool ClassGenerator::handles(Ref<Class> target_class, Ref<Attribute> attribute) {
     return _handles(target_class, attribute);
   }
 
-  inline GeneratorError* ClassGenerator::generate(Class* target_class, Attribute* attribute, Context* generated_body,
-      Context* generated_sources, Context* generated_global) {
+  inline Ref<GeneratorError> ClassGenerator::generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
+      Ref<Context> generated_sources, Ref<Context> generated_global) {
     return _generate(target_class, attribute, generated_body, generated_sources, generated_global);
   }
 
@@ -39,25 +39,25 @@ namespace GodotObjectCompiler {
   class IClassGenerator : public ClassGenerator {
    protected:
 
-    bool _handles(Class* target_class, Attribute* attribute) override;
-    GeneratorError* _generate(Class* target_class, Attribute* attribute, Context* generated_body,
-        Context* generated_sources, Context* generated_global) override;
+    bool _handles(Ref<Class> target_class, Ref<Attribute> attribute) override;
+    Ref<GeneratorError> _generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
+        Ref<Context> generated_sources, Ref<Context> generated_global) override;
 
    public:
 
     virtual ~IClassGenerator() = default;
-    virtual GeneratorError* do_generate(Class* target_class, AttrT* attribute, Context* generated_body,
-        Context* generated_sources, Context* generated_global) = 0;
+    virtual Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<AttrT> attribute, Ref<Context> generated_body,
+        Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
   };
 
   template <typename AttrT>
-  bool IClassGenerator<AttrT>::_handles(Class* target_class, Attribute* attribute) {
+  bool IClassGenerator<AttrT>::_handles(Ref<Class> target_class, Ref<Attribute> attribute) {
     return attribute->template is<AttrT>();
   }
 
   template <typename AttrT>
-  GeneratorError* IClassGenerator<AttrT>::_generate(Class* target_class, Attribute* attribute, Context* generated_body,
-      Context* generated_sources, Context* generated_global) {
+  Ref<GeneratorError> IClassGenerator<AttrT>::_generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
+      Ref<Context> generated_sources, Ref<Context> generated_global) {
     return do_generate(
         target_class, attribute->template as<AttrT>(), generated_body, generated_sources, generated_global);
   }
@@ -73,7 +73,7 @@ namespace GodotObjectCompiler {
 
 #define REGISTER_CLASS_GENERATOR(type)                \
   static inline bool _generator_##type##_registered = \
-      AttributeDB::instance()->register_class_generator(#type, new type());
+      AttributeDB::instance()->register_class_generator(#type, make_ref<type>());
 
 #define GEN_ERROR(message) return node_new<GeneratorError>(get_type_static(), message)
 #define GEN_ERROR_COND(condition, message) \

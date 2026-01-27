@@ -39,13 +39,13 @@ namespace GodotObjectCompiler {
     for (const String& input_file : context.input_files) {
       TreeSitterParser parser;
       String file_content = read_file(input_file);
-      Node* parsed = parser.parse(file_content);
+      Ref<Node> parsed = parser.parse(file_content);
 
       if (!parsed) {
         continue;
       }
 
-      Namespace* ns = parsed->as<Namespace>();
+      Ref<Namespace> ns = parsed->as<Namespace>();
       print_ln(ns->pretty_print());
 
       if (!ns) {
@@ -58,22 +58,22 @@ namespace GodotObjectCompiler {
       FileWriter source_writer{source_path};
       FileWriter generated_writer{generated_path};
 
-      GeneratedGlobalAttribute* generated_global_attribute = ns->find_child<GodotGeneratedGlobalAttribute>();
+      Ref<GeneratedGlobalAttribute> generated_global_attribute = ns->find_child<GodotGeneratedGlobalAttribute>();
 
-      Vector<Class*> classes = ns->classes_recursive();
-      Vector<Pair<GeneratedBodyAttribute*, Context*>> generated_bodies;
+      Vector<Ref<Class>> classes = ns->classes_recursive();
+      Vector<Pair<Ref<GeneratedBodyAttribute>, Ref<Context>>> generated_bodies;
 
       struct Results {
         String file_path;
-        Class* target_class;
+        Ref<Class> target_class;
         Size generated_body_line;
         Size generated_global_line;
-        Context* generated_body;
-        Context* generated_source;
-        Context* generated_global;
+        Ref<Context> generated_body;
+        Ref<Context> generated_source;
+        Ref<Context> generated_global;
       };
 
-      Context* global_generated = node_new<Context>();
+      Ref<Context> global_generated = node_new<Context>();
 
       Vector<Results> generate_results;
 
@@ -81,7 +81,7 @@ namespace GodotObjectCompiler {
       Writer::Define("GOC_FILE_ID", {}, file_id(input_file))->get_output(&generated_writer);
       Writer::Include(input_file)->get_output(&source_writer);
 
-      for (Class* target_class : classes) {
+      for (Ref<Class> target_class : classes) {
         Results results;
         results.file_path = input_file;
         results.target_class = target_class;
@@ -97,14 +97,14 @@ namespace GodotObjectCompiler {
         results.generated_body_line = generated_body_attribute->line;
         results.generated_source->add_child(Writer::NewLine());
 
-        Node* previous = target_class->get_previous_sibling();
+        Ref<Node> previous = target_class->get_previous_sibling();
         if (!previous || !previous->is<GodotClassAttribute>()) {
           continue;
         }
 
         GodotClassGenerator class_generator;
 
-        GeneratorError* error = class_generator.generate(target_class, previous->as<GodotClassAttribute>(),
+        Ref<GeneratorError> error = class_generator.generate(target_class, previous->as<GodotClassAttribute>(),
             results.generated_body, results.generated_source, results.generated_global);
         if (error != GeneratorError::OK) {
           // clang-format off
@@ -119,11 +119,11 @@ namespace GodotObjectCompiler {
           // clang-format on
         }
 
-        for (Node* child : *target_class->body()) {
-          Attribute* attribute = child->as<Attribute>();
+        for (Ref<Node> child : *target_class->body()) {
+          Ref<Attribute> attribute = child->as<Attribute>();
 
           if (attribute) {
-            for (ClassGenerator* generator : AttributeDB::instance()->class_generators()) {
+            for (Ref<ClassGenerator> generator : AttributeDB::instance()->class_generators()) {
               if (generator->handles(target_class, attribute)) {
                 error = generator->generate(target_class, attribute, results.generated_body, results.generated_source,
                     results.generated_global);
@@ -148,13 +148,13 @@ namespace GodotObjectCompiler {
       }
 
       for (Results& result : generate_results) {
-        Writer::IOutputNode* source_output = transformator.transform(result.generated_source);
+        Ref<Writer::IOutputNode> source_output = transformator.transform(result.generated_source);
         //
-        // Writer::IOutputNode* body_output = Writer::EscapedLines(
+        // Ref<Writer::IOutputNode> body_output = Writer::EscapedLines(
         //     {Writer::Text("#define " + ,
         //         transformator.transform(result.generated_body)});
 
-        Writer::IOutputNode* body_output =
+        Ref<Writer::IOutputNode> body_output =
             Writer::Define(generated_macro_name(result.file_path, result.generated_body_line), {},
                 {transformator.transform(result.generated_body)});
 
@@ -164,12 +164,12 @@ namespace GodotObjectCompiler {
         body_output->get_output(&generated_writer);
       }
       //
-      // Writer::IOutputNode* global_output = Writer::EscapedLines(
+      // Ref<Writer::IOutputNode> global_output = Writer::EscapedLines(
       //     {Writer::Text("#define " + generated_macro_name(input_file,
       //                                    generated_global_attribute ? generated_global_attribute->line : 0)),
       //         transformator.transform(global_generated)});
 
-      Writer::IOutputNode* global_output = Writer::Define(
+      Ref<Writer::IOutputNode> global_output = Writer::Define(
           generated_macro_name(input_file, generated_global_attribute ? generated_global_attribute->line : 0), {},
           {transformator.transform(global_generated)});
 

@@ -8,7 +8,7 @@ namespace GodotObjectCompiler {
 
    public:
 
-    Context* generate(Context* tree, Node* entry_point) override;
+    Ref<Context> generate(Ref<Context> tree, Ref<Node> entry_point) override;
   };
 
 }  // namespace GodotObjectCompiler

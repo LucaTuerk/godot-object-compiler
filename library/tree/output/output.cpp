@@ -10,8 +10,8 @@ namespace GodotObjectCompiler {
     void IndentNode::get_output(IStringWriter* writer) {
       StreamWriter child_writer = StreamWriter();
 
-      for (Node* child : get_children()) {
-        IOutputNode* output = child->as<IOutputNode>();
+      for (Ref<Node> child : get_children()) {
+        Ref<IOutputNode> output = child->as<IOutputNode>();
         if (output) {
           output->get_output(&child_writer);
         }
@@ -31,7 +31,7 @@ namespace GodotObjectCompiler {
       }
     }
 
-    bool IndentNode::copy_to(Node* other) const {
+    bool IndentNode::copy_to(Ref<Node> other) const {
       COPY_GUARD(IndentNode, Context)
 
       target->amount = amount;
@@ -39,7 +39,7 @@ namespace GodotObjectCompiler {
     }
 
     Size IndentNode::_total_amount_lazy_get() {
-      IndentNode* parent = find_ancestor<IndentNode>();
+      Ref<IndentNode> parent = find_ancestor<IndentNode>();
 
       if (parent) {
         return parent->total_amount() + amount;
@@ -50,8 +50,8 @@ namespace GodotObjectCompiler {
 
     void EnclosingNode::get_output(IStringWriter* writer) {
       writer->write(before);
-      for (Node* child : get_children()) {
-        IOutputNode* child_output = child->as<IOutputNode>();
+      for (Ref<Node> child : get_children()) {
+        Ref<IOutputNode> child_output = child->as<IOutputNode>();
         if (child_output) {
           child_output->get_output(writer);
         }
@@ -59,7 +59,7 @@ namespace GodotObjectCompiler {
       writer->write(after);
     }
 
-    bool EnclosingNode::copy_to(Node* other) const {
+    bool EnclosingNode::copy_to(Ref<Node> other) const {
       COPY_GUARD(EnclosingNode, Context)
 
       target->before = before;
@@ -79,8 +79,8 @@ namespace GodotObjectCompiler {
           writer->write(delimiter);
         }
 
-        Node* child = get_child(i);
-        IOutputNode* output = child->as<IOutputNode>();
+        Ref<Node> child = get_child(i);
+        Ref<IOutputNode> output = child->as<IOutputNode>();
 
         if (output) {
           Size tmp = writer->current_length();
@@ -96,7 +96,7 @@ namespace GodotObjectCompiler {
       Brackets({});
     }
 
-    bool ListNode::copy_to(Node* other) const {
+    bool ListNode::copy_to(Ref<Node> other) const {
       COPY_GUARD(ListNode, Context)
 
       target->before_first = before_first;
@@ -106,8 +106,8 @@ namespace GodotObjectCompiler {
     }
 
     void ReplaceNode::get_output(IStringWriter* writer) {
-      for (Node* child : *this) {
-        IOutputNode* output_node = child->as<IOutputNode>();
+      for (Ref<Node> child : *this) {
+        Ref<IOutputNode> output_node = child->as<IOutputNode>();
         if (output_node) {
           StreamWriter child_writer;
           output_node->get_output(&child_writer);
@@ -116,7 +116,7 @@ namespace GodotObjectCompiler {
       }
     }
 
-    bool ReplaceNode::copy_to(Node* other) const {
+    bool ReplaceNode::copy_to(Ref<Node> other) const {
       COPY_GUARD(ReplaceNode, Context)
 
       target->search = search;
@@ -126,7 +126,7 @@ namespace GodotObjectCompiler {
 
     void SnippetNode::get_output(IStringWriter* writer) { writer->write(content); }
 
-    bool SnippetNode::copy_to(Node* other) const {
+    bool SnippetNode::copy_to(Ref<Node> other) const {
       COPY_GUARD(SnippetNode, Node)
 
       target->content = content;
@@ -135,94 +135,88 @@ namespace GodotObjectCompiler {
 
 #define ADD_CHILDREN_AND_RET(creator)                                 \
   auto result = ExecutionContext::instance()->get_node_db()->creator; \
-  for (IOutputNode* child : children) {                               \
-    Node* node = dynamic_cast<Node*>(child);                          \
+  for (Ref<IOutputNode> child : children) {                               \
+    Ref<Node> node = std::dynamic_pointer_cast<Node>(child);                          \
     if (node) {                                                       \
       result->add_child(node);                                        \
     }                                                                 \
   }                                                                   \
   return result
 
-    void NamespaceOpen(Context*& target, const String& name) {
-      IOutputNode* content = Lines({});
-      target->add_child(Spaces({Text(name), Braces({NewLine(), Indent(4, {content}), NewLine()})}));
-      target = dynamic_cast<Context*>(content);
-    }
-
-    IndentNode* Indent(Size indent, std::initializer_list<IOutputNode*>&& children) {
+    Ref<IndentNode> Indent(Size indent, std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<IndentNode>(indent));
     }
 
-    EnclosingNode* Brackets(std::initializer_list<IOutputNode*>&& children) {
+    Ref<EnclosingNode> Brackets(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("(", ")"));
     }
 
-    EnclosingNode* SquareBrackets(std::initializer_list<IOutputNode*>&& children) {
+    Ref<EnclosingNode> SquareBrackets(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("[", "]"));
     }
 
-    EnclosingNode* Braces(std::initializer_list<IOutputNode*>&& children) {
+    Ref<EnclosingNode> Braces(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("{", "}"));
     }
 
-    EnclosingNode* Chevrons(std::initializer_list<IOutputNode*>&& children) {
+    Ref<EnclosingNode> Chevrons(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("<", ">"));
     }
 
-    ListNode* Lines(std::initializer_list<IOutputNode*>&& children) {
+    Ref<ListNode> Lines(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<ListNode>("\n", true, true););
     }
 
-    ReplaceNode* EscapedLines(std::initializer_list<IOutputNode*>&& children) {
+    Ref<ReplaceNode> EscapedLines(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<ReplaceNode>("\n", "\\\n"););
     }
 
-    ListNode* Spaces(std::initializer_list<IOutputNode*>&& children) {
+    Ref<ListNode> Spaces(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<ListNode>(" ", false, false););
     }
 
-    ListNode* NoSep(std::initializer_list<IOutputNode*>&& children) {
+    Ref<ListNode> NoSep(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<ListNode>("", false, false););
     }
 
-    ListNode* Params(std::initializer_list<IOutputNode*>&& children) {
+    Ref<ListNode> Params(std::initializer_list<Ref<IOutputNode>>&& children) {
       ADD_CHILDREN_AND_RET(create<ListNode>(", ", false, false););
     }
 
-    ListNode* Param(const String& type, const String& name, IOutputNode* default_val) {
+    Ref<ListNode> Param(const String& type, const String& name, Ref<IOutputNode> default_val) {
       return default_val ? Spaces({Text(type), Text(name), Text("="), default_val}) : Spaces({Text(type), Text(name)});
     }
 
-    ListNode* ConstRefParam(const String& type, const String& name, IOutputNode* default_val) {
+    Ref<ListNode> ConstRefParam(const String& type, const String& name, Ref<IOutputNode> default_val) {
       return default_val ? Spaces({ConstRef(type), Text(name), Text("="), default_val})
                          : Spaces({ConstRef(type), Text(name)});
     }
 
-    ListNode* LineOfCode(std::initializer_list<IOutputNode*>&& children) {
+    Ref<ListNode> LineOfCode(std::initializer_list<Ref<IOutputNode>>&& children) {
       return NoSep({NoSep({std::move(children)}), Semicolon()});
     }
 
-    SnippetNode* Text(const String& content) {
+    Ref<SnippetNode> Text(const String& content) {
       return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(content);
     }
 
-    SnippetNode* StringLiteral(const String& content) {
+    Ref<SnippetNode> StringLiteral(const String& content) {
       return ExecutionContext::instance()->get_node_db()->create<SnippetNode>("\"" + content + "\"");
     }
 
-    SnippetNode* Semicolon() { return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(";"); }
+    Ref<SnippetNode> Semicolon() { return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(";"); }
 
-    SnippetNode* NewLine() { return ExecutionContext::instance()->get_node_db()->create<SnippetNode>("\n"); }
+    Ref<SnippetNode> NewLine() { return ExecutionContext::instance()->get_node_db()->create<SnippetNode>("\n"); }
 
-    ListNode* ParamDecl(const String& type, const String& name) {
+    Ref<ListNode> ParamDecl(const String& type, const String& name) {
       return Spaces({
           Text(type),
           Text(name),
       });
     }
 
-    ListNode* FuncDef(const String& modifiers_front, const String& return_type, const String& function_name,
-        std::initializer_list<IOutputNode*>&& params, const String& modifiers) {
+    Ref<ListNode> FuncDef(const String& modifiers_front, const String& return_type, const String& function_name,
+        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers) {
       return Spaces({Text(return_type),
           NoSep({
               Text(function_name),
@@ -231,9 +225,9 @@ namespace GodotObjectCompiler {
           Text(modifiers), Semicolon(), NewLine()});
     }
 
-    ListNode* FuncImpl(const String& modifiers_front, const String& return_type, const String& function_name,
-        std::initializer_list<IOutputNode*>&& params, const String& modifiers,
-        std::initializer_list<IOutputNode*>&& lines) {
+    Ref<ListNode> FuncImpl(const String& modifiers_front, const String& return_type, const String& function_name,
+        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers,
+        std::initializer_list<Ref<IOutputNode>>&& lines) {
       return Spaces({Text(return_type),
           NoSep({
               Text(function_name),
@@ -247,21 +241,21 @@ namespace GodotObjectCompiler {
           NewLine()});
     }
 
-    ListNode* DeclAssign(const String& type, const String& name, IOutputNode* value) {
+    Ref<ListNode> DeclAssign(const String& type, const String& name, Ref<IOutputNode> value) {
       return LineOfCode({Spaces({Text(type), Text(name), Text("="), value})});
     }
 
-    ListNode* Assign(const String& variable_name, IOutputNode* value) {
+    Ref<ListNode> Assign(const String& variable_name, Ref<IOutputNode> value) {
       return NoSep({Spaces({Text(variable_name), Text("="), value}), Semicolon()});
     }
 
-    ListNode* Return(const String& name) { return LineOfCode({Spaces({Text("return"), Text(name)})}); }
+    Ref<ListNode> Return(const String& name) { return LineOfCode({Spaces({Text("return"), Text(name)})}); }
 
-    ListNode* FuncCall(const String& function_name, std::initializer_list<IOutputNode*>&& parameters) {
+    Ref<ListNode> FuncCall(const String& function_name, std::initializer_list<Ref<IOutputNode>>&& parameters) {
       return NoSep({Text(function_name), Brackets({Params(std::move(parameters))})});
     }
 
-    ListNode* MemberFuncDef(const String& type, const String& name, std::initializer_list<IOutputNode*>&& parameters,
+    Ref<ListNode> MemberFuncDef(const String& type, const String& name, std::initializer_list<Ref<IOutputNode>>&& parameters,
         const String& modifiers) {
       return Spaces({Text(type), NoSep({
                                      Text(name),
@@ -271,25 +265,25 @@ namespace GodotObjectCompiler {
                                  })});
     }
 
-    ListNode* ConstRef(const String& type) { return Spaces({Text("const"), NoSep({Text(type), Text("&")})}); }
+    Ref<ListNode> ConstRef(const String& type) { return Spaces({Text("const"), NoSep({Text(type), Text("&")})}); }
 
-    ListNode* MemberFuncImpl(const String& return_type, const String& class_name, const String& name,
-        std::initializer_list<IOutputNode*>&& params, const String& modifiers,
-        std::initializer_list<IOutputNode*>&& lines) {
+    Ref<ListNode> MemberFuncImpl(const String& return_type, const String& class_name, const String& name,
+        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers,
+        std::initializer_list<Ref<IOutputNode>>&& lines) {
       return FuncImpl("", return_type, class_name + "::" + name, std::move(params), modifiers, std::move(lines));
     }
 
-    SnippetNode* Param(const String& name) {
+    Ref<SnippetNode> Param(const String& name) {
       return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(name);
     }
 
-    SnippetNode* Include(const String& path) { return node_new<SnippetNode>("#include \"" + path + "\""); }
+    Ref<SnippetNode> Include(const String& path) { return node_new<SnippetNode>("#include \"" + path + "\""); }
 
-    ListNode* Namespace(const String& name, IOutputNode* content) {
+    Ref<ListNode> Namespace(const String& name, Ref<IOutputNode> content) {
       return Spaces({Text("namespace"), Text(name), Braces({NewLine(), Indent(4, {content})})});
     }
 
-    ListNode* Enum(const String& name, IOutputNode* content) {
+    Ref<ListNode> Enum(const String& name, Ref<IOutputNode> content) {
       return Spaces({Text("enum"), Text(name),
           Braces({
               NewLine(),
@@ -298,10 +292,10 @@ namespace GodotObjectCompiler {
           Semicolon()});
     }
 
-    ListNode* MacroDefine(const String& name, IOutputNode* content) { return Lines({}); }
+    Ref<ListNode> MacroDefine(const String& name, Ref<IOutputNode> content) { return Lines({}); }
 
-    ListNode* MacroFunctionDefine(
-        const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*> lines) {
+    Ref<ListNode> MacroFunctionDefine(
+        const String& name, std::initializer_list<Ref<IOutputNode>> params, std::initializer_list<Ref<IOutputNode>> lines) {
       return Spaces({
           Text("#define"),
           NoSep({
@@ -312,20 +306,20 @@ namespace GodotObjectCompiler {
       });
     }
 
-    ListNode* Define(const String& name, std::initializer_list<IOutputNode*> params, const String& content) {
+    Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params, const String& content) {
       return Spaces({Text("#define"), NoSep({Text(name), Brackets({Params(std::move(params))})}),
           EscapedLines({Text(content)}), NewLine(), NewLine()});
     }
 
-    ListNode* Define(
-        const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*>&& lines) {
+    Ref<ListNode> Define(
+        const String& name, std::initializer_list<Ref<IOutputNode>> params, std::initializer_list<Ref<IOutputNode>>&& lines) {
       return Spaces({Text("#define"), NoSep({Text(name), Brackets({Params(std::move(params))})}),
           EscapedLines({std::move(lines)}), NewLine(), NewLine()});
     }
 
-    SnippetNode* PragmaOnce() { return node_new<SnippetNode>("#pragma once\n\n"); }
+    Ref<SnippetNode> PragmaOnce() { return node_new<SnippetNode>("#pragma once\n\n"); }
 
-    ListNode* Class(const String& name, IOutputNode* content) {
+    Ref<ListNode> Class(const String& name, Ref<IOutputNode> content) {
       return Spaces({Text("class"), Text(name),
           Braces({
               NewLine(),
@@ -334,7 +328,7 @@ namespace GodotObjectCompiler {
           Semicolon()});
     }
 
-    ListNode* Class(const String& name, String base, IOutputNode* content) {
+    Ref<ListNode> Class(const String& name, String base, Ref<IOutputNode> content) {
       return Spaces({Text("class"), Text(name), Text(": public"), Text(base),
           Braces({
               NewLine(),

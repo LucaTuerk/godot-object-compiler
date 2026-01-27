@@ -8,18 +8,18 @@ namespace GodotObjectCompiler {
 
   String Type::_type_name_lazy_get() {
     StreamWriter writer;
-    for (Node* child : get_children()) {
-      if (Identifier* id = dynamic_cast<Identifier*>(child)) {
+    for (Ref<Node> child : get_children()) {
+      if (Ref<Identifier> id = child->as<Identifier>()) {
         writer.write(id->name);
-      } else if (Reference* ref = dynamic_cast<Reference*>(child)) {
+      } else if (Ref<Reference> ref = child->as<Reference>()) {
         writer.write("&");
-      } else if (Pointer* ptr = dynamic_cast<Pointer*>(child)) {
+      } else if (Ref<Pointer> ptr = child->as<Pointer>()) {
         writer.write("*");
-      } else if (Const* c = dynamic_cast<Const*>(child)) {
+      } else if (Ref<Const> c = child->as<Const>()) {
         writer.write("const");
-      } else if (Static* s = dynamic_cast<Static*>(child)) {
+      } else if (Ref<Static> s = child->as<Static>()) {
         writer.write("static");
-      } else if (Volatile* v = dynamic_cast<Volatile*>(child)) {
+      } else if (Ref<Volatile> v = child->as<Volatile>()) {
         writer.write("volatile");
       }
     }
