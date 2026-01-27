@@ -26,12 +26,6 @@ namespace GodotObjectCompiler {
   }
 
   NodeDB::~NodeDB() {
-    for (auto& [uid, node] : _nodes) {
-      // clean up unreferenced nodes
-      if (!node->_parent) {
-        // delete node;
-      }
-    }
   }
 
   Ref<Node> NodeDB::create(const String& type) {

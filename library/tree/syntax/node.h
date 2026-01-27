@@ -69,7 +69,7 @@ namespace GodotObjectCompiler {
    private:
 
     mutable Ref<Node> _root = nullptr;
-    Ref<Context> _parent = nullptr;
+    WeakRef<Context> _parent;
     UID _id = INVALID_ID;
     Index _index = INVALID_INDEX;
 

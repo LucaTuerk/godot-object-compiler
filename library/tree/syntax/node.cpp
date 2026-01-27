@@ -26,7 +26,7 @@ namespace GodotObjectCompiler {
     return i;
   }
 
-  Ref<Context> Node::get_parent() const { return _parent; }
+  Ref<Context> Node::get_parent() const { return _parent.lock(); }
 
   Ref<Node> Node::get_root() {
     if (!_root) {
@@ -41,18 +41,20 @@ namespace GodotObjectCompiler {
   }
 
   void Node::reparent(Ref<Context> new_parent) {
-    if (_parent) {
-      _parent->remove_child(shared_from_this());
+    Ref<Context> parent = get_parent();
+    if (parent) {
+      parent->remove_child(shared_from_this());
     }
     new_parent->add_child(shared_from_this());
   }
 
   Ref<Node> Node::get_sibling(int p_offset) const {
-    if (_parent == nullptr) {
+    Ref<Context> parent = get_parent();
+    if (parent == nullptr) {
       return nullptr;
     }
 
-    return _parent->get_child_strict((SignedIndex)_index + p_offset);
+    return parent->get_child_strict((SignedIndex)_index + p_offset);
   }
 
   Ref<Node> Node::get_next_sibling() const { return get_sibling(+1); }
@@ -69,9 +71,10 @@ namespace GodotObjectCompiler {
   }
 
   void Node::write_to(IStructuredWriter* writer) {
+    Ref<Context> parent = get_parent();
     writer->write("_class", get_type());
     writer->write("_id", get_id());
-    writer->write("_parent", _parent ? _parent->get_id() : INVALID_ID);
+    writer->write("_parent", parent ? parent->get_id() : INVALID_ID);
   }
 
   void Node::read_from(IStructuredReader* reader) {
