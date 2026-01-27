@@ -10,6 +10,8 @@ namespace GodotObjectCompiler {
   SKIP(compound_statement);
 
   // MAYBE IMPLEMENT
+  SKIP(number_literal);
+
   // SKIP(call_expression);
   SKIP(preproc_call);
   SKIP(preproc_def);

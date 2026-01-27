@@ -17,8 +17,6 @@ using namespace GodotObjectCompiler;
 int main() {
   Vector<String> paths = {
       "/home/luca/Repositories/godot-object-compiler/test_files/"
-      "simple_class_header.h",
-      "/home/luca/Repositories/godot-object-compiler/test_files/"
       "simple_class_header.h"};
 
   ApplicationContext context;

@@ -117,7 +117,7 @@ namespace GodotObjectCompiler {
 
   template <class T>
   Ref<T> Node::find_parent(Predicate<T> predicate) const {
-    Ref<Node> current = _parent;
+    Ref<Node> current = get_parent();
 
     while (current) {
       Ref<T> casted = std::dynamic_pointer_cast<T>(current);
@@ -146,7 +146,7 @@ namespace GodotObjectCompiler {
 
   template <class T>
   std::shared_ptr<T> Context::find_ancestor(StemExplorationType type, Predicate<T> predicate) {
-    Ref<Node> current = _parent;
+    Ref<Node> current = get_parent();
 
     while (current) {
       Ref<T> current_t = current->as<T>();

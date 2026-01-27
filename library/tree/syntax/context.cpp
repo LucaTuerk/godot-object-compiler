@@ -28,11 +28,11 @@ namespace GodotObjectCompiler {
       return;
     }
 
-    if (this == p_child->_parent.get()) {
+    if (this == p_child->get_parent().get()) {
       return;
     }
 
-    if (p_child->_parent != nullptr) {
+    if (p_child->get_parent() != nullptr) {
       return p_child->reparent(this->as<Context>());
     }
 
@@ -77,7 +77,8 @@ namespace GodotObjectCompiler {
   Context::ChildIterator Context::end() { return _children.end(); }
 
   void Context::merge_includes(Ref<Namespace> target, Size depth) {
-    if (!_parent) {
+    Ref<Context> parent = get_parent();
+    if (!parent) {
       ChildIterator _ = merge_includes(target, {}, depth);
     }
   }
@@ -100,8 +101,9 @@ namespace GodotObjectCompiler {
       }
     }
 
-    if (_parent) {
-      return _parent->reparent_child(this_itr, target);
+    Ref<Context> parent = get_parent();
+    if (parent) {
+      return parent->reparent_child(this_itr, target);
     }
 
     return {};
@@ -111,7 +113,7 @@ namespace GodotObjectCompiler {
     Ref<Node> child = *itr;
     itr = _children.erase(itr);
     child->_index = 0;
-    child->_parent = nullptr;
+    child->_parent = {};
 
     auto next = itr;
     while (next != _children.end()) {
@@ -146,7 +148,7 @@ namespace GodotObjectCompiler {
       p_new_child->_index = p_child->_index;
       p_new_child->_parent = this->as<Context>();
 
-      p_child->_parent = nullptr;
+      p_child->_parent = {};
 
       Ref<Context> child_context = p_child->as<Context>();
       Ref<Context> new_child_context = p_new_child->as<Context>();
