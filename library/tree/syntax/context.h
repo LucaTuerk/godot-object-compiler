@@ -1,4 +1,5 @@
 #pragma once
+#include "identifier.h"
 #include "library/core/lazy.h"
 #include "node.h"
 
@@ -16,6 +17,33 @@ namespace GodotObjectCompiler {
   enum BranchExplorationType {
     BFS,
     DFS,
+  };
+
+  template <typename T, typename... Args>
+  class Builder {
+   public:
+
+    Builder(Args... args);
+    operator T*();
+
+    template <typename B, typename... BArgs>
+    Builder& with_child(BArgs... child_args);
+
+    template <typename B, typename... BArgs>
+    Builder& with_child_ref(B** ptr, BArgs... child_args);
+
+    Builder& with_child(Node* child);
+    Builder& with_child_ref(Node** ptr, Node* child);
+
+    Builder& with_children(std::initializer_list<Node*>&& children);
+
+   private:
+
+    Builder(Context* parent, Args... args);
+
+    T* created;
+
+    friend Context;
   };
 
   class Context : public Node {
@@ -50,11 +78,6 @@ namespace GodotObjectCompiler {
     ChildIterator reparent_child(ChildIterator, Context* new_parent);
 
     template <typename T>
-    static bool default_node_predicate(T*) {
-      return true;
-    }
-
-    template <typename T>
     T* find_child(Index p_start_idx = 0, Predicate<T> predicate = default_node_predicate<T>) const;
 
     template <class T>
@@ -65,6 +88,9 @@ namespace GodotObjectCompiler {
 
     template <class T, typename... Args>
     T* create_child(Args&&... args);
+
+    template <class T, typename... Args>
+    Builder<T, Args...> build_child(Args&&... args);
 
     template <class T>
     void for_descendants(BranchExplorationType order = BFS, NodeFunctor<T> functor = default_node_predicate<T>);
@@ -88,11 +114,12 @@ namespace GodotObjectCompiler {
   };
 
   template <class T>
-  T* Node::find_parent() {
+  T* Node::find_parent(Predicate<T> predicate) const {
     Node* current = _parent;
 
     while (current) {
-      if (T* casted = dynamic_cast<T*>(current)) {
+      T* casted = dynamic_cast<T*>(current);
+      if (casted != nullptr && predicate(casted)) {
         return casted;
       }
       current = current->get_parent();
@@ -200,6 +227,11 @@ namespace GodotObjectCompiler {
     return child;
   }
 
+  template <class T, typename... Args>
+  Builder<T, Args...> Context::build_child(Args&&... args) {
+    return Builder<T, Args...>(this, std::forward<Args>(args)...);
+  }
+
   template <class T>
   void Context::for_descendants(BranchExplorationType order, NodeFunctor<T> functor) {
     switch (order) {
@@ -227,6 +259,77 @@ namespace GodotObjectCompiler {
         }
         break;
     }
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...>::Builder(Args... args) {
+    created = node_new<T>(std::forward<Args>(args)...);
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...>::Builder(Context* parent, Args... args) {
+    created = node_new<T>(std::forward<Args>(args)...);
+    if (parent) {
+      parent->add_child(created);
+    }
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...>::operator T*() {
+    return created;
+  }
+
+  template <typename T, typename... Args>
+  template <typename B, typename... BArgs>
+  Builder<T, Args...>& Builder<T, Args...>::with_child(BArgs... child_args) {
+    created->add_child(node_new<B>(std::forward<BArgs>(child_args)...));
+    return *this;
+  }
+
+  template <typename T, typename... Args>
+  template <typename B, typename... BArgs>
+  Builder<T, Args...>& Builder<T, Args...>::with_child_ref(B** ptr, BArgs... child_args) {
+    B* child = node_new<B>(std::forward<BArgs>(child_args)...);
+    created->add_child(child);
+    if (ptr) {
+      *ptr = child;
+    }
+    return *this;
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...>& Builder<T, Args...>::with_child_ref(Node** ptr, Node* child) {
+    created->add_child(child);
+    if (ptr) {
+      *ptr = child;
+    }
+    return *this;
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...>& Builder<T, Args...>::with_child(Node* child) {
+    created->add_child(child);
+    return *this;
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...>& Builder<T, Args...>::with_children(std::initializer_list<Node*>&& children) {
+    for (Node* child : children) {
+      created->add_child(child);
+    }
+    return *this;
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...> build(Args... args) {
+    return Builder<T, Args...>(args...);
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...> build_ref(T** ptr, Args... args) {
+    Builder<T, Args...> builder(args...);
+    *ptr = builder;
+    return builder;
   }
 
 }  // namespace GodotObjectCompiler

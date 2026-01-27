@@ -14,8 +14,7 @@ namespace GodotObjectCompiler {
     String type = ts_node_type(context.node);
     if (type == "field_declaration_list") {
       context.current_node = context.current_node->create_child<Body>();
-    }
-    if (type == "declaration_list") {
+    } else if (type == "declaration_list") {
       context.current_node = context.current_node->create_child<Body>();
     } else if (type == "parameter_list") {
       if (context.current_node->is<Attribute>()) {

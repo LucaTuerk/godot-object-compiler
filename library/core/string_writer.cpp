@@ -18,4 +18,15 @@ namespace GodotObjectCompiler {
 
   Size StreamWriter::current_length() { return _current_length; }
 
+  FileWriter::FileWriter(const String& path) { _file = std::fstream(path, std::ios::out); }
+
+  void FileWriter::write(const String& value) {
+    _file << value;
+    _stream.write(value);
+  }
+
+  String FileWriter::get_string() { return _stream.get_string(); }
+
+  Size FileWriter::current_length() { return _stream.current_length(); }
+
 }  // namespace GodotObjectCompiler

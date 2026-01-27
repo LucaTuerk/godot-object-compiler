@@ -6,6 +6,7 @@
 
 #include "library/core/string_writer.h"
 #include "output.h"
+#include "output_transformator.h"
 
 namespace GodotObjectCompiler {
 
@@ -16,12 +17,13 @@ namespace GodotObjectCompiler {
   }
 
   void OutputFile::write_output(IStringWriter* writer) {
-    for (Node* child : get_children()) {
-      Writer::IOutputNode* output_node = child->as<Writer::IOutputNode>();
-      if (output_node) {
-        output_node->get_output(writer);
+    if (!transformed) {
+      transformed = OutputTransformator().transform(this);
+      if (!transformed) {
+        return;
       }
     }
+    transformed->get_output(writer);
   }
 
 }  // namespace GodotObjectCompiler

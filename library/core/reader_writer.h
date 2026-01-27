@@ -8,6 +8,10 @@ namespace GodotObjectCompiler {
 
     virtual ~IStringWriter() = default;
     virtual void write(const String& value) = 0;
+
+    template <typename T>
+    void write_generic(const T& value);
+
     virtual String get_string() = 0;
     virtual Size current_length() = 0;
   };
@@ -49,6 +53,13 @@ namespace GodotObjectCompiler {
     virtual void _read_from_section(const String& section) = 0;
     virtual String _read(const String& key) = 0;
   };
+
+  template <typename T>
+  void IStringWriter::write_generic(const T& value) {
+    std::stringstream strstr;
+    strstr << value;
+    write(strstr.str());
+  }
 
   template <typename K, typename V>
   void IStructuredWriter::write(const K& key, const V& value) {

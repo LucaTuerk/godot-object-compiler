@@ -1,11 +1,29 @@
 
 #include "class.h"
 
+#include "../../../library_godot/attributes/attributes_godot.h"
 #include "attribute.h"
-#include "attributes_godot.h"
 #include "identifier.h"
 
 namespace GodotObjectCompiler {
+
+  Vector<String> Class::_direct_bases_names_lazy_get() {
+    Vector<String> direct_bases_names;
+
+    bool first = true;
+    for (Node* child : *this) {
+      Identifier* child_identifier = child->as<Identifier>();
+      if (child_identifier) {
+        if (first) {
+          first = false;
+        } else {
+          direct_bases_names.push_back(child_identifier->name);
+        }
+      }
+    }
+
+    return direct_bases_names;
+  }
 
   Vector<Class*> Class::_base_classes_lazy_get() {
     Vector<Identifier*> identifiers;
@@ -47,15 +65,13 @@ namespace GodotObjectCompiler {
     return classes;
   }
 
-  Body* Class::_class_body_lazy_get() { return find_child<Body>(); }
-
   Vector<Attribute*> Class::_attributes_lazy_get() {
     Vector<Attribute*> attributes;
-    if (!class_body()) {
+    if (!body()) {
       return attributes;
     }
 
-    for (Node* child : class_body()->get_children()) {
+    for (Node* child : body()->get_children()) {
       Attribute* child_attribute = child->as<Attribute>();
       if (child_attribute) {
         attributes.push_back(child_attribute->as<Attribute>());

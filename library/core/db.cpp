@@ -4,6 +4,7 @@
 #include "../tree/syntax/namespace.h"
 #include "../tree/syntax/node.h"
 #include "config.h"
+#include "helpers.h"
 
 namespace GodotObjectCompiler {
 
@@ -88,5 +89,44 @@ namespace GodotObjectCompiler {
   }
 
   Namespace* DB::get_root() const { return _root; }
+
+  TypeDB* TypeDB::instance() {
+    static TypeDB instance;
+    return &instance;
+  }
+
+  void TypeDB::set_cache_directory(const String& path) { _cache_directory = path; }
+
+  String TypeDB::_get_cache_file_path(const String& qualified_name) const {
+    return path_concat(_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
+  }
+
+  void TypeDB::save_type_data(Namespace* root) {
+    String qualified_name = root->qualified_name();
+    DB db = DB::init(root);
+    auto path = _get_cache_file_path(qualified_name);
+    auto base = path_base(path);
+    if (!dir_exists(base) && !create_dir_recursive(base)) {
+      return;
+    }
+    db.write_to_config(path);
+  }
+
+  Node* TypeDB::get_type_data(const String& qualified_name) {
+    if (auto itr = _cache.find(qualified_name); itr != _cache.end()) {
+      return itr->second;
+    }
+
+    const String& cache_file_path = _get_cache_file_path(qualified_name);
+
+    if (file_exists(cache_file_path)) {
+      DB db = DB::read_from_config(cache_file_path);
+      Node* root = db.get_root();
+      _cache[qualified_name] = db.get_root();
+      return root;
+    }
+
+    return nullptr;
+  }
 
 }  // namespace GodotObjectCompiler

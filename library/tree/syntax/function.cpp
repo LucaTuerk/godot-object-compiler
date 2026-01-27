@@ -9,6 +9,8 @@ namespace GodotObjectCompiler {
 
   Parameters* Function::_parameters_lazy_get() { return find_child<Parameters>(); }
 
+  Arguments* Function::_arguments_lazy_get() { return find_child<Arguments>(); }
+
   bool Function::_is_virtual_lazy_get() { return find_child<Virtual>() != nullptr; }
 
   bool Function::_is_override_lazy_get() { return find_child<Override>() != nullptr; }

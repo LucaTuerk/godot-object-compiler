@@ -43,12 +43,63 @@ namespace GodotObjectCompiler {
 
   bool file_exists(const String& path) { return std::filesystem::exists(path); }
 
+  bool dir_exists(const String& path) { return std::filesystem::exists(path) && std::filesystem::is_directory(path); }
+
+  bool create_dir_recursive(const String& path) { return std::filesystem::create_directories(path); }
+
+  Size file_write_time(const String& path) {
+    auto file_time = std::filesystem::last_write_time(path);
+    auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+        file_time - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now());
+    return std::chrono::system_clock::to_time_t(sctp);
+  }
+
   String path_base(const String& path) {
-    // TODO
-    return path;
+    String result = "";
+    const Vector<String>& split = string_split(path, "/");
+    for (Size i = 0; i < split.size() - 1; ++i) {
+      result += split[i];
+      if (i != split.size() - 2) {
+        result += "/";
+      }
+    }
+    return result;
   }
 
   String path_concat(const String& path1, const String& path2) { return path1 + "/" + path2; }
+
+  Vector<String> directory_files(const String& path) {
+    Vector<String> result;
+    std::filesystem::directory_iterator iter(path);
+    for (const auto& entry : iter) {
+      if (entry.is_regular_file()) {
+        result.push_back(entry.path().string());
+      }
+    }
+    return result;
+  }
+
+  Vector<String> directory_files_recursive(const String& path) {
+    Vector<String> result;
+    std::filesystem::recursive_directory_iterator iter(path);
+    for (const auto& entry : iter) {
+      if (entry.is_regular_file()) {
+        result.push_back(entry.path().string());
+      }
+    }
+    return result;
+  }
+
+  Vector<String> directory_dirs(const String& path) {
+    Vector<String> result;
+    std::filesystem::directory_iterator iter(path);
+    for (const auto& entry : iter) {
+      if (entry.is_directory()) {
+        result.push_back(entry.path().string());
+      }
+    }
+    return result;
+  }
 
   String hash_string(Hash hash) {
     std::stringstream strstr;

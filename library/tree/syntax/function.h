@@ -8,6 +8,14 @@ namespace GodotObjectCompiler {
 
   class Type;
 
+  class Arguments : public Context {
+    NODE_TYPE(Arguments)
+  };
+
+  class Argument : public Context {
+    NODE_TYPE(Argument)
+  };
+
   class Parameters : public Context {
     NODE_TYPE(Parameters);
   };
@@ -29,6 +37,7 @@ namespace GodotObjectCompiler {
     /* child nodes */
     LAZY(Function, Type*, type);
     LAZY(Function, Parameters*, parameters);
+    LAZY(Function, Arguments*, arguments);
 
     /* info */
     LAZY(Function, bool, is_virtual);

@@ -56,6 +56,9 @@ static const Index INVALID_INDEX = -1;
 template <typename K, typename V>
 using Dictionary = std::map<K, V>;
 
+template <typename A, typename B>
+using Pair = std::pair<A, B>;
+
 using TypeInfo = std::type_info;
 using TypeIndex = std::type_index;
 

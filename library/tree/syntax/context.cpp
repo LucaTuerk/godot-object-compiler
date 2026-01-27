@@ -27,11 +27,19 @@ namespace GodotObjectCompiler {
   }
 
   void Context::add_child(Node* p_child) {
-    if (p_child == this) {
+    if (!p_child) {
       return;
     }
 
-    if (!p_child) {
+    if (this == p_child->_parent) {
+      return;
+    }
+
+    if (p_child->_parent != nullptr) {
+      return p_child->reparent(this);
+    }
+
+    if (p_child == this) {
       return;
     }
 

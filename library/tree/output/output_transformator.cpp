@@ -22,14 +22,26 @@ namespace GodotObjectCompiler {
   }
 
   Writer::IOutputNode* OutputTransformator::transform(Node* tree) {
+    ADD_TEXT_IF_TYPE(Virtual, "virtual")
+    ADD_TEXT_IF_TYPE(Static, "static")
+    ADD_TEXT_IF_TYPE(Inline, "inline")
+    ADD_TEXT_IF_TYPE(Override, "override")
+    ADD_TEXT_IF_TYPE(Const, "const")
+    ADD_TEXT_IF_TYPE(Mutable, "mutable")
+    ADD_TEXT_IF_TYPE(Volatile, "volatile")
+    ADD_TEXT_IF_TYPE(Reference, "&")
+    ADD_TEXT_IF_TYPE(Pointer, "*")
+
     if (Namespace* _namespace = tree->as<Namespace>()) {
-      return Writer::Namespace(_namespace->name(), {transform(_namespace->body())});
+      return Writer::Spaces(
+          {Writer::Text("namespace"), Writer::Text(_namespace->name()), transform(_namespace->body())});
     }
 
     if (Body* body = tree->as<Body>()) {
       Writer::ListNode* into = Writer::Lines({});
       ADD_TRANSFORM_CHILDREN(body, into)
-      return into;
+      return Writer::NoSep(
+          {Writer::NewLine(), Writer::Braces({Writer::NewLine(), Writer::Indent(2, {Writer::NewLine(), into})})});
     }
 
     if (Parameters* parameters = tree->as<Parameters>()) {
@@ -48,6 +60,18 @@ namespace GodotObjectCompiler {
       return Writer::Brackets({into});
     }
 
+    if (Arguments* arguments = tree->as<Arguments>()) {
+      Writer::ListNode* into = Writer::Params({});
+      ADD_TRANSFORM_CHILDREN(arguments, into)
+      return Writer::Brackets({into});
+    }
+
+    if (Argument* argument = tree->as<Argument>()) {
+      Writer::ListNode* into = Writer::NoSep({});
+      ADD_TRANSFORM_CHILDREN(argument, into)
+      return into;
+    }
+
     if (Parameter* parameter = tree->as<Parameter>()) {
       Writer::ListNode* into = Writer::NoSep({});
       ADD_TRANSFORM_CHILDREN(parameter, into)
@@ -60,20 +84,33 @@ namespace GodotObjectCompiler {
       return into;
     }
 
-    ADD_TEXT_IF_TYPE(Virtual, "virtual")
-    ADD_TEXT_IF_TYPE(Static, "static")
-    ADD_TEXT_IF_TYPE(Inline, "inline")
-    ADD_TEXT_IF_TYPE(Override, "override")
-    ADD_TEXT_IF_TYPE(Const, "const")
-    ADD_TEXT_IF_TYPE(Mutable, "mutable")
-    ADD_TEXT_IF_TYPE(Volatile, "volatile")
-
     if (Identifier* identifier = tree->as<Identifier>()) {
-      return Writer::Text(identifier->name);
+      Node* next = identifier->get_next_sibling();
+      if (next && (next->is<Parameter>() || next->is<Argument>())) {
+        return Writer::NoSep({Writer::Text(identifier->name), transform(next)});
+      } else {
+        return Writer::Text(identifier->name);
+      }
     }
 
     if (Writer::IOutputNode* existing = tree->as<Writer::IOutputNode>()) {
-      return existing;
+      Node* node = dynamic_cast<Node*>(existing);
+      if (!node) {
+        return Writer::Text("");
+      }
+
+      Writer::IOutputNode* output_node = dynamic_cast<Writer::IOutputNode*>(node->clone());
+      if (!output_node) {
+        return Writer::Text("");
+      }
+
+      return output_node;
+    }
+
+    if (Function* function = tree->as<Function>()) {
+      Writer::ListNode* into = Writer::Spaces({});
+      ADD_TRANSFORM_CHILDREN(function, into);
+      return into;
     }
 
     if (Context* context = tree->as<Context>()) {

@@ -3,7 +3,8 @@
 namespace GodotObjectCompiler {
 
   bool FieldHandler::handles_node(TSNode& node, const String& type) {
-    return type == "field_declaration" || type == "declaration" || type == "function_definition";
+    return type == "field_declaration" || type == "declaration" || type == "function_definition" ||
+           type == "expression_statement";
   }
 
   bool has_decendant_of_type(TSNode node, const String& type) {
@@ -24,6 +25,8 @@ namespace GodotObjectCompiler {
     TSTreeCursor cursor = ts_tree_cursor_new(context.node);
 
     if (has_decendant_of_type(context.node, "function_declarator")) {
+      context.current_node = context.create_function();
+    } else if (has_decendant_of_type(context.node, "call_expression")) {
       context.current_node = context.create_function();
     } else if (has_decendant_of_type(context.node, "class_specifier")) {
     } else if (has_decendant_of_type(context.node, "struct_specifier")) {
