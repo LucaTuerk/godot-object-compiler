@@ -14,16 +14,11 @@ namespace GodotObjectCompiler {
     TSNode ancestor = node;
     do {
       ancestor = ts_node_parent(ancestor);
-    } while (ts_node_type(ancestor) != type);
+    } while (!ts_node_is_null(ancestor) && ts_node_type(ancestor) != type);
     return ancestor;
   }
 
-  IdentifierHandler::IdentifierHandler() {
-    _known_attributes.insert("GODOT_CLASS");
-    _known_attributes.insert("GODOT_GENERATED_CLASS");
-    _known_attributes.insert("GODOT_FUNCTION");
-    _known_attributes.insert("GODOT_PROPERTY");
-  }
+  IdentifierHandler::IdentifierHandler() = default;
 
   bool IdentifierHandler::handles_node(TSNode& node, const String& type) {
     return string_contains(type, "identifier") && !(type == "qualified_identifier" || type == "type_identifier");
@@ -64,6 +59,14 @@ namespace GodotObjectCompiler {
         context.current_node = attribute->get_parent();
         TSNode current = ts_tree_cursor_current_node(&context.cursor);
         TSNode ancestor = find_ancestor_of_type(current, "declaration");
+        if (ts_node_is_null(ancestor)) {
+          ancestor = find_ancestor_of_type(current, "expression_statement");
+        }
+
+        attribute->start = ts_node_start_byte(ancestor);
+        attribute->end = ts_node_end_byte(ancestor);
+        attribute->line = ts_node_start_point(ancestor).row + 1;
+
         context.specific_step_id = ancestor.id;
         return STEP_OVER_SPECIFIC;
       }

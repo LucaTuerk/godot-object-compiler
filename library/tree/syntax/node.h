@@ -46,8 +46,13 @@ namespace GodotObjectCompiler {
     Node* get_next_sibling() const;
     Node* get_previous_sibling() const;
 
+    template <typename T>
+    static bool default_node_predicate(T*) {
+      return true;
+    }
+
     template <class T>
-    T* find_parent();
+    T* find_parent(Predicate<T> predicate = default_node_predicate<T>) const;
 
     template <class T>
     T* find_previous_sibling();

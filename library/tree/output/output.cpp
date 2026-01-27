@@ -31,6 +31,13 @@ namespace GodotObjectCompiler {
       }
     }
 
+    bool IndentNode::copy_to(Node* other) const {
+      COPY_GUARD(IndentNode, Context)
+
+      target->amount = amount;
+      return true;
+    }
+
     Size IndentNode::_total_amount_lazy_get() {
       IndentNode* parent = find_ancestor<IndentNode>();
 
@@ -50,6 +57,14 @@ namespace GodotObjectCompiler {
         }
       }
       writer->write(after);
+    }
+
+    bool EnclosingNode::copy_to(Node* other) const {
+      COPY_GUARD(EnclosingNode, Context)
+
+      target->before = before;
+      target->after = after;
+      return true;
     }
 
     void ListNode::get_output(IStringWriter* writer) {
@@ -81,7 +96,42 @@ namespace GodotObjectCompiler {
       Brackets({});
     }
 
+    bool ListNode::copy_to(Node* other) const {
+      COPY_GUARD(ListNode, Context)
+
+      target->before_first = before_first;
+      target->after_last = after_last;
+      target->delimiter = delimiter;
+      return true;
+    }
+
+    void ReplaceNode::get_output(IStringWriter* writer) {
+      for (Node* child : *this) {
+        IOutputNode* output_node = child->as<IOutputNode>();
+        if (output_node) {
+          StreamWriter child_writer;
+          output_node->get_output(&child_writer);
+          writer->write(string_replace(child_writer.get_string(), search, replace));
+        }
+      }
+    }
+
+    bool ReplaceNode::copy_to(Node* other) const {
+      COPY_GUARD(ReplaceNode, Context)
+
+      target->search = search;
+      target->replace = replace;
+      return true;
+    }
+
     void SnippetNode::get_output(IStringWriter* writer) { writer->write(content); }
+
+    bool SnippetNode::copy_to(Node* other) const {
+      COPY_GUARD(SnippetNode, Node)
+
+      target->content = content;
+      return true;
+    }
 
 #define ADD_CHILDREN_AND_RET(creator)                                 \
   auto result = ExecutionContext::instance()->get_node_db()->creator; \
@@ -123,8 +173,8 @@ namespace GodotObjectCompiler {
       ADD_CHILDREN_AND_RET(create<ListNode>("\n", true, true););
     }
 
-    ListNode* EscapedLines(std::initializer_list<IOutputNode*>&& children) {
-      ADD_CHILDREN_AND_RET(create<ListNode>("\\\n", true, false));
+    ReplaceNode* EscapedLines(std::initializer_list<IOutputNode*>&& children) {
+      ADD_CHILDREN_AND_RET(create<ReplaceNode>("\n", "\\\n"););
     }
 
     ListNode* Spaces(std::initializer_list<IOutputNode*>&& children) {
@@ -233,6 +283,8 @@ namespace GodotObjectCompiler {
       return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(name);
     }
 
+    SnippetNode* Include(const String& path) { return node_new<SnippetNode>("#include \"" + path + "\""); }
+
     ListNode* Namespace(const String& name, IOutputNode* content) {
       return Spaces({Text("namespace"), Text(name), Braces({NewLine(), Indent(4, {content})})});
     }
@@ -259,6 +311,19 @@ namespace GodotObjectCompiler {
           Indent(2, {EscapedLines(std::move(lines))}),
       });
     }
+
+    ListNode* Define(const String& name, std::initializer_list<IOutputNode*> params, const String& content) {
+      return Spaces({Text("#define"), NoSep({Text(name), Brackets({Params(std::move(params))})}),
+          EscapedLines({Text(content)}), NewLine(), NewLine()});
+    }
+
+    ListNode* Define(
+        const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*>&& lines) {
+      return Spaces({Text("#define"), NoSep({Text(name), Brackets({Params(std::move(params))})}),
+          EscapedLines({std::move(lines)}), NewLine(), NewLine()});
+    }
+
+    SnippetNode* PragmaOnce() { return node_new<SnippetNode>("#pragma once\n\n"); }
 
     ListNode* Class(const String& name, IOutputNode* content) {
       return Spaces({Text("class"), Text(name),

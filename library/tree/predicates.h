@@ -9,7 +9,7 @@ namespace GodotObjectCompiler {
 
     template <typename T>
     Predicate<T> name(const char* name) {
-      return [name](T* node) { return node->qualified_name() == name; };
+      return [name](T* node) { return node->name() == name; };
     }
 
     template <typename T>

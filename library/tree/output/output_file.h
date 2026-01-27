@@ -6,6 +6,11 @@
 #include "library/core/string_writer.h"
 
 namespace GodotObjectCompiler {
+  namespace Writer {
+
+    class IOutputNode;
+
+  }
 
   class OutputFile : public Context {
     NODE_TYPE(OutputFile);
@@ -16,6 +21,7 @@ namespace GodotObjectCompiler {
     void write_output(IStringWriter* writer);
 
     String path;
+    Writer::IOutputNode* transformed;
   };
 
 }  // namespace GodotObjectCompiler

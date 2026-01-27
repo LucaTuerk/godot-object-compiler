@@ -1,21 +1,16 @@
 #include "main.h"
 
-#include <chrono>
-#include <iostream>
-
 #include "../library/core/config.h"
-#include "../library/tree/output/output_file.h"
-#include "../library/tree/syntax/all.h"
+#include "application_context.h"
 #include "library/core/core.h"
+#include "library/core/db.h"
 #include "library/core/helpers.h"
-#include "library/core/timer.h"
-#include "library/execution_context.h"
-#include "library/generator/generated_class_generator.h"
-#include "library/parser/parser.h"
-#include "library/tree/iterators.h"
-#include "library/tree/output/output.h"
+#include "library/core/string_writer.h"
+#include "library/generator/macro_include_generator.h"
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/predicates.h"
+#include "programs/generate.h"
+#include "programs/generate_type_db.h"
 
 using namespace GodotObjectCompiler;
 
@@ -26,70 +21,99 @@ int main() {
       "/home/luca/Repositories/godot-object-compiler/test_files/"
       "simple_class_header.h"};
 
-  constexpr std::array<Size, 3> column_size = {10, 30, 10};
+  ApplicationContext context;
+  context.input_files = {"/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h"};
+  context.generated_root = "/home/luca/Repositories/godot-object-compiler/test_files";
+  context.include_paths = {"/home/luca/Repositories/godot"};
+  context.cache_root = ".goc/cache";
 
-  Context* ns = node_new<Namespace>();
-  ns->create_child<Identifier>("A");
-  ns = ns->create_child<Body>();
-  Function* func = ns->create_child<Function>();
-  Type* type = func->create_child<Type>();
-  type->create_child<Identifier>("void");
-  func->create_child<Identifier>("Class::set_value");
-  Parameters* params = func->create_child<Parameters>();
-  Parameter* param = params->create_child<Parameter>();
-  Type* param_type = param->create_child<Type>();
-  param_type->create_child<Const>();
-  param_type->create_child<Identifier>("Ref<Some>");
-  param_type->create_child<Reference>();
-  param->create_child<Identifier>("p_value");
-  Body* func_body = func->create_child<Body>();
-  func_body->add_child(Writer::Text("value = p_value;\n"));
+  GenerateTypeDB generate_type_db;
+  generate_type_db.run(context);
 
+  MacroIncludeGenerator macro_include_generator;
+  Context* macro_include_content = node_new<Context>();
+  macro_include_generator.generate(nullptr, macro_include_content);
+
+  FileWriter marco_writer{path_concat(context.generated_root, "macros.h")};
   OutputTransformator transformator;
-  Writer::IOutputNode* output = transformator.transform(ns);
-  StreamWriter writer;
-  output->get_output(&writer);
-  print_ln(writer.get_string());
+  Writer::IOutputNode* macro_output = transformator.transform(macro_include_content);
+  macro_output->get_output(&marco_writer);
 
-  return 0;
+  Generate generate;
+  generate.run(context);
+
+  //
+  // Context* ns = node_new<Namespace>();
+  // ns->create_child<Identifier>("A");
+  // Body* body = ns->create_child<Body>();
+  // Function* func = body->create_child<Function>();
+  // Type* type = func->create_child<Type>();
+  // type->create_child<Identifier>("void");
+  // func->create_child<Identifier>("Class::set_value");
+  // Parameters* params = func->create_child<Parameters>();
+  // Parameter* param = params->create_child<Parameter>();
+  // Type* param_type = param->create_child<Type>();
+  // param_type->create_child<Const>();
+  // param_type->create_child<Identifier>("Ref<Some>");
+  // param_type->create_child<Reference>();
+  // param->create_child<Identifier>("p_value");
+  // Body* func_body = func->create_child<Body>();
+  // func_body->add_child(Writer::Text("value = p_value;\n"));
+  //
+  // Function* get = body->create_child<Function>();
+  // Type* type_get = get->create_child<Type>();
+  // type_get->create_child<Identifier>("Ref<Some>");
+  // get->create_child<Identifier>("Class::get_value");
+  // Parameters* params_get = get->create_child<Parameters>();
+  // Body* get_body = get->create_child<Body>();
+  // get_body->add_child(Writer::Return("value"));
+  //
+  // OutputTransformator transformator;
+  // Writer::IOutputNode* output = transformator.transform(ns);
+  // StreamWriter writer;
+  // output->get_output(&writer);
+  // print_ln(writer.get_string());
+  //
+  // return 0;
 
   for (const String& path : paths) {
-    Timer timer{"Handling " + path};
-    ExecutionContext* context = ExecutionContext::instance();
-    context->init();
-    context->set_remove_macros(read_lines(".goc/macro_remove.txt"));
-    context->set_include_paths(read_lines(".goc/include_paths.txt"));
-
-    TreeSitterParser* parser = new TreeSitterParser();
-
-    Namespace* ns = nullptr;
-    {
-      Timer parse_timer{"Parse \"" + path + "\""};
-      ns = parser->parse(read_file(path))->as<Namespace>();
-    }
-
-    Namespace* target = default_construct<Namespace>()->as<Namespace>();
-    {
-      Timer merge_timer{"Merge Includes \"" + path + "\""};
-      // ns->merge_includes(target);
-    }
-
-    GodotGeneratedClassGenerator generator;
-
-    for (Class* _class : BranchIterator<Class>(ns, BFS)) {
-      print_ln(_class->name());
-    }
-
-    Vector<Class*> classes = ns->classes_recursive();
-    for (Class* cl : classes) {
-      Context* generated = generator.generate(ns, cl);
-      for (Node* child : generated->get_children()) {
-        if (OutputFile* output = child->as<OutputFile>()) {
-          output->print();
-        }
-      }
-    }
+    // Timer timer{"Handling " + path};
+    // ExecutionContext* context = ExecutionContext::instance();
+    // context->init();
+    // context->set_remove_macros(read_lines(".goc/macro_remove.txt"));
+    // context->set_include_paths(read_lines(".goc/include_paths.txt"));
+    //
+    // TreeSitterParser* parser = new TreeSitterParser();
+    //
+    // Namespace* ns = nullptr;
+    // {
+    //   Timer parse_timer{"Parse \"" + path + "\""};
+    //   ns = parser->parse(read_file(path))->as<Namespace>();
+    // }
+    //
+    // Namespace* target = default_construct<Namespace>()->as<Namespace>();
+    // {
+    //   Timer merge_timer{"Merge Includes \"" + path + "\""};
+    //   // ns->merge_includes(target);
+    // }
+    //
+    // // GodotGeneratedClassGenerator generator;
+    // //
+    // // for (Class* _class : BranchIterator<Class>(ns, BFS)) {
+    // //   print_ln(_class->name());
+    // // }
+    //
+    // Vector<Class*> classes = ns->classes_recursive();
+    // for (Class* cl : classes) {
+    //   Context* generated = generator.generate(ns, cl);
+    //   for (Node* child : *generated) {
+    //     if (OutputFile* output = child->as<OutputFile>()) {
+    //       output->print();
+    //     }
+    //   }
+    // }
   }
+
   return 0;
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "access_specifier.h"
 #include "attribute.h"
-#include "attributes_godot.h"
+#include "attributes.h"
 #include "class.h"
 #include "context.h"
 #include "enum.h"

@@ -7,9 +7,16 @@ namespace GodotObjectCompiler {
   Vector<String> read_lines(const String& path);
   void write_file(const String& path, const String& content);
   bool file_exists(const String& path);
+  bool dir_exists(const String& path);
+  bool create_dir_recursive(const String& path);
+
+  Size file_write_time(const String& path);
 
   String path_base(const String& path);
   String path_concat(const String& path1, const String& path2);
+  Vector<String> directory_files(const String& path);
+  Vector<String> directory_files_recursive(const String& path);
+  Vector<String> directory_dirs(const String& path);
 
   String hash_string(Hash hash);
 

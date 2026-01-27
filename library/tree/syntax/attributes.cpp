@@ -1,0 +1,2 @@
+
+namespace GodotObjectCompiler {}  // namespace GodotObjectCompiler

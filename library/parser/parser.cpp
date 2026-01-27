@@ -4,6 +4,7 @@
 #include "../tree/syntax/all.h"
 #include "handlers/all.h"
 #include "helpers.h"
+#include "library/attribute_db.h"
 #include "node_handler.h"
 
 namespace GodotObjectCompiler {
@@ -48,7 +49,7 @@ namespace GodotObjectCompiler {
       return ExecutionContext::instance()->get_node_db()->create<Namespace>();
     }
 
-    // debug_print_tree(context.node);
+    debug_print_tree(context.node);
 
     while (true) {
       bool do_continue = true;
@@ -225,7 +226,7 @@ namespace GodotObjectCompiler {
     return context.global_namespace;
   }
 
-  // TreeSitter does not currently handle macro parameters well
+  // TreeSitter does not handle macro parameters well
   // but it works if the parameters are empty, so strip them before processing
   String TreeSitterParser::strip_known_macro_contents(const String& input, Dictionary<Size, String>& parameters) {
     String local_input = input;

@@ -131,16 +131,27 @@ env.Tool("compilation_db")
 env.CompilationDatabase()
 
 library_files = glob.glob("library/**/*.cpp", recursive=True)
-application_files = glob.glob("application/**/*.cpp", recursive=True)
 library_folders = glob.glob("library/**/",recursive=True)
+
+library_godot_files = glob.glob("library_godot/**/*.cpp", recursive=True)
+library_godot_folders = glob.glob("library_godot/**/",recursive=True)
+
+application_files = glob.glob("application/**/*.cpp", recursive=True)
 application_folders = glob.glob("application/**/",recursive=True)
 
+library_files.append(library_godot_files)
+
 env.Library("goc", library_files, CPPPATH=["."], LINKFLAGS=["-g"])
+
+for folder in library_godot_folders:
+    create_all_h(this_dir + '/' + folder)
+
 for folder in library_folders:
     create_all_h(this_dir + '/' + folder)
 
 for folder in application_folders:
     create_all_h(this_dir + '/' + folder)
+
 env.Program(
     "goc",
     application_files,

@@ -1,0 +1,6 @@
+#pragma once
+#include "godot_class_generator.h"
+#include "godot_enum_generator.h"
+#include "godot_function_generator.h"
+#include "godot_generator_utils.h"
+#include "godot_property_generator.h"

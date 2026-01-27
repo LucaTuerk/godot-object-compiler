@@ -1,30 +1,32 @@
+#pragma once
 
-class B : public Texture2D {
-  GODOT_PROPERTY()
-  int property4;
-};
+#include "/home/luca/Repositories/godot/core/io/resource.h"
+#include "/home/luca/Repositories/godot/core/object/class_db.h"
+#include "/home/luca/Repositories/godot/core/object/object.h"
+#include "/home/luca/Repositories/godot/core/variant/variant.h"
+#include "/home/luca/Repositories/godot/scene/3d/camera_3d.h"
+#include "macros.h"
 
-namespace Haah {
-  namespace gasd {
+// clang-format off
+#include "/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h.generated.h"
+// clang-format on
 
-    class G {
-      int hallo;
+namespace TestNamespace {
 
-      class huhu {
-        struct {
-          hihi
-        };
-      };
-    };
-
-    class Aha {};
-
-  }  // namespace gasd
+  GODOT_CLASS();
 
   class A : public Camera3D {
     GODOT_GENERATED_BODY();
 
    public:
+
+    GODOT_ENUM();
+
+    enum Test { DAS, IST, EIN, TEST };
+
+    GODOT_ENUM();
+
+    enum Test2 { TEST2_DAS, TEST2_IST, TEST2_NOCH, TEST2_EIN, TEST2_TEST };
 
     GODOT_PROPERTY();
     int property1;
@@ -32,17 +34,39 @@ namespace Haah {
     GODOT_PROPERTY();
     int property2;
 
-    class Hää {};
-
     GODOT_PROPERTY();
-    Ref<A> property3;
+    Camera3D* parent;
   };
 
-  namespace Hash {
+}  // namespace TestNamespace
 
-    struct WieAuchImmer {};
+GODOT_CLASS();
 
-  }  // namespace Hash
-}  // namespace Haah
+class Hää : public Resource {
+  GODOT_GENERATED_BODY();
 
-class C : public Texture2D {};
+  GODOT_PROPERTY();
+  int property3 = 10;
+
+  GODOT_FUNCTION();
+  int test_method(int hello);
+};
+
+GODOT_CLASS();
+
+class B : public TestNamespace::A {
+  GODOT_GENERATED_BODY();
+
+ public:
+
+  GODOT_ENUM();
+
+  enum Test { DAS, IST, EIN, TEST };
+
+  GODOT_PROPERTY();
+  float float_property1;
+};
+
+GODOT_GENERATED_GLOBAL();
+
+// COMMENT

@@ -14,10 +14,6 @@ namespace GodotObjectCompiler {
 
     NextStep handle(ParserContext& context) override;
     NextStep handle_known_attribute(ParserContext& context, const String& macro);
-
-   private:
-
-    HashSet<String> _known_attributes;
   };
 
 }  // namespace GodotObjectCompiler

@@ -1,5 +1,5 @@
 #pragma once
-#include "../tree/syntax/attribute.h"
+#include "library/attribute_db.h"
 #include "library/core/core.h"
 #include "parser.h"
 

@@ -13,4 +13,6 @@ namespace GodotObjectCompiler {
     NextStep handle(ParserContext& context) override;
   };
 
+  INTO(expression_statement);
+
 }  // namespace GodotObjectCompiler

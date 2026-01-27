@@ -26,6 +26,9 @@ namespace GodotObjectCompiler {
       explicit IndentNode(Size amount) : amount(amount) {}
 
       void get_output(IStringWriter* writer) override;
+
+      bool copy_to(Node* other) const override;
+
       Size amount = 0;
     };
 
@@ -35,6 +38,7 @@ namespace GodotObjectCompiler {
       EnclosingNode(String before, String after) : before(std::move(before)), after(std::move(after)) {}
 
       void get_output(IStringWriter* writer) override;
+      bool copy_to(Node* other) const override;
 
       String before;
       String after;
@@ -48,19 +52,35 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* writer) override;
 
+      bool copy_to(Node* other) const override;
+
       String delimiter;
       bool before_first = false;
       bool after_last = true;
     };
 
+    class ReplaceNode : public Context, public IOutputNode {
+      NODE_TYPE(ReplaceNode)
+
+      explicit ReplaceNode(const String& search, const String& replace) : search(search), replace(replace) {}
+
+      void get_output(IStringWriter* writer) override;
+
+      bool copy_to(Node* other) const override;
+
+      String search;
+      String replace;
+    };
+
     class SnippetNode : public Node, public IOutputNode {
       NODE_TYPE(SnippetNode);
-
-     public:
 
       explicit SnippetNode(const String& content) : content(content) {}
 
       void get_output(IStringWriter* writer) override;
+
+      bool copy_to(Node* other) const override;
+
       String content;
     };
 
@@ -72,7 +92,7 @@ namespace GodotObjectCompiler {
     EnclosingNode* Braces(std::initializer_list<IOutputNode*>&& children);
     EnclosingNode* Chevrons(std::initializer_list<IOutputNode*>&& children);
     ListNode* Lines(std::initializer_list<IOutputNode*>&& children);
-    ListNode* EscapedLines(std::initializer_list<IOutputNode*>&& children);
+    ReplaceNode* EscapedLines(std::initializer_list<IOutputNode*>&& children);
     ListNode* Spaces(std::initializer_list<IOutputNode*>&& children);
     ListNode* NoSep(std::initializer_list<IOutputNode*>&& children);
     ListNode* Params(std::initializer_list<IOutputNode*>&& children);
@@ -104,14 +124,19 @@ namespace GodotObjectCompiler {
     ListNode* Assign(const String& variable_name, IOutputNode* value);
     ListNode* Return(const String& name);
     SnippetNode* Param(const String& name);
+    SnippetNode* Include(const String& path);
     ListNode* Namespace(const String& name, IOutputNode* content);
     ListNode* Class(const String& name, IOutputNode* content);
     ListNode* Class(const String& name, const String& base, IOutputNode* content);
     ListNode* Enum(const String& name, IOutputNode* content);
-
     ListNode* MacroDefine(const String& name, IOutputNode* content);
     ListNode* MacroFunctionDefine(
         const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*> lines);
+
+    ListNode* Define(const String& name, std::initializer_list<IOutputNode*> params, const String& content);
+    ListNode* Define(
+        const String& name, std::initializer_list<IOutputNode*> params, std::initializer_list<IOutputNode*>&& lines);
+    SnippetNode* PragmaOnce();
 
   }  // namespace Writer
 }  // namespace GodotObjectCompiler
