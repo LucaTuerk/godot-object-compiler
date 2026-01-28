@@ -1,48 +1,41 @@
-#include "library/core/db.h"
+#include "library/type_db.h"
 
-#include "../tree/syntax/include.h"
-#include "../tree/syntax/namespace.h"
-#include "../tree/syntax/node.h"
-#include "config.h"
-#include "helpers.h"
+#include "core/config.h"
+#include "core/helpers.h"
+#include "tree/syntax/include.h"
+#include "tree/syntax/namespace.h"
+#include "tree/syntax/node.h"
 
 namespace GodotObjectCompiler {
 
-  void dump_node(IStructuredWriter* writer, Ref<Node> node) {
+  void dump_node(IStructuredWriter* writer, Ref<Node> node, bool is_root) {
     writer->write_to_section(node->get_id());
     node->write_to(writer);
 
+    if (is_root) {
+      writer->write<String, UID>("_parent", INVALID_ID);
+    }
+
     if (Ref<Context> context = node->as<Context>(); context && !context->is<Include>()) {
       for (Ref<Node> child : context->get_children()) {
-        dump_node(writer, child);
+        dump_node(writer, child, false);
       }
     }
   }
 
-  DB DB::init(Ref<Namespace> root) {
-    DB result;
-    result._root = root ? root : node_new<Namespace>();
-    return result;
+  bool ConfigNodeReaderWriter::write_to_file(Ref<Node> node, const String& path) {
+    Config config;
+    dump_node(&config, node, true);
+    return config.write_to_file(path);
   }
 
-  void DB::write_to_config(const String& path) const {
-    auto _path = path;
-
+  Ref<Node> ConfigNodeReaderWriter::read_from_file(const String& path) {
     Config config;
-    dump_node(&config, _root);
+    Vector<Ref<Node>> local_store;
 
-    config.write_to_section(_root->get_id());
-    config.write("_parent", INVALID_ID);
-
-    config.write_to_file(_path);
-  }
-
-  DB DB::read_from_config(const String& path) {
-    auto _path = path;
-    Config config;
-    config.read_from_file(_path);
-    DB db = DB();
-    db._root = nullptr;
+    if (!config.read_from_file(path)) {
+      return nullptr;
+    }
 
     for (const String& section : config.get_sections()) {
       config.read_from_section(section);
@@ -59,6 +52,7 @@ namespace GodotObjectCompiler {
       Ref<Node> node = NodeDB::create(node_class);
       if (node) {
         node->read_from(&config);
+        local_store.push_back(node);
       }
     }
 
@@ -74,21 +68,24 @@ namespace GodotObjectCompiler {
       Ref<Node> self = ExecutionContext::instance()->get_node_db()->get<Node>(uid);
       Ref<Context> parent = ExecutionContext::instance()->get_node_db()->get<Context>(parent_uid);
 
-      if (db._root == nullptr && parent_uid == INVALID_ID) {
-        db._root = self->as<Namespace>();
-      } else if (parent_uid == INVALID_ID) {
-        print_ln("Failed to find parent of type");
-      }
-
       if (parent && self) {
         parent->add_child(self);
       }
     }
 
-    return db;
-  }
+    Ref<Node> root;
+    for (const Ref<Node>& node : local_store) {
+      if (node->get_parent() == nullptr) {
+        if (root != nullptr) {
+          print_err("Multiple root nodes found in read config file. Invalid.");
+          return nullptr;
+        }
+        root = node;
+      }
+    }
 
-  Ref<Namespace> DB::get_root() const { return _root; }
+    return root;
+  }
 
   TypeDB* TypeDB::instance() {
     static TypeDB instance;
@@ -101,18 +98,22 @@ namespace GodotObjectCompiler {
     return path_concat(_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
   }
 
-  void TypeDB::save_type_data(Ref<Namespace> root) {
+  void TypeDB::save_type_data(Ref<NamedContext> root) {
+    Writer writer;
     String qualified_name = root->qualified_name();
-    DB db = DB::init(root);
+
     auto path = _get_cache_file_path(qualified_name);
     auto base = path_base(path);
     if (!dir_exists(base) && !create_dir_recursive(base)) {
       return;
     }
-    db.write_to_config(path);
+
+    writer.write_to_file(root, path);
   }
 
   Ref<Node> TypeDB::get_type_data(const String& qualified_name) {
+    Reader reader;
+
     if (auto itr = _cache.find(qualified_name); itr != _cache.end()) {
       return itr->second;
     }
@@ -120,9 +121,8 @@ namespace GodotObjectCompiler {
     const String& cache_file_path = _get_cache_file_path(qualified_name);
 
     if (file_exists(cache_file_path)) {
-      DB db = DB::read_from_config(cache_file_path);
-      Ref<Node> root = db.get_root();
-      _cache[qualified_name] = db.get_root();
+      Ref<Node> root = reader.read_from_file(cache_file_path);
+      _cache[qualified_name] = root;
       return root;
     }
 

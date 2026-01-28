@@ -11,26 +11,41 @@ namespace GodotObjectCompiler {
     return true;
   }
 
-  bool AttributeDB::register_attribute_params(
-      const String& class_name, const String& override_name, std::initializer_list<AttributeParameterType>&& args) {
-    _parameter_type[class_name][override_name] = std::move(args);
+  bool AttributeDB::register_attribute_parameter(
+      const String& class_name, const Ref<IAttributeParameterType>& parameter) {
+    HashSet<String>& registered = _registered_parameter_types[class_name];
+    if (registered.find(parameter->get_type_name()) != registered.end()) {
+      return false;
+    }
+
+    registered.insert(parameter->get_type_name());
+    _parameters[class_name].push_back(parameter);
     return true;
   }
 
   bool AttributeDB::is_known_macro(const String& macro) { return _macro_aliases.find(macro) != _macro_aliases.end(); }
 
   Ref<Attribute> AttributeDB::create_for_macro(const String& macro) {
-    auto name_itr = _macro_aliases.find(macro);
+    const auto name_itr = _macro_aliases.find(macro);
     if (name_itr == _macro_aliases.end()) {
       return nullptr;
     }
 
-    auto creator_itr = _creation_funcs.find(name_itr->second);
+    const auto creator_itr = _creation_funcs.find(name_itr->second);
     if (creator_itr == _creation_funcs.end()) {
       return nullptr;
     }
 
     return creator_itr->second();
+  }
+
+  Vector<Ref<IAttributeParameterType>> AttributeDB::get_parameters_for_macro(const String& macro) {
+    const auto name_itr = _macro_aliases.find(macro);
+    if (name_itr == _macro_aliases.end()) {
+      return {};
+    }
+
+    return _parameters[name_itr->second];
   }
 
   Vector<String> AttributeDB::get_all_macros() {
@@ -39,41 +54,6 @@ namespace GodotObjectCompiler {
       macros.push_back(key);
     }
     return macros;
-  }
-
-  Dictionary<String, Vector<AttributeParameterType>> const* AttributeDB::get_parameter_types(const String& macro) {
-    static Dictionary<String, Vector<AttributeParameterType>> empty_res = {};
-
-    auto name_itr = _macro_aliases.find(macro);
-    if (name_itr == _macro_aliases.end()) {
-      return &empty_res;
-    }
-
-    auto parameter_itr = _parameter_type.find(name_itr->second);
-    if (parameter_itr == _parameter_type.end()) {
-      return &empty_res;
-    }
-
-    return &parameter_itr->second;
-  }
-
-  bool AttributeDB::register_parameter(const String& class_name, IAttributeParameters* parameter) {
-    const HashSet<String>& registered = _registered_parameters[class_name];
-    if (registered.find(parameter->return_type_name()) != registered.end()) {
-      return false;
-    }
-
-    _parameters[class_name].push_back(parameter);
-    return true;
-  }
-
-  Vector<IAttributeParameters*> AttributeDB::get_parameters(const String& macro) {
-    if (auto alias_itr = _macro_aliases.find(macro); alias_itr != _macro_aliases.end()) {
-      if (auto itr = _parameters.find(alias_itr->second); itr != _parameters.end()) {
-        return itr->second;
-      }
-    }
-    return {};
   }
 
   bool AttributeDB::register_class_generator(const String& generator_name, Ref<ClassGenerator> generator) {

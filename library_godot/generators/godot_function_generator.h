@@ -1,7 +1,7 @@
 
 #pragma once
 #include "../../library/generator/generator.h"
-#include "../attributes/attributes_godot.h"
+#include "../attributes/godot_attributes.h"
 
 namespace GodotObjectCompiler {
 

@@ -25,8 +25,7 @@ namespace GodotObjectCompiler {
     return to;
   }
 
-  NodeDB::~NodeDB() {
-  }
+  NodeDB::~NodeDB() {}
 
   Ref<Node> NodeDB::create(const String& type) {
     auto itr = _node_constructors.find(type);

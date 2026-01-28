@@ -2,10 +2,10 @@
 
 #include "../tree/syntax/all.h"
 
-#define CREATE_NAMED(type)                               \
-  type* result = current_node->create_child<type>();     \
+#define CREATE_NAMED(type)                                   \
+  type* result = current_node->create_child<type>();         \
   Ref<Identifier> name = result->create_child<Identifier>(); \
-  name->name = get_child_content(node, "name");          \
+  name->name = get_child_content(node, "name");              \
   return result
 
 namespace GodotObjectCompiler {

@@ -1,9 +1,9 @@
 
 #pragma once
-#include "../../library/generator/generator.h"
-#include "../attributes/attributes_godot.h"
 #include "library/attribute_db.h"
+#include "library/generator/generator.h"
 #include "library/tree/output/generator_error.h"
+#include "library_godot/attributes/godot_attributes.h"
 
 namespace GodotObjectCompiler {
 
@@ -12,9 +12,8 @@ namespace GodotObjectCompiler {
 
    public:
 
-    Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<GodotPropertyAttribute> attribute, Ref<Context> generated_body,
-        Ref<Context> generated_sources, Ref<Context> generated_global) override;
-
+    Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<GodotPropertyAttribute> attribute,
+        Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) override;
   };
 
   REGISTER_CLASS_GENERATOR(GodotPropertyGenerator);

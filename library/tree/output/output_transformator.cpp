@@ -8,12 +8,12 @@
 
 namespace GodotObjectCompiler {
 
-#define ADD_TRANSFORM_CHILDREN(from, into)               \
-  for (Ref<Node> child : *from) {                            \
-    Ref<Writer::IOutputNode> transformed = transform(child); \
+#define ADD_TRANSFORM_CHILDREN(from, into)                               \
+  for (Ref<Node> child : *from) {                                        \
+    Ref<Writer::IOutputNode> transformed = transform(child);             \
     if (Ref<Node> node = std::dynamic_pointer_cast<Node>(transformed)) { \
-      into->add_child(node);                             \
-    }                                                    \
+      into->add_child(node);                                             \
+    }                                                                    \
   }
 
 #define ADD_TEXT_IF_TYPE(type, text) \
@@ -31,6 +31,7 @@ namespace GodotObjectCompiler {
     ADD_TEXT_IF_TYPE(Volatile, "volatile")
     ADD_TEXT_IF_TYPE(Reference, "&")
     ADD_TEXT_IF_TYPE(Pointer, "*")
+    ADD_TEXT_IF_TYPE(ConstExpression, "constexpr")
 
     if (Ref<Namespace> _namespace = tree->as<Namespace>()) {
       return Writer::Spaces(
@@ -74,7 +75,16 @@ namespace GodotObjectCompiler {
 
     if (Ref<Parameter> parameter = tree->as<Parameter>()) {
       Ref<Writer::ListNode> into = Writer::NoSep({});
-      ADD_TRANSFORM_CHILDREN(parameter, into)
+      for (Ref<Node> child : *parameter) {
+        Ref<Literal> literal = child->as<Literal>();
+        if (literal) {
+          into->add_child(Writer::Text(" = "));
+        }
+        Ref<Writer::IOutputNode> transformed = transform(child);
+        if (Ref<Node> node = std::dynamic_pointer_cast<Node>(transformed)) {
+          into->add_child(node);
+        }
+      }
       return into;
     }
 
@@ -105,6 +115,16 @@ namespace GodotObjectCompiler {
       }
 
       return output_node;
+    }
+
+    if (Ref<Literal> literal = tree->as<Literal>()) {
+      return Writer::Text(literal->content);
+    }
+
+    if (Ref<Field> arguments = tree->as<Field>()) {
+      Ref<Writer::ListNode> into = Writer::Spaces({});
+      ADD_TRANSFORM_CHILDREN(arguments, into)
+      return into;
     }
 
     if (Ref<Function> function = tree->as<Function>()) {

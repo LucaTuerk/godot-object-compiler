@@ -9,11 +9,15 @@ namespace GodotObjectCompiler {
   class IGenerator {
    public:
 
+    virtual ~IGenerator() = default;
+
     virtual Ref<Context> generate(Ref<Context> tree, Ref<Node> entry_point) = 0;
   };
 
   class ClassGenerator {
    public:
+
+    virtual ~ClassGenerator() = default;
 
     bool handles(Ref<Class> target_class, Ref<Attribute> attribute);
     Ref<GeneratorError> generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
@@ -22,16 +26,16 @@ namespace GodotObjectCompiler {
    protected:
 
     virtual bool _handles(Ref<Class> target_class, Ref<Attribute> attribute) = 0;
-    virtual Ref<GeneratorError> _generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
-        Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
+    virtual Ref<GeneratorError> _generate(Ref<Class> target_class, Ref<Attribute> attribute,
+        Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
   };
 
   inline bool ClassGenerator::handles(Ref<Class> target_class, Ref<Attribute> attribute) {
     return _handles(target_class, attribute);
   }
 
-  inline Ref<GeneratorError> ClassGenerator::generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
-      Ref<Context> generated_sources, Ref<Context> generated_global) {
+  inline Ref<GeneratorError> ClassGenerator::generate(Ref<Class> target_class, Ref<Attribute> attribute,
+      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
     return _generate(target_class, attribute, generated_body, generated_sources, generated_global);
   }
 
@@ -45,7 +49,7 @@ namespace GodotObjectCompiler {
 
    public:
 
-    virtual ~IClassGenerator() = default;
+    ~IClassGenerator() override = default;
     virtual Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<AttrT> attribute, Ref<Context> generated_body,
         Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
   };
@@ -56,8 +60,8 @@ namespace GodotObjectCompiler {
   }
 
   template <typename AttrT>
-  Ref<GeneratorError> IClassGenerator<AttrT>::_generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
-      Ref<Context> generated_sources, Ref<Context> generated_global) {
+  Ref<GeneratorError> IClassGenerator<AttrT>::_generate(Ref<Class> target_class, Ref<Attribute> attribute,
+      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
     return do_generate(
         target_class, attribute->template as<AttrT>(), generated_body, generated_sources, generated_global);
   }

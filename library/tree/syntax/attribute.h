@@ -1,14 +1,14 @@
 #pragma once
 #include "context.h"
 
-#define ATTRIBUTE_TYPE(node_type, target_type, target)                                                         \
-  NODE_TYPE(node_type)                                                                                         \
- protected:                                                                                                    \
-                                                                                                               \
+#define ATTRIBUTE_TYPE(node_type, target_type, target)                                                             \
+  NODE_TYPE(node_type)                                                                                             \
+ protected:                                                                                                        \
+                                                                                                                   \
   virtual bool _verify_target_class(Ref<Node> p_resolved) const override { return p_resolved->is<target_type>(); } \
-                                                                                                               \
-  virtual Target _get_target() const override { return target; }                                               \
-                                                                                                               \
+                                                                                                                   \
+  virtual Target _get_target() const override { return target; }                                                   \
+                                                                                                                   \
  private:
 
 namespace GodotObjectCompiler {

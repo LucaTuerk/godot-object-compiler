@@ -6,11 +6,10 @@
 
 #include <filesystem>
 
-#include "core/db.h"
 #include "core/helpers.h"
-#include "core/timer.h"
 #include "parser/parser.h"
 #include "tree/syntax/namespace.h"
+#include "type_db.h"
 
 namespace GodotObjectCompiler {
 
@@ -29,7 +28,7 @@ namespace GodotObjectCompiler {
 
   void ExecutionContext::set_remove_macros(const Vector<String>& value) { _remove_macros = value; }
 
-  String ExecutionContext::get_absolute_include_path(const String& included_from_path, const String& path) {
+  String ExecutionContext::get_absolute_include_path(const String& included_from_path, const String& path) const {
     String base_path = path_base(included_from_path);
     String relative_absolute = path_concat(base_path, path);
 
@@ -57,7 +56,6 @@ namespace GodotObjectCompiler {
     }
 
     if (is_file_included(absolute)) {
-      Timer timer{"Skip \"" + absolute + "\" already included"};
       return nullptr;
     }
     set_file_included(absolute);
@@ -70,17 +68,14 @@ namespace GodotObjectCompiler {
 
     String cache_path = get_cache_file_path(absolute_hash);
 
+    ConfigNodeReaderWriter reader_writer;
     if (file_exists(cache_path)) {
-      Timer timer{"Cached \"" + absolute + "\""};
-      DB db = DB::read_from_config(cache_path);
-      root = db.get_root();
+      root = reader_writer.read_from_file(cache_path);
     } else {
-      Timer timer{"Parse \"" + absolute + "\""};
       TreeSitterParser parser;
       Ref<Namespace> parsed = parser.parse(read_file(absolute))->as<Namespace>();
-      DB db = DB::init(parsed);
-      db.write_to_config(cache_path);
       root = parsed;
+      reader_writer.write_to_file(root, cache_path);
     }
 
     _included_nodes[absolute_hash] = root;

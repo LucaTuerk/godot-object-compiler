@@ -1,7 +1,7 @@
 
 #include "library_godot/generators/godot_property_generator.h"
 
-#include "../attributes/attributes_godot.h"
+#include "../attributes/godot_attributes.h"
 #include "godot_generator_utils.h"
 #include "library/tree/output/generator_error.h"
 #include "library/tree/output/output.h"

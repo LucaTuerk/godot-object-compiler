@@ -2,6 +2,7 @@
 #include "namespace.h"
 
 #include "class.h"
+#include "enum.h"
 #include "field.h"
 #include "function.h"
 
@@ -96,6 +97,32 @@ namespace GodotObjectCompiler {
     }
 
     return _classes;
+  }
+
+  Vector<Ref<Enum>> Namespace::_enums_lazy_get() {
+    Vector<Ref<Enum>> enums;
+    Ref<Body> body = find_child<Body>();
+    const List<Ref<Node>>& children = body ? body->get_children() : get_children();
+
+    for (Ref<Node> child : children) {
+      if (child->is<Enum>()) {
+        enums.push_back(child->as<Enum>());
+      }
+    }
+
+    return enums;
+  }
+
+  Vector<Ref<Enum>> Namespace::_enums_recursive_lazy_get() {
+    Vector<Ref<Enum>> _enums = enums();
+
+    for (Ref<Namespace> _child_namespace : child_namespaces()) {
+      for (Ref<Enum> _enum : _child_namespace->enums_recursive()) {
+        _enums.push_back(_enum);
+      }
+    }
+
+    return _enums;
   }
 
 }  // namespace GodotObjectCompiler

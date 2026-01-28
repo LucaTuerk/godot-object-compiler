@@ -36,4 +36,8 @@ namespace GodotObjectCompiler {
     NODE_TYPE(Volatile);
   };
 
+  class ConstExpression : public TypeQualifier {
+    NODE_TYPE(ConstExpression);
+  };
+
 }  // namespace GodotObjectCompiler

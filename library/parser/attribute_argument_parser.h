@@ -5,17 +5,13 @@
 
 namespace GodotObjectCompiler {
 
-  class Node;
-
-  class AttributeArgumentParser : public IParser {
+  class IAttributeArgumentParser {
    public:
 
-    void setup_for_macro(const String& macro_name);
-    Ref<Node> parse(const String& input) override;
+    virtual Ref<Context> parse_attribute_arguments(const String& content) = 0;
 
-   private:
-
-    Dictionary<String, Vector<AttributeParameterType>> const* parameters = nullptr;
+    static Vector<String> split_arguments(const String& content);
+    static String get_inner_arguments(const String& content);
   };
 
 }  // namespace GodotObjectCompiler

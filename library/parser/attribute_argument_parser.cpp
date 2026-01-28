@@ -8,20 +8,74 @@
 
 namespace GodotObjectCompiler {
 
-  void AttributeArgumentParser::setup_for_macro(const String& macro_name) {
-    parameters = AttributeDB::instance()->get_parameter_types(macro_name);
-  }
+  Vector<String> IAttributeArgumentParser::split_arguments(const String& content) {
+    std::stringstream strstr;
+    Vector<String> result;
 
-  Ref<Node> AttributeArgumentParser::parse(const String& input) {
-    Ref<Parameters> result = ExecutionContext::instance()->get_node_db()->create<Parameters>();
+    Size brackets_open = 0;
+    Size quotes_open = 0;
+    bool escaped = false;
 
-    for (const String& argument : string_split(input, ",")) {
-      if (!argument.empty()) {
-        result->create_child<Parameter>()->create_child<Identifier>(argument);
+    for (char c : content) {
+      if (!escaped) {
+        if (c == '(') {
+          brackets_open++;
+        } else if (c == ')') {
+          if (brackets_open == 0) {
+            return {};
+          }
+          brackets_open--;
+        } else if (c == '"') {
+          if (quotes_open) {
+            quotes_open--;
+          } else {
+            quotes_open++;
+          }
+        } else if (c == '\\') {
+          escaped = true;
+          strstr << c;
+          continue;
+        } else if (c == ',') {
+          if (!quotes_open && !brackets_open) {
+            result.push_back(strstr.str());
+            strstr = {};
+            continue;
+          }
+        }
       }
+
+      strstr << c;
+      escaped = false;
     }
 
+    result.push_back(strstr.str());
     return result;
+  }
+
+  String IAttributeArgumentParser::get_inner_arguments(const String& content) {
+    std::stringstream strstr;
+    bool open = false;
+    bool escaped = false;
+    for (char c : content) {
+      if (!escaped) {
+        if (c == '(') {
+          open = true;
+          continue;
+        } else if (c == ')') {
+          return strstr.str();
+        } else if (c == '\\') {
+          escaped = true;
+          strstr << c;
+          continue;
+        }
+      }
+
+      if (open) {
+        strstr << c;
+        escaped = false;
+      }
+    }
+    return "";
   }
 
 }  // namespace GodotObjectCompiler

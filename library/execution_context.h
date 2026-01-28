@@ -20,7 +20,7 @@ namespace GodotObjectCompiler {
 
     void set_remove_macros(const Vector<String>& value);
 
-    String get_absolute_include_path(const String& included_from_path, const String& path);
+    String get_absolute_include_path(const String& included_from_path, const String& path) const;
 
     const Vector<String>& get_include_paths();
 
@@ -36,7 +36,7 @@ namespace GodotObjectCompiler {
 
     bool is_cached(const String& path);
 
-    Hash get_path_hash(const String& absolute_path);
+    static Hash get_path_hash(const String& absolute_path);
 
     String get_cache_file_path(Hash hash);
 

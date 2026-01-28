@@ -49,7 +49,7 @@ namespace GodotObjectCompiler {
       return ExecutionContext::instance()->get_node_db()->create<Namespace>();
     }
 
-    debug_print_tree(context.node);
+    // debug_print_tree(context.node);
 
     while (true) {
       bool do_continue = true;
