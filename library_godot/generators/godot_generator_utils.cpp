@@ -1,6 +1,7 @@
 
 #include "library_godot/generators/godot_generator_utils.h"
 
+#include "../../library/type_db.h"
 #include "library/tree/output/output.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax/class.h"
@@ -102,6 +103,48 @@ namespace GodotObjectCompiler {
       bind_methods_body = bind_methods->find_child<Body>();
     }
     return bind_methods_body;
+  }
+
+  bool GodotGeneratorUtils::class_has_base_class(Ref<Class> target_class, const String& base_class_qualified) {
+    if (target_class->qualified_name() == base_class_qualified) {
+      return true;
+    }
+
+    // TODO: this will not work if the base class name is not fully qualified
+    for ( const String& base : target_class->direct_bases_names()) {
+      Ref<Class> base_class = TypeDB::instance()->get_type_data<Class>(base);
+      if (!base_class) {
+        print_err("Base class not found!");
+        return false;
+      }
+
+      return class_has_base_class(base_class, base_class_qualified);
+    }
+
+    return false;
+  }
+
+  bool GodotGeneratorUtils::class_is_node_type(Ref<Class> target_class) {
+    return class_has_base_class(target_class, "Node");
+  }
+
+  bool GodotGeneratorUtils::class_is_resource_type(Ref<Class> target_class) {
+    return class_has_base_class(target_class, "Resource");
+
+  }
+
+  bool GodotGeneratorUtils::class_is_ref_counted_type(Ref<Class> target_class) {
+    return class_has_base_class(target_class, "RefCounted");
+
+  }
+
+  bool GodotGeneratorUtils::class_is_object_type(Ref<Class> target_class) {
+    return class_has_base_class(target_class, "Object");
+  }
+
+  bool GodotGeneratorUtils::class_is_variant_type(Ref<Class> target_class) {
+    // TODO
+    return true;
   }
 
 }  // namespace GodotObjectCompiler

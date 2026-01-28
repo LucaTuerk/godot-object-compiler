@@ -10,7 +10,7 @@
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/namespace.h"
-#include "library_godot/attributes/attributes_godot.h"
+#include "library_godot/attributes/godot_attributes.h"
 #include "library_godot/generators/godot_class_generator.h"
 
 namespace GodotObjectCompiler {
@@ -46,7 +46,6 @@ namespace GodotObjectCompiler {
       }
 
       Ref<Namespace> ns = parsed->as<Namespace>();
-      print_ln(ns->pretty_print());
 
       if (!ns) {
         continue;

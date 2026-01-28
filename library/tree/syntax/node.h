@@ -107,15 +107,25 @@ Ref<GodotObjectCompiler::Node> GodotObjectCompiler::default_construct() {
   return ExecutionContext::instance()->get_node_db()->create<T>();
 }
 
-#define NODE_TYPE(type)                                                                                \
- public:                                                                                               \
-                                                                                                       \
-  type() = default;                                                                                    \
-  virtual String get_type() const override { return #type; }                                           \
-  static String get_type_static() { return #type; }                                                    \
+template <typename T>
+Ref<T> GodotObjectCompiler::INodeReader::read_from_file(const String& path) {
+  Ref<Node> result = read_from_file(path);
+  if (!result) {
+    return nullptr;
+  }
+
+  return result->template as<T>();
+}
+
+#define NODE_TYPE(type)                                                                                    \
+ public:                                                                                                   \
+                                                                                                           \
+  type() = default;                                                                                        \
+  virtual String get_type() const override { return #type; }                                               \
+  static String get_type_static() { return #type; }                                                        \
   static Ref<Node> create_static() { return ExecutionContext::instance()->get_node_db()->create<type>(); } \
   virtual Ref<Node> create() override { return type::create_static(); }                                    \
-  static inline bool __registered__##type##__ =                                                        \
+  static inline bool __registered__##type##__ =                                                            \
       NodeDB::register_node_constructor(#type, &GodotObjectCompiler::default_construct<type>);
 
 #define COPY_GUARD(type, parent)   \

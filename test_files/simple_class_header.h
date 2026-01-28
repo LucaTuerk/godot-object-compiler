@@ -6,6 +6,7 @@
 #include "/home/luca/Repositories/godot/core/variant/variant.h"
 #include "/home/luca/Repositories/godot/scene/3d/camera_3d.h"
 #include "macros.h"
+#include "test2.h"
 
 // clang-format off
 #include "/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h.generated.h"
@@ -13,7 +14,7 @@
 
 namespace TestNamespace {
 
-  GODOT_CLASS();
+  GODOT_CLASS(ToolClass | InternalClass);
 
   class A : public Camera3D {
     GODOT_GENERATED_BODY();
@@ -28,10 +29,10 @@ namespace TestNamespace {
 
     enum Test2 { TEST2_DAS, TEST2_IST, TEST2_NOCH, TEST2_EIN, TEST2_TEST };
 
-    GODOT_PROPERTY();
+    GODOT_PROPERTY(HintDir());
     int property1;
 
-    GODOT_PROPERTY();
+    GODOT_PROPERTY(HintRange("1,2,3"), UsageEditor | UsageCheckable);
     int property2;
 
     GODOT_PROPERTY();
@@ -54,7 +55,7 @@ class Hää : public Resource {
 
 GODOT_CLASS();
 
-class B : public TestNamespace::A {
+class B : public Hallöööle {
   GODOT_GENERATED_BODY();
 
  public:

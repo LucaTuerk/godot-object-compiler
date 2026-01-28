@@ -1,8 +1,8 @@
 
 #pragma once
-#include "library/generator/generator.h"
-#include "library_godot/attributes/attributes_godot.h"
 #include "godot_property_generator.h"
+#include "library/generator/generator.h"
+#include "library_godot/attributes/godot_attributes.h"
 
 namespace GodotObjectCompiler {
 

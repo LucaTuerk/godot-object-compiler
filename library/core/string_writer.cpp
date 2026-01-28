@@ -6,10 +6,6 @@
 namespace GodotObjectCompiler {
 
   void StreamWriter::write(const String& value) {
-    if (value == "\n") {
-      std::cout << value.length() << std::endl;
-    }
-
     _stream << value;
     _current_length += value.length();
   }

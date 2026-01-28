@@ -135,8 +135,8 @@ namespace GodotObjectCompiler {
 
 #define ADD_CHILDREN_AND_RET(creator)                                 \
   auto result = ExecutionContext::instance()->get_node_db()->creator; \
-  for (Ref<IOutputNode> child : children) {                               \
-    Ref<Node> node = std::dynamic_pointer_cast<Node>(child);                          \
+  for (Ref<IOutputNode> child : children) {                           \
+    Ref<Node> node = std::dynamic_pointer_cast<Node>(child);          \
     if (node) {                                                       \
       result->add_child(node);                                        \
     }                                                                 \
@@ -255,8 +255,8 @@ namespace GodotObjectCompiler {
       return NoSep({Text(function_name), Brackets({Params(std::move(parameters))})});
     }
 
-    Ref<ListNode> MemberFuncDef(const String& type, const String& name, std::initializer_list<Ref<IOutputNode>>&& parameters,
-        const String& modifiers) {
+    Ref<ListNode> MemberFuncDef(const String& type, const String& name,
+        std::initializer_list<Ref<IOutputNode>>&& parameters, const String& modifiers) {
       return Spaces({Text(type), NoSep({
                                      Text(name),
                                      Brackets({Params(std::move(parameters))}),
@@ -294,8 +294,8 @@ namespace GodotObjectCompiler {
 
     Ref<ListNode> MacroDefine(const String& name, Ref<IOutputNode> content) { return Lines({}); }
 
-    Ref<ListNode> MacroFunctionDefine(
-        const String& name, std::initializer_list<Ref<IOutputNode>> params, std::initializer_list<Ref<IOutputNode>> lines) {
+    Ref<ListNode> MacroFunctionDefine(const String& name, std::initializer_list<Ref<IOutputNode>> params,
+        std::initializer_list<Ref<IOutputNode>> lines) {
       return Spaces({
           Text("#define"),
           NoSep({
@@ -311,8 +311,8 @@ namespace GodotObjectCompiler {
           EscapedLines({Text(content)}), NewLine(), NewLine()});
     }
 
-    Ref<ListNode> Define(
-        const String& name, std::initializer_list<Ref<IOutputNode>> params, std::initializer_list<Ref<IOutputNode>>&& lines) {
+    Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params,
+        std::initializer_list<Ref<IOutputNode>>&& lines) {
       return Spaces({Text("#define"), NoSep({Text(name), Brackets({Params(std::move(params))})}),
           EscapedLines({std::move(lines)}), NewLine(), NewLine()});
     }

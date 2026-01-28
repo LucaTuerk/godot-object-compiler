@@ -42,10 +42,10 @@ namespace GodotObjectCompiler {
     return INVALID_ID;
   }
 
-  void Config::write_to_file(const String& path) {
+  bool Config::write_to_file(const String& path) {
     std::ofstream file(path);
     if (!file.is_open()) {
-      throw std::runtime_error("Failed to open file for writing");
+      return false;
     }
 
     for (const auto& section : config_values) {
@@ -55,12 +55,13 @@ namespace GodotObjectCompiler {
       }
       file << std::endl;
     }
+    return true;
   }
 
-  void Config::read_from_file(const String& path) {
+  bool Config::read_from_file(const String& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
-      throw std::runtime_error("Failed to open file for reading");
+      return false;
     }
 
     String line;
@@ -80,6 +81,7 @@ namespace GodotObjectCompiler {
         }
       }
     }
+    return true;
   }
 
 }  // namespace GodotObjectCompiler

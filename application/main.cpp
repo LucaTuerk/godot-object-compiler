@@ -1,12 +1,13 @@
 #include "main.h"
 
 #include "../library/core/config.h"
+#include "../library/type_db.h"
+#include "../library_godot/generators/godot_macro_include_generator.h"
 #include "application_context.h"
 #include "library/core/core.h"
-#include "library/core/db.h"
 #include "library/core/helpers.h"
 #include "library/core/string_writer.h"
-#include "library/generator/macro_include_generator.h"
+#include "library/parser/attribute_argument_parser.h"
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/predicates.h"
 #include "programs/generate.h"
@@ -15,6 +16,19 @@
 using namespace GodotObjectCompiler;
 
 int main() {
+  // Vector<String> split_vec =
+  //     IAttributeArgumentParser::split_arguments("Hint(\"abc,\"), Property(1,2,3,6,,asdiaidkasd),");
+  // for (const String& split : split_vec) {
+  //   print_ln(split);
+  //   auto inner = IAttributeArgumentParser::get_inner_arguments(split);
+  //   print_ln(inner);
+  //
+  //   for (const String& split2 : IAttributeArgumentParser::split_arguments(inner)) {
+  //     print_ln(split2);
+  //   }
+  // }
+  //
+  // return 0;
   Vector<String> paths = {
       "/home/luca/Repositories/godot-object-compiler/test_files/"
       "simple_class_header.h"};
@@ -22,13 +36,21 @@ int main() {
   ApplicationContext context;
   context.input_files = {"/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h"};
   context.generated_root = "/home/luca/Repositories/godot-object-compiler/test_files";
-  context.include_paths = {"/home/luca/Repositories/godot"};
+  context.include_paths = {"/home/luca/Repositories/godot", "/home/luca/Repositories/godot-object-compiler/test_files"};
   context.cache_root = ".goc/cache";
 
   GenerateTypeDB generate_type_db;
   generate_type_db.run(context);
 
-  MacroIncludeGenerator macro_include_generator;
+  Ref<Enum> mod_init_level = TypeDB::instance()->get_type_data<Enum>("ModuleInitializationLevel");
+  if (mod_init_level) {
+    for (const String& value : mod_init_level->value_names()) {
+      print_ln(value);
+    }
+  }
+  return 0;
+
+  GodotMacroIncludeGenerator macro_include_generator;
   Ref<Context> macro_include_content = node_new<Context>();
   macro_include_generator.generate(nullptr, macro_include_content);
 

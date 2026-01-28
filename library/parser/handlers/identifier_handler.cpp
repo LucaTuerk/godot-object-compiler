@@ -54,8 +54,8 @@ namespace GodotObjectCompiler {
 
       auto itr = context.stripped_parameters.find((Size)ts_node_start_byte(context.node));
       if (itr != context.stripped_parameters.end()) {
-        AttributeArgumentParser parser;
-        attribute->add_child(parser.parse(itr->second));
+        // AttributeArgumentParser parser;
+        // attribute->add_child(parser.parse(itr->second));
         context.current_node = attribute->get_parent();
         TSNode current = ts_tree_cursor_current_node(&context.cursor);
         TSNode ancestor = find_ancestor_of_type(current, "declaration");

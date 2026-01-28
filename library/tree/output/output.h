@@ -113,8 +113,8 @@ namespace GodotObjectCompiler {
         std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers);
 
     Ref<ListNode> ConstRef(const String& type);
-    Ref<ListNode> MemberFuncDef(const String& type, const String& name, std::initializer_list<Ref<IOutputNode>>&& parameters,
-        const String& modifiers);
+    Ref<ListNode> MemberFuncDef(const String& type, const String& name,
+        std::initializer_list<Ref<IOutputNode>>&& parameters, const String& modifiers);
     Ref<ListNode> MemberFuncImpl(const String& return_type, const String& class_name, const String& name,
         std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers,
         std::initializer_list<Ref<IOutputNode>>&& lines);
@@ -128,12 +128,12 @@ namespace GodotObjectCompiler {
     Ref<ListNode> Class(const String& name, const String& base, Ref<IOutputNode> content);
     Ref<ListNode> Enum(const String& name, Ref<IOutputNode> content);
     Ref<ListNode> MacroDefine(const String& name, Ref<IOutputNode> content);
-    Ref<ListNode> MacroFunctionDefine(
-        const String& name, std::initializer_list<Ref<IOutputNode>> params, std::initializer_list<Ref<IOutputNode>> lines);
+    Ref<ListNode> MacroFunctionDefine(const String& name, std::initializer_list<Ref<IOutputNode>> params,
+        std::initializer_list<Ref<IOutputNode>> lines);
 
     Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params, const String& content);
-    Ref<ListNode> Define(
-        const String& name, std::initializer_list<Ref<IOutputNode>> params, std::initializer_list<Ref<IOutputNode>>&& lines);
+    Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params,
+        std::initializer_list<Ref<IOutputNode>>&& lines);
     Ref<SnippetNode> PragmaOnce();
 
   }  // namespace Writer

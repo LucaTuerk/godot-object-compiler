@@ -11,7 +11,6 @@
   type const& name() const { return _##name##_lazy.get(); }                           \
                                                                                       \
  private:
-#include <atomic>
 
 namespace GodotObjectCompiler {
 
@@ -35,7 +34,7 @@ namespace GodotObjectCompiler {
 
     C* _obj;
     Getter _getter;
-    mutable std::atomic<bool> _has_data = false;
+    mutable bool _has_data = false;
     mutable T _data;
   };
 

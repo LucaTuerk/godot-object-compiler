@@ -1,7 +1,7 @@
 
 #include "class.h"
 
-#include "../../../library_godot/attributes/attributes_godot.h"
+#include "../../../library_godot/attributes/godot_attributes.h"
 #include "attribute.h"
 #include "identifier.h"
 

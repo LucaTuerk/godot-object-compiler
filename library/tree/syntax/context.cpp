@@ -6,8 +6,7 @@
 
 namespace GodotObjectCompiler {
 
-  Context::~Context() {
-  }
+  Context::~Context() {}
 
   bool Context::copy_to(Ref<Node> other) const {
     COPY_GUARD(Context, Node);

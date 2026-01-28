@@ -1,10 +1,11 @@
 #pragma once
+#include "godot_property_hint_parameter_type.h"
+#include "godot_property_usage_flags_parameter_type.h"
 #include "library/attribute_db.h"
 #include "library/tree/output/output.h"
 #include "library/tree/syntax/attribute.h"
 #include "library/tree/syntax/attributes.h"
 #include "library/tree/syntax/enum.h"
-#include "library_godot/attributes/attribute_parameters_godot.h"
 
 namespace GodotObjectCompiler {
 
@@ -31,13 +32,18 @@ namespace GodotObjectCompiler {
   class GodotPropertyAttribute : public FieldAttribute {
     ATTRIBUTE_TYPE(GodotPropertyAttribute, Field, NEXT)
     ATTRIBUTE_REGISTER_DEFAULT_MACRO(GODOT_PROPERTY)
-    // ATTRIBUTE_PARAMS(PropertyHintParameters)
-    // ATTRIBUTE_PARAMS(PropertyUsageParameters)
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyHintParameterType)
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlagsParameterType)
   };
 
   class GodotFunctionAttribute : public FunctionAttribute {
     ATTRIBUTE_TYPE(GodotFunctionAttribute, Function, NEXT)
     ATTRIBUTE_REGISTER_DEFAULT_MACRO(GODOT_FUNCTION)
+  };
+
+  class GodotSignalAttribute : public Attribute {
+    ATTRIBUTE_TYPE(GodotSignalAttribute, Function, NEXT)
+    ATTRIBUTE_REGISTER_DEFAULT_MACRO(GODOT_SIGNAL)
   };
 
 }  // namespace GodotObjectCompiler

@@ -1,13 +1,13 @@
 
 #include "generate_type_db.h"
 
+#include "../../library/type_db.h"
 #include "application/application_context.h"
 #include "library/core/config.h"
-#include "library/core/db.h"
 #include "library/core/helpers.h"
-#include "library/parser/attribute_argument_parser.h"
 #include "library/parser/parser.h"
 #include "library/tree/syntax/class.h"
+#include "library/tree/syntax/enum.h"
 #include "library/tree/syntax/namespace.h"
 
 namespace GodotObjectCompiler {
@@ -18,14 +18,21 @@ namespace GodotObjectCompiler {
     TreeSitterParser parser;
 
     Config times;
-    auto time_path = path_concat(context.cache_root, "last_read_times.goct");
+    auto time_path = path_concat(context.cache_root, "last_modified_times.goct");
     if (file_exists(time_path)) {
       times.read_from_file(time_path);
     }
 
     for (const String& include_path : context.include_paths) {
+      print_ln("Including: " + include_path);
       for (const String& file : directory_files_recursive(include_path)) {
         if (!string_suffix(file, ".h")) {
+          continue;
+        }
+
+        if (string_contains(file, "thirdparty") || string_contains(file, ".gen.h") ||
+            string_contains(file, ".generated.h")) {
+          // make this configurable
           continue;
         }
 
@@ -38,6 +45,7 @@ namespace GodotObjectCompiler {
           }
         }
 
+        print_ln("Parsing " + file);
         times.write<String, Size>(file, current_modified);
         times.write_to_file(time_path);
 
@@ -48,6 +56,11 @@ namespace GodotObjectCompiler {
           Vector<Ref<Class>> classes = ns->classes_recursive();
           for (Ref<Class> cls : classes) {
             type_db->save_type_data(cls);
+          }
+
+          Vector<Ref<Enum>> enums = ns->enums_recursive();
+          for (Ref<Enum> e : enums) {
+            type_db->save_type_data(e);
           }
         }
       }
