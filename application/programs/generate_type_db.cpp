@@ -24,14 +24,14 @@ namespace GodotObjectCompiler {
     }
 
     for (const String& include_path : context.include_paths) {
-      print_ln("Including: " + include_path);
       for (const String& file : directory_files_recursive(include_path)) {
         if (!string_suffix(file, ".h")) {
           continue;
         }
 
         if (string_contains(file, "thirdparty") || string_contains(file, ".gen.h") ||
-            string_contains(file, ".generated.h")) {
+            string_contains(file, ".generated.h") || string_contains(file, "godot/platform") ||
+            string_contains(file, "godot/drivers")) {
           // make this configurable
           continue;
         }
@@ -45,11 +45,10 @@ namespace GodotObjectCompiler {
           }
         }
 
-        print_ln("Parsing " + file);
         times.write<String, Size>(file, current_modified);
         times.write_to_file(time_path);
 
-        Ref<Node> generated = parser.parse(read_file(file));
+        Ref<Node> generated = parser.parse_file(file);
         Ref<Namespace> ns = generated->as<Namespace>();
 
         if (ns) {

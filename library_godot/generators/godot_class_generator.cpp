@@ -10,15 +10,15 @@ namespace GodotObjectCompiler {
       Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
     using namespace GodotGeneratorUtils;
 
-    GEN_ERROR_COND(
-        attribute->resolve_target() != target_class, "Resolved class is not the provided target class. Abort!");
+    GEN_ERROR_COND(attribute->resolve_target() != target_class, target_class,
+        "Resolved class is not the provided target class. Abort!");
 
     Vector<String> bases = target_class->direct_bases_names();
-    GEN_ERROR_COND(bases.empty(),
+    GEN_ERROR_COND(bases.empty(), target_class,
         "Target class does not name base classes and thus cannot inherit from a Godot object type. Abort!");
 
     if (!class_is_object_type(target_class)) {
-      GEN_ERROR("Target class does not inherit from a godot object class. Abort!");
+      GEN_ERROR(target_class, "Target class does not inherit from a godot object class. Abort!");
     }
 
     // clang-format off

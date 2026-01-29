@@ -18,6 +18,7 @@ namespace GodotObjectCompiler {
   struct ParserContext {
     using NodeID = const void*;
 
+    String file_path;
     String buffer;
     Ref<Context> current_node;
     TSParser* parser;
@@ -44,6 +45,8 @@ namespace GodotObjectCompiler {
 
     ParserContext() = default;
     explicit ParserContext(const String& input);
+
+    static ParserContext from_path(const String& path);
     ~ParserContext();
 
    private:

@@ -15,6 +15,24 @@ namespace GodotObjectCompiler {
 
   ExecutionContext::ExecutionContext() { init(); }
 
+  String error_level_to_string(ErrorLevel level) {
+    switch (level) {
+      case ERROR:
+        return "Error";
+        break;
+      case WARNING:
+        return "Warning";
+        break;
+      case INFO:
+        return "Info";
+        break;
+      case VERBOSE:
+        return "Verbose";
+        break;
+    }
+    return "";
+  }
+
   void ExecutionContext::init() {
     _node_db = {};
     _included_files = {};
@@ -86,6 +104,25 @@ namespace GodotObjectCompiler {
 
   bool ExecutionContext::is_file_included(const String& include_path) {
     return _included_files.find(include_path) != _included_files.end();
+  }
+
+  void ExecutionContext::set_error_level(ErrorLevel level, ErrorDetail error_detail) {
+    _error_level = level;
+    _error_detail = error_detail;
+  }
+
+  ErrorLevel ExecutionContext::get_error_level() const {
+    return _error_level;
+  }
+
+  ErrorDetail ExecutionContext::get_error_detail() const {
+    return _error_detail;
+  }
+
+  void ExecutionContext::print(ErrorLevel level, const String& message) {
+    if (level >= _error_level) {
+      print_ln(message);
+    }
   }
 
   void ExecutionContext::set_file_included(const String& include_path) { _included_files.insert(include_path); }

@@ -105,18 +105,6 @@ namespace GodotObjectCompiler {
 
         Ref<GeneratorError> error = class_generator.generate(target_class, previous->as<GodotClassAttribute>(),
             results.generated_body, results.generated_source, results.generated_global);
-        if (error != GeneratorError::OK) {
-          // clang-format off
-          results.generated_body->build_child<Function>().with_children(
-          {
-            build<Identifier>("static_assert"),
-            build<Arguments>().with_children({
-              build<Argument>().with_child(Writer::Text("false")),
-              build<Argument>().with_child(Writer::StringLiteral(error->error_message))
-            })
-          }).with_child(Writer::Semicolon());
-          // clang-format on
-        }
 
         for (Ref<Node> child : *target_class->body()) {
           Ref<Attribute> attribute = child->as<Attribute>();
@@ -126,19 +114,6 @@ namespace GodotObjectCompiler {
               if (generator->handles(target_class, attribute)) {
                 error = generator->generate(target_class, attribute, results.generated_body, results.generated_source,
                     results.generated_global);
-
-                if (error != GeneratorError::OK) {
-                  // clang-format off
-                  results.generated_body->build_child<Function>().with_children(
-                  {
-                    build<Identifier>("static_assert"),
-                    build<Arguments>().with_children({
-                      build<Argument>().with_child(Writer::Text("false")),
-                      build<Argument>().with_child(Writer::StringLiteral(error->error_message))
-                    })
-                  }).with_child(Writer::Semicolon());
-                  // clang-format on
-                }
               }
             }
           }
@@ -148,32 +123,21 @@ namespace GodotObjectCompiler {
 
       for (Results& result : generate_results) {
         Ref<Writer::IOutputNode> source_output = transformator.transform(result.generated_source);
-        //
-        // Ref<Writer::IOutputNode> body_output = Writer::EscapedLines(
-        //     {Writer::Text("#define " + ,
-        //         transformator.transform(result.generated_body)});
 
         Ref<Writer::IOutputNode> body_output =
             Writer::Define(generated_macro_name(result.file_path, result.generated_body_line), {},
                 {transformator.transform(result.generated_body)});
 
         source_output->get_output(&source_writer);
-        // generated_writer.write("#define GOC_FILE_ID " + file_id(result.file_path) + "\n");
-        // generated_writer.write("\n");
         body_output->get_output(&generated_writer);
+
+        Ref<Writer::IOutputNode> global_output = Writer::Define(
+            generated_macro_name(input_file, generated_global_attribute ? generated_global_attribute->line : 0), {},
+            {transformator.transform(global_generated)});
+
+        generated_writer.write("\n");
+        global_output->get_output(&generated_writer);
       }
-      //
-      // Ref<Writer::IOutputNode> global_output = Writer::EscapedLines(
-      //     {Writer::Text("#define " + generated_macro_name(input_file,
-      //                                    generated_global_attribute ? generated_global_attribute->line : 0)),
-      //         transformator.transform(global_generated)});
-
-      Ref<Writer::IOutputNode> global_output = Writer::Define(
-          generated_macro_name(input_file, generated_global_attribute ? generated_global_attribute->line : 0), {},
-          {transformator.transform(global_generated)});
-
-      generated_writer.write("\n");
-      global_output->get_output(&generated_writer);
     }
     return 0;
   }

@@ -5,20 +5,21 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> target_class, Ref<GodotFunctionAttribute> attribute,
-      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
+  Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> target_class,
+      Ref<GodotFunctionAttribute> attribute, Ref<Context> generated_body, Ref<Context> generated_sources,
+      Ref<Context> generated_global) {
     Ref<Node> target_node = attribute->resolve_target();
-    GEN_ERROR_COND(target_node == nullptr, "Could not resolve target node for function macro.");
+    GEN_ERROR_COND(target_node == nullptr, target_class, "Could not resolve target node for function macro.");
 
     Ref<Function> target_function = target_node->as<Function>();
-    GEN_ERROR_COND(target_function == nullptr, "Resolved not for function macro is not a function.");
+    GEN_ERROR_COND(target_function == nullptr, target_class, "Resolved not for function macro is not a function.");
 
     Ref<Body> bind_methods_body =
         GodotGeneratorUtils::get_or_create_bind_methods_body(target_class, generated_body, generated_sources);
 
     Ref<Parameters> parameters = target_function->parameters();
-    GEN_ERROR_COND(
-        !parameters, "Function does not name parameters, this was probably parsed as a function call. Abort");
+    GEN_ERROR_COND(!parameters, target_class,
+        "Function does not name parameters, this was probably parsed as a function call. Abort");
 
     Vector<String> parameter_names;
 

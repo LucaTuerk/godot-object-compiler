@@ -21,6 +21,7 @@ namespace GodotObjectCompiler {
 
     ~TreeSitterParser() = default;
 
+    Ref<Node> parse_file(const String& path);
     Ref<Node> parse(const String& input) override;
     Ref<Node> parse(const String& input, std::vector<INodeHandler*> handlers);
 
@@ -31,6 +32,7 @@ namespace GodotObjectCompiler {
 
     String strip_known_macro_contents(const String& input, Dictionary<Size, String>& parameters);
 
+    bool input_is_path = false;
     static inline Vector<INodeHandler*> _handlers{};
     ParserContext context{};
   };

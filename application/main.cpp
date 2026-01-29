@@ -9,7 +9,6 @@
 #include "library/core/string_writer.h"
 #include "library/parser/attribute_argument_parser.h"
 #include "library/tree/output/output_transformator.h"
-#include "library/tree/predicates.h"
 #include "programs/generate.h"
 #include "programs/generate_type_db.h"
 
@@ -36,8 +35,12 @@ int main() {
   ApplicationContext context;
   context.input_files = {"/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h"};
   context.generated_root = "/home/luca/Repositories/godot-object-compiler/test_files";
-  context.include_paths = {"/home/luca/Repositories/godot", "/home/luca/Repositories/godot-object-compiler/test_files"};
+  context.include_paths = {"/home/luca/Repositories/godot", "/home/luca/godot-object-compiler"};
   context.cache_root = ".goc/cache";
+
+  ExecutionContext::instance()->set_error_level(ErrorLevel::ERROR, ErrorDetail::FULL);
+  ExecutionContext::instance()->set_remove_macros({"_NO_INLINE_", "_FORCE_INLINE_", "_THREAD_SAFE_CLASS_",
+      "_ALWAYS_INLINE_", "WASM_EXPORT", "JNIEXPORT", "JNICALL", "_PRINTF_FORMAT_ATTRIBUTE_2_0"});
 
   GenerateTypeDB generate_type_db;
   generate_type_db.run(context);
