@@ -1,7 +1,6 @@
 
-#include "godot_property_hint_parameter_type.h"
-
 #include "../../library/type_db.h"
+#include "godot_property_hint.h"
 #include "library/core/helpers.h"
 #include "library/tree/syntax/enum.h"
 
@@ -22,6 +21,10 @@ namespace GodotObjectCompiler {
       return itr->second;
     }
     return "";
+  }
+
+  Ref<Argument> GodotPropertyHintParameterType::create_argument() {
+    return node_new<GodotPropertyHintArgument>();
   }
 
   Vector<String> GodotPropertyHintParameterType::_value_names_lazy_get() {

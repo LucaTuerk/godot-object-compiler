@@ -4,6 +4,7 @@
 
 #include "identifier_handler.h"
 
+#include "library/attribute_db.h"
 #include "library/core/helpers.h"
 #include "library/parser/attribute_argument_parser.h"
 #include "library/tree/syntax/attribute.h"
@@ -42,34 +43,36 @@ namespace GodotObjectCompiler {
   }
 
   NextStep IdentifierHandler::handle_known_attribute(ParserContext& context, const String& macro) {
-    if (!context.current_node->is<Function>()) {
-      return STEP_OVER;
-    }
-
     if (Ref<Context> parent = context.current_node->get_parent(); parent) {
       Ref<Attribute> attribute = AttributeDB::instance()->create_for_macro(macro);
+      HANDLER_ERROR_COND(!attribute, "Failed to create attribute for known macro " + macro);
+
       parent->replace_child(context.current_node, attribute, true);
 
       context.current_node = attribute;
 
-      auto itr = context.stripped_parameters.find((Size)ts_node_start_byte(context.node));
-      if (itr != context.stripped_parameters.end()) {
-        // AttributeArgumentParser parser;
-        // attribute->add_child(parser.parse(itr->second));
-        context.current_node = attribute->get_parent();
-        TSNode current = ts_tree_cursor_current_node(&context.cursor);
-        TSNode ancestor = find_ancestor_of_type(current, "declaration");
-        if (ts_node_is_null(ancestor)) {
-          ancestor = find_ancestor_of_type(current, "expression_statement");
+      Ref<IAttributeArgumentParser> argument_parser = attribute->get_argument_parser();
+
+      if (argument_parser) {
+        auto itr = context.stripped_parameters.find((Size)ts_node_start_byte(context.node));
+        if (itr != context.stripped_parameters.end()) {
+          argument_parser->parse_attribute_arguments(itr->second, attribute->create_child<Arguments>());
         }
-
-        attribute->start = ts_node_start_byte(ancestor);
-        attribute->end = ts_node_end_byte(ancestor);
-        attribute->line = ts_node_start_point(ancestor).row + 1;
-
-        context.specific_step_id = ancestor.id;
-        return STEP_OVER_SPECIFIC;
       }
+
+      context.current_node = attribute->get_parent();
+      TSNode current = ts_tree_cursor_current_node(&context.cursor);
+      TSNode ancestor = find_ancestor_of_type(current, "declaration");
+      if (ts_node_is_null(ancestor)) {
+        ancestor = find_ancestor_of_type(current, "expression_statement");
+      }
+
+      attribute->start = ts_node_start_byte(ancestor);
+      attribute->end = ts_node_end_byte(ancestor);
+      attribute->line = ts_node_start_point(ancestor).row + 1;
+
+      context.specific_step_id = ancestor.id;
+      return STEP_OVER_SPECIFIC;
     }
 
     return STEP_OVER;

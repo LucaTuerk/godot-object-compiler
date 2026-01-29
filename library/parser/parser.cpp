@@ -1,5 +1,7 @@
 #include "parser.h"
 
+#include <utility>
+
 #include "../core/string_writer.h"
 #include "../tree/syntax/all.h"
 #include "handlers/all.h"
@@ -33,12 +35,12 @@ namespace GodotObjectCompiler {
     ts_tree_cursor_delete(&cursor);
   }
 
-  Ref<Node> TreeSitterParser::parse_file(const String& path) {
+  Ref<ParserError> TreeSitterParser::parse_file(const String& path, Ref<Context> target) {
     input_is_path = true;
-    return parse(path);
+    return parse(path, std::move(target));
   }
 
-  Ref<Node> TreeSitterParser::parse(const String& input) {
+  Ref<ParserError> TreeSitterParser::parse(const String& input, Ref<Context> target) {
     using NodeID = const void*;
 
     Dictionary<NodeID, Ref<Context>> before_node;
@@ -56,10 +58,16 @@ namespace GodotObjectCompiler {
     context.stripped_parameters = stripped_parameters;
 
     if (!context.is_valid()) {
-      return ExecutionContext::instance()->get_node_db()->create<Namespace>();
+      return node_new<ParserError>(ErrorLevel::ERROR, "TreeSitterParser: Invalid parser context.");
     }
 
-    // debug_print_tree(context.node);
+    auto global_namespace = target->as<Namespace>();
+    if (!global_namespace || !global_namespace->qualified_name().empty()) {
+      return node_new<ParserError>(
+          ERROR, "TreeSitterParser: Invalid target node, expected to be the global namespace.");
+    }
+    context.global_namespace = global_namespace;
+    context.current_node = global_namespace;
 
     while (true) {
       bool do_continue = true;
@@ -137,103 +145,7 @@ namespace GodotObjectCompiler {
       }
     }
 
-    return context.global_namespace;
-  }
-
-  Ref<Node> TreeSitterParser::parse(const String& input, std::vector<INodeHandler*> handlers) {
-    using NodeID = const void*;
-
-    Dictionary<NodeID, Ref<Context>> before_node;
-    Dictionary<Size, String> stripped_parameters;
-
-    String local_input = strip_known_macro_contents(input, stripped_parameters);
-
-    context = ParserContext(local_input);
-    context.stripped_parameters = stripped_parameters;
-
-    if (!context.is_valid()) {
-      return ExecutionContext::instance()->get_node_db()->create<Namespace>();
-    }
-
-    debug_print_tree(context.node);
-
-    while (true) {
-      bool do_continue = true;
-
-      do {
-        context.node = ts_tree_cursor_current_node(&context.cursor);
-        if (ts_node_is_null(context.node)) {
-          print_err("Cursor is pointing at null node.");
-          break;
-        }
-
-        do_continue = true;
-        NextStep step = UNDECIDED;
-        String type = ts_node_type(context.node);
-
-        for (INodeHandler* handler : handlers) {
-          if (handler->handles_node(context.node, type)) {
-            Ref<Context> tmp = context.current_node;
-
-            step = handler->handle(context);
-
-            if (tmp != context.current_node) {
-              before_node[context.node.id] = tmp;
-            }
-
-            break;
-          }
-        }
-
-        switch (step) {
-          case UNDECIDED:
-            if (ts_node_child_count(context.node) > 0) {
-              do_continue = ts_tree_cursor_goto_first_child(&context.cursor);
-            } else {
-              do_continue = ts_tree_cursor_goto_next_sibling(&context.cursor);
-            }
-            break;
-          case STEP_INTO:
-            do_continue = ts_tree_cursor_goto_first_child(&context.cursor);
-            break;
-          case STEP_OVER:
-            do_continue = ts_tree_cursor_goto_next_sibling(&context.cursor);
-            break;
-          case STEP_OUT:
-            do_continue = ts_tree_cursor_goto_parent(&context.cursor);
-            break;
-          case STEP_OVER_SPECIFIC:
-            while (ts_tree_cursor_current_node(&context.cursor).id != context.specific_step_id) {
-              do_continue = ts_tree_cursor_goto_parent(&context.cursor);
-            }
-            ts_tree_cursor_goto_next_sibling(&context.cursor);
-        }
-
-      } while (do_continue);
-
-      bool has_reached_root = false;
-
-      do {
-        if (!ts_tree_cursor_goto_parent(&context.cursor)) {
-          has_reached_root = true;
-        }
-
-        if (auto itr = before_node.find(ts_tree_cursor_current_node(&context.cursor).id); itr != before_node.end()) {
-          context.current_node = itr->second;
-        }
-      } while (!has_reached_root && !ts_tree_cursor_goto_next_sibling(&context.cursor));
-
-      if (context.current_node == nullptr) {
-        print_err("Reached topmost node early.");
-        break;
-      }
-
-      if (has_reached_root) {
-        break;
-      }
-    }
-
-    return context.global_namespace;
+    return ParserError::OK;
   }
 
   // TreeSitter does not handle macro parameters well
@@ -253,33 +165,68 @@ namespace GodotObjectCompiler {
         }
       }
 
+      std::sort(positions.begin(), positions.end());
+
       StreamWriter writer;
       for (Size position : positions) {
-        // TODO FIX THIS
-        Size bracket_open_pos = local_input.find('(', position);
-        Size bracket_closed_pos = local_input.find(')', position);
-        if (bracket_open_pos > bracket_closed_pos) {
-          continue;
+        Size open_index = position;
+        bool found_whitespace = false;
+        bool no_args = false;
+
+        auto itr = std::next(local_input.begin(), position);
+        while (itr != local_input.end()) {
+          if (*itr == '(') {
+            break;
+          }
+
+          bool whitespace = is_whitespace(*itr);
+          if (whitespace && !found_whitespace) {
+            found_whitespace = true;
+          } else if (!whitespace && found_whitespace) {
+            no_args = true;
+            break;
+          }
+
+          ++itr;
+          ++open_index;
         }
-        if (bracket_open_pos == String::npos || bracket_closed_pos == String::npos) {
+
+        if (no_args) {
           continue;
         }
 
-        parameters.insert({position, input.substr(bracket_open_pos + 1, bracket_closed_pos - bracket_open_pos - 1)});
+        StreamWriter content;
+        Size opened = 1;
+        Size closed_index = open_index + 1;
+        ++itr;
 
-        writer.write(local_input.substr(index, bracket_open_pos - index + 1));
-        for (char c : local_input.substr(bracket_open_pos + 1, bracket_closed_pos - bracket_open_pos - 1)) {
-          if (c == ' ') {
-            writer.write(" ");
-          } else if (c == '\t') {
-            writer.write("\t");
-          } else if (c == '\n') {
-            writer.write("\n");
+        while (itr != local_input.end()) {
+          if (*itr == '(') {
+            opened++;
+          }
+          if (*itr == ')') {
+            opened--;
+          }
+
+          if (opened == 0) {
+            break;
+          }
+          content.write_generic(*itr);
+          ++itr;
+          ++closed_index;
+        }
+
+        parameters.insert({position, content.get_string()});
+
+        writer.write(local_input.substr(index, open_index - index + 1));
+        for (char c : content.get_string()) {
+          if (is_whitespace(c)) {
+            writer.write_generic(c);
           } else {
             writer.write(" ");
           }
         }
-        index = bracket_closed_pos;
+        index = closed_index;
       }
       writer.write(local_input.substr(index));
       local_input = writer.get_string();

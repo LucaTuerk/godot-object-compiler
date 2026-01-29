@@ -38,18 +38,14 @@ namespace GodotObjectCompiler {
 
     for (const String& input_file : context.input_files) {
       TreeSitterParser parser;
-      String file_content = read_file(input_file);
-      Ref<Node> parsed = parser.parse(file_content);
+      Ref<Namespace> global_namespace = node_new<Namespace>();
+      Ref<ParserError> error = parser.parse_file(input_file, global_namespace);
 
-      if (!parsed) {
+      if (error != ParserError::OK) {
         continue;
       }
 
-      Ref<Namespace> ns = parsed->as<Namespace>();
-
-      if (!ns) {
-        continue;
-      }
+      print_ln(global_namespace->pretty_print());
 
       String source_path = input_file + ".generated.cpp";
       String generated_path = input_file + ".generated.h";
@@ -57,9 +53,10 @@ namespace GodotObjectCompiler {
       FileWriter source_writer{source_path};
       FileWriter generated_writer{generated_path};
 
-      Ref<GeneratedGlobalAttribute> generated_global_attribute = ns->find_child<GodotGeneratedGlobalAttribute>();
+      Ref<GeneratedGlobalAttribute> generated_global_attribute =
+          global_namespace->find_child<GodotGeneratedGlobalAttribute>();
 
-      Vector<Ref<Class>> classes = ns->classes_recursive();
+      Vector<Ref<Class>> classes = global_namespace->classes_recursive();
       Vector<Pair<Ref<GeneratedBodyAttribute>, Ref<Context>>> generated_bodies;
 
       struct Results {
@@ -106,14 +103,18 @@ namespace GodotObjectCompiler {
         Ref<GeneratorError> error = class_generator.generate(target_class, previous->as<GodotClassAttribute>(),
             results.generated_body, results.generated_source, results.generated_global);
 
+        if (error != GeneratorError::OK) {
+          continue;
+        }
+
         for (Ref<Node> child : *target_class->body()) {
           Ref<Attribute> attribute = child->as<Attribute>();
 
           if (attribute) {
             for (Ref<ClassGenerator> generator : AttributeDB::instance()->class_generators()) {
               if (generator->handles(target_class, attribute)) {
-                error = generator->generate(target_class, attribute, results.generated_body, results.generated_source,
-                    results.generated_global);
+                Ref<GeneratorError> attr_error = generator->generate(target_class, attribute, results.generated_body,
+                    results.generated_source, results.generated_global);
               }
             }
           }

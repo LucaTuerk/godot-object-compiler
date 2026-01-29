@@ -8,6 +8,7 @@
 #include "library/core/helpers.h"
 #include "library/core/string_writer.h"
 #include "library/parser/attribute_argument_parser.h"
+#include "library/parser/parser.h"
 #include "library/tree/output/output_transformator.h"
 #include "programs/generate.h"
 #include "programs/generate_type_db.h"
@@ -32,26 +33,24 @@ int main() {
       "/home/luca/Repositories/godot-object-compiler/test_files/"
       "simple_class_header.h"};
 
+  Dictionary<Size, String> parameters;
+  print_ln(TreeSitterParser::strip_known_macro_contents(
+      read_file("/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h"), parameters));
+
   ApplicationContext context;
   context.input_files = {"/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h"};
-  context.generated_root = "/home/luca/Repositories/godot-object-compiler/test_files";
-  context.include_paths = {"/home/luca/Repositories/godot", "/home/luca/godot-object-compiler"};
+  context.generated_root = "/home/luca/Repositories/godot-object-compiler/.generated";
+  context.include_paths = read_lines("/home/luca/Repositories/godot-object-compiler/.goc/include_paths.txt");
   context.cache_root = ".goc/cache";
 
-  ExecutionContext::instance()->set_error_level(ErrorLevel::ERROR, ErrorDetail::FULL);
-  ExecutionContext::instance()->set_remove_macros({"_NO_INLINE_", "_FORCE_INLINE_", "_THREAD_SAFE_CLASS_",
-      "_ALWAYS_INLINE_", "WASM_EXPORT", "JNIEXPORT", "JNICALL", "_PRINTF_FORMAT_ATTRIBUTE_2_0"});
+  ExecutionContext::instance()->set_error_level(ERROR, FULL);
+  ExecutionContext::instance()->set_remove_macros(
+      read_lines("/home/luca/Repositories/godot-object-compiler/.goc/macro_remove.txt"));
+  ExecutionContext::instance()->set_include_paths(
+      read_lines("/home/luca/Repositories/godot-object-compiler/.goc/include_paths.txt"));
 
   GenerateTypeDB generate_type_db;
   generate_type_db.run(context);
-
-  Ref<Enum> mod_init_level = TypeDB::instance()->get_type_data<Enum>("ModuleInitializationLevel");
-  if (mod_init_level) {
-    for (const String& value : mod_init_level->value_names()) {
-      print_ln(value);
-    }
-  }
-  return 0;
 
   GodotMacroIncludeGenerator macro_include_generator;
   Ref<Context> macro_include_content = node_new<Context>();

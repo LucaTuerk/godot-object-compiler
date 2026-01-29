@@ -33,6 +33,7 @@ namespace GodotObjectCompiler {
     virtual void read_from(IStructuredReader* reader);
 
     String pretty_print() const;
+    String print_pretty_and_get_child_line(Ref<Node> child, Size& line) const;
 
     UID get_id() const;
     Index get_index() const;

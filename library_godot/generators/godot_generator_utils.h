@@ -20,7 +20,7 @@ namespace GodotObjectCompiler {
     bool class_is_node_type(Ref<Class> target_class);
     bool class_is_resource_type(Ref<Class> target_class);
     bool class_is_ref_counted_type(Ref<Class> target_class);
-    bool class_is_object_type(Ref<Class> target_class);
+    bool class_is_godot_object_type(Ref<Class> target_class);
     bool class_is_variant_type(Ref<Class> target_class);
 
   };

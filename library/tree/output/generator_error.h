@@ -3,6 +3,7 @@
 #include "library/tree/syntax/context.h"
 
 namespace GodotObjectCompiler {
+
   //
   // class GeneratorError : public Context {
   //   NODE_TYPE(GeneratorError);

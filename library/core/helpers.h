@@ -25,8 +25,12 @@ namespace GodotObjectCompiler {
   bool string_contains(const String& str, const String& str2);
   bool string_suffix(const String& str, const String& str2);
   bool string_only_contains(const String& str, char symbol);
+  bool is_whitespace(char c);
   String string_replace(const String& target, const String& search_str, const String& replace_with);
   String extract_lines(const String& content, Size start_line, Size end_line, Size highlight_line);
+  String string_trim(const String& str);
+  String string_trim_left(const String& str);
+  String string_trim_right(const String& str);
 
   String macro_case_to_pascal_case(const String& input);
 

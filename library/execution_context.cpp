@@ -91,8 +91,14 @@ namespace GodotObjectCompiler {
       root = reader_writer.read_from_file(cache_path);
     } else {
       TreeSitterParser parser;
-      Ref<Namespace> parsed = parser.parse(read_file(absolute))->as<Namespace>();
-      root = parsed;
+      Ref<Namespace> global_namespace = node_new<Namespace>();
+
+      Ref<ParserError> error = parser.parse_file(path, global_namespace);
+      if (error != ParserError::OK) {
+        return nullptr;
+      }
+
+      root = global_namespace;
       reader_writer.write_to_file(root, cache_path);
     }
 
@@ -111,13 +117,9 @@ namespace GodotObjectCompiler {
     _error_detail = error_detail;
   }
 
-  ErrorLevel ExecutionContext::get_error_level() const {
-    return _error_level;
-  }
+  ErrorLevel ExecutionContext::get_error_level() const { return _error_level; }
 
-  ErrorDetail ExecutionContext::get_error_detail() const {
-    return _error_detail;
-  }
+  ErrorDetail ExecutionContext::get_error_detail() const { return _error_detail; }
 
   void ExecutionContext::print(ErrorLevel level, const String& message) {
     if (level >= _error_level) {

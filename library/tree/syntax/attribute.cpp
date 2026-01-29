@@ -6,6 +6,8 @@
 
 namespace GodotObjectCompiler {
 
+  Ref<IAttributeArgumentParser> Attribute::get_argument_parser() { return nullptr; }
+
   Ref<Node> Attribute::resolve_target() const {
     switch (_get_target()) {
       case NEXT: {

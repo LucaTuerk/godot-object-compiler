@@ -1,6 +1,8 @@
 
 #include "attribute_argument_parser.h"
 
+#include <cstring>
+
 #include "../tree/syntax/all.h"
 #include "../tree/syntax/function.h"
 #include "../tree/syntax/identifier.h"
@@ -48,12 +50,16 @@ namespace GodotObjectCompiler {
       escaped = false;
     }
 
-    result.push_back(strstr.str());
+    result.push_back(string_trim(strstr.str()));
     return result;
   }
 
-  String IAttributeArgumentParser::get_inner_arguments(const String& content) {
-    std::stringstream strstr;
+  void IAttributeArgumentParser::split_outer_inner(const String& content, String& outer, String& inner) {
+    std::stringstream inner_strm;
+    std::stringstream outer_strm;
+    outer = "";
+    inner = "";
+
     bool open = false;
     bool escaped = false;
     for (char c : content) {
@@ -62,20 +68,30 @@ namespace GodotObjectCompiler {
           open = true;
           continue;
         } else if (c == ')') {
-          return strstr.str();
+          break;
         } else if (c == '\\') {
           escaped = true;
-          strstr << c;
+          inner_strm << c;
           continue;
         }
       }
 
       if (open) {
-        strstr << c;
+        inner_strm << c;
         escaped = false;
+      } else {
+        outer_strm << c;
       }
     }
-    return "";
+
+    outer = string_trim(outer_strm.str());
+    inner = string_trim(inner_strm.str());
+  }
+
+  Vector<String> IAttributeArgumentParser::split_flags(const String& content) {
+    Vector<String> split = string_split(content, "|");
+    std::transform(split.cbegin(), split.cend(), split.begin(), &string_trim);
+    return split;
   }
 
 }  // namespace GodotObjectCompiler

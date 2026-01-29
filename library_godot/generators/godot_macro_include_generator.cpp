@@ -7,8 +7,8 @@
 #include "library/tree/output/output_file.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax/enum.h"
-#include "library_godot/attributes/godot_property_hint_parameter_type.h"
-#include "library_godot/attributes/godot_property_usage_flags_parameter_type.h"
+#include "library_godot/attributes/godot_property_hint.h"
+#include "library_godot/attributes/godot_property_usage_flags.h"
 
 namespace GodotObjectCompiler {
 

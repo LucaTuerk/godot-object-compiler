@@ -138,7 +138,7 @@ namespace GodotObjectCompiler {
 
   }
 
-  bool GodotGeneratorUtils::class_is_object_type(Ref<Class> target_class) {
+  bool GodotGeneratorUtils::class_is_godot_object_type(Ref<Class> target_class) {
     return class_has_base_class(target_class, "Object");
   }
 

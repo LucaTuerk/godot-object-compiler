@@ -86,6 +86,11 @@ namespace GodotObjectCompiler {
   }
 
   String Node::pretty_print() const {
+    Size dummy;
+    return print_pretty_and_get_child_line(nullptr, dummy);
+  }
+
+  String Node::print_pretty_and_get_child_line(Ref<Node> target, Size& line) const {
     String result = "";
 
     Index depth = get_depth();
@@ -102,10 +107,16 @@ namespace GodotObjectCompiler {
     if (const auto context = std::dynamic_pointer_cast<const Context>(shared_from_this())) {
       for (Index i = 0; i < context->get_child_count(); i++) {
         auto child = context->get_child(i);
-        auto include = child->as<Include>();
-        if (include) {
-          // include->evaluate();
+
+        if (child == target && target != nullptr) {
+          line = 1;
+          std::stringstream strstr(result);
+          String line_str;
+          while (std::getline(strstr, line_str)) {
+            line++;
+          }
         }
+
         result += child->pretty_print();
       }
     }

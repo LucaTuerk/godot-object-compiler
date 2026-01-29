@@ -102,4 +102,3 @@ namespace GodotObjectCompiler {
   if ((condition)) {                                                                          \
     ERROR_NODE_LEVEL(GeneratorError, ErrorLevel::WARNING, get_type_static(), message, target) \
   }
-

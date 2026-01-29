@@ -1,20 +1,20 @@
 #pragma once
 
+#include "../.generated/macros.h"
 #include "/home/luca/Repositories/godot/core/io/resource.h"
 #include "/home/luca/Repositories/godot/core/object/class_db.h"
 #include "/home/luca/Repositories/godot/core/object/object.h"
 #include "/home/luca/Repositories/godot/core/variant/variant.h"
 #include "/home/luca/Repositories/godot/scene/3d/camera_3d.h"
-#include "macros.h"
 #include "test2.h"
 
 // clang-format off
-#include "/home/luca/Repositories/godot-object-compiler/test_files/simple_class_header.h.generated.h"
+#include "../.generated/simple_class_header.h.generated.h"
 // clang-format on
 
 namespace TestNamespace {
 
-  GODOT_CLASS(ToolClass | InternalClass);
+  GODOT_CLASS();
 
   class A : public Camera3D {
     GODOT_GENERATED_BODY();
@@ -43,7 +43,7 @@ namespace TestNamespace {
 
 GODOT_CLASS();
 
-class Hää : public Resource {
+class Hää {
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY();
@@ -55,7 +55,7 @@ class Hää : public Resource {
 
 GODOT_CLASS();
 
-class B : public Hallöööle {
+class B : public Hää {
   GODOT_GENERATED_BODY();
 
  public:
@@ -70,4 +70,4 @@ class B : public Hallöööle {
 
 GODOT_GENERATED_GLOBAL();
 
-// COMMENT
+// TEst

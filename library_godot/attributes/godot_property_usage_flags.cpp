@@ -1,7 +1,6 @@
 
-#include "godot_property_usage_flags_parameter_type.h"
-
 #include "../../library/type_db.h"
+#include "godot_property_usage_flags.h"
 #include "library/core/helpers.h"
 #include "library/tree/syntax/enum.h"
 
@@ -28,6 +27,10 @@ namespace GodotObjectCompiler {
       return itr->second;
     }
     return "";
+  }
+
+  Ref<Argument> GodotPropertyUsageFlagsParameterType::create_argument() {
+    return node_new<GodotPropertyUsageFlagsArgument>();
   }
 
   Vector<String> GodotPropertyUsageFlagsParameterType::_value_names_lazy_get() {
