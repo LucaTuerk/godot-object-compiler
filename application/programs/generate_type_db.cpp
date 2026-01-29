@@ -31,7 +31,7 @@ namespace GodotObjectCompiler {
 
         if (string_contains(file, "thirdparty") || string_contains(file, ".gen.h") ||
             string_contains(file, ".generated.h") || string_contains(file, "godot/platform") ||
-            string_contains(file, "godot/drivers")) {
+            string_contains(file, "godot/drivers") || string_contains(file, "godot/tests")) {
           // make this configurable
           continue;
         }
@@ -48,16 +48,20 @@ namespace GodotObjectCompiler {
         times.write<String, Size>(file, current_modified);
         times.write_to_file(time_path);
 
-        Ref<Node> generated = parser.parse_file(file);
-        Ref<Namespace> ns = generated->as<Namespace>();
+        Ref<Namespace> global_namespace = node_new<Namespace>();
+        Ref<ParserError> error = parser.parse_file(file, global_namespace);
 
-        if (ns) {
-          Vector<Ref<Class>> classes = ns->classes_recursive();
+        if (error != ParserError::OK) {
+          continue;
+        }
+
+        if (global_namespace) {
+          Vector<Ref<Class>> classes = global_namespace->classes_recursive();
           for (Ref<Class> cls : classes) {
             type_db->save_type_data(cls);
           }
 
-          Vector<Ref<Enum>> enums = ns->enums_recursive();
+          Vector<Ref<Enum>> enums = global_namespace->enums_recursive();
           for (Ref<Enum> e : enums) {
             type_db->save_type_data(e);
           }

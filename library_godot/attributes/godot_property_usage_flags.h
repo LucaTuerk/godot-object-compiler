@@ -6,24 +6,24 @@
 
 namespace GodotObjectCompiler {
 
+  class GodotPropertyUsageFlagsArgument : public Argument {
+    NODE_TYPE(GodotPropertyUsageFlagsArgument);
+  };
+
   class GodotPropertyUsageFlagsParameterType : public IAttributeParameterType {
-    public:
+   public:
+
     FeatureFlags get_features() override;
     String get_type_name() override;
     Vector<String> get_value_names() override;
     Vector<Argument> get_arguments() override;
     String get_godot_usage_flag_for_value_name(const String& name);
+    Ref<GodotObjectCompiler::Argument> create_argument() override;
 
-    private:
+   private:
+
     LAZY(GodotPropertyUsageFlagsParameterType, Vector<String>, value_names);
     Dictionary<String, String> _godot_usage_flags;
-  };
-
-  class GodotPropertyUsageFlagsParameter : public Node {
-    NODE_TYPE(GodotPropertyUsageFlagsParameter);
-
-  public:
-    String godot_usage_flag;
   };
 
 }  // namespace GodotObjectCompiler

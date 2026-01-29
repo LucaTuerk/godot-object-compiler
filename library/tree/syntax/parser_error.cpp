@@ -1,6 +1,7 @@
 
 #include "parser_error.h"
 
+#include "context.h"
 #include "library/core/helpers.h"
 #include "library/core/string_writer.h"
 
@@ -32,6 +33,7 @@ namespace GodotObjectCompiler {
 
   GeneratorError::GeneratorError(
       ErrorLevel level, const String& generator_name, const String& user_message, Ref<Node> node) {
+    error_level = level;
     StreamWriter writer;
     writer.write(error_level_to_string(level));
     writer.write(" ");
@@ -41,7 +43,15 @@ namespace GodotObjectCompiler {
 
     if (ExecutionContext::instance()->get_error_detail() == ErrorDetail::FULL) {
       writer.write("\nOccurred while processing node:\n");
-      writer.write(node->pretty_print());
+
+      Ref<Context> parent = node->get_parent();
+      if (parent) {
+        Size line = 0;
+        String pretty = parent->print_pretty_and_get_child_line(node, line);
+        writer.write(extract_lines(pretty, line - std::min(line, static_cast<Size>(3)), line + 3, line));
+      } else {
+        writer.write(extract_lines(node->pretty_print(), 0, 6, 1));
+      }
     }
 
     writer.write("\n");
@@ -50,6 +60,7 @@ namespace GodotObjectCompiler {
 
   ParserError::ParserError(ErrorLevel level, const String& parser_name, const String& user_message,
       const String& file_path, const String& file_content, Size line, Size column) {
+    error_level = level;
     StreamWriter writer;
     writer.write(error_level_to_string(level));
     writer.write(" ");
@@ -67,7 +78,7 @@ namespace GodotObjectCompiler {
       writer.write("\nOccurred while processing source:\n");
       writer.write(extract_lines(file_content, line - std::min(line, static_cast<Size>(3)), line + 3, line));
     } else {
-      writer.write(extract_lines(file_content, line,line, line));
+      writer.write(extract_lines(file_content, line, line, line));
     }
 
     message = writer.get_string();

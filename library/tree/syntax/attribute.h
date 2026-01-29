@@ -1,5 +1,6 @@
 #pragma once
 #include "context.h"
+#include "library/parser/attribute_argument_parser.h"
 
 #define ATTRIBUTE_TYPE(node_type, target_type, target)                                                             \
   NODE_TYPE(node_type)                                                                                             \
@@ -24,6 +25,7 @@ namespace GodotObjectCompiler {
 
     Ref<Node> resolve_target() const;
     bool verify_target(Ref<Node> p_resolved) const;
+    virtual Ref<IAttributeArgumentParser> get_argument_parser();
 
     Size start;
     Size end;

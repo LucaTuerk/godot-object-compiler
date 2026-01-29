@@ -48,6 +48,15 @@ namespace GodotObjectCompiler {
     return _parameters[name_itr->second];
   }
 
+  String AttributeDB::get_macro_for_attribute(const String& class_name) {
+    for (const auto& [macro, name] : _macro_aliases) {
+      if (name == class_name) {
+        return macro;
+      }
+    }
+    return "";
+  }
+
   Vector<String> AttributeDB::get_all_macros() {
     Vector<String> macros;
     for (auto& [key, val] : _macro_aliases) {

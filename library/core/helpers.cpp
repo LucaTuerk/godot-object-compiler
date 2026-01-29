@@ -5,6 +5,7 @@
 #include <random>
 
 #include "core.h"
+#include "string_writer.h"
 
 namespace GodotObjectCompiler {
 
@@ -147,6 +148,8 @@ namespace GodotObjectCompiler {
     return true;
   }
 
+  bool is_whitespace(char c) { return std::isspace(static_cast<unsigned char>(c)); }
+
   String string_replace(const String& target, const String& search_str, const String& replace_with) {
     std::stringstream strstr;
 
@@ -183,6 +186,22 @@ namespace GodotObjectCompiler {
     }
 
     return trgstr.str();
+  }
+
+  String string_trim(const String& str) { return string_trim_left(string_trim_right(str)); }
+
+  String string_trim_left(const String& str) {
+    String ret = str;
+    auto itr = std::find_if(ret.begin(), ret.end(), [](unsigned char c) { return !is_whitespace(c); });
+    ret.erase(ret.begin(), itr);
+    return ret;
+  }
+
+  String string_trim_right(const String& str) {
+    String ret = str;
+    auto itr = std::find_if(ret.rbegin(), ret.rend(), [](unsigned char c) { return !is_whitespace(c); });
+    ret.erase(itr.base(), ret.end());
+    return ret;
   }
 
   String macro_case_to_pascal_case(const String& input) {

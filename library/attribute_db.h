@@ -49,6 +49,7 @@ namespace GodotObjectCompiler {
 
     Vector<Ref<IAttributeParameterType>> get_parameters_for_macro(const String& macro);
 
+    String get_macro_for_attribute(const String& class_name);
     Vector<String> get_all_macros();
 
     bool register_class_generator(const String& generator_name, Ref<ClassGenerator> generator);
@@ -69,7 +70,7 @@ namespace GodotObjectCompiler {
 
 }  // namespace GodotObjectCompiler
 
-#define ATTRIBUTE_REGISTER_DEFAULT_MACRO(macro)                                                \
+#define ATTRIBUTE_DEFAULT_MACRO(macro)                                                         \
   static Ref<Attribute> attribute_create_static() { return create_static()->as<Attribute>(); } \
   static inline bool attribute_registered =                                                    \
       AttributeDB::instance()->register_attribute(get_type_static(), #macro, &attribute_create_static);
