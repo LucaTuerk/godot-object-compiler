@@ -3,6 +3,7 @@
 #include "library/tree/output/generator_error.h"
 #include "library/tree/syntax/attributes.h"
 #include "library/tree/syntax/class.h"
+#include "library/tree/syntax/parser_error.h"
 
 namespace GodotObjectCompiler {
 
@@ -79,24 +80,26 @@ namespace GodotObjectCompiler {
   static inline bool _generator_##type##_registered = \
       AttributeDB::instance()->register_class_generator(#type, make_ref<type>());
 
-#define GEN_ERROR(message) return node_new<GeneratorError>(get_type_static(), message)
-#define GEN_ERROR_COND(condition, message) \
-  if ((condition)) {                       \
-    GEN_ERROR(message);                    \
+#define ERROR_NODE_LEVEL(error_type, error_level, ...)     \
+  if constexpr (error_level == ErrorLevel::ERROR) {        \
+    return node_new<error_type>(error_level, __VA_ARGS__); \
+  } else {                                                 \
+    node_new<error_type>(error_level, __VA_ARGS__);        \
   }
 
-#define GEN_ADD_CHILD_ERROR_TO_RESULT(func) \
-  {                                         \
-    auto error = (func);                    \
-    if (error != GeneratorError::OK) {      \
-      result->add_child(error);             \
-    }                                       \
+#define GEN_ERROR(target, message) \
+  ERROR_NODE_LEVEL(GeneratorError, ErrorLevel::ERROR, get_type_static(), message, target)
+
+#define GEN_ERROR_COND(condition, target, message)                                          \
+  if ((condition)) {                                                                        \
+    ERROR_NODE_LEVEL(GeneratorError, ErrorLevel::ERROR, get_type_static(), message, target) \
   }
 
-#define GEN_RETURN_ON_CHILD_ERROR(func) \
-  {                                     \
-    auto error = (func);                \
-    if (error != GeneratorError::OK) {  \
-      return error;                     \
-    }                                   \
+#define GEN_WARNING(target, message) \
+  ERROR_NODE_LEVEL(GeneratorError, ErrorLevel::WARNING, get_type_static(), message, target)
+
+#define GEN_WARNING_COND(condition, target, message)                                          \
+  if ((condition)) {                                                                          \
+    ERROR_NODE_LEVEL(GeneratorError, ErrorLevel::WARNING, get_type_static(), message, target) \
   }
+

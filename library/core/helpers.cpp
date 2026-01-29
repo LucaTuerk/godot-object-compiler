@@ -80,6 +80,11 @@ namespace GodotObjectCompiler {
   }
 
   Vector<String> directory_files_recursive(const String& path) {
+    if (!std::filesystem::is_directory(path)) {
+      print_err(path + " is not a directory!");
+      return {};
+    }
+
     Vector<String> result;
     std::filesystem::recursive_directory_iterator iter(path);
     for (const auto& entry : iter) {
@@ -87,6 +92,7 @@ namespace GodotObjectCompiler {
         result.push_back(entry.path().string());
       }
     }
+
     return result;
   }
 
@@ -157,6 +163,26 @@ namespace GodotObjectCompiler {
 
     strstr << target.substr(start);
     return strstr.str();
+  }
+
+  String extract_lines(const String& content, Size start_line, Size end_line, Size highlight_line) {
+    std::stringstream cntstr(content);
+    std::stringstream trgstr;
+
+    String line;
+    Size current = 0;
+    while (std::getline(cntstr, line)) {
+      current++;
+      if (current >= start_line && current <= end_line) {
+        trgstr << current << (current == highlight_line ? "\t|>\t" : "\t|\t") << line << '\n';
+      }
+
+      if (current >= end_line) {
+        break;
+      }
+    }
+
+    return trgstr.str();
   }
 
   String macro_case_to_pascal_case(const String& input) {

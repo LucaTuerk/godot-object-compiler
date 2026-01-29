@@ -4,6 +4,20 @@
 
 namespace GodotObjectCompiler {
 
+  enum ErrorLevel {
+    ERROR = 0,
+    WARNING = 1,
+    INFO = 2,
+    VERBOSE = 3,
+  };
+
+  enum ErrorDetail {
+    CONDENSED = 0,
+    FULL = 1,
+  };
+
+  String error_level_to_string(ErrorLevel level);
+
   class ExecutionContext {
    public:
 
@@ -29,6 +43,14 @@ namespace GodotObjectCompiler {
     void set_include_paths(const Vector<String>& value);
 
     bool is_file_included(const String& include_path);
+
+    void set_error_level(ErrorLevel level, ErrorDetail error_detail);
+
+    ErrorLevel get_error_level() const;
+
+    ErrorDetail get_error_detail() const;
+
+    void print(ErrorLevel level, const String& message);
 
    private:
 
@@ -56,6 +78,9 @@ namespace GodotObjectCompiler {
     /** INCLUDE **/
     Vector<String> _include_paths;
     HashSet<String> _included_files;
+
+    ErrorLevel _error_level;
+    ErrorDetail _error_detail;
   };
 
 }  // namespace GodotObjectCompiler

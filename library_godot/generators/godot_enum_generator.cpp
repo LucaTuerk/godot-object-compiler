@@ -10,10 +10,10 @@ namespace GodotObjectCompiler {
       Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
 
     Ref<Node> target_node = attribute->resolve_target();
-    GEN_ERROR_COND(!target_node, "Could not find target for Enum marco.");
+    GEN_ERROR_COND(!target_node, target_class, "Could not find target for Enum marco.");
 
     Ref<Enum> target_enum = target_node->as<Enum>();
-    GEN_ERROR_COND(!target_enum, "Resolved target for enum macro is not an enum");
+    GEN_ERROR_COND(!target_enum, target_class,  "Resolved target for enum macro is not an enum");
 
     Ref<Body> bind_methods_body = GodotGeneratorUtils::get_or_create_bind_methods_body(target_class,generated_body,generated_sources);
 

@@ -1,6 +1,7 @@
 #include "library/parser/parser_context.h"
 
 #include "../tree/syntax/all.h"
+#include "library/core/helpers.h"
 
 #define CREATE_NAMED(type)                                   \
   type* result = current_node->create_child<type>();         \
@@ -102,6 +103,12 @@ namespace GodotObjectCompiler {
     node = ts_tree_root_node(tree);
     cursor = ts_tree_cursor_new(node);
     _invalid = ts_node_is_null(node);
+  }
+
+  ParserContext ParserContext::from_path(const String& path) {
+    ParserContext result{read_file(path)};
+    result.file_path = path;
+    return result;
   }
 
   ParserContext::~ParserContext() {

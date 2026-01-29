@@ -33,16 +33,26 @@ namespace GodotObjectCompiler {
     ts_tree_cursor_delete(&cursor);
   }
 
+  Ref<Node> TreeSitterParser::parse_file(const String& path) {
+    input_is_path = true;
+    return parse(path);
+  }
+
   Ref<Node> TreeSitterParser::parse(const String& input) {
     using NodeID = const void*;
 
     Dictionary<NodeID, Ref<Context>> before_node;
     Dictionary<Size, String> stripped_parameters;
 
-    String local_input = Parser::Helpers::remove_macros(input);
+    String local_input =
+        input_is_path ? Parser::Helpers::remove_macros(read_file(input)) : Parser::Helpers::remove_macros(input);
     local_input = strip_known_macro_contents(local_input, stripped_parameters);
 
     context = ParserContext(local_input);
+    if (input_is_path) {
+      context.file_path = input;
+      input_is_path = false;
+    }
     context.stripped_parameters = stripped_parameters;
 
     if (!context.is_valid()) {

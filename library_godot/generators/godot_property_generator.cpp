@@ -10,21 +10,22 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> target_class, Ref<GodotPropertyAttribute> attribute,
-      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
+  Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> target_class,
+      Ref<GodotPropertyAttribute> attribute, Ref<Context> generated_body, Ref<Context> generated_sources,
+      Ref<Context> generated_global) {
     using namespace GodotGeneratorUtils;
 
     Ref<Node> target = attribute->resolve_target();
     Ref<Body> bind_methods_body = get_or_create_bind_methods_body(target_class, generated_body, generated_sources);
-    GEN_ERROR_COND(!bind_methods_body, "Failed to find or generate the _bind_methods function body.");
+    GEN_ERROR_COND(!bind_methods_body, target_class, "Failed to find or generate the _bind_methods function body.");
 
     if (const Ref<Field> target_field = target->as<Field>()) {
       const String property_name = target_field->name();
       const Ref<Type> field_type = target_field->type();
 
-      GEN_ERROR_COND(target_field->is_const(), "Target field is a Constant. Abort!");
-      GEN_ERROR_COND(target_field->is_static(), "Target field is a static Field. Abort!");
-      GEN_ERROR_COND(!field_type, "Field does not name a type. Abort!");
+      GEN_ERROR_COND(target_field->is_const(), target_class, "Target field is a Constant. Abort!");
+      GEN_ERROR_COND(target_field->is_static(), target_class, "Target field is a static Field. Abort!");
+      GEN_ERROR_COND(!field_type, target_class, "Field does not name a type. Abort!");
 
       const String type_name = field_type->type_name();
       const String getter_name = "get_" + property_name;
@@ -100,7 +101,6 @@ namespace GodotObjectCompiler {
       generated_sources->add_child(set_impl);
       bind_methods_body->add_child(add_property);
     }
-
 
     return GeneratorError::OK;
   }
