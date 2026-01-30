@@ -134,6 +134,14 @@ namespace GodotObjectCompiler {
     return _children.end();
   }
 
+  void Context::remove_all_children() {
+    while (!_children.empty()) {
+      Ref<Node> child = _children.back();
+      _children.pop_back();
+      child->_parent = {};
+    }
+  }
+
   void Context::remove_child(Ref<Node> p_child) {
     auto itr = std::find(_children.begin(), _children.end(), p_child);
     remove_child(itr);

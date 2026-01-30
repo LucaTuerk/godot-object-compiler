@@ -78,6 +78,7 @@ namespace GodotObjectCompiler {
     ChildIterator merge_includes(Ref<Namespace> target, ChildIterator this_itr, Size depth);
     ChildIterator remove_child(ChildIterator itr);
     ChildIterator reparent_child(ChildIterator, Ref<Context> new_parent);
+    void remove_all_children();
 
     template <typename T>
     Ref<T> find_child(Index p_start_idx = 0, Predicate<T> predicate = default_node_predicate<T>) const;

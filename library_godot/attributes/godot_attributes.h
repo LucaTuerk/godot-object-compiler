@@ -1,4 +1,6 @@
 #pragma once
+#include "godot_module_init_level.h"
+#include "godot_class_registration_hint.h"
 #include "godot_property_hint.h"
 #include "godot_property_usage_flags.h"
 #include "library/attribute_db.h"
@@ -27,6 +29,9 @@ namespace GodotObjectCompiler {
   class GodotClassAttribute : public GodotAttributeWithParams {
     ATTRIBUTE_TYPE(GodotClassAttribute, Class, NEXT)
     ATTRIBUTE_DEFAULT_MACRO(GODOT_CLASS)
+
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotClassRegistrationHint)
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotModuleInitializationLevel)
   };
 
   class GodotEnumAttribute : public GodotAttributeWithParams {
@@ -38,8 +43,8 @@ namespace GodotObjectCompiler {
     ATTRIBUTE_TYPE(GodotPropertyAttribute, Field, NEXT)
     ATTRIBUTE_DEFAULT_MACRO(GODOT_PROPERTY)
 
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyHintParameterType)
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlagsParameterType)
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyHint)
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlags)
   };
 
   class GodotFunctionAttribute : public GodotAttributeWithParams {

@@ -77,4 +77,4 @@ namespace GodotObjectCompiler {
 
 #define ATTRIBUTE_REGISTER_PARAMETERS(type)        \
   static inline bool type##_parameter_registered = \
-      AttributeDB::instance()->register_attribute_parameter(get_type_static(), make_ref<type>());
+      AttributeDB::instance()->register_attribute_parameter(get_type_static(), make_ref<type##ParameterType>());

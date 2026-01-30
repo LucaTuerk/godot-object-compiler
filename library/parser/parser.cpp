@@ -46,11 +46,12 @@ namespace GodotObjectCompiler {
     Dictionary<NodeID, Ref<Context>> before_node;
     Dictionary<Size, String> stripped_parameters;
 
-    String local_input =
+    String original_input =
         input_is_path ? Parser::Helpers::remove_macros(read_file(input)) : Parser::Helpers::remove_macros(input);
-    local_input = strip_known_macro_contents(local_input, stripped_parameters);
+    String local_input = strip_known_macro_contents(original_input, stripped_parameters);
 
     context = ParserContext(local_input);
+    context.original_buffer = original_input;
     if (input_is_path) {
       context.file_path = input;
       input_is_path = false;

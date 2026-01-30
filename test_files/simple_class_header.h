@@ -9,12 +9,12 @@
 #include "test2.h"
 
 // clang-format off
-#include "../.generated/simple_class_header.h.generated.h"
+#include "simple_class_header.h.generated.h"
 // clang-format on
 
 namespace TestNamespace {
 
-  GODOT_CLASS();
+  GODOT_CLASS(RegisterCustom, LevelScene);
 
   class A : public Camera3D {
     GODOT_GENERATED_BODY();
@@ -32,7 +32,7 @@ namespace TestNamespace {
     GODOT_PROPERTY(HintDir());
     int property1;
 
-    GODOT_PROPERTY(HintRange("1,2,3"), UsageEditor | UsageCheckable);
+    GODOT_PROPERTY(HintRange(), UsageCheckable);
     int property2;
 
     GODOT_PROPERTY();
@@ -43,7 +43,7 @@ namespace TestNamespace {
 
 GODOT_CLASS();
 
-class Hää {
+class Hää : Node3D {
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY();
@@ -55,7 +55,7 @@ class Hää {
 
 GODOT_CLASS();
 
-class B : public Hää {
+class B : public Node2D {
   GODOT_GENERATED_BODY();
 
  public:

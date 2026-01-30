@@ -57,7 +57,7 @@ namespace GodotObjectCompiler {
     return true;
   }
 
-  bool GodotMacroIncludeGenerator::generate_attribute_type(Ref<IAttributeParameterType> type, Ref<Context> write_to) {
+  bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(Ref<IAttributeParameterType> type, Ref<Context> write_to) {
     String type_name = type->get_type_name();
 
     write_to->build_child<Writer::SnippetNode>("class " + type_name + " {};");
@@ -172,7 +172,7 @@ namespace GodotObjectCompiler {
       for (const auto& param : params) {
         if (generated_param_types.find(param->get_type_name()) == generated_param_types.end()) {
           generated_param_types.insert(param->get_type_name());
-          generate_attribute_type(param, entry);
+          generate_attribute_parameter_type(param, entry);
         }
       }
 

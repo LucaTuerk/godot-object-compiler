@@ -36,4 +36,19 @@ namespace GodotObjectCompiler {
 
   Vector<String> string_split(const String& str, const String& delimiter);
 
+  template <typename... Args>
+  String format(const String& format_str, Args&&... args);
+
+  template <typename... Args>
+  String format(const String& format_str, Args&&... args) {
+    int size_s = std::snprintf(nullptr, 0, format_str.c_str(), args...) + 1;
+    if (size_s <= 0) {
+      return "";
+    }
+    auto size = static_cast<size_t>(size_s);
+    std::unique_ptr<char[]> buf(new char[size]);
+    std::snprintf(buf.get(), size, format_str.c_str(), args...);
+    return String(buf.get(), buf.get() + size - 1);
+  }
+
 }  // namespace GodotObjectCompiler

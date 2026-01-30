@@ -45,20 +45,9 @@ namespace GodotObjectCompiler {
   NextStep IdentifierHandler::handle_known_attribute(ParserContext& context, const String& macro) {
     if (Ref<Context> parent = context.current_node->get_parent(); parent) {
       Ref<Attribute> attribute = AttributeDB::instance()->create_for_macro(macro);
-      HANDLER_ERROR_COND(!attribute, "Failed to create attribute for known macro " + macro);
+      HANDLER_ERROR_COND(!attribute, "Failed to create attribute for known macro %s", macro.c_str());
 
       parent->replace_child(context.current_node, attribute, true);
-
-      context.current_node = attribute;
-
-      Ref<IAttributeArgumentParser> argument_parser = attribute->get_argument_parser();
-
-      if (argument_parser) {
-        auto itr = context.stripped_parameters.find((Size)ts_node_start_byte(context.node));
-        if (itr != context.stripped_parameters.end()) {
-          argument_parser->parse_attribute_arguments(itr->second, attribute->create_child<Arguments>());
-        }
-      }
 
       context.current_node = attribute->get_parent();
       TSNode current = ts_tree_cursor_current_node(&context.cursor);
@@ -67,9 +56,28 @@ namespace GodotObjectCompiler {
         ancestor = find_ancestor_of_type(current, "expression_statement");
       }
 
+      auto node_start_point = ts_node_start_point(ancestor);
       attribute->start = ts_node_start_byte(ancestor);
       attribute->end = ts_node_end_byte(ancestor);
-      attribute->line = ts_node_start_point(ancestor).row + 1;
+      attribute->line = node_start_point.row + 1;
+
+      Ref<IAttributeArgumentParser> argument_parser = attribute->get_argument_parser();
+
+      if (argument_parser) {
+        auto itr = context.stripped_parameters.find((Size)ts_node_start_byte(context.node));
+        if (itr != context.stripped_parameters.end()) {
+          Ref<ParserError> error =
+              argument_parser->parse_attribute_arguments(itr->second, attribute->create_child<Arguments>());
+
+          if (error != ParserError::OK) {
+            attribute->remove_all_children();
+            attribute->add_child(node_new<ParserError>(error->error_level, "TreeSitterParser",
+                format("Failed to parse attribute arguments.\n%s", error->message.c_str()), context.file_path,
+                context.original_buffer, attribute->line, node_start_point.column + 1));
+            error->set_handled();
+          }
+        }
+      }
 
       context.specific_step_id = ancestor.id;
       return STEP_OVER_SPECIFIC;
