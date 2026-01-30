@@ -45,11 +45,11 @@ namespace GodotObjectCompiler {
 
 }  // namespace GodotObjectCompiler
 
-#define HANDLER_ERROR(message)                                    \
-  node_new<ParserError>(ERROR, "TreeSitterParser: " + (message)); \
+#define HANDLER_ERROR(...)                           \
+  node_new<ParserError>(ERROR, format(__VA_ARGS__)); \
   return STEP_OVER;
 
-#define HANDLER_ERROR_COND(condition, message) \
-  if ((condition)) {                           \
-    HANDLER_ERROR(message)                     \
+#define HANDLER_ERROR_COND(condition, ...) \
+  if ((condition)) {                       \
+    HANDLER_ERROR(__VA_ARGS__)             \
   }

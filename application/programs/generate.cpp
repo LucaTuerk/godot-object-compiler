@@ -45,8 +45,6 @@ namespace GodotObjectCompiler {
         continue;
       }
 
-      print_ln(global_namespace->pretty_print());
-
       String source_path = input_file + ".generated.cpp";
       String generated_path = input_file + ".generated.h";
 

@@ -19,6 +19,7 @@ namespace GodotObjectCompiler {
     using NodeID = const void*;
 
     String file_path;
+    String original_buffer;
     String buffer;
     Ref<Context> current_node;
     TSParser* parser;

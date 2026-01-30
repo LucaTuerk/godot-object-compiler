@@ -10,7 +10,7 @@ namespace GodotObjectCompiler {
    public:
 
     bool generate_macros(Ref<Context> write_to);
-    bool generate_attribute_type(Ref<IAttributeParameterType> type, Ref<Context> write_to);
+    bool generate_attribute_parameter_type(Ref<IAttributeParameterType> type, Ref<Context> write_to);
     bool generate_prototype_methods(
         const Ref<Context>& write_to, const String& macro, const Vector<Ref<IAttributeParameterType>>& params);
 

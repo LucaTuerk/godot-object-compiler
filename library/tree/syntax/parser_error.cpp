@@ -8,12 +8,12 @@
 namespace GodotObjectCompiler {
 
   Error::~Error() {
-    if (ExecutionContext::instance()->get_error_level() >= error_level) {
+    if (!handled && ExecutionContext::instance()->get_error_level() >= error_level) {
       print_err(message);
     }
   }
 
-  String Error::to_string() const { return get_type_static() + ": " + message; };
+  String Error::to_string() const { return get_type_static(); };
 
   bool Error::copy_to(Ref<Node> other) const {
     COPY_GUARD(ParserError, Node);
@@ -30,6 +30,8 @@ namespace GodotObjectCompiler {
     Node::read_from(reader);
     reader->read<String, String>("error_offending");
   }
+
+  void Error::set_handled() { handled = true; }
 
   GeneratorError::GeneratorError(
       ErrorLevel level, const String& generator_name, const String& user_message, Ref<Node> node) {

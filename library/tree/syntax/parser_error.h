@@ -16,11 +16,16 @@ namespace GodotObjectCompiler {
     bool copy_to(Ref<Node> other) const override;
     void write_to(IStructuredWriter* writer) override;
     void read_from(IStructuredReader* reader) override;
+    void set_handled();
 
     ErrorLevel error_level;
     String message;
 
     static inline const Ref<Error> OK = nullptr;
+
+   private:
+
+    bool handled = false;
   };
 
   class GeneratorError : public Error {

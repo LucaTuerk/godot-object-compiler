@@ -13,7 +13,6 @@ namespace GodotObjectCompiler {
   void OutputFile::print() {
     StreamWriter writer;
     write_output(&writer);
-    print_ln(writer.get_string());
   }
 
   void OutputFile::write_output(IStringWriter* writer) {

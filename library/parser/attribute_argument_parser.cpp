@@ -18,6 +18,10 @@ namespace GodotObjectCompiler {
     Size quotes_open = 0;
     bool escaped = false;
 
+    if (string_trim(content).empty()) {
+      return {};
+    }
+
     for (char c : content) {
       if (!escaped) {
         if (c == '(') {
