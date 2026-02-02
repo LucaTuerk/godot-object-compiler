@@ -1,0 +1,2 @@
+/home/luca/Repositories/godot-object-compiler/test_files
+/home/luca/Repositories/godot

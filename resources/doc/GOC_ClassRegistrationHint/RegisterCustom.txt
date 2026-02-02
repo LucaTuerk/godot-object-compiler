@@ -1,0 +1,3 @@
+The GOC generator does not create any registration code for this
+class. You need to use a custom registration and deregistration
+function to make this class available in the Godot Editor.
