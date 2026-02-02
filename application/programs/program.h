@@ -9,6 +9,8 @@ namespace GodotObjectCompiler {
   class ProgramError : public Error {
     NODE_TYPE(ProgramError)
 
+    ProgramError(ErrorLevel level, const String& message) : Error(level, message) {}
+
     static inline const Ref<ProgramError> OK = nullptr;
   };
 
@@ -21,6 +23,8 @@ namespace GodotObjectCompiler {
     virtual Ref<ProgramError> run(ApplicationContext& context) = 0;
   };
 
+  using ProgramPath = Vector<String>;
+
   class Programs {
    public:
 
@@ -31,9 +35,16 @@ namespace GodotObjectCompiler {
 
     bool register_program(const Ref<IProgram>& program);
 
+    Ref<IProgram> find_program(const Vector<String>& application_arguments, Vector<String>& program_arguments);
+
+    const Dictionary<ProgramPath, Ref<IProgram>>& get_programs();
+
    private:
 
-    Dictionary<String, Ref<IProgram>> _programs;
+    static Size overlap(const ProgramPath& a, const ProgramPath& b);
+
+    HashSet<String> _registered_programs;
+    Dictionary<ProgramPath, Ref<IProgram>> _programs;
   };
 
 }  // namespace GodotObjectCompiler

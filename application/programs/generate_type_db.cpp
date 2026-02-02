@@ -15,8 +15,6 @@
 namespace GodotObjectCompiler {
 
   Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& context) {
-    TypeDB* type_db = TypeDB::instance();
-    type_db->set_cache_directory(context.paths_cache);
     TreeSitterParser parser;
 
     Config times;
@@ -60,17 +58,17 @@ namespace GodotObjectCompiler {
         if (global_namespace) {
           Vector<Ref<Class>> classes = global_namespace->classes_recursive();
           for (Ref<Class> cls : classes) {
-            type_db->save_type_data(cls);
+            TypeDB::instance()->save_type_data(cls);
           }
 
           Vector<Ref<Enum>> enums = global_namespace->enums_recursive();
           for (Ref<Enum> e : enums) {
-            type_db->save_type_data(e);
+            TypeDB::instance()->save_type_data(e);
           }
 
           Vector<Ref<Define>> defines = global_namespace->find_children<Define>(true);
           for (Ref<Define> define : defines) {
-            type_db->save_type_data(define);
+            TypeDB::instance()->save_type_data(define);
           }
         }
       }

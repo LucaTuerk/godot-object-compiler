@@ -46,7 +46,7 @@ namespace GodotObjectCompiler {
 
     String godot_registration_macro;
     if (class_type_type->get_macro_for_value_name(class_type_name, godot_registration_macro)) {
-      Ref<Context> if_clause = Writer::Spaces({Writer::Text(format("if (p_value == %s) ", godot_init_level.c_str()))});
+      Ref<Context> if_clause = Writer::Spaces({Writer::Text(format("if (p_level == %s) ", godot_init_level.c_str()))});
       Ref<Body> body = if_clause->build_child<Body>();
       initialize_content->add_child(if_clause);
       // clang-format off
@@ -55,12 +55,6 @@ namespace GodotObjectCompiler {
         build<Arguments>().with_child(build<Argument>().with_child(Writer::Text(target_class->qualified_name()))),
       }).with_child(Writer::Semicolon()));
       // clang-format on
-
-      OutputTransformator transformator;
-      Ref<Writer::IOutputNode> output = transformator.transform(if_clause);
-      StreamWriter writer;
-      output->get_output(&writer);
-      print_err(writer.get_string());
     }
     return GeneratorError::OK;
   }

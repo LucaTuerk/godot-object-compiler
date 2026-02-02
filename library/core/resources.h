@@ -15,6 +15,7 @@ namespace GodotObjectCompiler {
     }
 
     void load_pack(ResourcePack* pack);
+    Vector<String> resources_recursive(const String& path) const;
     [[nodiscard]] String load_text_resource(const String& path) const;
 
     [[nodiscard]] bool has_resource(const String& path) const;

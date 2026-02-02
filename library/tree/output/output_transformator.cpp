@@ -82,7 +82,7 @@ namespace GodotObjectCompiler {
     }
 
     if (Ref<Parameter> parameter = tree->as<Parameter>()) {
-      Ref<Writer::ListNode> into = Writer::NoSep({});
+      Ref<Writer::ListNode> into = Writer::Spaces({});
       for (Ref<Node> child : *parameter) {
         Ref<Literal> literal = child->as<Literal>();
         if (literal) {

@@ -4,6 +4,7 @@
 #include "include.h"
 #include "library/core/config.h"
 #include "library/core/core.h"
+#include "library/core/helpers.h"
 #include "namespace.h"
 
 namespace GodotObjectCompiler {
@@ -92,17 +93,36 @@ namespace GodotObjectCompiler {
 
   String Node::print_pretty_and_get_child_line(Ref<Node> target, Size& line) const {
     String result = "";
+    String line_prefix = "";
 
     Index depth = get_depth();
     for (Index i = 0; i < depth; i++) {
       if (i == depth - 1) {
-        result += "    |- ";
+        // clang-format off
+        result      += "    |- ";
+        line_prefix += "       ";
+        // clang-format on
       } else {
-        result += "   ";
+        // clang-format off
+        line_prefix += "   ";
+        result      += "   ";
+        // clang-format on
       }
     }
 
-    result += to_string() + "\n";
+    bool first = true;
+    for ( const String& line : string_split(to_string(), "\n")) {
+      if (!line.empty()) {
+        if (first) {
+          result += line + "\n";
+        } else {
+          result += line_prefix;
+          result += line;
+          result += "\n";
+        }
+      }
+      first = false;
+    }
 
     if (const auto context = std::dynamic_pointer_cast<const Context>(shared_from_this())) {
       for (Index i = 0; i < context->get_child_count(); i++) {
