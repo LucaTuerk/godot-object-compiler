@@ -1,4 +1,3 @@
-
 #include "generate_bindings.h"
 
 #include "library/attribute_db.h"
@@ -10,8 +9,10 @@
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/namespace.h"
+#include "library_godot/assumptions.h"
 #include "library_godot/attributes/godot_attributes.h"
 #include "library_godot/generators/godot_class_generator.h"
+#include "library_godot/generators/godot_macro_include_generator.h"
 
 namespace GodotObjectCompiler {
 
@@ -30,11 +31,84 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ProgramError> GenerateBindings::run(ApplicationContext& context) {
-    ExecutionContext* execution_context = ExecutionContext::instance();
-    execution_context->init();
-    execution_context->set_remove_macros(read_lines(".goc/macro_remove.txt"));
-    execution_context->set_include_paths(read_lines(".goc/include_paths.txt"));
     OutputTransformator transformator;
+
+    GodotMacroIncludeGenerator macro_include_generator;
+    Ref<Context> macro_include_content = node_new<Context>();
+    macro_include_generator.generate(nullptr, macro_include_content);
+
+    FileWriter marco_writer{path_concat(context.paths_generated, "macros.h")};
+    Ref<Writer::IOutputNode> macro_output = transformator.transform(macro_include_content);
+    macro_output->get_output(&marco_writer);
+
+    Ref<Context> register_types_header = node_new<Context>();
+    Ref<Context> register_types_source = node_new<Context>();
+    Ref<Context> register_class_includes = node_new<Context>();
+
+    String register_method_name = "register_module";
+    String unregister_method_name = "unregister_module";
+    String register_file_name = "register_types";
+    Vector<String> registered_classes_headers;
+
+    // clang-format off
+    register_types_header->add_children({
+      Writer::PragmaOnce(),
+      Writer::Include("modules/register_module_types.h"),
+      Writer::Include("core/object/class_db.h"),
+      Writer::NewLine(),
+      build<Function>().with_children({
+        build<Type>().with_child<Identifier>("void"),
+        build<Identifier>(register_method_name),
+          build<Parameters>().with_child(
+            build<Parameter>().with_children({
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
+              build<Identifier>("p_level")
+            })
+          )
+      }).with_child(Writer::Semicolon()),
+      build<Function>().with_children({
+        build<Type>().with_child<Identifier>("void"),
+        build<Identifier>(unregister_method_name),
+          build<Parameters>().with_child(
+            build<Parameter>().with_children({
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
+              build<Identifier>("p_level")
+            })
+          )
+      }).with_child(Writer::Semicolon())
+    });
+
+    Ref<Body> register_body;
+    Ref<Body> unregister_body;
+
+    register_types_source->add_children({
+      Writer::Include(path_concat_ext(context.paths_generated, register_file_name, "h")),
+      register_class_includes,
+      Writer::NewLine(),
+      build<Function>().with_children({
+        build<Type>().with_child<Identifier>("void"),
+        build<Identifier>(register_method_name),
+          build<Parameters>().with_child(
+            build<Parameter>().with_children({
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
+              build<Identifier>("p_level")
+            })
+          ),
+        build_ref<Body>(&register_body)
+      }),
+      build<Function>().with_children({
+        build<Type>().with_child<Identifier>("void"),
+        build<Identifier>(unregister_method_name),
+          build<Parameters>().with_child(
+            build<Parameter>().with_children({
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
+              build<Identifier>("p_level")
+            })
+          ),
+        build_ref<Body>(&unregister_body)
+      })
+    });
+    // clang-format on
 
     for (const String& input_file : context.files_input) {
       TreeSitterParser parser;
@@ -83,6 +157,7 @@ namespace GodotObjectCompiler {
       };
 
       Ref<Context> global_generated = node_new<Context>();
+
       Vector<Results> generate_results;
 
       Writer::PragmaOnce()->get_output(&generated_writer);
@@ -141,6 +216,10 @@ namespace GodotObjectCompiler {
           continue;
         }
 
+        if (results.initialize->get_child_count() > 0 || results.uninitialize->get_child_count() > 0) {
+          register_class_includes->add_child(Writer::Include(input_file));
+        }
+
         Ref<GeneratorError> start_gen_error =
             class_generator.generate_startup(target_class, class_attribute, results.startup, results.shutdown);
         if (start_gen_error != GeneratorError::OK) {
@@ -173,6 +252,9 @@ namespace GodotObjectCompiler {
       }
 
       for (Results& result : generate_results) {
+        register_body->add_child(result.initialize);
+        unregister_body->add_child(result.uninitialize);
+
         Ref<Writer::IOutputNode> source_output = transformator.transform(result.generated_source);
 
         Ref<Writer::IOutputNode> body_output =
@@ -190,6 +272,15 @@ namespace GodotObjectCompiler {
         global_output->get_output(&generated_writer);
       }
     }
+
+    Ref<Writer::IOutputNode> register_header_output = transformator.transform(register_types_header);
+    Ref<Writer::IOutputNode> register_source_output = transformator.transform(register_types_source);
+
+    FileWriter register_header_writer(path_concat_ext(context.paths_generated, "register_types", "h"));
+    FileWriter register_source_writer(path_concat_ext(context.paths_generated, "register_types", "cpp"));
+
+    register_header_output->get_output(&register_header_writer);
+    register_source_output->get_output(&register_source_writer);
 
     return ProgramError::OK;
   }

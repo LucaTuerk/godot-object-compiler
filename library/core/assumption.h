@@ -61,6 +61,7 @@ namespace GodotObjectCompiler {
 
   template <typename T>
   Assumption<T>::~Assumption() {
+#ifdef ASSUMPTIONS_ENABLED
     if (state == STATE_INDETERMINATE) {
       print_err("Assumption was left in a indeterminate state: " + message);
     }
@@ -72,6 +73,7 @@ namespace GodotObjectCompiler {
         print_err(format("Assumption did not hold and was accessed %d times: %s", value_access_count, message.c_str()));
       }
     }
+#endif
   }
 
   template <typename T>

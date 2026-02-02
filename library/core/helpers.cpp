@@ -44,6 +44,8 @@ namespace GodotObjectCompiler {
 
   bool file_exists(const String& path) { return std::filesystem::exists(path); }
 
+  bool remove_file(const String& path) { return std::remove(path.c_str()) == 0; }
+
   void ensure_file_exists(const String& path, const String& initial_content) {
     if (file_exists(path)) {
       return;
@@ -152,6 +154,8 @@ namespace GodotObjectCompiler {
     return str.rfind(suffix) == str.size() - suffix.size();
   }
 
+  bool string_prefix(const String& str, const String& prefix) { return str.find(prefix) == 0; }
+
   bool string_only_contains(const String& str, char symbol) {
     if (str.length() == 0) {
       return false;
@@ -166,7 +170,33 @@ namespace GodotObjectCompiler {
     return true;
   }
 
+  String string_vector_combine(const Vector<String>& vec, String delimiter) {
+    StreamWriter writer;
+    for (Size i = 0; i < vec.size(); i++) {
+      if (i != 0 && i != vec.size()-1) {
+        writer.write(delimiter);
+      }
+      writer.write(vec.at(i));
+    }
+    return writer.get_string();
+  }
+
   bool is_whitespace(char c) { return std::isspace(static_cast<unsigned char>(c)); }
+
+  String input(const String& prompt, const String& default_value) {
+    String result;
+    if (default_value.empty()) {
+      std::cout << prompt;
+    } else {
+      std::cout << format(prompt, default_value.c_str());
+    }
+    getline(std::cin, result);
+
+    if (result.empty()) {
+      return default_value;
+    }
+    return result;
+  }
 
   String string_replace(const String& target, const String& search_str, const String& replace_with) {
     std::stringstream strstr;

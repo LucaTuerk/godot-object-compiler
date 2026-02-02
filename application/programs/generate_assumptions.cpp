@@ -1,6 +1,25 @@
-
+#include "application/application_context.h"
+#include "library/core/core.h"
+#include "library/core/helpers.h"
+#include "library/core/string_writer.h"
+#include "library/generator/attribute_parameter_type.h"
+#include "library/tree/output/output.h"
+#include "library/tree/output/output_transformator.h"
+#include "library/tree/syntax/context.h"
+#include "library/tree/syntax/function.h"
+#include "library/tree/syntax/identifier.h"
+#include "library/tree/syntax/namespace.h"
+#include "library/tree/syntax/node.h"
+#include "library/tree/syntax/type.h"
+#include "library_godot/assumptions.h"
+#include "library_godot/attributes/godot_class_type.h"
+#include "library_godot/attributes/godot_module_init_level.h"
+#include "library_godot/attributes/godot_property_hint.h"
+#include "library_godot/attributes/godot_property_usage_flags.h"
+#include "library_godot/attributes/godot_variant_type.h"
+#include "program.h"
+#ifdef DEV_BUILD
 #include "generate_assumptions.h"
-
 #include "library/core/string_writer.h"
 #include "library/tree/output/output.h"
 #include "library/tree/output/output_transformator.h"
@@ -9,6 +28,7 @@
 #include "library_godot/attributes/godot_property_hint.h"
 #include "library_godot/attributes/godot_property_usage_flags.h"
 #include "library_godot/attributes/godot_variant_type.h"
+#include "program.h"
 
 namespace GodotObjectCompiler {
 
@@ -121,3 +141,4 @@ namespace GodotObjectCompiler {
   }
 
 }  // namespace GodotObjectCompiler
+#endif

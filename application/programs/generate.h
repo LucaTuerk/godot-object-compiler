@@ -1,12 +1,11 @@
 
 #pragma once
-#ifdef DEV_BUILD
 #include "program.h"
 
 namespace GodotObjectCompiler {
 
-  class GenerateAssumptions : public IProgram {
-    PROGRAM(GenerateAssumptions, "generate/assumptions");
+  class Generate : public IProgram {
+    PROGRAM(Generate, "generate");
 
    public:
 
@@ -14,4 +13,3 @@ namespace GodotObjectCompiler {
   };
 
 }  // namespace GodotObjectCompiler
-#endif

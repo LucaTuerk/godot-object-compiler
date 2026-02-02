@@ -11,8 +11,8 @@ namespace GodotObjectCompiler {
 
   struct Project {
     String project_name;
-    Size godot_target_major_version;
-    Size godot_target_minor_version;
+    Size godot_target_major_version = 4;
+    Size godot_target_minor_version = 2;
     String paths_root;
     String paths_generated;
     String paths_cache;
@@ -25,7 +25,7 @@ namespace GodotObjectCompiler {
     bool read_from_file(const String& path);
     bool write_to_file(const String& path);
 
-  private:
+   private:
 
     static Vector<String> from_comma_separated_string(const String& str);
     String to_comma_separated_string(const Vector<String>& str);
