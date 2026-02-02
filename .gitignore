@@ -6,9 +6,9 @@ libgoc.a
 .sconsign.dblite
 .goc
 compile_commands.json
-*.txt
 *.o
 *.h.generated
 *.cpp.generated
 *.generated.h
 *.generated.cpp
+.generated

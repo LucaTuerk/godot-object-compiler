@@ -1,0 +1,5 @@
+Injects the generated code of all classes in this file that
+needs to be added in the global namespace.
+
+For Example:
+    - Enable enum variant casting using the VARIANT_ENUM_CAST macro
