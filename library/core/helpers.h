@@ -6,16 +6,19 @@ namespace GodotObjectCompiler {
   String read_file(const String& path);
   Vector<String> read_lines(const String& path);
   void write_file(const String& path, const String& content);
-  bool file_exists(const String& path);
   void ensure_file_exists(const String& path, const String& initial_content);
-  bool dir_exists(const String& path);
   bool create_dir_recursive(const String& path);
+  bool file_exists(const String& path);
+  bool dir_exists(const String& path);
 
   Size file_write_time(const String& path);
 
   String path_base(const String& path);
   String path_concat(const String& path1, const String& path2);
   String path_concat_ext(const String& dir, const String& filename, const String& extension);
+  String path_relative(const String& path, const String& base);
+  String path_absolute(const String& path);
+  String path_stem(const String& path);
   Vector<String> directory_files(const String& path);
   Vector<String> directory_files_recursive(const String& path);
   Vector<String> directory_dirs(const String& path);

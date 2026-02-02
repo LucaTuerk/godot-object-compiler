@@ -29,7 +29,7 @@ namespace GodotObjectCompiler {
     Ref<GodotVariantTypeParameterType> ptype = GodotVariantTypeParameterType::instance();
 
     for (const String& value_name : ptype->value_names()) {
-      String res_path = path_concat_ext("res://variant_types", value_name, "txt");
+      String res_path = "res://" + path_concat_ext("variant_types", value_name, "txt");
       if (Resources::instance()->has_resource(res_path)) {
         String content = Resources::instance()->load_text_resource(res_path);
         for (const String& line : string_split(content, "\n")) {

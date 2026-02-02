@@ -42,7 +42,7 @@ namespace GodotObjectCompiler {
       ensure_file_exists(doc_file, "No documentation available");
 #endif
 
-      String res_file = path_concat_ext("res://doc", macro, "txt");
+      String res_file = "res://" + path_concat_ext("doc", macro, "txt");
       if (Resources::instance()->has_resource(res_file)) {
         Ref<Context> params_docu = Writer::Params({});
         // clang-format off
@@ -81,8 +81,8 @@ namespace GodotObjectCompiler {
       Ref<IAttributeParameterType> type, Ref<Context> write_to) {
     String type_name = type->get_return_type();
 
-    String doc_res_path = path_concat("res://doc", type_name + ".txt");
-    String doc_res_dir = path_concat("res://doc", type_name);
+    String doc_res_path = "res://" + path_concat("doc", type_name + ".txt");
+    String doc_res_dir = "res://" +path_concat("doc", type_name);
 
     Ref<Context> value_names_documentation = Writer::Params({});
     Ref<Context> type_documentation = Writer::Lines({});

@@ -36,7 +36,7 @@ namespace GodotObjectCompiler {
     execution_context->set_include_paths(read_lines(".goc/include_paths.txt"));
     OutputTransformator transformator;
 
-    for (const String& input_file : context.input_files) {
+    for (const String& input_file : context.files_input) {
       TreeSitterParser parser;
       Ref<Namespace> global_namespace = node_new<Namespace>();
       Ref<ParserError> error = parser.parse_file(input_file, global_namespace);
@@ -45,10 +45,17 @@ namespace GodotObjectCompiler {
         continue;
       }
 
-      // print_ln(global_namespace->pretty_print());
+      String relative_path = path_relative(input_file, context.paths_root);
 
-      String source_path = input_file + ".generated.cpp";
-      String generated_path = input_file + ".generated.h";
+      String in_generated_path = path_concat(context.paths_generated, relative_path);
+      String in_generated_base = path_base(in_generated_path);
+      String in_generated_stem = path_stem(in_generated_path);
+      String source_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.cpp");
+      String generated_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
+
+      if (!dir_exists(in_generated_base)) {
+        create_dir_recursive(in_generated_base);
+      }
 
       FileWriter source_writer{source_path};
       FileWriter generated_writer{generated_path};
