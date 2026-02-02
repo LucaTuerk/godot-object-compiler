@@ -14,11 +14,11 @@ namespace GodotObjectCompiler {
   bool AttributeDB::register_attribute_parameter(
       const String& class_name, const Ref<IAttributeParameterType>& parameter) {
     HashSet<String>& registered = _registered_parameter_types[class_name];
-    if (registered.find(parameter->get_type_name()) != registered.end()) {
+    if (registered.find(parameter->get_type()) != registered.end()) {
       return false;
     }
 
-    registered.insert(parameter->get_type_name());
+    registered.insert(parameter->get_type());
     _parameters[class_name].push_back(parameter);
     return true;
   }

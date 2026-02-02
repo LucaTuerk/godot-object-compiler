@@ -23,7 +23,7 @@ namespace GodotObjectCompiler {
       }
       context.current_node = context.current_node->create_child<Parameters>();
     } else if (type == "template_argument_list") {
-      context.current_node = context.current_node->create_child<TemplateParameters>();
+      context.current_node = context.current_node->create_child<TemplateArguments>();
     } else {
       context.current_node = context.current_node->create_child<Context>();
     }

@@ -2,8 +2,10 @@
 
 #include "core/config.h"
 #include "core/helpers.h"
+#include "tree/syntax/class.h"
+#include "tree/syntax/define.h"
+#include "tree/syntax/enum.h"
 #include "tree/syntax/include.h"
-#include "tree/syntax/namespace.h"
 #include "tree/syntax/node.h"
 
 namespace GodotObjectCompiler {
@@ -127,6 +129,18 @@ namespace GodotObjectCompiler {
     }
 
     return nullptr;
+  }
+
+  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Enum>>& assumption) {
+    return validate_t<Enum>(assumption);
+  }
+
+  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Class>>& assumption) {
+    return validate_t<Class>(assumption);
+  }
+
+  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Define>>& assumption) {
+    return validate_t<Define>(assumption);
   }
 
 }  // namespace GodotObjectCompiler

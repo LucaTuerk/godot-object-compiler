@@ -99,6 +99,7 @@ namespace GodotObjectCompiler {
     Ref<ListNode> LineOfCode(std::initializer_list<Ref<IOutputNode>>&& children);
     Ref<ListNode> ParamDecl(const String& type, const String& name);
     Ref<SnippetNode> Text(const String& content);
+    Ref<SnippetNode> BoldText(const String& content);
     Ref<SnippetNode> StringLiteral(const String& content);
     Ref<SnippetNode> Semicolon();
     Ref<SnippetNode> NewLine();
@@ -130,6 +131,8 @@ namespace GodotObjectCompiler {
     Ref<ListNode> MacroDefine(const String& name, Ref<IOutputNode> content);
     Ref<ListNode> MacroFunctionDefine(const String& name, std::initializer_list<Ref<IOutputNode>> params,
         std::initializer_list<Ref<IOutputNode>> lines);
+
+    Ref<EnclosingNode> DocComment(Ref<Node> content);
 
     Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params, const String& content);
     Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params,

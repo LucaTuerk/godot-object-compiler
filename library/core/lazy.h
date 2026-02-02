@@ -28,6 +28,8 @@ namespace GodotObjectCompiler {
       _has_data = true;
     }
 
+    void poke() const;
+
     T const& get() const;
 
    private:
@@ -39,11 +41,16 @@ namespace GodotObjectCompiler {
   };
 
   template <typename T, typename C>
-  const T& Lazy<T, C>::get() const {
+  void Lazy<T, C>::poke() const {
     if (!_has_data) {
       _data = (_obj->*_getter)();
       _has_data = true;
     }
+  }
+
+  template <typename T, typename C>
+  const T& Lazy<T, C>::get() const {
+    poke();
     return _data;
   }
 

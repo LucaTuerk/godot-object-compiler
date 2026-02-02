@@ -6,6 +6,8 @@
 
 namespace GodotObjectCompiler {
 
+  Ref<Literal> Literal::StringLiteral(const String& content) { return node_new<Literal>("\"" + content + "\""); }
+
   String Literal::to_string() const { return "Literal: " + content; }
 
   bool Literal::copy_to(Ref<Node> other) const {

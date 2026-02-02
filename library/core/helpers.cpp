@@ -44,6 +44,19 @@ namespace GodotObjectCompiler {
 
   bool file_exists(const String& path) { return std::filesystem::exists(path); }
 
+  void ensure_file_exists(const String& path, const String& initial_content) {
+    if (file_exists(path)) {
+      return;
+    }
+
+    try {
+      FileWriter writer(path);
+      writer.write(initial_content);
+    } catch (std::exception& e) {
+      PANIC("Failed to write file: %s", e.what());
+    }
+  }
+
   bool dir_exists(const String& path) { return std::filesystem::exists(path) && std::filesystem::is_directory(path); }
 
   bool create_dir_recursive(const String& path) { return std::filesystem::create_directories(path); }
@@ -67,7 +80,11 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  String path_concat(const String& path1, const String& path2) { return path1 + "/" + path2; }
+  String path_concat(const String& path1, const String& path2) { return format("%s/%s", path1.c_str(), path2.c_str()); }
+
+  String path_concat_ext(const String& dir, const String& filename, const String& extension) {
+    return format("%s/%s.%s", dir.c_str(), filename.c_str(), extension.c_str());
+  }
 
   Vector<String> directory_files(const String& path) {
     Vector<String> result;
@@ -204,6 +221,23 @@ namespace GodotObjectCompiler {
     return ret;
   }
 
+  String string_shrink_inner_space(const String& str) {
+    StreamWriter writer;
+    Size whitespace_count = 0;
+    for (char c : str) {
+      if (!is_whitespace(c)) {
+        if (whitespace_count > 0) {
+          writer.write(" ");
+          whitespace_count = 0;
+        }
+        writer.write_generic(c);
+      } else {
+        whitespace_count++;
+      }
+    }
+    return writer.get_string();
+  }
+
   String macro_case_to_pascal_case(const String& input) {
     std::stringstream strstr;
 
@@ -241,6 +275,8 @@ namespace GodotObjectCompiler {
 
     return result;
   }
+
+  String format(const String& format_str) { return format_str; }
 
   void print_ln(const String& str) { std::cout << str << std::endl; }
 

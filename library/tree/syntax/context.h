@@ -55,11 +55,12 @@ namespace GodotObjectCompiler {
     bool copy_to(Ref<Node> other) const override;
 
     void add_child(Ref<Node> p_child);
+    void add_children(std::initializer_list<Ref<Node>>&& p_children);
     void remove_child(Ref<Node> p_child);
-
     void replace_child(Ref<Node> p_child, Ref<Node> p_new_child, bool take_children = false);
 
     Size get_child_count() const;
+    Size get_descendant_count() const;
     Ref<Node> get_child(SignedIndex p_idx) const;
     Ref<Node> get_child_strict(SignedIndex p_idx) const;
     List<Ref<Node>>& get_children();
@@ -94,6 +95,9 @@ namespace GodotObjectCompiler {
 
     template <class T, typename... Args>
     Builder<T, Args...> build_child(Args&&... args);
+
+    template <class T>
+    Vector<Ref<T>> find_children(bool recursive = false);
 
     template <class T>
     void for_descendants(BranchExplorationType order = BFS, NodeFunctor<T> functor = default_node_predicate<T>);
@@ -233,6 +237,31 @@ namespace GodotObjectCompiler {
   template <class T, typename... Args>
   Builder<T, Args...> Context::build_child(Args&&... args) {
     return Builder<T, Args...>(this->as<Context>(), std::forward<Args>(args)...);
+  }
+
+  template <class T>
+  void find_recursive_helper(Node* node, bool recursive, Vector<Ref<T>>& results) {
+    Ref<T> node_t = node->as<T>();
+    Ref<Context> node_context = node->as<Context>();
+
+    if (node_t) {
+      results.push_back(node_t);
+    }
+
+    if (recursive && node_context) {
+      for (Ref<Node> child : *node_context) {
+        find_recursive_helper(child.get(), recursive, results);
+      }
+    }
+  }
+
+  template <class T>
+  Vector<Ref<T>> Context::find_children(bool recursive) {
+    Vector<Ref<T>> results;
+    for (auto child : *this) {
+      find_recursive_helper(child.get(), recursive, results);
+    }
+    return results;
   }
 
   template <class T>

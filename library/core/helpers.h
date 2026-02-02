@@ -7,6 +7,7 @@ namespace GodotObjectCompiler {
   Vector<String> read_lines(const String& path);
   void write_file(const String& path, const String& content);
   bool file_exists(const String& path);
+  void ensure_file_exists(const String& path, const String& initial_content);
   bool dir_exists(const String& path);
   bool create_dir_recursive(const String& path);
 
@@ -14,6 +15,7 @@ namespace GodotObjectCompiler {
 
   String path_base(const String& path);
   String path_concat(const String& path1, const String& path2);
+  String path_concat_ext(const String& dir, const String& filename, const String& extension);
   Vector<String> directory_files(const String& path);
   Vector<String> directory_files_recursive(const String& path);
   Vector<String> directory_dirs(const String& path);
@@ -31,6 +33,7 @@ namespace GodotObjectCompiler {
   String string_trim(const String& str);
   String string_trim_left(const String& str);
   String string_trim_right(const String& str);
+  String string_shrink_inner_space(const String& str);
 
   String macro_case_to_pascal_case(const String& input);
 
@@ -41,6 +44,11 @@ namespace GodotObjectCompiler {
 
   template <typename... Args>
   String format(const String& format_str, Args&&... args) {
+    const std::size_t n = sizeof...(Args);
+    if (n == 0) {
+      return format_str;
+    }
+
     int size_s = std::snprintf(nullptr, 0, format_str.c_str(), args...) + 1;
     if (size_s <= 0) {
       return "";
@@ -52,3 +60,12 @@ namespace GodotObjectCompiler {
   }
 
 }  // namespace GodotObjectCompiler
+
+#define PANIC(...)                                                               \
+  print_err(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__)); \
+  abort()
+
+#define PANIC_COND(condition, ...) \
+  if ((condition)) {               \
+    PANIC(__VA_ARGS__);            \
+  }

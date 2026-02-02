@@ -21,13 +21,13 @@ namespace GodotObjectCompiler {
       String child_result = child_writer.get_string();
       Vector<String> lines = string_split(child_result, "\n");
       for (const String& line : lines) {
-        if (!line.empty()) {
-          for (Size i = 0; i < total; ++i) {
-            writer->write(" ");
-          }
-          writer->write(line);
-          writer->write("\n");
+        for (Size i = 0; i < total; ++i) {
+          writer->write(" ");
         }
+        if (!line.empty()) {
+          writer->write(line);
+        }
+        writer->write("\n");
       }
     }
 
@@ -83,9 +83,10 @@ namespace GodotObjectCompiler {
         Ref<IOutputNode> output = child->as<IOutputNode>();
 
         if (output) {
-          Size tmp = writer->current_length();
-          output->get_output(writer);
-          last_empty = tmp == writer->current_length();
+          StreamWriter child_writer;
+          output->get_output(&child_writer);
+          last_empty = child_writer.current_length() == 0 || child_writer.get_string() == delimiter;
+          writer->write(child_writer.get_string());
         }
       }
 
@@ -164,7 +165,7 @@ namespace GodotObjectCompiler {
     }
 
     Ref<ListNode> Lines(std::initializer_list<Ref<IOutputNode>>&& children) {
-      ADD_CHILDREN_AND_RET(create<ListNode>("\n", true, true););
+      ADD_CHILDREN_AND_RET(create<ListNode>("\n", false, false););
     }
 
     Ref<ReplaceNode> EscapedLines(std::initializer_list<Ref<IOutputNode>>&& children) {
@@ -198,6 +199,10 @@ namespace GodotObjectCompiler {
 
     Ref<SnippetNode> Text(const String& content) {
       return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(content);
+    }
+
+    Ref<SnippetNode> BoldText(const String& content) {
+      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(format("<b>%s</b>", content.c_str()));
     }
 
     Ref<SnippetNode> StringLiteral(const String& content) {
@@ -304,6 +309,12 @@ namespace GodotObjectCompiler {
           }),
           Indent(2, {EscapedLines(std::move(lines))}),
       });
+    }
+
+    Ref<EnclosingNode> DocComment(Ref<Node> content) {
+      return build<EnclosingNode>("/**\n*", "/")
+          .with_child(build<ReplaceNode>("\n", "\n*").with_child(build<IndentNode>(2).with_child(content)));
+      return build<EnclosingNode>("/**\n*", "\n*/").with_child(build<ReplaceNode>("\n", "\n*").with_child(content));
     }
 
     Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params, const String& content) {

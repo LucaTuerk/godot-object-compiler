@@ -4,6 +4,7 @@
 
 #include "output_transformator.h"
 
+#include "library/core/helpers.h"
 #include "library/core/string_writer.h"
 
 namespace GodotObjectCompiler {
@@ -22,6 +23,10 @@ namespace GodotObjectCompiler {
   }
 
   Ref<Writer::IOutputNode> OutputTransformator::transform(Ref<Node> tree) {
+    if (tree == nullptr) {
+      return Writer::Text("");
+    }
+
     ADD_TEXT_IF_TYPE(Virtual, "virtual")
     ADD_TEXT_IF_TYPE(Static, "static")
     ADD_TEXT_IF_TYPE(Inline, "inline")
@@ -32,6 +37,10 @@ namespace GodotObjectCompiler {
     ADD_TEXT_IF_TYPE(Reference, "&")
     ADD_TEXT_IF_TYPE(Pointer, "*")
     ADD_TEXT_IF_TYPE(ConstExpression, "constexpr")
+    ADD_TEXT_IF_TYPE(Unsigned, "unsigned")
+    ADD_TEXT_IF_TYPE(Signed, "signed")
+    ADD_TEXT_IF_TYPE(Short, "short")
+    ADD_TEXT_IF_TYPE(Long, "long")
 
     if (Ref<Namespace> _namespace = tree->as<Namespace>()) {
       return Writer::Spaces(
@@ -41,8 +50,7 @@ namespace GodotObjectCompiler {
     if (Ref<Body> body = tree->as<Body>()) {
       Ref<Writer::ListNode> into = Writer::Lines({});
       ADD_TRANSFORM_CHILDREN(body, into)
-      return Writer::NoSep(
-          {Writer::NewLine(), Writer::Braces({Writer::NewLine(), Writer::Indent(2, {Writer::NewLine(), into})})});
+      return Writer::NoSep({Writer::NewLine(), Writer::Braces({Writer::NewLine(), Writer::Indent(2, {into})})});
     }
 
     if (Ref<Parameters> parameters = tree->as<Parameters>()) {
@@ -114,6 +122,7 @@ namespace GodotObjectCompiler {
         return Writer::Text("");
       }
 
+      replace_non_output_children(output_node);
       return output_node;
     }
 
@@ -140,6 +149,23 @@ namespace GodotObjectCompiler {
     }
 
     return Writer::Text("");
+  }
+
+  void OutputTransformator::replace_non_output_children(Ref<Writer::IOutputNode> node) {
+    if (Ref<Context> context = std::dynamic_pointer_cast<Context>(node)) {
+      for (Ref<Node> child : *context) {
+        Ref<Writer::IOutputNode> output_child = child->as<Writer::IOutputNode>();
+        if (output_child) {
+          replace_non_output_children(output_child);
+        } else {
+          Ref<Writer::IOutputNode> transformed = transform(child);
+          Ref<Node> casted = std::dynamic_pointer_cast<Node>(transformed);
+          if (casted) {
+            context->replace_child(child, casted);
+          }
+        }
+      }
+    }
   }
 
 }  // namespace GodotObjectCompiler

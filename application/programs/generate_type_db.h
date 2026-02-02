@@ -8,11 +8,11 @@ namespace GodotObjectCompiler {
   class ApplicationContext;
 
   class GenerateTypeDB : public IProgram {
-    PROGRAM("generate_type_db");
+    PROGRAM(GenerateTypeDB, "generate/type_db");
 
    public:
 
-    int run(ApplicationContext& context) override;
+    Ref<ProgramError> run(ApplicationContext& context) override;
   };
 
 }  // namespace GodotObjectCompiler

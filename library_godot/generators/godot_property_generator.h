@@ -11,6 +11,8 @@ namespace GodotObjectCompiler {
     GENERATOR(GodotPropertyGenerator);
 
    public:
+   Ref<GeneratorError> do_generate_default_attribute_arguments(
+        Ref<Class> target_class, Ref<GodotPropertyAttribute> attribute, Ref<Context> default_values) override;
 
     Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<GodotPropertyAttribute> attribute,
         Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) override;
