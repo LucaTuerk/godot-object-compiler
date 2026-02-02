@@ -68,23 +68,24 @@ namespace GodotObjectCompiler {
     return std::chrono::system_clock::to_time_t(sctp);
   }
 
-  String path_base(const String& path) {
-    String result = "";
-    const Vector<String>& split = string_split(path, "/");
-    for (Size i = 0; i < split.size() - 1; ++i) {
-      result += split[i];
-      if (i != split.size() - 2) {
-        result += "/";
-      }
-    }
-    return result;
-  }
+  String path_base(const String& path) { return std::filesystem::path(path).parent_path().generic_string(); }
 
-  String path_concat(const String& path1, const String& path2) { return format("%s/%s", path1.c_str(), path2.c_str()); }
+  String path_concat(const String& path1, const String& path2) {
+    return (std::filesystem::path(path1) / std::filesystem::path(path2)).generic_string();
+  }
 
   String path_concat_ext(const String& dir, const String& filename, const String& extension) {
-    return format("%s/%s.%s", dir.c_str(), filename.c_str(), extension.c_str());
+    return (std::filesystem::path(dir) / std::filesystem::path(format("%s.%s", filename.c_str(), extension.c_str())))
+        .generic_string();
   }
+
+  String path_relative(const String& path, const String& base) {
+    return std::filesystem::relative(path, base).generic_string();
+  }
+
+  String path_absolute(const String& path) { return std::filesystem::absolute(path).generic_string(); }
+
+  String path_stem(const String& path) { return std::filesystem::path(path).stem().generic_string(); }
 
   Vector<String> directory_files(const String& path) {
     Vector<String> result;

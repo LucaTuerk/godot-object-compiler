@@ -16,16 +16,16 @@ namespace GodotObjectCompiler {
 
   Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& context) {
     TypeDB* type_db = TypeDB::instance();
-    type_db->set_cache_directory(context.cache_root);
+    type_db->set_cache_directory(context.paths_cache);
     TreeSitterParser parser;
 
     Config times;
-    auto time_path = path_concat(context.cache_root, "last_modified_times.goct");
+    auto time_path = path_concat(context.paths_cache, "last_modified_times.goct");
     if (file_exists(time_path)) {
       times.read_from_file(time_path);
     }
 
-    for (const String& include_path : context.include_paths) {
+    for (const String& include_path : context.paths_include) {
       for (const String& file : directory_files_recursive(include_path)) {
         if (!string_suffix(file, ".h")) {
           continue;

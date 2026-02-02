@@ -9,10 +9,13 @@ namespace GodotObjectCompiler {
 
     Vector<String> application_arguments;
 
-    String cache_root;
-    String generated_root;
-    Vector<String> input_files;
-    Vector<String> include_paths;
+    String paths_root;
+    String paths_cache;
+    String paths_generated;
+    Vector<String> files_input;
+    Vector<String> paths_include;
+
+    bool valid() const;
   };
 
 }  // namespace GodotObjectCompiler
