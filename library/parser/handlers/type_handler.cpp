@@ -21,6 +21,16 @@ namespace GodotObjectCompiler {
     }
 
     String type = ts_node_type(context.node);
+    if (type == "template_type") {
+      context.current_node = context.current_node->create_child<Type>();
+      return STEP_INTO;
+    }
+
+    if (type == "template_argument_list") {
+      context.current_node = context.current_node->create_child<TemplateArguments>();
+      return STEP_INTO;
+    }
+
     Ref<Node> last = context.current_node->get_child(-1);
     bool last_is_qualifier = last && last->is<TypeQualifier>();
 

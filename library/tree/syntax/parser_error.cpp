@@ -46,11 +46,14 @@ namespace GodotObjectCompiler {
     if (ExecutionContext::instance()->get_error_detail() == ErrorDetail::FULL) {
       writer.write("\nOccurred while processing node:\n");
 
-      Ref<Context> parent = node->get_parent();
-      if (parent) {
+      if (Ref<Context> parent = node->get_parent()) {
         Size line = 0;
         String pretty = parent->print_pretty_and_get_child_line(node, line);
-        writer.write(extract_lines(pretty, line - std::min(line, static_cast<Size>(3)), line + 3, line));
+
+        Ref<Context> context = node->as<Context>();
+        Size node_lines = context ? context->get_descendant_count() : 1;
+
+        writer.write(extract_lines(pretty, line - std::min(line, static_cast<Size>(3)), line + node_lines + 3, line));
       } else {
         writer.write(extract_lines(node->pretty_print(), 0, 6, 1));
       }

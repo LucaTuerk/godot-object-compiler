@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../node_handler.h"
 #include "library/parser/node_handler.h"
 
 namespace GodotObjectCompiler {
@@ -14,8 +15,10 @@ namespace GodotObjectCompiler {
 
   // SKIP(call_expression);
   SKIP(preproc_call);
-  SKIP(preproc_def);
+  // SKIP(preproc_def);
   SKIP(preproc_ifdef);
-  SKIP(preproc_function_def);
+  // SKIP(preproc_function_def);
+
+  SKIP(operator);
 
 }  // namespace GodotObjectCompiler

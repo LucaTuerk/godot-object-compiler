@@ -21,9 +21,30 @@ namespace GodotObjectCompiler {
 
     virtual bool handles_node(TSNode& node, const String& type) = 0;
     virtual NextStep handle(ParserContext& context) = 0;
+
+    static TSNode find_child_of_type(TSNode node, const String& type);
+    static TSNode find_ancestor_of_type(TSNode node, const String& type);
   };
 
 }  // namespace GodotObjectCompiler
+
+inline TSNode GodotObjectCompiler::INodeHandler::find_child_of_type(TSNode node, const String& type) {
+  for (uint32_t i = 0; i < ts_node_child_count(node); ++i) {
+    TSNode child = ts_node_child(node, i);
+    if (String(ts_node_type(child)) == type) {
+      return child;
+    }
+  }
+  return TSNode();
+}
+
+inline TSNode GodotObjectCompiler::INodeHandler::find_ancestor_of_type(TSNode node, const String& type) {
+  TSNode ancestor = node;
+  do {
+    ancestor = ts_node_parent(ancestor);
+  } while (!ts_node_is_null(ancestor) && ts_node_type(ancestor) != type);
+  return ancestor;
+}
 
 #define SKIP(name)                                                                         \
   class ___##name##___SKIP : public INodeHandler {                                         \

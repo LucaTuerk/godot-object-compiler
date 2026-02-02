@@ -24,6 +24,10 @@ namespace GodotObjectCompiler {
     NODE_TYPE(TemplateParameters);
   };
 
+  class TemplateArguments : public Context {
+    NODE_TYPE(TemplateArguments);
+  };
+
   class Parameter : public NamedContext {
     NODE_TYPE(Parameter);
 

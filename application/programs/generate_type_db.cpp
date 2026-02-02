@@ -6,13 +6,15 @@
 #include "library/core/config.h"
 #include "library/core/helpers.h"
 #include "library/parser/parser.h"
+#include "library/tree/output/output.h"
 #include "library/tree/syntax/class.h"
+#include "library/tree/syntax/define.h"
 #include "library/tree/syntax/enum.h"
 #include "library/tree/syntax/namespace.h"
 
 namespace GodotObjectCompiler {
 
-  int GenerateTypeDB::run(ApplicationContext& context) {
+  Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& context) {
     TypeDB* type_db = TypeDB::instance();
     type_db->set_cache_directory(context.cache_root);
     TreeSitterParser parser;
@@ -65,10 +67,16 @@ namespace GodotObjectCompiler {
           for (Ref<Enum> e : enums) {
             type_db->save_type_data(e);
           }
+
+          Vector<Ref<Define>> defines = global_namespace->find_children<Define>(true);
+          for (Ref<Define> define : defines) {
+            type_db->save_type_data(define);
+          }
         }
       }
     }
-    return 0;
+
+    return ProgramError::OK;
   }
 
 }  // namespace GodotObjectCompiler

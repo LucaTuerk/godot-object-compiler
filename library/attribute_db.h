@@ -49,7 +49,11 @@ namespace GodotObjectCompiler {
 
     Vector<Ref<IAttributeParameterType>> get_parameters_for_macro(const String& macro);
 
+    template <typename AttributeT, typename ParamT>
+    Ref<ParamT> get_parameter_type();
+
     String get_macro_for_attribute(const String& class_name);
+
     Vector<String> get_all_macros();
 
     bool register_class_generator(const String& generator_name, Ref<ClassGenerator> generator);
@@ -68,6 +72,32 @@ namespace GodotObjectCompiler {
     Dictionary<String, String> _macro_aliases;
   };
 
+  template <typename AttributeT, typename ParamT>
+  Ref<ParamT> AttributeDB::get_parameter_type() {
+    String attribute_type_name = AttributeT::get_type_static();
+
+    auto itr = _parameters.find(attribute_type_name);
+    if (itr == _parameters.end()) {
+      PANIC("Unknown attribute type %s", attribute_type_name.c_str());
+    }
+
+    const Vector<Ref<IAttributeParameterType>>& params = itr->second;
+
+    auto params_itr = std::find_if(
+        params.begin(), params.end(), [](auto val) { return val->get_type() == ParamT::get_type_static(); });
+    if (params_itr == params.end()) {
+      PANIC("Unknown parameter type %s for attribute type %s", ParamT::get_type_static().c_str(),
+          attribute_type_name.c_str());
+    }
+
+    Ref<ParamT> param = std::dynamic_pointer_cast<ParamT>(*params_itr);
+    if (!param) {
+      PANIC("Failed to convert parameter to requested type %s", ParamT::get_type_static().c_str());
+    }
+
+    return param;
+  }
+
 }  // namespace GodotObjectCompiler
 
 #define ATTRIBUTE_DEFAULT_MACRO(macro)                                                         \
@@ -77,4 +107,4 @@ namespace GodotObjectCompiler {
 
 #define ATTRIBUTE_REGISTER_PARAMETERS(type)        \
   static inline bool type##_parameter_registered = \
-      AttributeDB::instance()->register_attribute_parameter(get_type_static(), make_ref<type##ParameterType>());
+      AttributeDB::instance()->register_attribute_parameter(get_type_static(), type##ParameterType::instance());

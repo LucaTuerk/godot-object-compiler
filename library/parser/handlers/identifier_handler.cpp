@@ -11,14 +11,6 @@
 
 namespace GodotObjectCompiler {
 
-  TSNode find_ancestor_of_type(TSNode node, const String& type) {
-    TSNode ancestor = node;
-    do {
-      ancestor = ts_node_parent(ancestor);
-    } while (!ts_node_is_null(ancestor) && ts_node_type(ancestor) != type);
-    return ancestor;
-  }
-
   IdentifierHandler::IdentifierHandler() = default;
 
   bool IdentifierHandler::handles_node(TSNode& node, const String& type) {

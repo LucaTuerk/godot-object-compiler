@@ -44,7 +44,25 @@ namespace GodotObjectCompiler {
     _children.push_back(p_child);
   }
 
+  void Context::add_children(std::initializer_list<Ref<Node>>&& p_children) {
+    for (const Ref<Node>& child : p_children) {
+      add_child(child);
+    }
+  }
+
   Size Context::get_child_count() const { return _children.size(); }
+
+  Size Context::get_descendant_count() const {
+    Size count = 0;
+    for (const Ref<Node>& child : _children) {
+      if (const Ref<Context>& context_child = child->as<Context>()) {
+        count += context_child->get_descendant_count() + 1;
+      } else {
+        count += 1;
+      }
+    }
+    return count;
+  }
 
   Ref<Node> Context::get_child(SignedIndex p_idx) const {
     Index actual_idx = p_idx;

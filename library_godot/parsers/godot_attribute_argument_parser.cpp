@@ -72,7 +72,7 @@ namespace GodotObjectCompiler {
 
       Ref<Argument> argument_node = type->create_argument();
       if (!argument_node) {
-        return node_new<ParserError>(ERROR, "Failed to create argument node for type " + type->get_type_name());
+        return node_new<ParserError>(ERROR, "Failed to create argument node for type " + type->get_return_type());
       }
 
       target->add_child(argument_node);
@@ -113,16 +113,16 @@ namespace GodotObjectCompiler {
 
         if (error != ParserError::OK) {
           error->set_handled();
-          return node_new<ParserError>(
-              ERROR, format("Failed to parse argument \"%s\". %s", argument.c_str(),
-                         attribute->get_type().c_str(), error->message.c_str()));
+          return node_new<ParserError>(ERROR, format("Failed to parse argument \"%s\". %s", argument.c_str(),
+                                                  attribute->get_type().c_str(), error->message.c_str()));
         }
       }
     }
 
     if (no_match) {
-      return node_new<ParserError>(ERROR, format("Failed to find matching argument type with value name \"%s\" for attribute %s",
-                                              argument.c_str(), attribute->get_type().c_str()));
+      return node_new<ParserError>(
+          ERROR, format("Failed to find matching argument type with value name \"%s\" for attribute %s",
+                     argument.c_str(), attribute->get_type().c_str()));
     }
     return ParserError::OK;
   }
@@ -133,6 +133,8 @@ namespace GodotObjectCompiler {
       case IAttributeParameterType::ARG_STRING:
         target->build_child<Argument>().with_child<Literal>(content);
         break;
+      default:
+        PANIC("Unimplemented IAttributeParameterType %d", static_cast<int>(parameter.type));
     }
 
     return ParserError::OK;

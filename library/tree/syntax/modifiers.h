@@ -40,4 +40,20 @@ namespace GodotObjectCompiler {
     NODE_TYPE(ConstExpression);
   };
 
+  class Unsigned : public TypeQualifier {
+    NODE_TYPE(Unsigned);
+  };
+
+  class Signed : public TypeQualifier {
+    NODE_TYPE(Signed);
+  };
+
+  class Short : public TypeQualifier {
+    NODE_TYPE(Short)
+  };
+
+  class Long : public TypeQualifier {
+    NODE_TYPE(Long)
+  };
+
 }  // namespace GodotObjectCompiler

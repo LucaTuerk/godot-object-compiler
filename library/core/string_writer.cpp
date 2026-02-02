@@ -1,7 +1,10 @@
 
 #include "string_writer.h"
 
+#include <filesystem>
 #include <iostream>
+
+#include "helpers.h"
 
 namespace GodotObjectCompiler {
 
@@ -14,10 +17,24 @@ namespace GodotObjectCompiler {
 
   Size StreamWriter::current_length() { return _current_length; }
 
-  FileWriter::FileWriter(const String& path) { _file = std::fstream(path, std::ios::out); }
+  FileWriter::FileWriter(const String& path, bool do_not_write_same_content) {
+    this->path = path;
+    this->do_not_write_same_content = do_not_write_same_content;
+    if (!do_not_write_same_content) {
+      _file = std::fstream(path, std::ios::out);
+    }
+  }
+
+  FileWriter::~FileWriter() {
+    if (do_not_write_same_content && (!file_exists(path) || read_file(path) != _stream.get_string())) {
+      write_file(path, _stream.get_string());
+    }
+  }
 
   void FileWriter::write(const String& value) {
-    _file << value;
+    if (!do_not_write_same_content) {
+      _file << value;
+    }
     _stream.write(value);
   }
 

@@ -1,8 +1,15 @@
 #pragma once
+#include "core/assumption.h"
 #include "core/core.h"
 #include "library/tree/syntax/context.h"
 
 namespace GodotObjectCompiler {
+
+  class Define;
+
+  class Class;
+
+  class Enum;
 
   class ConfigNodeReaderWriter : public INodeReader, public INodeWriter {
    public:
@@ -11,7 +18,20 @@ namespace GodotObjectCompiler {
     Ref<Node> read_from_file(const String& path) override;
   };
 
-  class TypeDB {
+  template <typename T>
+  struct AssumeType {
+    String type_name;
+    Size template_arg_count;
+
+    AssumeType() = default;
+
+    AssumeType(const String& type_name, const Size& template_arg_count = 0)
+        : type_name(type_name), template_arg_count(template_arg_count) {}
+  };
+
+  class TypeDB : public IAssumptionValidator<AssumeType<Enum>>,
+                 public IAssumptionValidator<AssumeType<Class>>,
+                 public IAssumptionValidator<AssumeType<Define>> {
    public:
 
     static TypeDB* instance();
@@ -21,6 +41,13 @@ namespace GodotObjectCompiler {
 
     template <typename T>
     Ref<T> get_type_data(const String& qualified_name);
+
+    template <typename T>
+    AssumptionState validate_t(Assumption<AssumeType<T>>& type_assumption);
+
+    AssumptionState validate_assumption(Assumption<AssumeType<Enum>>& assumption) override;
+    AssumptionState validate_assumption(Assumption<AssumeType<Class>>& assumption) override;
+    AssumptionState validate_assumption(Assumption<AssumeType<Define>>& assumption) override;
 
    private:
 
@@ -40,6 +67,15 @@ namespace GodotObjectCompiler {
     }
 
     return result->as<T>();
+  }
+
+  template <typename T>
+  AssumptionState TypeDB::validate_t(Assumption<AssumeType<T>>& type_assumption) {
+    Ref<T> result = get_type_data<T>(type_assumption().type_name);
+    if (!result) {
+      return STATE_INVALID;
+    }
+    return STATE_VALID;
   }
 
 }  // namespace GodotObjectCompiler

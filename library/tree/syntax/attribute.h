@@ -10,6 +10,16 @@
                                                                                                                    \
   virtual Target _get_target() const override { return target; }                                                   \
                                                                                                                    \
+ public:                                                                                                           \
+                                                                                                                   \
+  Ref<target_type> Target##target_type() {                                                                         \
+    Ref<Node> node_target = resolve_target();                                                                      \
+    if (!node_target) {                                                                                            \
+      return nullptr;                                                                                              \
+    }                                                                                                              \
+    return node_target->as<target_type>();                                                                         \
+  }                                                                                                                \
+                                                                                                                   \
  private:
 
 namespace GodotObjectCompiler {

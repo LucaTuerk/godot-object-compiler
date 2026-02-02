@@ -15,6 +15,8 @@ namespace GodotObjectCompiler {
    public:
 
     Ref<Writer::IOutputNode> transform(Ref<Node> tree) override;
+
+    void replace_non_output_children(Ref<Writer::IOutputNode> node);
   };
 
 }  // namespace GodotObjectCompiler

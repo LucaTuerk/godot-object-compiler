@@ -4,6 +4,7 @@
 #include "library/tree/syntax/attributes.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/parser_error.h"
+#include "library_godot/attributes/godot_attributes.h"
 
 namespace GodotObjectCompiler {
 
@@ -20,23 +21,57 @@ namespace GodotObjectCompiler {
 
     virtual ~ClassGenerator() = default;
 
-    bool handles(Ref<Class> target_class, Ref<Attribute> attribute);
-    Ref<GeneratorError> generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
-        Ref<Context> generated_sources, Ref<Context> generated_global);
+    bool handles(const Ref<Class>& target_class, const Ref<Attribute>& attribute);
+    static void merge_default_attribute_arguments(
+        const Ref<Attribute>& target_attribute, const Ref<Context>& default_values);
+
+    Ref<GeneratorError> generate_default_attribute_arguments(
+        const Ref<Class>& target_class, const Ref<Attribute>& attribute, const Ref<Context>& default_values);
+
+    Ref<GeneratorError> generate(const Ref<Class>& target_class, const Ref<Attribute>& attribute,
+        const Ref<Context>& generated_body, const Ref<Context>& generated_sources,
+        const Ref<Context>& generated_global);
 
    protected:
 
     virtual bool _handles(Ref<Class> target_class, Ref<Attribute> attribute) = 0;
+    virtual Ref<GeneratorError> _generate_default_attribute_arguments(
+        Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> default_values) = 0;
     virtual Ref<GeneratorError> _generate(Ref<Class> target_class, Ref<Attribute> attribute,
         Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
   };
 
-  inline bool ClassGenerator::handles(Ref<Class> target_class, Ref<Attribute> attribute) {
+  inline bool ClassGenerator::handles(const Ref<Class>& target_class, const Ref<Attribute>& attribute) {
     return _handles(target_class, attribute);
   }
 
-  inline Ref<GeneratorError> ClassGenerator::generate(Ref<Class> target_class, Ref<Attribute> attribute,
-      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
+  inline void ClassGenerator::merge_default_attribute_arguments(
+      const Ref<Attribute>& target_attribute, const Ref<Context>& default_values) {
+    HashSet<String> had_value_set;
+
+    Ref<Arguments> arguments = target_attribute->find_child<Arguments>();
+    if (!arguments) {
+      arguments = target_attribute->build_child<Arguments>();
+    }
+
+    for (const Ref<Node>& child : arguments->get_children()) {
+      had_value_set.insert(child->get_type());
+    }
+
+    for (const Ref<Node>& child : *default_values) {
+      if (had_value_set.find(child->get_type()) == had_value_set.end()) {
+        arguments->add_child(child->clone());
+      }
+    }
+  }
+
+  inline Ref<GeneratorError> ClassGenerator::generate_default_attribute_arguments(
+      const Ref<Class>& target_class, const Ref<Attribute>& attribute, const Ref<Context>& default_values) {
+    return _generate_default_attribute_arguments(target_class, attribute, default_values);
+  }
+
+  inline Ref<GeneratorError> ClassGenerator::generate(const Ref<Class>& target_class, const Ref<Attribute>& attribute,
+      const Ref<Context>& generated_body, const Ref<Context>& generated_sources, const Ref<Context>& generated_global) {
     return _generate(target_class, attribute, generated_body, generated_sources, generated_global);
   }
 
@@ -45,12 +80,17 @@ namespace GodotObjectCompiler {
    protected:
 
     bool _handles(Ref<Class> target_class, Ref<Attribute> attribute) override;
+    Ref<GeneratorError> _generate_default_attribute_arguments(
+        Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> default_values) override;
+
     Ref<GeneratorError> _generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
         Ref<Context> generated_sources, Ref<Context> generated_global) override;
 
    public:
 
     ~IClassGenerator() override = default;
+    virtual Ref<GeneratorError> do_generate_default_attribute_arguments(
+        Ref<Class> target_class, Ref<AttrT> attribute, Ref<Context> default_values);
     virtual Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<AttrT> attribute, Ref<Context> generated_body,
         Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
   };
@@ -61,10 +101,22 @@ namespace GodotObjectCompiler {
   }
 
   template <typename AttrT>
+  Ref<GeneratorError> IClassGenerator<AttrT>::_generate_default_attribute_arguments(
+      Ref<Class> target_class, Ref<Attribute> attribute, std::shared_ptr<Context> default_values) {
+    return do_generate_default_attribute_arguments(target_class, attribute->as<AttrT>(), default_values);
+  }
+
+  template <typename AttrT>
   Ref<GeneratorError> IClassGenerator<AttrT>::_generate(Ref<Class> target_class, Ref<Attribute> attribute,
       Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
     return do_generate(
         target_class, attribute->template as<AttrT>(), generated_body, generated_sources, generated_global);
+  }
+
+  template <typename AttrT>
+  Ref<GeneratorError> IClassGenerator<AttrT>::do_generate_default_attribute_arguments(
+      Ref<Class> target_class, Ref<AttrT> attribute, Ref<Context> default_values) {
+    return GeneratorError::OK;
   }
 
 }  // namespace GodotObjectCompiler
