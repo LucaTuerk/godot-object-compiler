@@ -3,10 +3,20 @@
 
 namespace GodotObjectCompiler {
 
-  INTO(trailing_return_type);
-  INTO(type_descriptor);
+  //
+  // class TypeHandler : public INodeHandler {
+  //   NODE_HANDLER(TypeHandler)
+  //
+  //  public:
+  //
+  //   ~TypeHandler() override = default;
+  //   bool handles_node(TSNode& node, const String& type) override;
+  //   NextStep handle(ParserContext& context) override;
+  // };
 
-  SIMPLE_GENERATE(placeholder_type_specifier, PlaceholderType, STEP_OVER);
+  // INTO(trailing_return_type);
+  // INTO(type_descriptor);
+  // SIMPLE_GENERATE(placeholder_type_specifier, PlaceholderType, STEP_OVER);
 
   class TrailingReturnTypeIntoV2 : public IntoHandler<TrailingReturnTypeIntoV2> {
     NODE_HANDLER_V2(TrailingReturnTypeIntoV2);
@@ -31,16 +41,6 @@ namespace GodotObjectCompiler {
 
     static inline String generate_type = "placeholder_type_generate";
     static inline ParserStep next_step = ParserStep::StepOver();
-  };
-
-  class TypeHandler : public INodeHandler {
-    NODE_HANDLER(TypeHandler)
-
-   public:
-
-    ~TypeHandler() override = default;
-    bool handles_node(TSNode& node, const String& type) override;
-    NextStep handle(ParserContext& context) override;
   };
 
   class TypeHandlerV2 : public INodeHandlerV2 {

@@ -4,13 +4,13 @@
 
 namespace GodotObjectCompiler {
 
-  class ErrorHandler : public INodeHandler {
-    NODE_HANDLER(ErrorHandler)
-   public:
-
-    bool handles_node(TSNode& node, const String& type) override;
-    NextStep handle(ParserContext& context) override;
-  };
+  // class ErrorHandler : public INodeHandler {
+  //   NODE_HANDLER(ErrorHandler)
+  //  public:
+  //
+  //   bool handles_node(TSNode& node, const String& type) override;
+  //   NextStep handle(ParserContext& context) override;
+  // };
 
   class ErrorHandlerV2 : public INodeHandlerV2 {
     NODE_HANDLER_V2(ErrorHandlerV2);

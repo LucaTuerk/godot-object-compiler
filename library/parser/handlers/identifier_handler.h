@@ -3,18 +3,18 @@
 
 namespace GodotObjectCompiler {
 
-  class IdentifierHandler : public INodeHandler {
-    NODE_HANDLER(IdentifierHandler)
-
-   public:
-
-    IdentifierHandler();
-    ~IdentifierHandler() override = default;
-    bool handles_node(TSNode& node, const String& type) override;
-
-    NextStep handle(ParserContext& context) override;
-    NextStep handle_known_attribute(ParserContext& context, const String& macro);
-  };
+  // class IdentifierHandler : public INodeHandler {
+  //   NODE_HANDLER(IdentifierHandler)
+  //
+  //  public:
+  //
+  //   IdentifierHandler();
+  //   ~IdentifierHandler() override = default;
+  //   bool handles_node(TSNode& node, const String& type) override;
+  //
+  //   NextStep handle(ParserContext& context) override;
+  //   NextStep handle_known_attribute(ParserContext& context, const String& macro);
+  // };
 
   class IdentifierHandlerV2 : public INodeHandlerV2 {
     NODE_HANDLER_V2(IdentifierHandlerV2);

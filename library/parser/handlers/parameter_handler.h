@@ -3,15 +3,15 @@
 
 namespace GodotObjectCompiler {
 
-  class ParameterHandler : public INodeHandler {  //"parameter_declaration"
-    NODE_HANDLER(ParameterHandler)
-
-   public:
-
-    ~ParameterHandler() override = default;
-    bool handles_node(TSNode& node, const String& type) override;
-    NextStep handle(ParserContext& context) override;
-  };
+  // class ParameterHandler : public INodeHandler {  //"parameter_declaration"
+  //   NODE_HANDLER(ParameterHandler)
+  //
+  //  public:
+  //
+  //   ~ParameterHandler() override = default;
+  //   bool handles_node(TSNode& node, const String& type) override;
+  //   NextStep handle(ParserContext& context) override;
+  // };
 
   class ParameterHandlerV2 : public INodeHandlerV2 {
     NODE_HANDLER_V2(ParameterHandlerV2);

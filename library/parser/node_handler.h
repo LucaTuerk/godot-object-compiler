@@ -5,9 +5,9 @@
 
 #include "../tree/syntax/all.h"
 #include "library/core/core.h"
+#include "parser.h"
 #include "parser_context.h"
 #include "tree_sitter_node.h"
-#include "parser.h"
 
 #define NODE_HANDLER(name) static inline bool __registered___##name##___ = TreeSitterParser::register_handler<name>();
 #define NODE_HANDLER_V2(name) \

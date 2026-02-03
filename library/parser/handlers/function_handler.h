@@ -3,15 +3,16 @@
 
 namespace GodotObjectCompiler {
 
-  class FieldHandler : public INodeHandler {
-    NODE_HANDLER(FieldHandler)
-
-   public:
-
-    ~FieldHandler() override = default;
-    bool handles_node(TSNode& node, const String& type) override;
-    NextStep handle(ParserContext& context) override;
-  };
+  // class FieldHandler : public INodeHandler {
+  //   NODE_HANDLER(FieldHandler)
+  //
+  //  public:
+  //
+  //   ~FieldHandler() override = default;
+  //   bool handles_node(TSNode& node, const String& type) override;
+  //   NextStep handle(ParserContext& context) override;
+  // };
+  // INTO(expression_statement);
 
   class FieldHandlerV2 : public INodeHandlerV2 {
     NODE_HANDLER_V2(FieldHandlerV2);
@@ -29,7 +30,5 @@ namespace GodotObjectCompiler {
 
     static inline String into_type = "expression_statement";
   };
-
-  INTO(expression_statement);
 
 }  // namespace GodotObjectCompiler

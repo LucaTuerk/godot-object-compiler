@@ -5,10 +5,13 @@
 
 namespace GodotObjectCompiler {
 
-  // DO NOT IMPLEMENT
-  SKIP(template_declaration);
-  SKIP(conditional_expression);
-  SKIP(compound_statement);
+  // INTO(preproc_ifdef);
+  // SKIP(operator);
+  // SKIP(preproc_call);
+  // SKIP(number_literal);
+  // SKIP(template_declaration);
+  // SKIP(conditional_expression);
+  // SKIP(compound_statement);
 
   class TemplateDeclarationSkipV2 : public SkipHandler<TemplateDeclarationSkipV2> {
     NODE_HANDLER_V2(TemplateDeclarationSkipV2);
@@ -34,9 +37,6 @@ namespace GodotObjectCompiler {
     static inline String skip_type = "compound_statement";
   };
 
-  // MAYBE IMPLEMENT
-  SKIP(number_literal);
-
   class NumberLiteralSkipV2 : public SkipHandler<NumberLiteralSkipV2> {
     NODE_HANDLER_V2(NumberLiteralSkipV2);
 
@@ -44,9 +44,6 @@ namespace GodotObjectCompiler {
 
     static inline String skip_type = "number_literal";
   };
-
-  // SKIP(call_expression);
-  SKIP(preproc_call);
 
   class PreprocCallSkipV2 : public SkipHandler<PreprocCallSkipV2> {
     NODE_HANDLER_V2(PreprocCallSkipV2);
@@ -56,9 +53,6 @@ namespace GodotObjectCompiler {
     static inline String skip_type = "preproc_call";
   };
 
-  // SKIP(preproc_def);
-  INTO(preproc_ifdef);
-
   class PreprocIfDefIntoV2 : public IntoHandler<PreprocIfDefIntoV2> {
     NODE_HANDLER_V2(PreprocIfDefIntoV2);
 
@@ -66,10 +60,6 @@ namespace GodotObjectCompiler {
 
     static inline String into_type = "preproc_if_def_into";
   };
-
-  // SKIP(preproc_function_def);
-
-  SKIP(operator);
 
   class OperatorSkipV2 : public SkipHandler<OperatorSkipV2> {
     NODE_HANDLER_V2(OperatorSkipV2);

@@ -88,7 +88,7 @@ namespace GodotObjectCompiler {
 
   bool Node::has_parent() { return _parent.lock() != nullptr; }
 
-  bool Node::has_next_sibling() { return has_parent() && _index < get_parent()->get_child_count() - 2; }
+  bool Node::has_next_sibling() { return has_parent() && _index != get_parent()->get_child_count() - 1; }
 
   bool Node::has_previous_sibling() { return has_parent() && _index > 0; }
 
