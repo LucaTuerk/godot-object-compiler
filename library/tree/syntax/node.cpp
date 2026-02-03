@@ -111,7 +111,7 @@ namespace GodotObjectCompiler {
     }
 
     bool first = true;
-    for ( const String& line : string_split(to_string(), "\n")) {
+    for (const String& line : string_split(to_string(), "\n")) {
       if (!line.empty()) {
         if (first) {
           result += line + "\n";

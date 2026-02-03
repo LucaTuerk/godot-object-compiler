@@ -16,7 +16,7 @@ namespace GodotObjectCompiler {
   // SKIP(call_expression);
   SKIP(preproc_call);
   // SKIP(preproc_def);
-  SKIP(preproc_ifdef);
+  INTO(preproc_ifdef);
   // SKIP(preproc_function_def);
 
   SKIP(operator);

@@ -6,3 +6,4 @@
 #include "godot_initialization_generator.h"
 #include "godot_macro_include_generator.h"
 #include "godot_property_generator.h"
+#include "godot_signal_generator.h"

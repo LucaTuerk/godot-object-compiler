@@ -124,6 +124,7 @@ namespace GodotObjectCompiler {
     Ref<ListNode> Return(const String& name);
     Ref<SnippetNode> Param(const String& name);
     Ref<SnippetNode> Include(const String& path);
+    Ref<SnippetNode> SystemInclude(const String& path);
     Ref<ListNode> Namespace(const String& name, Ref<IOutputNode> content);
     Ref<ListNode> Class(const String& name, Ref<IOutputNode> content);
     Ref<ListNode> Class(const String& name, const String& base, Ref<IOutputNode> content);

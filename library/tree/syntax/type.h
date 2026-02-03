@@ -17,6 +17,7 @@ namespace GodotObjectCompiler {
     NODE_TYPE(Type);
 
     LAZY(Type, String, type_name);
+    LAZY(Type, String, type_name_untemplated);
     LAZY(Type, String, type_name_unmodified);
     LAZY(Type, bool, is_template_type);
     LAZY(Type, Size, template_argument_count);

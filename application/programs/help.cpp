@@ -67,7 +67,6 @@ namespace GodotObjectCompiler {
     } else {
       return name;
     }
-
   }
 
 }  // namespace GodotObjectCompiler

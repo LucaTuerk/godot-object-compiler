@@ -34,7 +34,7 @@ namespace GodotObjectCompiler {
     bool class_is_variant_type(Ref<Class> target_class);
 
     bool type_is_godot_ref_type(const Ref<Type>& target_type, Ref<Type>& inner_type);
-    bool type_is_ref_counted_type(const Ref<Type>& target_type);
+    bool inner_type_is_ref_counted_type(const Ref<Type>& inner_type);
     bool type_is_object_type(const Ref<Type>& target_type);
     bool type_is_node_type(const Ref<Type>& target_type);
     bool type_is_variant_type(const Ref<Type>& target_type);
@@ -44,9 +44,13 @@ namespace GodotObjectCompiler {
     Ref<GodotVariantTypeArgument> VariantType(const String& variant_type);
     Ref<GodotPropertyHintArgument> PropertyHint(const String& value, const String& hint_string = "");
     Ref<GodotPropertyUsageFlagsArgument> PropertyUsageFlag(const String& usage);
+
     Ref<Node> PropertyInfo(const Ref<GodotVariantTypeArgument>& variant_type,
         const Ref<GodotPropertyHintArgument>& hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>>& usages,
         const String& property_name);
+
+    Ref<Node> PropertyInfo(const Ref<GodotVariantTypeArgument>& variant_type, const String& property_name);
+    Ref<Node> PropertyInfoDefaultForType(const Ref<Type>& type, const String& property_name);
 
   };  // namespace GodotGeneratorUtils
 

@@ -25,7 +25,7 @@ namespace GodotObjectCompiler {
 
     for (const String& include_path : context.paths_include) {
       for (const String& file : directory_files_recursive(include_path)) {
-        if (!string_suffix(file, ".h")) {
+        if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp")) {
           continue;
         }
 

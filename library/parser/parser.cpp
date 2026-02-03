@@ -68,9 +68,10 @@ namespace GodotObjectCompiler {
           ERROR, "TreeSitterParser: Invalid target node, expected to be the global namespace.");
     }
     context.global_namespace = global_namespace;
-    context.current_node = global_namespace;
+    Ref<Body> body = global_namespace->build_child<Body>();
+    context.current_node = body;
 
-    // debug_print_tree(context.node);
+    debug_print_tree(context.node);
 
     while (true) {
       bool do_continue = true;
@@ -201,8 +202,13 @@ namespace GodotObjectCompiler {
         StreamWriter content;
         Size opened = 1;
         Size closed_index = open_index + 1;
-        ++itr;
 
+        if (itr == local_input.end()) {
+          // EHH Fix this
+          return "";
+        }
+
+        ++itr;
         while (itr != local_input.end()) {
           if (*itr == '(') {
             opened++;

@@ -284,6 +284,8 @@ namespace GodotObjectCompiler {
 
     Ref<SnippetNode> Include(const String& path) { return node_new<SnippetNode>("#include \"" + path + "\""); }
 
+    Ref<SnippetNode> SystemInclude(const String& path) { return node_new<SnippetNode>("#include <" + path + ">"); }
+
     Ref<ListNode> Namespace(const String& name, Ref<IOutputNode> content) {
       return Spaces({Text("namespace"), Text(name), Braces({NewLine(), Indent(4, {content})})});
     }

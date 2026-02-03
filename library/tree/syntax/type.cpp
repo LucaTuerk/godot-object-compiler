@@ -3,57 +3,43 @@
 #include "identifier.h"
 #include "library/core/helpers.h"
 #include "library/core/string_writer.h"
+#include "library/tree/output/output_transformator.h"
 #include "modifiers.h"
 
 namespace GodotObjectCompiler {
 
   String Type::_type_name_lazy_get() {
     StreamWriter writer;
+    OutputTransformator().transform(shared_from_this())->get_output(&writer);
+    return string_shrink_inner_space(string_trim(writer.get_string()));
+  }
 
-    for (Ref<Node> child : get_children()) {
-      if (Ref<Identifier> id = child->as<Identifier>()) {
-        writer.write(id->name);
-      } else if (Ref<Reference> ref = child->as<Reference>()) {
-        writer.write("&");
-      } else if (Ref<Pointer> ptr = child->as<Pointer>()) {
-        writer.write("*");
-      } else if (Ref<Const> c = child->as<Const>()) {
-        writer.write(" const ");
-      } else if (Ref<Static> s = child->as<Static>()) {
-        writer.write(" static ");
-      } else if (Ref<Volatile> v = child->as<Volatile>()) {
-        writer.write(" volatile ");
-      } else if (Ref<Unsigned> u = child->as<Unsigned>()) {
-        writer.write(" unsigned ");
-      } else if (Ref<Signed> s = child->as<Signed>()) {
-        writer.write(" signed ");
-      } else if (Ref<Short> s = child->as<Short>()) {
-        writer.write(" short ");
-      } else if (Ref<Long> s = child->as<Long>()) {
-        writer.write(" long ");
+  String Type::_type_name_untemplated_lazy_get() {
+    StreamWriter writer;
+    Ref<Type> temp = node_new<Type>();
+    for (const Ref<Node>& child : *this) {
+      if (child->is<TemplateParameters>() || child->is<TemplateArguments>()) {
+        continue;
       }
+      temp->add_child(child->clone());
     }
 
+    OutputTransformator().transform(temp)->get_output(&writer);
     return string_shrink_inner_space(string_trim(writer.get_string()));
   }
 
   String Type::_type_name_unmodified_lazy_get() {
     StreamWriter writer;
-
-    for (Ref<Node> child : get_children()) {
-      if (Ref<Identifier> id = child->as<Identifier>()) {
-        writer.write(id->name);
-      } else if (Ref<Unsigned> u = child->as<Unsigned>()) {
-        writer.write(" unsigned ");
-      } else if (Ref<Signed> s = child->as<Signed>()) {
-        writer.write(" signed ");
-      } else if (Ref<Short> s = child->as<Short>()) {
-        writer.write(" short ");
-      } else if (Ref<Long> s = child->as<Long>()) {
-        writer.write(" long ");
+    Ref<Type> temp = node_new<Type>();
+    for (const Ref<Node>& child : *this) {
+      if (child->is<TypeQualifier>() || child->is<Pointer>() || child->is<Reference>()) {
+        continue;
       }
+
+      temp->add_child(child->clone());
     }
 
+    OutputTransformator().transform(temp)->get_output(&writer);
     return string_shrink_inner_space(string_trim(writer.get_string()));
   }
 

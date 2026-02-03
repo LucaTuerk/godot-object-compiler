@@ -5,9 +5,7 @@
 
 namespace GodotObjectCompiler {
 
-  void Permissions::clear() {
-    allowed_write_paths.clear();
-  }
+  void Permissions::clear() { allowed_write_paths.clear(); }
 
   void Permissions::add_write_path(const String& path) {
     String absolute = path_absolute(path);
@@ -16,8 +14,9 @@ namespace GodotObjectCompiler {
 
   bool Permissions::is_allowed_write_path(const String& path) {
     String absolute = path_absolute(path);
-    return std::find_if(allowed_write_paths.begin(), allowed_write_paths.end(),
-               [absolute](const String& allowed) { return string_prefix(absolute, allowed); }) != allowed_write_paths.end();
+    return std::find_if(allowed_write_paths.begin(), allowed_write_paths.end(), [absolute](const String& allowed) {
+      return string_prefix(absolute, allowed);
+    }) != allowed_write_paths.end();
   }
 
   void Permissions::ensure_is_allowed_write_path(const String& path) {

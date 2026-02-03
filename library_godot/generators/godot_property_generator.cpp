@@ -26,7 +26,7 @@ namespace GodotObjectCompiler {
     GEN_ERROR_COND(field_type_name.empty(), target_field, "Invalid type name for target field.");
 
     if (Ref<Type> ref_inner_type;
-        type_is_godot_ref_type(field_type, ref_inner_type) && type_is_ref_counted_type(ref_inner_type)) {
+        type_is_godot_ref_type(field_type, ref_inner_type) && inner_type_is_ref_counted_type(ref_inner_type)) {
       // clang-format off
       default_values->add_children({
         VariantType(VariantTypeObject()),
@@ -85,19 +85,26 @@ namespace GodotObjectCompiler {
       const String getter_name = format("get_%s", property_name.c_str());
       const String setter_name = format("set_%s", property_name.c_str());
 
+      Ref<Type> ref_inner;
+      bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner);
+      bool is_obj_type = type_is_object_type(field_type);
+      bool use_const_ref = !(is_obj_type || is_ref_type);
+
       bind_methods_body->add_child(bind_method(target_class->name(), getter_name, {}));
       bind_methods_body->add_child(bind_method(target_class->name(), setter_name, {property_name}));
 
+      Ref<Node> used_type = use_const_ref ? const_ref(type_name) : field_type->clone();
+
       // clang-format off
       Ref<Function> get_def = build<Function>().with_children({
-        const_ref(type_name),
+        used_type->clone(),
         build<Identifier>(getter_name),
         build<Parameters>(),
         build<Const>()
       }).with_child(Writer::Semicolon());
 
       Ref<Function> get_impl = build<Function>().with_children({
-        const_ref(type_name),
+        used_type->clone(),
         build<Identifier>(target_class->name()  + "::" + getter_name),
         build<Parameters>(),
         build<Const>(),
@@ -111,7 +118,7 @@ namespace GodotObjectCompiler {
         build<Identifier>(setter_name),
         build<Parameters>().with_child(
           build<Parameter>().with_children({
-            const_ref(type_name),
+            used_type->clone(),
             build<Identifier>("p_" + property_name),
         }))
       }).with_child(Writer::Semicolon());
@@ -123,7 +130,7 @@ namespace GodotObjectCompiler {
             .with_child(
               build<Parameter>()
               .with_children({
-                const_ref(type_name),
+                used_type->clone(),
                 build<Identifier>("p_"+property_name)
               })
             ),
