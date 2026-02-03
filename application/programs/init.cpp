@@ -2,8 +2,11 @@
 #include "init.h"
 
 #include "application/project.h"
+#include "init_local_resources.h"
 #include "library/core/helpers.h"
+#include "library/core/permissions.h"
 #include "library/core/resources.h"
+#include "program_functions.h"
 
 namespace GodotObjectCompiler {
 
@@ -52,6 +55,18 @@ namespace GodotObjectCompiler {
     print_ln("");
 
     if (input("|? Accept? (y/%s) ", "n") == "y") {
+      Permissions::instance()->add_write_path(path_cwd());
+      Project project;
+      project.project_name = project_name;
+      project.paths_root = root_folder;
+      project.paths_generated = generate_folder;
+      project.paths_cache = cache_root;
+      project.write_to_file("generated.goc_project");
+
+      if (!context.set_from_project(project)) {
+        return make_ref<ProgramError>(ERROR, "Failed to setup ApplicationContext from provided project settings. Abort!");
+      }
+
       if (gen_missing == "y") {
         if (create_dir_recursive(root_absolute)) {
           print_ln(format("   |-> Created directory \"%s\".", root_absolute.c_str()));
@@ -81,29 +96,7 @@ namespace GodotObjectCompiler {
         print_ln(format("|-> Folders written to \"%s\".", ignore_path.c_str()));
       }
 
-      Vector<String> copy_resources_roots = {
-          "res://variant_types",
-          "res://macros",
-      };
-
-      for (const String& copy_resources : copy_resources_roots) {
-        for (const String& res_path : Resources::instance()->resources_recursive(copy_resources)) {
-          String relative = path_relative(res_path, copy_resources);
-          auto file_path =
-              path_concat(path_concat(goc_absolute, string_replace(copy_resources, "res://", "")), relative);
-          if (!file_exists(file_path)) {
-            create_dir_recursive(path_base(file_path));
-            write_file(file_path, Resources::instance()->load_text_resource(res_path));
-          }
-        }
-      }
-
-      Project project;
-      project.project_name = project_name;
-      project.paths_root = root_folder;
-      project.paths_generated = generate_folder;
-      project.paths_cache = cache_root;
-      project.write_to_file("generated.goc_project");
+      Ref<ProgramError> init_resources_error = InitLocalResources().run(context);
 
       String _ = input(format("\n|-> Successfully generated project file \"%s\" (enter to exit)",
           path_absolute("generated.goc_project").c_str()));

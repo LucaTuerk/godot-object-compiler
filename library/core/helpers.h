@@ -19,6 +19,7 @@ namespace GodotObjectCompiler {
   String path_concat_ext(const String& dir, const String& filename, const String& extension);
   String path_relative(const String& path, const String& base);
   String path_absolute(const String& path);
+  String path_cwd();
   String path_stem(const String& path);
   Vector<String> directory_files(const String& path);
   Vector<String> directory_files_recursive(const String& path);

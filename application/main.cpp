@@ -4,6 +4,7 @@
 #include "compiled_resources/res.gen.h"
 #include "library/core/core.h"
 #include "library/core/helpers.h"
+#include "library/core/permissions.h"
 #include "library/core/resources.h"
 #include "library/core/string_writer.h"
 #include "library/parser/parser.h"
@@ -54,24 +55,13 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  context.paths_root = path_absolute(project.paths_root);
-  context.paths_generated = path_absolute(project.paths_generated);
-  context.paths_cache = path_absolute(project.paths_cache);
-
-  context.paths_include = project.paths_include;
-  if (std::find(context.paths_include.begin(), context.paths_include.end(), project.paths_root) ==
-      context.paths_include.end()) {
-    context.paths_include.push_back(project.paths_root);
-  }
-  context.files_input = directory_files_recursive(project.paths_root);
-
-  std::transform(
-      context.paths_include.begin(), context.paths_include.end(), context.paths_include.begin(), &path_absolute);
-  std::transform(context.files_input.begin(), context.files_input.end(), context.files_input.begin(), &path_absolute);
-
-  if (!context.valid()) {
+  if (!context.set_from_project(project)) {
     return 1;
   }
+
+#ifdef DEV_BUILD
+  Permissions::instance()->add_write_path("resources");
+#endif
 
   TypeDB::instance()->set_cache_directory(context.paths_cache);
   ExecutionContext::instance()->set_error_level(ERROR, FULL);

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <random>
 
+#include "permissions.h"
+
 String read_file(const String& path) {
   std::ifstream ifs;
   // prepare f to throw if failbit gets set
@@ -36,6 +38,7 @@ Vector<String> read_lines(const String& path) {
 }
 
 void write_file(const String& path, const String& content) {
+  GodotObjectCompiler::Permissions::instance()->ensure_is_allowed_write_path(path);
   std::ofstream ofs(path.c_str(), std::ios::out | std::ios::binary);
   ofs.write(content.c_str(), content.size());
 }

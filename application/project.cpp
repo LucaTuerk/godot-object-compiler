@@ -20,6 +20,7 @@ namespace GodotObjectCompiler {
 
     reader->read_from_section("Paths");
     paths_root = reader->read<String, String>("RootPath");
+    paths_goc = reader->read<String, String>("GOCPath");
     paths_generated = reader->read<String, String>("GeneratedPath");
     paths_cache = reader->read<String, String>("CachePath");
     paths_include = from_comma_separated_string(reader->read<String, String>("IncludePaths"));
@@ -38,6 +39,7 @@ namespace GodotObjectCompiler {
     writer->write<String, String>("RootPath", paths_root);
     writer->write<String, String>("GeneratedPath", paths_generated);
     writer->write<String, String>("CachePath", paths_cache);
+    writer->write<String, String>("GOCPath", paths_goc);
     writer->write<String, String>("IncludePaths", to_comma_separated_string(paths_include));
     writer->write<String, String>("IgnorePaths", to_comma_separated_string(paths_ignore));
   }
