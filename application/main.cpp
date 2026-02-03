@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
   }
 
   Project project;
-  if (!project.read_from_file("./goc_project.conf")) {
+  if (!project.read_from_file("goc_project.conf")) {
     print_err("Could not find project file.");
     return 1;
   }

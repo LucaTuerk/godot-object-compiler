@@ -121,9 +121,14 @@ namespace GodotObjectCompiler {
     }
 
     const String& cache_file_path = _get_cache_file_path(qualified_name);
+    const String& godot_cache_file_path = _get_cache_file_path("godot::" + qualified_name);
 
     if (file_exists(cache_file_path)) {
       Ref<Node> root = reader.read_from_file(cache_file_path);
+      _cache[qualified_name] = root;
+      return root;
+    } else if (file_exists(godot_cache_file_path)) {
+      Ref<Node> root = reader.read_from_file(godot_cache_file_path);
       _cache[qualified_name] = root;
       return root;
     }

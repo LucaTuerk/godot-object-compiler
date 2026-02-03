@@ -64,7 +64,8 @@ namespace GodotObjectCompiler {
       project.write_to_file("generated.goc_project");
 
       if (!context.set_from_project(project)) {
-        return make_ref<ProgramError>(ERROR, "Failed to setup ApplicationContext from provided project settings. Abort!");
+        return make_ref<ProgramError>(
+            ERROR, "Failed to setup ApplicationContext from provided project settings. Abort!");
       }
 
       if (gen_missing == "y") {

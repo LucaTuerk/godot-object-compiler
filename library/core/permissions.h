@@ -4,7 +4,8 @@
 namespace GodotObjectCompiler {
 
   class Permissions {
-  public:
+   public:
+
     static Permissions* instance() {
       static Permissions instance;
       return &instance;
@@ -15,9 +16,9 @@ namespace GodotObjectCompiler {
     bool is_allowed_write_path(const String& path);
     void ensure_is_allowed_write_path(const String& path);
 
-  private:
+   private:
+
     HashSet<String> allowed_write_paths;
   };
 
 }  // namespace GodotObjectCompiler
-

@@ -45,21 +45,29 @@ namespace GodotObjectCompiler {
     Ref<Context> register_types_source = node_new<Context>();
     Ref<Context> register_class_includes = node_new<Context>();
 
-    String register_method_name = "register_module";
-    String unregister_method_name = "unregister_module";
-    String register_file_name = "register_types";
+    String register_method_name = "generated_register_module";
+    String unregister_method_name = "generated_unregister_module";
+    String register_file_name = "generated_register_types";
     Vector<String> registered_classes_headers;
+
+    // #include <gdextension_interface.h>
+    // #include <godot_cpp/core/class_db.hpp>
+    // #include <godot_cpp/core/defs.hpp>
+    // #include <godot_cpp/godot.hpp>
 
     // clang-format off
     register_types_header->add_children({
       Writer::PragmaOnce(),
-      Writer::Include("modules/register_module_types.h"),
-      Writer::Include("core/object/class_db.h"),
+      // Writer::Include("modules/register_module_types.h"),
+      // Writer::Include("core/object/class_db.h"),
+      Writer::SystemInclude("godot_cpp/godot.hpp"),
+      Writer::Text("using namespace godot;"),
       Writer::NewLine(),
       build<Function>().with_children({
         build<Type>().with_child<Identifier>("void"),
         build<Identifier>(register_method_name),
-          build<Parameters>().with_child(
+          build<Parameters>()
+        .with_child(
             build<Parameter>().with_children({
               build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
               build<Identifier>("p_level")
@@ -69,7 +77,8 @@ namespace GodotObjectCompiler {
       build<Function>().with_children({
         build<Type>().with_child<Identifier>("void"),
         build<Identifier>(unregister_method_name),
-          build<Parameters>().with_child(
+          build<Parameters>()
+        .with_child(
             build<Parameter>().with_children({
               build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
               build<Identifier>("p_level")
@@ -82,6 +91,9 @@ namespace GodotObjectCompiler {
     Ref<Body> unregister_body;
 
     register_types_source->add_children({
+      Writer::SystemInclude("gdextension_interface.h"),
+      Writer::SystemInclude("godot_cpp/core/class_db.hpp"),
+      Writer::SystemInclude("godot_cpp/core/defs.hpp"),
       Writer::Include(path_concat_ext(context.paths_generated, register_file_name, "h")),
       register_class_includes,
       Writer::NewLine(),
@@ -111,6 +123,10 @@ namespace GodotObjectCompiler {
     // clang-format on
 
     for (const String& input_file : context.files_input) {
+      if (!string_suffix(input_file, ".h") && !string_suffix(input_file, ".hpp")) {
+        continue;
+      }
+
       TreeSitterParser parser;
       Ref<Namespace> global_namespace = node_new<Namespace>();
       Ref<ParserError> error = parser.parse_file(input_file, global_namespace);
@@ -161,6 +177,7 @@ namespace GodotObjectCompiler {
       Vector<Results> generate_results;
 
       Writer::PragmaOnce()->get_output(&generated_writer);
+      Writer::Text("#undef GOC_FILE_ID\n")->get_output(&generated_writer);
       Writer::Define("GOC_FILE_ID", {}, file_id(input_file))->get_output(&generated_writer);
       Writer::Include(input_file)->get_output(&source_writer);
 
@@ -276,8 +293,8 @@ namespace GodotObjectCompiler {
     Ref<Writer::IOutputNode> register_header_output = transformator.transform(register_types_header);
     Ref<Writer::IOutputNode> register_source_output = transformator.transform(register_types_source);
 
-    FileWriter register_header_writer(path_concat_ext(context.paths_generated, "register_types", "h"));
-    FileWriter register_source_writer(path_concat_ext(context.paths_generated, "register_types", "cpp"));
+    FileWriter register_header_writer(path_concat_ext(context.paths_generated, "generated_register_types", "h"));
+    FileWriter register_source_writer(path_concat_ext(context.paths_generated, "generated_register_types", "cpp"));
 
     register_header_output->get_output(&register_header_writer);
     register_source_output->get_output(&register_source_writer);

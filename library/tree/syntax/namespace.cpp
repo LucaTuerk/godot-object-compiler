@@ -40,89 +40,27 @@ namespace GodotObjectCompiler {
   }
 
   Vector<Ref<Field>> Namespace::_fields_lazy_get() {
-    Vector<Ref<Field>> fields;
-    Ref<Body> body = find_child<Body>();
-    const List<Ref<Node>>& children = body ? body->get_children() : get_children();
-
-    for (Ref<Node> child : children) {
-      if (child->is<Field>()) {
-        fields.push_back(child->as<Field>());
-      }
-    }
-
-    return fields;
+    return body() ? body()->find_children<Field>() : Vector<Ref<Field>>();
   }
 
   Vector<Ref<Function>> Namespace::_functions_lazy_get() {
-    Vector<Ref<Function>> functions;
-    Ref<Body> body = find_child<Body>();
-    const List<Ref<Node>>& children = body ? body->get_children() : get_children();
-
-    for (Ref<Node> child : children) {
-      if (child->is<Function>()) {
-        functions.push_back(child->as<Function>());
-      }
-    }
-
-    for (Ref<Namespace> _namespace : namespaces()) {
-      for (Ref<Function> _class : _namespace->functions()) {
-        functions.push_back(_class);
-      }
-    }
-
-    return functions;
+    return body() ? body()->find_children<Function>() : Vector<Ref<Function>>();
   }
 
   Vector<Ref<Class>> Namespace::_classes_lazy_get() {
-    Vector<Ref<Class>> classes;
-    Ref<Body> body = find_child<Body>();
-    const List<Ref<Node>>& children = body ? body->get_children() : get_children();
-
-    for (Ref<Node> child : children) {
-      if (child->is<Class>()) {
-        classes.push_back(child->as<Class>());
-      }
-    }
-
-    return classes;
+    return body() ? body()->find_children<Class>() : Vector<Ref<Class>>();
   }
 
   Vector<Ref<Class>> Namespace::_classes_recursive_lazy_get() {
-    Vector<Ref<Class>> _classes = classes();
-
-    for (Ref<Namespace> _child_namespace : child_namespaces()) {
-      for (Ref<Class> _class : _child_namespace->classes_recursive()) {
-        _classes.push_back(_class);
-      }
-    }
-
-    return _classes;
+    return body() ? body()->find_children<Class>(true) : Vector<Ref<Class>>();
   }
 
   Vector<Ref<Enum>> Namespace::_enums_lazy_get() {
-    Vector<Ref<Enum>> enums;
-    Ref<Body> body = find_child<Body>();
-    const List<Ref<Node>>& children = body ? body->get_children() : get_children();
-
-    for (Ref<Node> child : children) {
-      if (child->is<Enum>()) {
-        enums.push_back(child->as<Enum>());
-      }
-    }
-
-    return enums;
+    return body() ? body()->find_children<Enum>() : Vector<Ref<Enum>>();
   }
 
   Vector<Ref<Enum>> Namespace::_enums_recursive_lazy_get() {
-    Vector<Ref<Enum>> _enums = enums();
-
-    for (Ref<Namespace> _child_namespace : child_namespaces()) {
-      for (Ref<Enum> _enum : _child_namespace->enums_recursive()) {
-        _enums.push_back(_enum);
-      }
-    }
-
-    return _enums;
+    return body() ? body()->find_children<Enum>(true) : Vector<Ref<Enum>>();
   }
 
 }  // namespace GodotObjectCompiler

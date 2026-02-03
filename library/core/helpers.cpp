@@ -97,9 +97,7 @@ namespace GodotObjectCompiler {
     return std::filesystem::absolute(path).generic_string();
   }
 
-  String path_cwd() {
-    return std::filesystem::current_path();
-  }
+  String path_cwd() { return std::filesystem::current_path(); }
 
   String path_stem(const String& path) { return std::filesystem::path(path).stem().generic_string(); }
 

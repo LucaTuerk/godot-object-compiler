@@ -81,6 +81,18 @@ namespace GodotObjectCompiler {
       return into;
     }
 
+    if (Ref<TemplateParameters> arguments = tree->as<TemplateParameters>()) {
+      Ref<Writer::ListNode> into = Writer::Params({});
+      ADD_TRANSFORM_CHILDREN(arguments, into)
+      return Writer::Chevrons({into});
+    }
+
+    if (Ref<TemplateArguments> arguments = tree->as<TemplateArguments>()) {
+      Ref<Writer::ListNode> into = Writer::Params({});
+      ADD_TRANSFORM_CHILDREN(arguments, into)
+      return Writer::Chevrons({into});
+    }
+
     if (Ref<Parameter> parameter = tree->as<Parameter>()) {
       Ref<Writer::ListNode> into = Writer::Spaces({});
       for (Ref<Node> child : *parameter) {
