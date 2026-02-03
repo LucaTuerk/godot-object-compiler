@@ -9,14 +9,14 @@
 
 namespace GodotObjectCompiler {
 
-  bool LiteralHandler::handles_node(TSNode& node, const String& type) {
-    return string_suffix(type, "literal") || type == "null";
-  }
-
-  NextStep LiteralHandler::handle(ParserContext& context) {
-    context.current_node->create_child<Literal>(context.copy_node_content(context.node));
-    return STEP_OVER;
-  }
+  // bool LiteralHandler::handles_node(TSNode& node, const String& type) {
+  //   return string_suffix(type, "literal") || type == "null";
+  // }
+  //
+  // NextStep LiteralHandler::handle(ParserContext& context) {
+  //   context.current_node->create_child<Literal>(context.copy_node_content(context.node));
+  //   return STEP_OVER;
+  // }
 
   bool LiteralHandlerV2::handles_node(const Ref<TreeSitterNode>& current_src) {
     return string_suffix(current_src->type, "literal") || current_src->type == "null";

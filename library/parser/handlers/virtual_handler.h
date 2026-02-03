@@ -3,15 +3,15 @@
 
 namespace GodotObjectCompiler {
 
-  class VirtualHandler : public INodeHandler {
-    NODE_HANDLER(VirtualHandler)
-
-   public:
-
-    ~VirtualHandler() override = default;
-    bool handles_node(TSNode& node, const String& type) override;
-    NextStep handle(ParserContext& context) override;
-  };
+  // class VirtualHandler : public INodeHandler {
+  //   NODE_HANDLER(VirtualHandler)
+  //
+  //  public:
+  //
+  //   ~VirtualHandler() override = default;
+  //   bool handles_node(TSNode& node, const String& type) override;
+  //   NextStep handle(ParserContext& context) override;
+  // };
 
   class VirtualHandlerV2 : public INodeHandlerV2 {
     NODE_HANDLER_V2(VirtualHandlerV2);

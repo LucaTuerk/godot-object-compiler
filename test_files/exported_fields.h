@@ -1,6 +1,4 @@
 #pragma once
-#include <cstdint>
-
 #include "../.generated/macros.h"
 #include "../library/core/core.h"
 #include "/home/luca/Repositories/godot/core/variant/variant.h"

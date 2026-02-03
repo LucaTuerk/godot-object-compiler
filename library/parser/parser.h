@@ -4,6 +4,7 @@
 #include "library/core/core.h"
 #include "library/parser/parser_context.h"
 #include "library/tree/syntax/parser_error.h"
+
 // #include "node_handler.h"
 
 namespace GodotObjectCompiler {
@@ -44,7 +45,7 @@ namespace GodotObjectCompiler {
     static inline Vector<INodeHandler*> _handlers{};
     static inline HashSet<String> _handler_names_v2{};
     static inline Vector<Ref<INodeHandlerV2>> _handlers_v2{};
-    ParserContext context{};
+    // ParserContext context{};
   };
 
   template <typename T>

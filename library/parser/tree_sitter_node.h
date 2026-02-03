@@ -21,7 +21,7 @@ namespace GodotObjectCompiler {
       Point(const TSPoint& point);
     };
 
-    TreeSitterNode(const TSNode& node);
+    TreeSitterNode(const TSNode& node, ParserContext* parser_context);
 
     String to_string() const override;
 

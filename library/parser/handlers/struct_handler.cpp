@@ -4,12 +4,12 @@
 
 namespace GodotObjectCompiler {
 
-  bool StructHandler::handles_node(TSNode& node, const String& type) { return type == "struct_specifier"; }
-
-  NextStep StructHandler::handle(ParserContext& context) {
-    context.current_node = context.current_node->build_child<Struct>();
-    return STEP_INTO;
-  }
+  // bool StructHandler::handles_node(TSNode& node, const String& type) { return type == "struct_specifier"; }
+  //
+  // NextStep StructHandler::handle(ParserContext& context) {
+  //   context.current_node = context.current_node->build_child<Struct>();
+  //   return STEP_INTO;
+  // }
 
   bool StructHandlerV2::handles_node(const Ref<TreeSitterNode>& current_src) {
     return current_src->type == "struct_specifier";

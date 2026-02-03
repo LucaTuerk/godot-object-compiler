@@ -11,14 +11,14 @@
 
 namespace GodotObjectCompiler {
 
-  bool ErrorHandler::handles_node(TSNode& node, const String& type) { return type == "ERROR"; }
-
-  NextStep ErrorHandler::handle(ParserContext& context) {
-    auto node_start_point = ts_node_start_point(context.node);
-    context.current_node->create_child<ParserError>(ErrorLevel::ERROR, "TreeSitterParser", "", context.file_path,
-        context.buffer, node_start_point.row + 1, node_start_point.column + 1);
-    return STEP_OVER;
-  }
+  // bool ErrorHandler::handles_node(TSNode& node, const String& type) { return type == "ERROR"; }
+  //
+  // NextStep ErrorHandler::handle(ParserContext& context) {
+  //   auto node_start_point = ts_node_start_point(context.node);
+  //   context.current_node->create_child<ParserError>(ErrorLevel::ERROR, "TreeSitterParser", "", context.file_path,
+  //       context.buffer, node_start_point.row + 1, node_start_point.column + 1);
+  //   return STEP_OVER;
+  // }
 
   bool ErrorHandlerV2::handles_node(const Ref<TreeSitterNode>& current_src) { return current_src->type == "ERROR"; }
 
