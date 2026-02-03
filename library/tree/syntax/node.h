@@ -32,6 +32,10 @@ namespace GodotObjectCompiler {
     virtual void write_to(IStructuredWriter* writer);
     virtual void read_from(IStructuredReader* reader);
 
+    bool has_parent();
+    bool has_next_sibling();
+    bool has_previous_sibling();
+
     String pretty_print() const;
     String print_pretty_and_get_child_line(Ref<Node> child, Size& line) const;
 

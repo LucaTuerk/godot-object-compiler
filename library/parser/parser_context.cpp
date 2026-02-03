@@ -2,6 +2,8 @@
 
 #include "../tree/syntax/all.h"
 #include "library/core/helpers.h"
+#include "parser.h"
+#include "tree_sitter_node.h"
 
 #define CREATE_NAMED(type)                                   \
   type* result = current_node->create_child<type>();         \
@@ -62,31 +64,6 @@ namespace GodotObjectCompiler {
     return buffer.substr(ts_node_start_byte(p_node), ts_node_end_byte(p_node) - ts_node_start_byte(p_node));
   }
 
-  Ref<Namespace> ParserContext::create_namespace() {
-    Ref<Namespace> result = current_node->create_child<Namespace>();
-    return result;
-  }
-
-  Ref<Class> ParserContext::create_class() {
-    Ref<Class> result = current_node->create_child<Class>();
-    return result;
-  }
-
-  Ref<Struct> ParserContext::create_struct() {
-    Ref<Struct> result = current_node->create_child<Struct>();
-    return result;
-  }
-
-  Ref<Function> ParserContext::create_function() {
-    Ref<Function> result = current_node->create_child<Function>();
-    return result;
-  }
-
-  Ref<Field> ParserContext::create_field() {
-    Ref<Field> result = current_node->create_child<Field>();
-    return result;
-  }
-
   bool ParserContext::is_valid() const {
     uint32_t node_child_count = ts_node_child_count(node);
     return !_invalid && node_child_count > 0;
@@ -101,6 +78,7 @@ namespace GodotObjectCompiler {
     ts_parser_set_language(parser, tree_sitter_cpp());
     tree = ts_parser_parse_string(parser, nullptr, buffer.c_str(), buffer.length());
     node = ts_tree_root_node(tree);
+    ts_node = create_node(node);
     cursor = ts_tree_cursor_new(node);
     _invalid = ts_node_is_null(node);
   }
@@ -116,6 +94,31 @@ namespace GodotObjectCompiler {
       // ts_tree_cursor_delete(&cursor);
       // ts_tree_delete(tree);
     }
+  }
+
+  Ref<TreeSitterNode> ParserContext::create_tree(TSTree* tree) {
+    TSNode ts_root = ts_tree_root_node(tree);
+    if (ts_node_is_null(ts_root)) {
+      return nullptr;
+    }
+
+    return create_node(ts_root);
+  }
+
+  Ref<TreeSitterNode> ParserContext::create_node(TSNode ts_node) {
+    if (ts_node_is_null(ts_node)) {
+      return nullptr;
+    }
+
+    Ref<TreeSitterNode> node = node_new<TreeSitterNode>(ts_node);
+    for (uint32_t i = 0; i < ts_node_child_count(ts_node); ++i) {
+      auto child = create_node(ts_node_child(ts_node, i));
+      if (child) {
+        node->add_child(child);
+      }
+    }
+
+    return node;
   }
 
 }  // namespace GodotObjectCompiler
