@@ -1,4 +1,3 @@
-#define GOC_GENERATE_DOCS
 
 #include "godot_macro_include_generator.h"
 
@@ -37,7 +36,8 @@ namespace GodotObjectCompiler {
     String generated_content = "GOC_BODY_COMBINE(GOC_GENERATED_, __LINE__, _, GOC_FILE_ID())()";
 
     for (const String& macro : AttributeDB::instance()->get_all_macros()) {
-#ifdef GOC_GENERATE_DOCS
+
+#ifdef DEV_BUILD
       String doc_file = path_concat_ext("./resources/doc", macro, "txt");
       ensure_file_exists(doc_file, "No documentation available");
 #endif
@@ -82,7 +82,7 @@ namespace GodotObjectCompiler {
     String type_name = type->get_return_type();
 
     String doc_res_path = "res://" + path_concat("doc", type_name + ".txt");
-    String doc_res_dir = "res://" +path_concat("doc", type_name);
+    String doc_res_dir = "res://" + path_concat("doc", type_name);
 
     Ref<Context> value_names_documentation = Writer::Params({});
     Ref<Context> type_documentation = Writer::Lines({});
@@ -99,9 +99,9 @@ namespace GodotObjectCompiler {
     write_to->build_child<Writer::SnippetNode>("class " + type_name + " {};");
     write_to->add_child(Writer::NewLine());
 
-#ifdef GOC_GENERATE_DOCS
-    auto doc_file = path_concat_ext("./resources/doc", type_name, "txt");
-    auto doc_dir = path_concat("./resources/doc", type_name);
+#ifdef DEV_BUILD
+    auto doc_file = path_concat_ext("resources/doc", type_name, "txt");
+    auto doc_dir = path_concat("resources/doc", type_name);
     create_dir_recursive(doc_dir);
     ensure_file_exists(doc_file, "No documentation available");
 #endif
@@ -130,7 +130,7 @@ namespace GodotObjectCompiler {
     Size index = 0;
     const Vector<IAttributeParameterType::Argument> arguments = type->get_arguments();
     for (const String& value_name : type->get_value_names()) {
-#ifdef GOC_GENERATE_DOCS
+#ifdef DEV_BUILD
       auto value_doc_path = path_concat_ext(doc_dir, value_name, "txt");
       ensure_file_exists(value_doc_path, "No documentation available");
 #endif

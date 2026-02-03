@@ -1,6 +1,7 @@
 
 #pragma once
 #include "library/core/core.h"
+#include "project.h"
 
 namespace GodotObjectCompiler {
 
@@ -8,6 +9,7 @@ namespace GodotObjectCompiler {
    public:
 
     String paths_root;
+    String paths_goc;
     String paths_cache;
     String paths_generated;
     Vector<String> files_input;
@@ -15,7 +17,8 @@ namespace GodotObjectCompiler {
     Vector<String> application_arguments;
     Vector<String> program_arguments;
 
-    bool valid() const;
+    bool set_from_project(const Project& project);
+    bool validate() const;
   };
 
 }  // namespace GodotObjectCompiler

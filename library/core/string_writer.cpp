@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "helpers.h"
+#include "permissions.h"
 
 namespace GodotObjectCompiler {
 
@@ -18,6 +19,7 @@ namespace GodotObjectCompiler {
   Size StreamWriter::current_length() { return _current_length; }
 
   FileWriter::FileWriter(const String& path, bool do_not_write_same_content) {
+    Permissions::instance()->ensure_is_allowed_write_path(path);
     this->path = path;
     this->do_not_write_same_content = do_not_write_same_content;
     if (!do_not_write_same_content) {

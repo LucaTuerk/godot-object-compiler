@@ -2,10 +2,29 @@
 #include "application_context.h"
 
 #include "library/core/helpers.h"
+#include "library/core/permissions.h"
 
 namespace GodotObjectCompiler {
 
-  bool ApplicationContext::valid() const {
+  bool ApplicationContext::set_from_project(const Project& project) {
+    paths_root = path_absolute(project.paths_root);
+    paths_generated = path_absolute(project.paths_generated);
+    paths_cache = path_absolute(project.paths_cache);
+    paths_goc = path_absolute(project.paths_goc);
+
+    paths_include = project.paths_include;
+    if (std::find(paths_include.begin(), paths_include.end(), project.paths_root) == paths_include.end()) {
+      paths_include.push_back(project.paths_root);
+    }
+
+    files_input = directory_files_recursive(project.paths_root);
+
+    std::transform(paths_include.begin(), paths_include.end(), paths_include.begin(), &path_absolute);
+    std::transform(files_input.begin(), files_input.end(), files_input.begin(), &path_absolute);
+    return validate();
+  }
+
+  bool ApplicationContext::validate() const {
     bool success = true;
 
     if (!dir_exists(paths_root)) {
@@ -34,6 +53,13 @@ namespace GodotObjectCompiler {
       if (!dir_exists(include_path)) {
         print_err(format("Invalid include path\"%s\". Path is not a directory.", include_path.c_str()));
       }
+    }
+
+    if (success) {
+      Permissions::instance()->clear();
+      Permissions::instance()->add_write_path(paths_goc);
+      Permissions::instance()->add_write_path(paths_generated);
+      Permissions::instance()->add_write_path(paths_cache);
     }
 
     return success;

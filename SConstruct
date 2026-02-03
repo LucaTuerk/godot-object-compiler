@@ -126,6 +126,7 @@ env.Prepend(CXXFLAGS=["-std=c++17"])
 env.Prepend(CPPFLAGS=["-Werror", "-Wall", "-Wextra", "-Wno-unused-variable", "-Wno-unused-parameter"])
 env.Prepend(CPPPATH=["."])
 env.Append(CXXFLAGS=["-g"])
+env.Append(CPPDEFINES=["DEV_BUILD"])
 
 env.Tool("compilation_db")
 env.CompilationDatabase()

@@ -1,9 +1,5 @@
-//
-// Created by luca on 02.02.26.
-//
+#pragma once
 
-#ifndef GODOT_OBJECT_COMPILER_PROJECT_H
-#define GODOT_OBJECT_COMPILER_PROJECT_H
 #include "../library/core/core.h"
 #include "../library/core/reader_writer.h"
 
@@ -16,6 +12,7 @@ namespace GodotObjectCompiler {
     String paths_root;
     String paths_generated;
     String paths_cache;
+    String paths_goc;
     Vector<String> paths_include;
     Vector<String> paths_ignore;
 
@@ -32,5 +29,3 @@ namespace GodotObjectCompiler {
   };
 
 }  // namespace GodotObjectCompiler
-
-#endif  // GODOT_OBJECT_COMPILER_PROJECT_H

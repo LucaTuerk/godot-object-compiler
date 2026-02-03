@@ -5,6 +5,7 @@
 #include <random>
 
 #include "core.h"
+#include "permissions.h"
 #include "string_writer.h"
 
 namespace GodotObjectCompiler {
@@ -38,6 +39,7 @@ namespace GodotObjectCompiler {
   }
 
   void write_file(const String& path, const String& content) {
+    Permissions::instance()->ensure_is_allowed_write_path(path);
     std::ofstream ofs(path.c_str(), std::ios::out | std::ios::binary);
     ofs.write(content.c_str(), content.size());
   }
@@ -61,7 +63,10 @@ namespace GodotObjectCompiler {
 
   bool dir_exists(const String& path) { return std::filesystem::exists(path) && std::filesystem::is_directory(path); }
 
-  bool create_dir_recursive(const String& path) { return std::filesystem::create_directories(path); }
+  bool create_dir_recursive(const String& path) {
+    Permissions::instance()->ensure_is_allowed_write_path(path);
+    return std::filesystem::create_directories(path);
+  }
 
   Size file_write_time(const String& path) {
     auto file_time = std::filesystem::last_write_time(path);
@@ -85,7 +90,16 @@ namespace GodotObjectCompiler {
     return std::filesystem::relative(path, base).generic_string();
   }
 
-  String path_absolute(const String& path) { return std::filesystem::absolute(path).generic_string(); }
+  String path_absolute(const String& path) {
+    if (path.empty()) {
+      return path_cwd();
+    }
+    return std::filesystem::absolute(path).generic_string();
+  }
+
+  String path_cwd() {
+    return std::filesystem::current_path();
+  }
 
   String path_stem(const String& path) { return std::filesystem::path(path).stem().generic_string(); }
 
@@ -173,7 +187,7 @@ namespace GodotObjectCompiler {
   String string_vector_combine(const Vector<String>& vec, String delimiter) {
     StreamWriter writer;
     for (Size i = 0; i < vec.size(); i++) {
-      if (i != 0 && i != vec.size()-1) {
+      if (i != 0 && i != vec.size() - 1) {
         writer.write(delimiter);
       }
       writer.write(vec.at(i));

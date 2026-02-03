@@ -4,7 +4,6 @@
 #include "library/core/helpers.h"
 #include "library/core/resources.h"
 #include "library/core/string_writer.h"
-#define DEV_BUILD
 
 namespace GodotObjectCompiler {
 
