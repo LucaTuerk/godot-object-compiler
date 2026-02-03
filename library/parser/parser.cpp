@@ -8,6 +8,7 @@
 #include "helpers.h"
 #include "library/attribute_db.h"
 #include "node_handler.h"
+#include "tree_sitter_node.h"
 
 namespace GodotObjectCompiler {
 
@@ -59,7 +60,7 @@ namespace GodotObjectCompiler {
     context.stripped_parameters = stripped_parameters;
 
     if (!context.is_valid()) {
-      return node_new<ParserError>(ErrorLevel::ERROR, "TreeSitterParser: Invalid parser context.");
+      return node_new<ParserError>(ERROR, "TreeSitterParser: Invalid parser context.");
     }
 
     auto global_namespace = target->as<Namespace>();
@@ -87,6 +88,13 @@ namespace GodotObjectCompiler {
         NextStep step = UNDECIDED;
         String type = ts_node_type(context.node);
 
+        if (type != context.ts_node->type) {
+          print_err("Mismatch");
+          break;
+        } else {
+          print_ln("Success");
+        }
+
         for (INodeHandler* handler : _handlers) {
           if (handler->handles_node(context.node, type)) {
             Ref<Context> tmp = context.current_node;
@@ -105,24 +113,41 @@ namespace GodotObjectCompiler {
           case UNDECIDED:
             if (ts_node_child_count(context.node) > 0) {
               do_continue = ts_tree_cursor_goto_first_child(&context.cursor);
+              if (!context.ts_node->empty()) {
+                context.ts_node = context.ts_node->get_child(0)->as<TreeSitterNode>();
+              }
             } else {
               do_continue = ts_tree_cursor_goto_next_sibling(&context.cursor);
+              if (context.ts_node->has_next_sibling()) {
+                context.ts_node = context.ts_node->get_next_sibling()->as<TreeSitterNode>();
+              }
             }
             break;
           case STEP_INTO:
             do_continue = ts_tree_cursor_goto_first_child(&context.cursor);
+            if (!context.ts_node->empty()) {
+              context.ts_node = context.ts_node->get_child(0)->as<TreeSitterNode>();
+            }
             break;
           case STEP_OVER:
             do_continue = ts_tree_cursor_goto_next_sibling(&context.cursor);
+            if (context.ts_node->has_next_sibling()) {
+              context.ts_node = context.ts_node->get_next_sibling()->as<TreeSitterNode>();
+            }
             break;
           case STEP_OUT:
             do_continue = ts_tree_cursor_goto_parent(&context.cursor);
+            if (context.ts_node->has_parent()) {
+              context.ts_node = context.ts_node->get_parent()->as<TreeSitterNode>();
+            }
             break;
           case STEP_OVER_SPECIFIC:
             while (ts_tree_cursor_current_node(&context.cursor).id != context.specific_step_id) {
               do_continue = ts_tree_cursor_goto_parent(&context.cursor);
+              context.ts_node = context.ts_node->get_parent()->as<TreeSitterNode>();
             }
             ts_tree_cursor_goto_next_sibling(&context.cursor);
+            context.ts_node = context.ts_node->get_next_sibling()->as<TreeSitterNode>();
         }
 
       } while (do_continue);
@@ -134,8 +159,16 @@ namespace GodotObjectCompiler {
           has_reached_root = true;
         }
 
+        if (context.ts_node->has_parent()) {
+          context.ts_node = context.ts_node->get_parent()->as<TreeSitterNode>();
+        }
+
         if (auto itr = before_node.find(ts_tree_cursor_current_node(&context.cursor).id); itr != before_node.end()) {
           context.current_node = itr->second;
+        }
+
+        if (context.ts_node->has_next_sibling()) {
+          context.ts_node = context.ts_node->get_next_sibling()->as<TreeSitterNode>();
         }
       } while (!has_reached_root && !ts_tree_cursor_goto_next_sibling(&context.cursor));
 

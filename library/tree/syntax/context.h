@@ -24,7 +24,11 @@ namespace GodotObjectCompiler {
    public:
 
     Builder(Args... args);
+
     operator Ref<T>();
+
+    template <typename B, typename = std::enable_if_t<std::is_base_of_v<B, T>>>
+    operator Ref<B>();
 
     operator Ref<Node>();
 
@@ -59,6 +63,7 @@ namespace GodotObjectCompiler {
     void remove_child(Ref<Node> p_child);
     void replace_child(Ref<Node> p_child, Ref<Node> p_new_child, bool take_children = false);
 
+    bool empty() const;
     Size get_child_count() const;
     Size get_descendant_count() const;
     Ref<Node> get_child(SignedIndex p_idx) const;
@@ -309,6 +314,12 @@ namespace GodotObjectCompiler {
   template <typename T, typename... Args>
   Builder<T, Args...>::operator Ref<T>() {
     return created;
+  }
+
+  template <typename T, typename... Args>
+  template <typename B, typename>
+  Builder<T, Args...>::operator Ref<B>() {
+    return created->template as<B>();
   }
 
   template <typename T, typename... Args>

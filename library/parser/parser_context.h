@@ -8,6 +8,8 @@
 
 namespace GodotObjectCompiler {
 
+  class TreeSitterNode;
+
   class Node;
   class Namespace;
   class Class;
@@ -26,6 +28,7 @@ namespace GodotObjectCompiler {
     TSTree* tree;
     TSTreeCursor cursor;
     TSNode node;
+    Ref<TreeSitterNode> ts_node;
     Ref<Namespace> global_namespace;
     Dictionary<Size, String> stripped_parameters;
     NodeID specific_step_id;
@@ -36,12 +39,6 @@ namespace GodotObjectCompiler {
     TSNode get_descendant_by_type(const String& type, bool& success);
     String copy_node_content(const TSNode& p_node);
 
-    Ref<Namespace> create_namespace();
-    Ref<Class> create_class();
-    Ref<Struct> create_struct();
-    Ref<Function> create_function();
-    Ref<Field> create_field();
-
     bool is_valid() const;
 
     ParserContext() = default;
@@ -49,6 +46,9 @@ namespace GodotObjectCompiler {
 
     static ParserContext from_path(const String& path);
     ~ParserContext();
+
+    static Ref<TreeSitterNode> create_tree(TSTree* tree);
+    static Ref<TreeSitterNode> create_node(TSNode ts_node);
 
    private:
 

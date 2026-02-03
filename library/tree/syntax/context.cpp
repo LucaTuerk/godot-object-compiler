@@ -186,6 +186,8 @@ namespace GodotObjectCompiler {
     }
   }
 
+  bool Context::empty() const { return _children.empty(); }
+
   void Context::write_to(IStructuredWriter* writer) { Node::write_to(writer); }
 
   String NamedContext::_name_lazy_get() {

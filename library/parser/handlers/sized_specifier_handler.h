@@ -13,4 +13,13 @@ namespace GodotObjectCompiler {
     NextStep handle(ParserContext& context) override;
   };
 
+  class SizedSpecifierHandlerV2 : public INodeHandlerV2 {
+    NODE_HANDLER_V2(SizedSpecifierHandlerV2);
+
+   public:
+
+    bool handles_node(const Ref<TreeSitterNode>& current_src) override;
+    ParserStep handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) override;
+  };
+
 }  // namespace GodotObjectCompiler
