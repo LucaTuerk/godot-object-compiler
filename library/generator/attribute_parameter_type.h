@@ -38,8 +38,8 @@ namespace GodotObjectCompiler {
   };
 
   inline AssumptionState IAttributeParameterType::validate_assumption(Assumption<String>& assumption) {
-    Vector<String> values = get_value_names();
-    if (std::find(values.begin(), values.end(), assumption()) == values.end()) {
+    if (Vector<String> values = get_value_names();
+        std::find(values.begin(), values.end(), assumption()) == values.end()) {
       return STATE_INVALID;
     }
 

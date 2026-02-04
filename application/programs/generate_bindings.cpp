@@ -257,8 +257,6 @@ namespace GodotObjectCompiler {
 
                 ClassGenerator::merge_default_attribute_arguments(attribute, default_values);
 
-                // print_ln(attribute->pretty_print());
-
                 Ref<GeneratorError> attr_error = generator->generate(target_class, attribute, results.generated_body,
                     results.generated_source, results.generated_global);
               }

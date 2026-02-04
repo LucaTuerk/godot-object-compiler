@@ -23,8 +23,8 @@ namespace GodotObjectCompiler {
   class FileWriter : public IStringWriter {
    public:
 
-    FileWriter(const String& path, bool do_not_write_same_content = false);
-    ~FileWriter();
+    explicit FileWriter(const String& path, bool do_not_write_same_content = false);
+    ~FileWriter() override;
 
     void write(const String& value) override;
     String get_string() override;

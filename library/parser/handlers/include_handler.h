@@ -1,19 +1,11 @@
 #pragma once
-#include "../node_handler.h"
+#include "library/parser/node_handler.h"
+#include "library/parser/parser.h"
 
 namespace GodotObjectCompiler {
 
-  // class IncludeHandler : public INodeHandler {
-  //   NODE_HANDLER(IncludeHandler);
-  //
-  //  public:
-  //
-  //   bool handles_node(TSNode& node, const String& type) override;
-  //   NextStep handle(ParserContext& context) override;
-  // };
-
-  class IncludeHandlerV2 : public INodeHandlerV2 {
-    NODE_HANDLER_V2(IncludeHandlerV2);
+  class IncludeHandler : public INodeHandler {
+    NODE_HANDLER(IncludeHandler);
 
    public:
 

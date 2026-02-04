@@ -16,7 +16,7 @@ namespace GodotObjectCompiler {
 
     const Vector<String>& get_sections();
     bool has_config_value(const String& key);
-    bool write_to_file(const String& path);
+    bool write_to_file(const String& path) override;
     bool read_from_file(const String& path) override;
 
    protected:
