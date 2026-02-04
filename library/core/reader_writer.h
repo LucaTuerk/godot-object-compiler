@@ -19,7 +19,7 @@ namespace GodotObjectCompiler {
   class IStructuredWriter {
    public:
 
-    virtual ~IStructuredWriter() {}
+    virtual ~IStructuredWriter() = default;
 
     template <typename K, typename V>
     void write(const K& key, const V& value);
@@ -38,7 +38,7 @@ namespace GodotObjectCompiler {
   class IStructuredReader {
    public:
 
-    virtual ~IStructuredReader() {}
+    virtual ~IStructuredReader() = default;
 
     template <typename K, typename V>
     V read(const K& key);
@@ -103,11 +103,15 @@ namespace GodotObjectCompiler {
   class INodeWriter {
    public:
 
+    virtual ~INodeWriter() = default;
+
     virtual bool write_to_file(Ref<Node> node, const String& path) = 0;
   };
 
   class INodeReader {
    public:
+
+    virtual ~INodeReader() = default;
 
     virtual Ref<Node> read_from_file(const String& path) = 0;
 

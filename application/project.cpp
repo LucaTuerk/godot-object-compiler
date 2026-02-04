@@ -4,9 +4,9 @@
 
 #include "project.h"
 
-#include "../library/core/helpers.h"
-#include "../library/core/string_writer.h"
 #include "library/core/config.h"
+#include "library/core/helpers.h"
+#include "library/core/string_writer.h"
 
 namespace GodotObjectCompiler {
 

@@ -1,21 +1,11 @@
 #pragma once
 #include "library/parser/node_handler.h"
+#include "library/parser/parser.h"
 
 namespace GodotObjectCompiler {
 
-  // class FieldHandler : public INodeHandler {
-  //   NODE_HANDLER(FieldHandler)
-  //
-  //  public:
-  //
-  //   ~FieldHandler() override = default;
-  //   bool handles_node(TSNode& node, const String& type) override;
-  //   NextStep handle(ParserContext& context) override;
-  // };
-  // INTO(expression_statement);
-
-  class FieldHandlerV2 : public INodeHandlerV2 {
-    NODE_HANDLER_V2(FieldHandlerV2);
+  class FieldHandler : public INodeHandler {
+    NODE_HANDLER(FieldHandler);
 
    public:
 
@@ -23,8 +13,8 @@ namespace GodotObjectCompiler {
     ParserStep handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) override;
   };
 
-  class ExpressionStatementIntoV2 : public IntoHandler<ExpressionStatementIntoV2> {
-    NODE_HANDLER_V2(ExpressionStatementIntoV2);
+  class ExpressionStatementInto : public IntoHandler<ExpressionStatementInto> {
+    NODE_HANDLER(ExpressionStatementInto);
 
    public:
 
