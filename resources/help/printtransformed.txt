@@ -1,0 +1,4 @@
+Show the syntax tree after is has been transformed into the GOC format.
+
+Arguments:
+    [0] - path to the file to parse and transform

@@ -1,16 +1,16 @@
 
 #include "generate_type_db.h"
 
-#include "../../library/type_db.h"
 #include "application/application_context.h"
 #include "library/core/config.h"
 #include "library/core/helpers.h"
 #include "library/parser/parser.h"
-#include "library/tree/output/output.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/define.h"
 #include "library/tree/syntax/enum.h"
 #include "library/tree/syntax/namespace.h"
+#include "library/tree/syntax/struct.h"
+#include "library/type_db.h"
 
 namespace GodotObjectCompiler {
 
@@ -56,19 +56,13 @@ namespace GodotObjectCompiler {
         }
 
         if (global_namespace) {
-          Vector<Ref<Class>> classes = global_namespace->classes_recursive();
-          for (Ref<Class> cls : classes) {
-            TypeDB::instance()->save_type_data(cls);
-          }
+          Vector<Ref<NamedContext>> found =
+              global_namespace->find_children<NamedContext>(true, [](Ref<NamedContext> node) {
+                return node->is<Class>() || node->is<Struct>() || node->is<Enum>() || node->is<Define>();
+              });
 
-          Vector<Ref<Enum>> enums = global_namespace->enums_recursive();
-          for (Ref<Enum> e : enums) {
-            TypeDB::instance()->save_type_data(e);
-          }
-
-          Vector<Ref<Define>> defines = global_namespace->find_children<Define>(true);
-          for (Ref<Define> define : defines) {
-            TypeDB::instance()->save_type_data(define);
+          for (const Ref<NamedContext>& node : found) {
+            TypeDB::instance()->save_type_data(node);
           }
         }
       }

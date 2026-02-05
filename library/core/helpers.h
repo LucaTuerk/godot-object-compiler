@@ -10,6 +10,7 @@ namespace GodotObjectCompiler {
   bool create_dir_recursive(const String& path);
   bool file_exists(const String& path);
   bool remove_file(const String& path);
+  bool remove(const String& path);
   bool dir_exists(const String& path);
 
   Size file_write_time(const String& path);
@@ -24,6 +25,7 @@ namespace GodotObjectCompiler {
   Vector<String> directory_files(const String& path);
   Vector<String> directory_files_recursive(const String& path);
   Vector<String> directory_dirs(const String& path);
+  Vector<String> directory_entries(const String& path);
 
   String hash_string(Hash hash);
 

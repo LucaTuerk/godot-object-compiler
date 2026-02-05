@@ -30,7 +30,8 @@ namespace GodotObjectCompiler {
   Ref<Argument> GodotPropertyHintParameterType::create_argument() { return node_new<GodotPropertyHintArgument>(); }
 
   Vector<String> GodotPropertyHintParameterType::_value_names_lazy_get() {
-    Ref<Enum> prop_hint_enum = TypeDB::instance()->get_type_data<Enum>(AssumedGodotTypes::PropertyHintEnum().type_name);
+    Ref<Enum> prop_hint_enum =
+        TypeDB::instance()->get_type_data<Enum>(AssumedGodotTypes::PropertyHintEnum().qualified_name);
     if (!prop_hint_enum) {
       return {};
     }
@@ -71,6 +72,15 @@ namespace GodotObjectCompiler {
     }
 
     return literal->content;
+  }
+
+  String GodotPropertyHintArgument::_hint_content_lazy_get() {
+    String hint = hint_string();
+    if (hint.size() < 2) {
+      return "";
+    }
+
+    return hint.substr(1, hint.size() - 2);
   }
 
 }  // namespace GodotObjectCompiler

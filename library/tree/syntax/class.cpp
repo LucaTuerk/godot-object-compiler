@@ -1,68 +1,45 @@
 
 #include "class.h"
 
-#include "../../../library_godot/attributes/godot_attributes.h"
 #include "attribute.h"
 #include "identifier.h"
+#include "library/type_db.h"
+#include "library_godot/attributes/godot_attributes.h"
 
 namespace GodotObjectCompiler {
 
   Vector<String> Class::_direct_bases_names_lazy_get() {
-    Vector<String> direct_bases_names;
+    Vector<String> result;
 
-    bool first = true;
-    for (Ref<Node> child : *this) {
-      Ref<Identifier> child_identifier = child->as<Identifier>();
-      if (child_identifier) {
-        if (first) {
-          first = false;
-        } else {
-          direct_bases_names.push_back(child_identifier->name);
-        }
-      }
+    const Ref<BaseClasses> base_classes = find_child<BaseClasses>();
+    if (!base_classes) {
+      return {};
     }
 
-    return direct_bases_names;
+    for (const Ref<Type>& type : base_classes->find_children<Type>()) {
+      result.push_back(type->name());
+    }
+
+    return result;
   }
 
   Vector<Ref<Class>> Class::_base_classes_lazy_get() {
     Vector<Ref<Identifier>> identifiers;
 
-    bool first = true;
-    for (Ref<Node> child : get_children()) {
-      Ref<Identifier> child_identifier = child->as<Identifier>();
-      if (child_identifier) {
-        if (first) {
-          first = false;
-        } else {
-          identifiers.push_back(child_identifier);
-        }
-      }
-    }
-
-    if (identifiers.empty()) {
+    Ref<BaseClasses> bases = find_child<BaseClasses>();
+    if (!bases) {
       return {};
     }
 
-    Vector<Ref<Class>> classes;
-    Ref<Context> root = get_root()->as<Context>();
-    if (root) {
-      for (Ref<Identifier> base_id : identifiers) {
-        Ref<Class> base = root->find_descendant<Class>(BFS, [base_id](Ref<Class> some_class) {
-          auto qualified_name = some_class->qualified_name();
-          return qualified_name == base_id->name;
-        });
-
-        if (base) {
-          classes.push_back(base);
-          Vector<Ref<Class>> base_base_classes = base->base_classes();
-          for (Ref<Class> base_base_class : base_base_classes) {
-            classes.push_back(base_base_class);
-          }
-        }
+    Vector<Ref<Class>> result;
+    for (const Ref<Type>& type : bases->find_children<Type>()) {
+      Ref<Class> base_class = TypeDB::instance()->get_type_data<Class>(type);
+      if (base_class) {
+        result.push_back(base_class);
       }
     }
-    return classes;
+
+    return result;
   }
 
   Vector<Ref<Attribute>> Class::_attributes_lazy_get() {

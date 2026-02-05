@@ -1,7 +1,11 @@
 #include "context.h"
 
+#include "function.h"
 #include "identifier.h"
 #include "include.h"
+#include "library/core/helpers.h"
+#include "library/core/string_writer.h"
+#include "library/type_db.h"
 #include "namespace.h"
 
 namespace GodotObjectCompiler {
@@ -170,9 +174,12 @@ namespace GodotObjectCompiler {
     if (itr != _children.end()) {
       *itr = p_new_child;
 
+      UID child_uid = p_child->get_id();
       p_new_child->_index = p_child->_index;
       p_new_child->_parent = this->as<Context>();
-
+      p_child->_id = ExecutionContext::instance()->get_node_db()->request_id_change(child_uid);
+      p_new_child->_id =
+          ExecutionContext::instance()->get_node_db()->request_id_change(p_new_child->get_id(), child_uid);
       p_child->_parent = {};
 
       Ref<Context> child_context = p_child->as<Context>();
@@ -201,18 +208,19 @@ namespace GodotObjectCompiler {
   Ref<Body> NamedContext::_body_lazy_get() { return find_child<Body>(); }
 
   String NamedContext::_qualified_name_lazy_get() {
-    String result = "";
+    StreamWriter writer;
 
     Ref<Namespace> ns = find_ancestor<Namespace>();
     if (ns) {
       auto parent_qualified_name = ns->qualified_name();
       if (!parent_qualified_name.empty()) {
-        result += parent_qualified_name;
-        result += "::";
+        writer.write(parent_qualified_name);
+        writer.write("::");
       }
     }
 
-    return result + name();
+    writer.write(name());
+    return writer.get_string();
   }
 
   bool NamedContext::copy_to(Ref<Node> other) const {
@@ -220,6 +228,19 @@ namespace GodotObjectCompiler {
     // COPY_LAZY(name);
     // COPY_LAZY(qualified_name);
     return true;
+  }
+
+  String NamedContext::_mangled_name_lazy_get() {
+    Size template_parameter_count = 0;
+    for (const Ref<Node>& child : *this) {
+      if (Ref<TemplateParameters> parameters = child->as<TemplateParameters>()) {
+        template_parameter_count = parameters->get_child_count();
+      } else if (Ref<TemplateArguments> arguments = child->as<TemplateArguments>()) {
+        template_parameter_count = arguments->get_child_count();
+      }
+    }
+
+    return TypeDB::mangle_name(qualified_name(), template_parameter_count);
   }
 
 }  // namespace GodotObjectCompiler

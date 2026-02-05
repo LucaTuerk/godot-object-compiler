@@ -66,6 +66,12 @@ class Huhu : Node3D {
 
   GODOT_PROPERTY();
   Ref<Texture2D> texture;
+
+  GODOT_PROPERTY();
+  TypedArray<Ref<Texture2D>> texture_array;
+
+  GODOT_PROPERTY();
+  TypedDictionary<String, Ref<Texture2D>> texture_dictionary;
 };
 
 GODOT_CLASS(LevelCore);

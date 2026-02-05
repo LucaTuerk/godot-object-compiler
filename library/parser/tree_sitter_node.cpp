@@ -25,6 +25,22 @@ namespace GodotObjectCompiler {
     return std::find(type_names.begin(), type_names.end(), type) != type_names.end();
   }
 
+  bool TreeSitterNode::is_handled() const { return handled; }
+
+  void TreeSitterNode::set_handled(bool handled) { this->handled = handled; }
+
+  bool TreeSitterNode::copy_to(Ref<Node> other) const {
+    COPY_GUARD(TreeSitterNode, Context)
+
+    target->context = context;
+    target->type = type;
+    target->start_byte = start_byte;
+    target->end_byte = end_byte;
+    target->start_point = start_point;
+    target->end_point = end_point;
+    return true;
+  }
+
   String TreeSitterNode::_content_lazy_get() { return context->buffer.substr(start_byte, end_byte - start_byte); }
 
 }  // namespace GodotObjectCompiler

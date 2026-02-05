@@ -34,7 +34,7 @@ namespace GodotObjectCompiler {
   Vector<String> GodotModuleInitializationLevelParameterType::_value_names_lazy_get() {
     using namespace AssumedGodotTypes;
 
-    Ref<Enum> init_level_enum = TypeDB::instance()->get_type_data<Enum>(ModuleInitializationLevel().type_name);
+    Ref<Enum> init_level_enum = TypeDB::instance()->get_type_data<Enum>(ModuleInitializationLevel().qualified_name);
     if (!init_level_enum) {
       return {};
     }

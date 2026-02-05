@@ -11,6 +11,7 @@ namespace GodotObjectCompiler {
 
     LAZY(GodotPropertyHintArgument, String, godot_property_hint)
     LAZY(GodotPropertyHintArgument, String, hint_string)
+    LAZY(GodotPropertyHintArgument, String, hint_content)
   };
 
   class GodotPropertyHintParameterType : public IAttributeParameterType {

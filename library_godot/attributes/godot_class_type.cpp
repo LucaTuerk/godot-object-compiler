@@ -36,12 +36,12 @@ namespace GodotObjectCompiler {
 
   Vector<String> GodotClassTypeParameterType::_value_names_lazy_get() {
     Vector<String> godot_macros = {
-      AssumedGodotTypes::GDREGISTER_CLASS().type_name,
-      AssumedGodotTypes::GDREGISTER_VIRTUAL_CLASS().type_name,
-      AssumedGodotTypes::GDREGISTER_ABSTRACT_CLASS().type_name,
-      AssumedGodotTypes::GDREGISTER_INTERNAL_CLASS().type_name,
-      AssumedGodotTypes::GDREGISTER_RUNTIME_CLASS().type_name,
-      AssumedGodotTypes::GDREGISTER_NATIVE_STRUCT().type_name,
+      AssumedGodotTypes::GDREGISTER_CLASS().qualified_name,
+      AssumedGodotTypes::GDREGISTER_VIRTUAL_CLASS().qualified_name,
+      AssumedGodotTypes::GDREGISTER_ABSTRACT_CLASS().qualified_name,
+      AssumedGodotTypes::GDREGISTER_INTERNAL_CLASS().qualified_name,
+      AssumedGodotTypes::GDREGISTER_RUNTIME_CLASS().qualified_name,
+      AssumedGodotTypes::GDREGISTER_NATIVE_STRUCT().qualified_name,
     };
 
     Vector<String> value_names = {"RegisterCustom"};

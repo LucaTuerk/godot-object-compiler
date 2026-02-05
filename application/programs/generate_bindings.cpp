@@ -69,7 +69,7 @@ namespace GodotObjectCompiler {
           build<Parameters>()
         .with_child(
             build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().qualified_name),
               build<Identifier>("p_level")
             })
           )
@@ -80,7 +80,7 @@ namespace GodotObjectCompiler {
           build<Parameters>()
         .with_child(
             build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().qualified_name),
               build<Identifier>("p_level")
             })
           )
@@ -102,7 +102,7 @@ namespace GodotObjectCompiler {
         build<Identifier>(register_method_name),
           build<Parameters>().with_child(
             build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().qualified_name),
               build<Identifier>("p_level")
             })
           ),
@@ -113,7 +113,7 @@ namespace GodotObjectCompiler {
         build<Identifier>(unregister_method_name),
           build<Parameters>().with_child(
             build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type_name),
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().qualified_name),
               build<Identifier>("p_level")
             })
           ),

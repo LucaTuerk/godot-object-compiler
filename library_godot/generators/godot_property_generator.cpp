@@ -25,42 +25,19 @@ namespace GodotObjectCompiler {
     String field_type_name = field_type->type_name();
     GEN_ERROR_COND(field_type_name.empty(), target_field, "Invalid type name for target field.");
 
-    if (Ref<Type> ref_inner_type;
-        type_is_godot_ref_type(field_type, ref_inner_type) && inner_type_is_ref_counted_type(ref_inner_type)) {
-      // clang-format off
-      default_values->add_children({
-        VariantType(VariantTypeObject()),
-        PropertyHint(HintResourceType(), ref_inner_type->name()),
-        PropertyUsageFlag(UsageDefault())
-      });
-      // clang-format on
-    } else if (type_is_node_type(field_type)) {
-      // clang-format off
-      default_values->add_children({
-        VariantType(VariantTypeObject()),
-        PropertyHint(HintNodeType(), field_type->name()),
-        PropertyUsageFlag(UsageDefault())
-      });
-      // clang-format on
-    } else if (type_is_object_type(field_type)) {
-      // clang-format off
-      default_values->add_children({
-        VariantType(VariantTypeObject()),
-        PropertyHint(HintResourceType(), field_type->name()),
-        PropertyUsageFlag(UsageDefault())
-      });
-      // clang-format on
-    } else if (String variant_type; get_variant_type_from_type(field_type, variant_type)) {
-      // clang-format off
-      default_values->add_children({
-          VariantType(variant_type),
-          PropertyHint(HintNone()),
-          PropertyUsageFlag(UsageDefault()),
-      });
-      // clang-format on
-    } else {
+    Ref<GodotVariantTypeArgument> variant_type;
+    Ref<GodotPropertyHintArgument> property_hint;
+    Ref<GodotPropertyUsageFlagsArgument> property_usage_flags;
+
+    if (!get_defaults_for_type(field_type, variant_type, property_hint, property_usage_flags)) {
       GEN_ERROR(target_field, "Unknown type. Failed to determine default property info.");
     }
+
+    default_values->add_children({
+      variant_type,
+      property_hint,
+      property_usage_flags
+    });
 
     return GeneratorError::OK;
   }
@@ -88,7 +65,8 @@ namespace GodotObjectCompiler {
       Ref<Type> ref_inner;
       bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner);
       bool is_obj_type = type_is_object_type(field_type);
-      bool use_const_ref = !(is_obj_type || is_ref_type);
+      bool is_collection_type = type_is_godot_collection_type(field_type);
+      bool use_const_ref = !(is_obj_type || is_ref_type || is_collection_type);
 
       bind_methods_body->add_child(bind_method(target_class->name(), getter_name, {}));
       bind_methods_body->add_child(bind_method(target_class->name(), setter_name, {property_name}));

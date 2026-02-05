@@ -1,1 +1,1 @@
-No help available
+Generate the type database.

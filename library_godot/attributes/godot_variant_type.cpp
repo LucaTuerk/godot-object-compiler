@@ -30,7 +30,7 @@ namespace GodotObjectCompiler {
 
   Vector<String> GodotVariantTypeParameterType::_value_names_lazy_get() {
     Ref<Enum> variant_type_enum =
-        TypeDB::instance()->get_type_data<Enum>(AssumedGodotTypes::VariantTypeEnum().type_name);
+        TypeDB::instance()->get_type_data<Enum>(AssumedGodotTypes::VariantTypeEnum().qualified_name);
     if (!variant_type_enum) {
       return {};
     }

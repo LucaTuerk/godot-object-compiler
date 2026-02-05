@@ -6,6 +6,7 @@
 
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/access_specifier.h"
+#include "library/tree/syntax/class.h"
 
 namespace GodotObjectCompiler {
 
@@ -14,6 +15,11 @@ namespace GodotObjectCompiler {
   }
 
   ParserStep AccessSpecifierHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
+    if (current_target->is<BaseClasses>()) {
+      // We don't care about base class access specifiers for now, so keep it clean an skip here.
+      return ParserStep::StepOver();
+    }
+
     const String content = current_src->content();
 
     if (content == "public") {

@@ -12,24 +12,23 @@
 namespace GodotObjectCompiler {
 
   auto TypeHandler::handles_node(const Ref<TreeSitterNode>& current_src) -> bool {
-    return string_suffix(current_src->type, "type") ||
-           current_src->type_in({"qualified_identifier", "type_identifier", "trailing_return_type"});
+    return current_src->type_in(
+        {"primitive_type", "qualified_identifier", "type_identifier", "trailing_return_type", "template_type"});
+    // return string_suffix(current_src->type, "type") ||
+    //       ;
   }
 
   ParserStep TypeHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    if (current_target->is<Class>() || current_target->is<Struct>() || current_target->is<Enum>()) {
+    if ((current_target->is<Class>() || current_target->is<Struct>() || current_target->is<Enum>()) &&
+        (current_target->find_child<Identifier>() == nullptr)) {
       current_target->create_child<Identifier>(current_src->content());
       return ParserStep::StepOver();
     }
 
     if (current_src->type == "template_type") {
+      // current_target = current_target->create_child<Type>();
       current_target = current_target->create_child<Type>();
-      return ParserStep::StepInto();
-    }
-
-    if (current_src->type == "template_argument_list") {
-      current_target = current_target->create_child<TemplateArguments>();
-      return ParserStep::StepInto();
+      return ParserStep::Undecided();
     }
 
     Ref<Node> last = current_target->get_child(-1);
@@ -51,8 +50,9 @@ namespace GodotObjectCompiler {
       last->reparent(type_node);
     }
 
+    // current_target = type_node;
     type_node->create_child<Identifier>(current_src->content());
-    return ParserStep::StepOver();
+    return ParserStep::Undecided();
   }
 
 }  // namespace GodotObjectCompiler

@@ -23,7 +23,7 @@ namespace GodotObjectCompiler {
   class FileWriter : public IStringWriter {
    public:
 
-    explicit FileWriter(const String& path, bool do_not_write_same_content = false);
+    explicit FileWriter(const String& path, bool do_not_write_same_content = true);
     ~FileWriter() override;
 
     void write(const String& value) override;
@@ -33,7 +33,7 @@ namespace GodotObjectCompiler {
    private:
 
     String path;
-    bool do_not_write_same_content = false;
+    bool do_not_write_same_content = true;
     StreamWriter _stream;
     std::fstream _file;
   };

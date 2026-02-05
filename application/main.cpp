@@ -59,6 +59,13 @@ int main(int argc, char* argv[]) {
   ExecutionContext::instance()->set_error_level(ERROR, FULL);
   ExecutionContext::instance()->set_remove_macros(read_lines(path_absolute(".goc/macros/macro_remove.txt")));
   ExecutionContext::instance()->set_include_paths(context.paths_include);
+  //
+  // TreeSitterParser parser;
+  // Ref<Namespace> ns = node_new<Namespace>();
+  // parser.parse_file("/home/luca/Repositories/godot/core/variant/typed_array.h", ns);
+  // print_ln(ns->pretty_print());
+  //
+  // return 0;
 
   Ref<ProgramError> error = program->run(context);
   if (error != ProgramError::OK) {
