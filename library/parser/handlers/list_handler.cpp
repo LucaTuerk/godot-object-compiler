@@ -24,6 +24,8 @@ namespace GodotObjectCompiler {
       current_target = current_target->create_child<Parameters>();
     } else if (current_src->type == "template_argument_list") {
       current_target = current_target->create_child<TemplateArguments>();
+    } else if (current_src->type == "template_parameter_list") {
+      current_target = current_target->create_child<TemplateParameters>();
     } else {
       current_target = current_target->create_child<Context>();
     }

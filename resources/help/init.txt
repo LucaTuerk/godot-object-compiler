@@ -1,1 +1,1 @@
-No help available
+Initialize a new GOC project at the current working directory.

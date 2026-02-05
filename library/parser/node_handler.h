@@ -35,6 +35,7 @@ namespace GodotObjectCompiler {
 
     virtual ~INodeHandler() = default;
 
+    virtual String get_type() = 0;
     virtual bool handles_node(const Ref<TreeSitterNode>& current_src) = 0;
     virtual ParserStep handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) = 0;
   };
@@ -96,5 +97,11 @@ namespace GodotObjectCompiler {
 
 }  // namespace GodotObjectCompiler
 
-#define NODE_HANDLER(name) \
-  static inline bool __registered__##name##___ = TreeSitterParser::register_handler<name>(#name)
+#define NODE_HANDLER(name)                     \
+ public:                                       \
+                                               \
+  String get_type() override { return #name; } \
+                                               \
+ private:                                      \
+                                               \
+  static inline bool __registered__##name##___ = TreeSitterParser::register_handler<name>(#name);

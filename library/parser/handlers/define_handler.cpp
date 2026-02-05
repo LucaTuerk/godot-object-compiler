@@ -14,9 +14,9 @@ namespace GodotObjectCompiler {
   ParserStep DefineHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
     Ref<TreeSitterNode> identifier = current_src->find_child<TreeSitterNode>(0, type_is("identifier"));
     if (identifier) {
-      current_target = build<Define>().with_child<Identifier>(identifier->content());
+      Ref<Define> define = current_target->build_child<Define>().with_child<Identifier>(identifier->content());
       if (current_src->type == "preproc_function_def") {
-        current_target->build_child<Arguments>();
+        define->build_child<Arguments>();
       }
     }
     return ParserStep::StepOver();

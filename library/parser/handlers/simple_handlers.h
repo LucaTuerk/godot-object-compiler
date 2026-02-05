@@ -5,12 +5,12 @@
 
 namespace GodotObjectCompiler {
 
-  class TemplateDeclarationSkip : public SkipHandler<TemplateDeclarationSkip> {
-    NODE_HANDLER(TemplateDeclarationSkip);
+  class TemplateDeclarationInto : public IntoHandler<TemplateDeclarationInto> {
+    NODE_HANDLER(TemplateDeclarationInto);
 
    public:
 
-    static inline String skip_type = "template_declaration";
+    static inline String into_type = "template_declaration";
   };
 
   class ConditionalExpressionSkip : public SkipHandler<ConditionalExpressionSkip> {
@@ -45,13 +45,14 @@ namespace GodotObjectCompiler {
     static inline String skip_type = "preproc_call";
   };
 
-  class PreprocIfDefInto : public IntoHandler<PreprocIfDefInto> {
-    NODE_HANDLER(PreprocIfDefInto);
-
-   public:
-
-    static inline String into_type = "preproc_if_def_into";
-  };
+  //
+  // class PreprocIfDefInto : public IntoHandler<PreprocIfDefInto> {
+  //   NODE_HANDLER(PreprocIfDefInto);
+  //
+  //  public:
+  //
+  //   static inline String into_type = "preproc_ifdef";
+  // };
 
   class OperatorSkip : public SkipHandler<OperatorSkip> {
     NODE_HANDLER(OperatorSkip);

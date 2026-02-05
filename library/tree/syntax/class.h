@@ -10,6 +10,10 @@ namespace GodotObjectCompiler {
   class Function;
   class Body;
 
+  class BaseClasses : public Context {
+    NODE_TYPE(BaseClasses)
+  };
+
   class Class : public Namespace {
     NODE_TYPE(Class);
 

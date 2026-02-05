@@ -9,7 +9,7 @@ namespace GodotObjectCompiler {
   class NodeDB {
    public:
 
-    UID request_id_change(UID from, UID to);
+    UID request_id_change(UID from, UID to = INVALID_ID);
 
     template <typename T, typename... Args>
     Ref<T> create(Args&&... args);

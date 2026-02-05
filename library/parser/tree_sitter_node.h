@@ -27,12 +27,18 @@ namespace GodotObjectCompiler {
 
     bool type_in(std::initializer_list<String>&& type_names) const;
 
+    bool is_handled() const;
+    void set_handled(bool handled = true);
+
     ParserContext* context;
     String type;
     Size start_byte;
     Size end_byte;
     Point start_point;
     Point end_point;
+    bool handled = false;
+
+    bool copy_to(Ref<Node> other) const override;
 
     LAZY(TreeSitterNode, String, content);
   };

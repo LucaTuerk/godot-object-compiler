@@ -46,7 +46,15 @@ namespace GodotObjectCompiler {
 
   bool file_exists(const String& path) { return std::filesystem::exists(path); }
 
-  bool remove_file(const String& path) { return std::remove(path.c_str()) == 0; }
+  bool remove_file(const String& path) {
+    Permissions::instance()->ensure_is_allowed_write_path(path);
+    return std::filesystem::remove(path.c_str()) == 0;
+  }
+
+  bool remove(const String& path) {
+    Permissions::instance()->ensure_is_allowed_write_path(path);
+    return std::filesystem::remove_all(path.c_str()) > 0;
+  }
 
   void ensure_file_exists(const String& path, const String& initial_content) {
     if (file_exists(path)) {
@@ -134,6 +142,17 @@ namespace GodotObjectCompiler {
     std::filesystem::directory_iterator iter(path);
     for (const auto& entry : iter) {
       if (entry.is_directory()) {
+        result.push_back(entry.path().string());
+      }
+    }
+    return result;
+  }
+
+  Vector<String> directory_entries(const String& path) {
+    Vector<String> result;
+    std::filesystem::directory_iterator iter(path);
+    for (const auto& entry : iter) {
+      if (entry.is_regular_file() || entry.is_directory()) {
         result.push_back(entry.path().string());
       }
     }

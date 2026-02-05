@@ -21,6 +21,16 @@ namespace GodotObjectCompiler {
     inline Assumption<AssumeType<Class>> GodotRef{
         {"Ref", 1}, "Assume that a class named \"Ref\" with 1 template parameter exists in the TypeDB."};
 
+    inline Assumption<AssumeType<Class>> Array{{"Array"}, "Assume that a class named \"Array\" exists in the TypeDB."};
+
+    inline Assumption<AssumeType<Class>> TypedArray {
+            {"TypedArray", 1}, "Assume that a class named \"TypedArray\" with 1 template parameter exists in the TypeDB."};
+
+    inline Assumption<AssumeType<Class>> Dictionary{{"Dictionary"}, "Assume that a class named \"Dictionary\" exists in the TypeDB."};
+
+    inline Assumption<AssumeType<Class>> TypedDictionary {
+            {"TypedDictionary", 2}, "Assume that a class named \"TypedDictionary\" with 2 template parameter exists in the TypeDB."};
+
     inline Assumption<AssumeType<Enum>> ModuleInitializationLevel{{"ModuleInitializationLevel"},
         "Assume that an enum type of name \"ModuleInitializationLevel\" exists in the TypeDB."};
 

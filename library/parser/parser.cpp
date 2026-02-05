@@ -19,7 +19,7 @@ namespace GodotObjectCompiler {
 
   Ref<ParserError> TreeSitterParser::parse(const String& input, Ref<Context> target) {
     Dictionary<Size, String> stripped_parameters;
-    Dictionary<UID, Ref<Context>> before_node;
+    Dictionary<UID, UID> before_node;
     HashSet<UID> handled;
 
     String original_input =
@@ -27,9 +27,21 @@ namespace GodotObjectCompiler {
     String local_input = strip_known_macro_contents(original_input, stripped_parameters);
     ParserContext context = ParserContext(local_input);
     context.stripped_parameters = stripped_parameters;
+    if (input_is_path) {
+      context.file_path = input;
+    }
 
     if (!context.is_valid()) {
       return node_new<ParserError>(ERROR, "Failed to setup context.");
+    }
+
+    if (Ref<Node> first_ifdef = context.current_src->find_child(0, type_is("preproc_ifdef"))) {
+      if (first_ifdef->get_index() == 0) {
+        for (const Ref<Node>& child : *first_ifdef->as<Context>()) {
+          context.current_src->add_child(child->clone());
+        }
+        context.current_src->remove_child(first_ifdef);
+      }
     }
 
     auto global_namespace = target->as<Namespace>();
@@ -38,7 +50,13 @@ namespace GodotObjectCompiler {
           ERROR, "TreeSitterParser: Invalid target node, expected to be the global namespace.");
     }
 
-    print_ln(context.current_src->pretty_print());
+    auto recall = [&]() {
+      if (auto itr = before_node.find(context.current_src->get_id()); itr != before_node.end()) {
+        if (Ref<Context> before = ExecutionContext::instance()->get_node_db()->get<Context>(itr->second)) {
+          context.current_target = before;
+        }
+      }
+    };
 
     Ref<Body> body = global_namespace->create_child<Body>();
     context.current_target = body;
@@ -47,22 +65,24 @@ namespace GodotObjectCompiler {
       bool do_continue = true;
 
       do {
-        bool already_handled = handled.find(context.current_src->get_id()) != handled.end();
-        ParserStep step = already_handled ? ParserStep::StepOver() : ParserStep::Undecided();
+        ParserStep step = context.current_src->is_handled() ? ParserStep::StepOver() : ParserStep::Undecided();
 
-        if (!already_handled) {
+        if (!context.current_src->is_handled()) {
           for (const Ref<INodeHandler>& node_handler : _handlers) {
             if (node_handler->handles_node(context.current_src)) {
               Ref<Context> before = context.current_target;
               step = node_handler->handle(context.current_src, context.current_target);
 
+              PANIC_COND(!context.current_target->has_parent(),
+                  "Invalid orphan parser target after call to NodeHandler %s", node_handler->get_type().c_str())
+
               if (before != context.current_target) {
-                before_node[context.current_src->get_id()] = before;
+                before_node[context.current_src->get_id()] = before->get_id();
               }
               break;
             }
           }
-          handled.insert(context.current_src->get_id());
+          context.current_src->set_handled();
         }
 
         if (step.is_undecided()) {
@@ -87,16 +107,13 @@ namespace GodotObjectCompiler {
           do_continue = context.current_src->has_parent();
           if (do_continue) {
             context.current_src = context.current_src->get_parent()->as<TreeSitterNode>();
+            recall();
           }
         } else if (Ref<TreeSitterNode> go_to; step.is_go_to(go_to)) {
           do_continue = go_to != nullptr;
           if (do_continue) {
             context.current_src = go_to;
-
-            do_continue = context.current_src->has_next_sibling();
-            if (do_continue) {
-              context.current_src = context.current_src->get_next_sibling()->as<TreeSitterNode>();
-            }
+            recall();
           }
         }
       } while (do_continue);
@@ -104,13 +121,11 @@ namespace GodotObjectCompiler {
       if (!context.current_src->has_parent()) {
         break;
       }
+
       context.current_src = context.current_src->get_parent()->as<TreeSitterNode>();
-      if (auto itr = before_node.find(context.current_src->get_id()); itr != before_node.end()) {
-        context.current_target = itr->second;
-      }
+      recall();
     }
 
-    print_ln(context.current_target->pretty_print());
     return ParserError::OK;
   }
 

@@ -13,6 +13,10 @@ namespace GodotObjectCompiler {
       return from;
     }
 
+    if (to == INVALID_ID) {
+      to = _generate_unique_id();
+    }
+
     if (_nodes.find(from) == _nodes.end()) {
       print_err("Trying to change a node id, but no node is registered for this id.");
       return from;

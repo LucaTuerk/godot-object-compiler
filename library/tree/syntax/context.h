@@ -102,7 +102,7 @@ namespace GodotObjectCompiler {
     Builder<T, Args...> build_child(Args&&... args);
 
     template <class T>
-    Vector<Ref<T>> find_children(bool recursive = false);
+    Vector<Ref<T>> find_children(bool recursive = false, Predicate<T> predicate = default_node_predicate<T>);
 
     template <class T>
     void for_descendants(BranchExplorationType order = BFS, NodeFunctor<T> functor = default_node_predicate<T>);
@@ -123,6 +123,7 @@ namespace GodotObjectCompiler {
     LAZY(NamedContext, Ref<Body>, body);
     LAZY(NamedContext, String, name);
     LAZY(NamedContext, String, qualified_name);
+    LAZY(NamedContext, String, mangled_name);
   };
 
   template <class T>
@@ -245,26 +246,26 @@ namespace GodotObjectCompiler {
   }
 
   template <class T>
-  void find_recursive_helper(Node* node, bool recursive, Vector<Ref<T>>& results) {
+  void find_recursive_helper(Node* node, bool recursive, Vector<Ref<T>>& results, Predicate<T> predicate) {
     Ref<T> node_t = node->as<T>();
     Ref<Context> node_context = node->as<Context>();
 
-    if (node_t) {
+    if (node_t && predicate(node_t)) {
       results.push_back(node_t);
     }
 
     if (recursive && node_context) {
       for (Ref<Node> child : *node_context) {
-        find_recursive_helper(child.get(), recursive, results);
+        find_recursive_helper(child.get(), recursive, results, predicate);
       }
     }
   }
 
   template <class T>
-  Vector<Ref<T>> Context::find_children(bool recursive) {
+  Vector<Ref<T>> Context::find_children(bool recursive, Predicate<T> predicate) {
     Vector<Ref<T>> results;
     for (auto child : *this) {
-      find_recursive_helper(child.get(), recursive, results);
+      find_recursive_helper(child.get(), recursive, results, predicate);
     }
     return results;
   }

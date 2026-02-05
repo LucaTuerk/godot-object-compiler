@@ -7,6 +7,7 @@
 #include "tree/syntax/enum.h"
 #include "tree/syntax/include.h"
 #include "tree/syntax/node.h"
+#include "tree/syntax/type.h"
 
 namespace GodotObjectCompiler {
 
@@ -102,7 +103,7 @@ namespace GodotObjectCompiler {
 
   void TypeDB::save_type_data(Ref<NamedContext> root) {
     Writer writer;
-    String qualified_name = root->qualified_name();
+    String qualified_name = root->mangled_name();
 
     auto path = _get_cache_file_path(qualified_name);
     auto base = path_base(path);
@@ -113,27 +114,32 @@ namespace GodotObjectCompiler {
     writer.write_to_file(root, path);
   }
 
-  Ref<Node> TypeDB::get_type_data(const String& qualified_name) {
+  Ref<Node> TypeDB::get_type_data(const String& qualified_name, Size template_argument_count) {
     Reader reader;
+    String mangled_name = mangle_name(qualified_name, template_argument_count);
 
-    if (auto itr = _cache.find(qualified_name); itr != _cache.end()) {
+    if (auto itr = _cache.find(mangled_name); itr != _cache.end()) {
       return itr->second;
     }
 
-    const String& cache_file_path = _get_cache_file_path(qualified_name);
-    const String& godot_cache_file_path = _get_cache_file_path("godot::" + qualified_name);
+    const String& cache_file_path = _get_cache_file_path(mangled_name);
+    const String& godot_cache_file_path = _get_cache_file_path("godot::" + mangled_name);
 
     if (file_exists(cache_file_path)) {
       Ref<Node> root = reader.read_from_file(cache_file_path);
-      _cache[qualified_name] = root;
+      _cache[mangled_name] = root;
       return root;
     } else if (file_exists(godot_cache_file_path)) {
       Ref<Node> root = reader.read_from_file(godot_cache_file_path);
-      _cache[qualified_name] = root;
+      _cache[mangled_name] = root;
       return root;
     }
 
     return nullptr;
+  }
+
+  Ref<Node> TypeDB::get_type_data(const Ref<Type>& type) {
+    return get_type_data(type->name(), type->template_argument_count());
   }
 
   AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Enum>>& assumption) {
@@ -146,6 +152,13 @@ namespace GodotObjectCompiler {
 
   AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Define>>& assumption) {
     return validate_t<Define>(assumption);
+  }
+
+  String TypeDB::mangle_name(const String& qualified_name, Size template_parameter_count) {
+    if (template_parameter_count == 0) {
+      return qualified_name;
+    }
+    return format("%s_T_ARGS_%d_", qualified_name.c_str(), template_parameter_count);
   }
 
 }  // namespace GodotObjectCompiler

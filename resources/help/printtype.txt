@@ -1,1 +1,4 @@
-No help available
+Print the type tree for a type identified by it's qualified name.
+
+Arguments:
+    [0] - The types qualified name
