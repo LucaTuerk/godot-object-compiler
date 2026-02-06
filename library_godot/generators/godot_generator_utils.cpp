@@ -248,6 +248,15 @@ namespace GodotObjectCompiler {
       return true;
     }
 
+    if (Ref<Enum> enum_object; type_is_enum_type(target_type,enum_object)) {
+      variant_type = VariantType(VariantTypeInt());
+      Vector<String> value_names = enum_object->value_names();
+      std::transform(value_names.begin(), value_names.end(), value_names.begin(),cpp_enum_case_to_exposed_enum_case);
+      property_hint = PropertyHint(HintEnum(), string_vector_combine(value_names,","));
+      property_usage_flags = PropertyUsageFlag(UsageDefault());
+      return true;
+    }
+
     if (Ref<Type> inner_type; type_is_godot_typed_array_type(target_type, inner_type)) {
       Ref<GodotVariantTypeArgument> inner_variant_type;
       Ref<GodotPropertyHintArgument> inner_property_hint;
@@ -385,6 +394,16 @@ namespace GodotObjectCompiler {
     }
 
     return class_is_node_type(_class);
+  }
+
+  bool GodotGeneratorUtils::type_is_enum_type(const Ref<Type>& target_type, Ref<Enum>& enum_object) {
+    const Ref<Enum> _enum = TypeDB::instance()->get_type_data<Enum>(target_type->type_name_unmodified());
+    if (!_enum) {
+      enum_object = nullptr;
+      return false;
+    }
+    enum_object = _enum;
+    return true;
   }
 
   bool GodotGeneratorUtils::type_is_variant_type(const Ref<Type>& target_type) {

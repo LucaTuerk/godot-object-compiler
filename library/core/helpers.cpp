@@ -204,7 +204,7 @@ namespace GodotObjectCompiler {
   String string_vector_combine(const Vector<String>& vec, String delimiter) {
     StreamWriter writer;
     for (Size i = 0; i < vec.size(); i++) {
-      if (i != 0 && i != vec.size() - 1) {
+      if (i != 0) {
         writer.write(delimiter);
       }
       writer.write(vec.at(i));
@@ -316,6 +316,34 @@ namespace GodotObjectCompiler {
     } while (end != String::npos);
 
     return strstr.str();
+  }
+
+  String cpp_enum_case_to_exposed_enum_case(const String& input) {
+    StreamWriter writer;
+    bool last_is_space = true;
+    bool last_is_num = false;
+
+    for (char c : input) {
+      if (c == '_' && !last_is_space) {
+        writer.write(" ");
+        last_is_num = false;
+        last_is_space = true;
+      } else if (isdigit(c) && !last_is_num) {
+        writer.write(" ");
+        writer.write_generic(c);
+        last_is_num = true;
+        last_is_space = false;
+      } else if (!isdigit(c) && (last_is_space || last_is_num)) {
+        writer.write_generic(static_cast<char>(toupper(c)));
+        last_is_num = false;
+        last_is_space = false;
+      } else {
+        writer.write_generic(static_cast<char>(tolower(c)));
+        last_is_num = false;
+        last_is_space = false;
+      }
+    }
+    return writer.get_string();
   }
 
   Vector<String> string_split(const String& str, const String& delimiter) {

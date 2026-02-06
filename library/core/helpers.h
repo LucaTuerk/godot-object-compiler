@@ -46,6 +46,7 @@ namespace GodotObjectCompiler {
   String string_trim_right(const String& str);
   String string_shrink_inner_space(const String& str);
   String macro_case_to_pascal_case(const String& input);
+  String cpp_enum_case_to_exposed_enum_case(const String& input);
   Vector<String> string_split(const String& str, const String& delimiter);
 
   template <typename... Args>
