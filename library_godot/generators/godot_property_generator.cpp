@@ -33,11 +33,7 @@ namespace GodotObjectCompiler {
       GEN_ERROR(target_field, "Unknown type. Failed to determine default property info.");
     }
 
-    default_values->add_children({
-      variant_type,
-      property_hint,
-      property_usage_flags
-    });
+    default_values->add_children({variant_type, property_hint, property_usage_flags});
 
     return GeneratorError::OK;
   }
@@ -63,8 +59,10 @@ namespace GodotObjectCompiler {
       const String setter_name = format("set_%s", property_name.c_str());
 
       Ref<Type> ref_inner;
+      Ref<Enum> enum_object;
       bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner);
       bool is_obj_type = type_is_object_type(field_type);
+      bool is_enum_type = type_is_enum_type(field_type, enum_object);
       bool is_collection_type = type_is_godot_collection_type(field_type);
       bool use_const_ref = !(is_obj_type || is_ref_type || is_collection_type);
 
@@ -72,6 +70,9 @@ namespace GodotObjectCompiler {
       bind_methods_body->add_child(bind_method(target_class->name(), setter_name, {property_name}));
 
       Ref<Node> used_type = use_const_ref ? const_ref(type_name) : field_type->clone();
+      if (is_enum_type) {
+        used_type = build<Type>().with_child<Identifier>("int");
+      }
 
       // clang-format off
       Ref<Function> get_def = build<Function>().with_children({
@@ -112,7 +113,10 @@ namespace GodotObjectCompiler {
                 build<Identifier>("p_"+property_name)
               })
             ),
-        build<Body>().with_child(Writer::Assign(property_name, Writer::Text("p_" + property_name))),
+        build<Body>().with_child(
+          (is_enum_type ?
+            Writer::Assign(property_name, Writer::Text(format("static_cast<%s>(p_%s)", enum_object->qualified_name().c_str(),property_name.c_str()))):
+            Writer::Assign(property_name, Writer::Text(format("p_%s", property_name.c_str()))))),
       });
 
       Ref<GodotVariantTypeArgument> variant_type = attribute->arguments()->find_child<GodotVariantTypeArgument>();

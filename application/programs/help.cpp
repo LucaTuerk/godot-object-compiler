@@ -26,7 +26,6 @@ namespace GodotObjectCompiler {
     const Ref<Context> help = node_new<HelpEntry>(ProgramPath(), "Available Programs: ", false);
 
     for (const auto& [path, program] : programs) {
-      
 #ifdef DEV_BUILD
       String file_stem = string_vector_combine(path, "_");
       String file_path = path_concat_ext("resources/help", file_stem, "txt");

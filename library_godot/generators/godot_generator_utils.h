@@ -81,6 +81,7 @@ namespace GodotObjectCompiler {
     bool type_is_object_type(const Ref<Type>& target_type);
     bool type_is_godot_collection_type(const Ref<Type>& target_type);
     bool type_is_node_type(const Ref<Type>& target_type);
+    bool type_is_enum_type(const Ref<Type>& target_type, Ref<Enum>& enum_object);
     bool type_is_variant_type(const Ref<Type>& target_type);
     bool get_variant_type_from_type(const Ref<Type>& target_type, String& variant_type);
 

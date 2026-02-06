@@ -52,7 +52,12 @@ namespace GodotObjectCompiler {
 
     // current_target = type_node;
     type_node->create_child<Identifier>(current_src->content());
-    return ParserStep::Undecided();
+
+    if (current_src->type == "qualified_identifier") {
+      return ParserStep::StepOver();
+    } else {
+      return ParserStep::Undecided();
+    }
   }
 
 }  // namespace GodotObjectCompiler

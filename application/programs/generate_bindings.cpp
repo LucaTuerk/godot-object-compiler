@@ -151,7 +151,7 @@ namespace GodotObjectCompiler {
       FileWriter generated_writer{generated_path};
 
       Ref<GeneratedGlobalAttribute> generated_global_attribute =
-          global_namespace->find_child<GodotGeneratedGlobalAttribute>();
+          global_namespace->find_descendant<GodotGeneratedGlobalAttribute>();
 
       Vector<Ref<Class>> classes = global_namespace->classes_recursive();
       Vector<Pair<Ref<GeneratedBodyAttribute>, Ref<Context>>> generated_bodies;
