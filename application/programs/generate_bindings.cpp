@@ -1,3 +1,37 @@
+/**************************************************************************/
+/* generate_bindings.cpp                                                  */
+/*                        ___  ___  ___   ___ _____                       */
+/*                       / __|/ _ \|   \ / _ \_   _|                      */
+/*                      | (_ | (_) | |) | (_) || |                        */
+/*                       \___|\___/|___/ \___/ |_|                        */
+/*   ___  ___    _ ___ ___ _____    ___ ___  __  __ ___ ___ _    ___ ___  */
+/*  / _ \| _ )_ | | __/ __|_   _|  / __/ _ \|  \/  | _ \_ _| |  | __| _ \ */
+/* | (_) | _ \ || | _| (__  | |   | (_| (_) | |\/| |  _/| || |__| _||   / */
+/*  \___/|___/\__/|___\___| |_|    \___\___/|_|  |_|_| |___|____|___|_|_\ */
+/*                                                                        */
+/*              This file is part of Godot Object Compiler                */
+/*                  Copyright (c) 2026 Luca Ian Tuerk                     */
+/**************************************************************************/
+/*                            MIT LICENCE                                 */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 #include "generate_bindings.h"
 
 #include "library/attribute_db.h"
@@ -12,6 +46,7 @@
 #include "library_godot/assumptions.h"
 #include "library_godot/attributes/godot_attributes.h"
 #include "library_godot/generators/godot_class_generator.h"
+#include "library_godot/generators/godot_generator_utils.h"
 #include "library_godot/generators/godot_macro_include_generator.h"
 
 namespace GodotObjectCompiler {
@@ -37,7 +72,7 @@ namespace GodotObjectCompiler {
     Ref<Context> macro_include_content = node_new<Context>();
     macro_include_generator.generate(nullptr, macro_include_content);
 
-    FileWriter marco_writer{path_concat(p_context.paths_generated, "macros.h")};
+    FileWriter marco_writer = FileWriter::generated(path_concat(p_context.paths_generated, "macros.h"));
     Ref<Writer::IOutputNode> macro_output = transformator.transform(macro_include_content);
     macro_output->get_output(&marco_writer);
 
@@ -49,11 +84,6 @@ namespace GodotObjectCompiler {
     String unregister_method_name = "generated_unregister_module";
     String register_file_name = "generated_register_types";
     Vector<String> registered_classes_headers;
-
-    // #include <gdextension_interface.h>
-    // #include <godot_cpp/core/class_db.hpp>
-    // #include <godot_cpp/core/defs.hpp>
-    // #include <godot_cpp/godot.hpp>
 
     // clang-format off
     register_types_header->add_children({
@@ -147,8 +177,8 @@ namespace GodotObjectCompiler {
         create_dir_recursive(in_generated_base);
       }
 
-      FileWriter source_writer{source_path};
-      FileWriter generated_writer{generated_path};
+      FileWriter source_writer = FileWriter::generated(source_path);
+      FileWriter generated_writer = FileWriter::generated(generated_path);
 
       Ref<GeneratedGlobalAttribute> generated_global_attribute =
           global_namespace->find_descendant<GodotGeneratedGlobalAttribute>();
@@ -291,8 +321,10 @@ namespace GodotObjectCompiler {
     Ref<Writer::IOutputNode> register_header_output = transformator.transform(register_types_header);
     Ref<Writer::IOutputNode> register_source_output = transformator.transform(register_types_source);
 
-    FileWriter register_header_writer(path_concat_ext(p_context.paths_generated, "generated_register_types", "h"));
-    FileWriter register_source_writer(path_concat_ext(p_context.paths_generated, "generated_register_types", "cpp"));
+    FileWriter register_header_writer =
+        FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "h"));
+    FileWriter register_source_writer =
+        FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "cpp"));
 
     register_header_output->get_output(&register_header_writer);
     register_source_output->get_output(&register_source_writer);

@@ -1,3 +1,37 @@
+/**************************************************************************/
+/* helpers.cpp                                                            */
+/*                        ___  ___  ___   ___ _____                       */
+/*                       / __|/ _ \|   \ / _ \_   _|                      */
+/*                      | (_ | (_) | |) | (_) || |                        */
+/*                       \___|\___/|___/ \___/ |_|                        */
+/*   ___  ___    _ ___ ___ _____    ___ ___  __  __ ___ ___ _    ___ ___  */
+/*  / _ \| _ )_ | | __/ __|_   _|  / __/ _ \|  \/  | _ \_ _| |  | __| _ \ */
+/* | (_) | _ \ || | _| (__  | |   | (_| (_) | |\/| |  _/| || |__| _||   / */
+/*  \___/|___/\__/|___\___| |_|    \___\___/|_|  |_|_| |___|____|___|_|_\ */
+/*                                                                        */
+/*              This file is part of Godot Object Compiler                */
+/*                  Copyright (c) 2026 Luca Ian Tuerk                     */
+/**************************************************************************/
+/*                            MIT LICENCE                                 */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
 #include "helpers.h"
 
 #include <filesystem>
@@ -106,6 +140,15 @@ namespace GodotObjectCompiler {
       return path_cwd();
     }
     return std::filesystem::absolute(p_path).generic_string();
+  }
+
+  String path_file_name(const String& p_path) {
+    std::filesystem::path path = p_path;
+    if (!is_regular_file(path)) {
+      return "";
+    }
+
+    return path.filename();
   }
 
   String path_cwd() { return std::filesystem::current_path(); }
@@ -286,6 +329,20 @@ namespace GodotObjectCompiler {
     auto itr = std::find_if(ret.rbegin(), ret.rend(), [](unsigned char c) { return !is_whitespace(c); });
     ret.erase(itr.base(), ret.end());
     return ret;
+  }
+
+  String string_pad_right(const String& p_content, char p_padding, Size p_size) {
+    if (p_content.size() >= p_size) {
+      return p_content;
+    }
+
+    StreamWriter writer;
+    writer.write(p_content);
+    for (Size i = p_content.length(); i < p_size; i++) {
+      writer.write_generic(p_padding);
+    }
+
+    return writer.get_string();
   }
 
   String string_shrink_inner_space(const String& p_content) {
