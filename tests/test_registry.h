@@ -70,7 +70,7 @@ namespace GodotObjectCompiler {
     bool operator<<(TestFunctor functor) const;
   };
 
-}  // namespace GodotObjectCompiler
+}
 
 #define GOC_TEST(name)                                                                        \
   static inline bool __##name##__test_registered__ = GodotObjectCompiler::TestRegister(#name) \

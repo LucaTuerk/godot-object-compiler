@@ -95,4 +95,4 @@ namespace GodotObjectCompiler {
     ATTRIBUTE_DEFAULT_MACRO(GODOT_SIGNAL)
   };
 
-}  // namespace GodotObjectCompiler
+}

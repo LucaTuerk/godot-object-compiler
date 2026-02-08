@@ -82,4 +82,4 @@ namespace GodotObjectCompiler {
     virtual bool _verify_target(Ref<Node> p_resolved) const;
   };
 
-}  // namespace GodotObjectCompiler
+}

@@ -37,7 +37,8 @@
 #include <tree_sitter/api.h>
 #include <tree_sitter/tree-sitter-cpp.h>
 
-#include "library/core/helpers.h"
+
+#include "library/core/string_utilities.h"
 #include "library/tree/syntax/context.h"
 
 namespace GodotObjectCompiler {
@@ -91,4 +92,4 @@ namespace GodotObjectCompiler {
     return [str](Ref<TreeSitterNode> node) { return string_contains(node->type, str); };
   }
 
-}  // namespace GodotObjectCompiler
+}

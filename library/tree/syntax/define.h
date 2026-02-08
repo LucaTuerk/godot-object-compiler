@@ -42,4 +42,4 @@ namespace GodotObjectCompiler {
     NODE_TYPE(Define)
   };
 
-}  // namespace GodotObjectCompiler
+}

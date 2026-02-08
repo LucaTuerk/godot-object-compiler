@@ -78,4 +78,4 @@ namespace GodotObjectCompiler {
     bool _invalid = true;
   };
 
-}  // namespace GodotObjectCompiler
+}

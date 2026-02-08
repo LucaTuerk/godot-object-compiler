@@ -56,4 +56,4 @@ namespace GodotObjectCompiler {
     Ref<Writer::IOutputNode> transformed;
   };
 
-}  // namespace GodotObjectCompiler
+}

@@ -35,7 +35,6 @@
 
 #pragma once
 #include "core.h"
-#include "helpers.h"
 
 namespace GodotObjectCompiler {
 
@@ -154,4 +153,4 @@ namespace GodotObjectCompiler {
     return state == STATE_INVALID;
   }
 
-}  // namespace GodotObjectCompiler
+}

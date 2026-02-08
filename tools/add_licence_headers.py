@@ -11,6 +11,9 @@ def add_licence_headers(path: pathlib.Path):
 
     for file in list(path.rglob('**/*.h')) + list(path.rglob('**/*.cpp')):
         write = ''
+        if file.name == 'all.h':
+            continue
+            
         with open(file, 'r') as current:
             content = current.read()
             if "This file is part of Godot Object Compiler" in content:
@@ -23,9 +26,3 @@ def add_licence_headers(path: pathlib.Path):
 
         with open(file, 'w') as current:
             current.write(write)
-
-
-add_licence_headers(pathlib.Path('library'))
-add_licence_headers(pathlib.Path('library_godot'))
-add_licence_headers(pathlib.Path('application'))
-add_licence_headers(pathlib.Path('tests'))

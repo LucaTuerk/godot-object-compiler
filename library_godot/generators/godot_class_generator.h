@@ -35,7 +35,6 @@
 
 #pragma once
 #include "godot_initialization_generator.h"
-#include "godot_property_generator.h"
 #include "library/generator/generator.h"
 #include "library_godot/attributes/godot_attributes.h"
 
@@ -61,4 +60,4 @@ namespace GodotObjectCompiler {
         Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
   };
 
-}  // namespace GodotObjectCompiler
+}

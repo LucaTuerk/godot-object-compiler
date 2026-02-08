@@ -35,7 +35,8 @@
 
 #include "program.h"
 
-#include "library/core/helpers.h"
+
+#include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler {
 
@@ -82,4 +83,4 @@ namespace GodotObjectCompiler {
     return overlap;
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -63,4 +63,4 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-}  // namespace GodotObjectCompiler
+}

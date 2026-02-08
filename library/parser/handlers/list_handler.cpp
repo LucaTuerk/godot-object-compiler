@@ -34,7 +34,7 @@
 /**************************************************************************/
 #include "list_handler.h"
 
-#include "library/core/helpers.h"
+
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/attribute.h"
 #include "library/tree/syntax/function.h"
@@ -67,4 +67,4 @@ namespace GodotObjectCompiler {
     return ParserStep::StepInto();
   }
 
-}  // namespace GodotObjectCompiler
+}

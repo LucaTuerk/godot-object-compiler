@@ -49,4 +49,4 @@ namespace GodotObjectCompiler {
     return step;
   }
 
-}  // namespace GodotObjectCompiler
+}

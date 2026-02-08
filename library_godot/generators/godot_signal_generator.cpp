@@ -113,4 +113,4 @@ namespace GodotObjectCompiler {
     return GeneratorError::OK;
   }
 
-}  // namespace GodotObjectCompiler
+}

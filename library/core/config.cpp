@@ -118,4 +118,4 @@ namespace GodotObjectCompiler {
     return true;
   }
 
-}  // namespace GodotObjectCompiler
+}

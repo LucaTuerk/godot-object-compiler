@@ -36,11 +36,11 @@
 #include "string_writer.h"
 
 #include <filesystem>
-#include <iostream>
 
-#include "helpers.h"
+#include "file_system_utilities.h"
 #include "permissions.h"
 #include "resources.h"
+#include "string_utilities.h"
 
 namespace GodotObjectCompiler {
 
@@ -101,4 +101,4 @@ namespace GodotObjectCompiler {
     return content;
   }
 
-}  // namespace GodotObjectCompiler
+}

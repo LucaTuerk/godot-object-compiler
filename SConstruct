@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 from typing import TYPE_CHECKING
 from tools.create_all_h import create_all_h
+from tools.add_licence_headers import add_licence_headers
 import os
+import pathlib
 
 this_dir = Dir('.').srcnode().abspath
 
@@ -158,6 +160,11 @@ for folder in application_folders:
 
 for folder in test_folders:
     create_all_h(this_dir + '/' + folder)
+
+add_licence_headers(pathlib.Path('library'))
+add_licence_headers(pathlib.Path('library_godot'))
+add_licence_headers(pathlib.Path('application'))
+add_licence_headers(pathlib.Path('tests'))
 
 env.Program(
     "goc",

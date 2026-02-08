@@ -97,4 +97,4 @@ namespace GodotObjectCompiler {
     return body() ? body()->find_children<Enum>(true) : Vector<Ref<Enum>>();
   }
 
-}  // namespace GodotObjectCompiler
+}

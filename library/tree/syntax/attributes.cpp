@@ -33,4 +33,4 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-namespace GodotObjectCompiler {}  // namespace GodotObjectCompiler
+namespace GodotObjectCompiler {}

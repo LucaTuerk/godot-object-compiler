@@ -34,7 +34,7 @@
 /**************************************************************************/
 #include "enum.h"
 
-#include "library/core/helpers.h"
+
 
 namespace GodotObjectCompiler {
 
@@ -60,4 +60,4 @@ namespace GodotObjectCompiler {
     return value;
   }
 
-}  // namespace GodotObjectCompiler
+}

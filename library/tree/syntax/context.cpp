@@ -37,7 +37,7 @@
 #include "function.h"
 #include "identifier.h"
 #include "include.h"
-#include "library/core/helpers.h"
+
 #include "library/core/string_writer.h"
 #include "library/type_db.h"
 #include "namespace.h"
@@ -309,4 +309,4 @@ namespace GodotObjectCompiler {
     return TypeDB::mangle_name(qualified_name(), template_parameter_count);
   }
 
-}  // namespace GodotObjectCompiler
+}

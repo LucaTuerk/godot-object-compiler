@@ -44,4 +44,4 @@ namespace GodotObjectCompiler {
 
   bool Field::_is_volatile_lazy_get() { return find_descendant<Volatile>() != nullptr; }
 
-}  // namespace GodotObjectCompiler
+}

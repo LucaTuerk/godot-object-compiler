@@ -35,12 +35,13 @@
 
 #include "godot_macro_include_generator.h"
 
-#include "library/type_db.h"
 #include "library/attribute_db.h"
-#include "library/core/helpers.h"
+#include "library/core/file_system_utilities.h"
+
 #include "library/core/resources.h"
 #include "library/tree/output/output.h"
 #include "library/tree/output/output_file.h"
+#include "library/type_db.h"
 
 namespace GodotObjectCompiler {
 
@@ -280,4 +281,4 @@ namespace GodotObjectCompiler {
     return entry;
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -35,7 +35,8 @@
 #include "library/type_db.h"
 
 #include "core/config.h"
-#include "core/helpers.h"
+#include "core/file_system_utilities.h"
+#include "core/string_utilities.h"
 #include "core/string_writer.h"
 #include "tree/syntax/class.h"
 #include "tree/syntax/define.h"
@@ -220,4 +221,4 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-}  // namespace GodotObjectCompiler
+}

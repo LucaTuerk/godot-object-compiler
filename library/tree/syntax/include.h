@@ -57,4 +57,4 @@ namespace GodotObjectCompiler {
     String include_path;
   };
 
-}  // namespace GodotObjectCompiler
+}

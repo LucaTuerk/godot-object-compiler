@@ -38,9 +38,8 @@
 
 #include "execution_context.h"
 
-#include <filesystem>
-
-#include "core/helpers.h"
+#include "core/file_system_utilities.h"
+#include "core/string_utilities.h"
 #include "parser/parser.h"
 #include "tree/syntax/namespace.h"
 #include "type_db.h"
@@ -175,4 +174,4 @@ namespace GodotObjectCompiler {
     return path_concat(".goc/cache", hash_string(p_hash) + ".gocdb");
   }
 
-}  // namespace GodotObjectCompiler
+}

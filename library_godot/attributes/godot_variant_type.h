@@ -66,4 +66,4 @@ namespace GodotObjectCompiler {
     Dictionary<String, String> _value_name_to_godot_variant_type;
   };
 
-}  // namespace GodotObjectCompiler
+}

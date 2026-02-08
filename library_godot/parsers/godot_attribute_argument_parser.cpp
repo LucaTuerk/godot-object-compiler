@@ -35,7 +35,7 @@
 
 #include "godot_attribute_argument_parser.h"
 
-#include "library/core/helpers.h"
+
 
 namespace GodotObjectCompiler {
 
@@ -175,4 +175,4 @@ namespace GodotObjectCompiler {
     return ParserError::OK;
   }
 
-}  // namespace GodotObjectCompiler
+}

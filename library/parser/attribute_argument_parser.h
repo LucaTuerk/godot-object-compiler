@@ -52,7 +52,7 @@ namespace GodotObjectCompiler {
     static Vector<String> split_flags(const String& p_content);
   };
 
-}  // namespace GodotObjectCompiler
+}
 
 #define ARGUMENT_PARSER(type) \
   static String() get_type_static() { return #type; }

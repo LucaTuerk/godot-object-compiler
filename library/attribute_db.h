@@ -134,7 +134,7 @@ namespace GodotObjectCompiler {
     return param;
   }
 
-}  // namespace GodotObjectCompiler
+}
 
 #define ATTRIBUTE_DEFAULT_MACRO(macro)                                                         \
   static Ref<Attribute> attribute_create_static() { return create_static()->as<Attribute>(); } \

@@ -99,6 +99,6 @@ namespace GodotObjectCompiler {
         "Assume that a macro of name \"GDREGISTER_NATIVE_STRUCT\" exisits in the TypeDB."};
 
     bool validate_assumptions();
-  }  // namespace GodotTypeAssumptions
+  }
 
-}  // namespace GodotObjectCompiler
+}

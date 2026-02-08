@@ -34,7 +34,7 @@
 /**************************************************************************/
 #include "storage_class_handler.h"
 
-#include "library/core/helpers.h"
+
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/modifiers.h"
 
@@ -53,4 +53,4 @@ namespace GodotObjectCompiler {
     return ParserStep::StepOver();
   }
 
-}  // namespace GodotObjectCompiler
+}

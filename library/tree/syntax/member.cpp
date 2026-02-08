@@ -86,4 +86,4 @@ namespace GodotObjectCompiler {
     return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PRIVATE;
   }
 
-}  // namespace GodotObjectCompiler
+}

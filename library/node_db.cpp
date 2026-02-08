@@ -95,4 +95,4 @@ namespace GodotObjectCompiler {
 
   bool NodeDB::_has_uid(UID p_uid) { return _uids.find(p_uid) != _uids.end(); }
 
-}  // namespace GodotObjectCompiler
+}

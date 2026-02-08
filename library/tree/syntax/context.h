@@ -443,4 +443,4 @@ namespace GodotObjectCompiler {
     return builder;
   }
 
-}  // namespace GodotObjectCompiler
+}

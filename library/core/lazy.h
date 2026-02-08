@@ -88,4 +88,4 @@ namespace GodotObjectCompiler {
     return _data;
   }
 
-}  // namespace GodotObjectCompiler
+}

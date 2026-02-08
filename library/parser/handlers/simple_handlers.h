@@ -87,4 +87,4 @@ namespace GodotObjectCompiler {
     static inline String skip_type = "operator";
   };
 
-}  // namespace GodotObjectCompiler
+}

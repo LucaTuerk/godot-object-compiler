@@ -84,4 +84,4 @@ namespace GodotObjectCompiler {
     bool copy_to(Ref<Node> p_other) const override;
   };
 
-}  // namespace GodotObjectCompiler
+}

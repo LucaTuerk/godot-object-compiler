@@ -61,4 +61,4 @@ namespace GodotObjectCompiler {
     Vector<ResourcePack*> _loaded_packs;
   };
 
-}  // namespace GodotObjectCompiler
+}

@@ -34,7 +34,7 @@
 /**************************************************************************/
 #include "pointer_ref_handler.h"
 
-#include "library/core/helpers.h"
+
 #include "library/parser/node_handler.h"
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/type.h"
@@ -68,4 +68,4 @@ namespace GodotObjectCompiler {
     return ParserStep::Undecided();
   }
 
-}  // namespace GodotObjectCompiler
+}

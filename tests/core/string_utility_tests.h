@@ -34,7 +34,7 @@
 /**************************************************************************/
 #pragma once
 
-#include "library/core/helpers.h"
+
 
 GOC_TEST(StringReplace) {
   using namespace GodotObjectCompiler;

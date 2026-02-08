@@ -60,4 +60,4 @@ namespace GodotObjectCompiler {
     content = p_reader->read<String, String>("literal_content");
   }
 
-}  // namespace GodotObjectCompiler
+}

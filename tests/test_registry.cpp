@@ -48,4 +48,4 @@ namespace GodotObjectCompiler {
     return TestRegistry::instance()->register_test(name, std::move(functor));
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -83,7 +83,7 @@ namespace GodotObjectCompiler {
     return true;
   }
 
-}  // namespace GodotObjectCompiler
+}
 
 #define HANDLER_ERROR(...)                           \
   node_new<ParserError>(ERROR, format(__VA_ARGS__)); \

@@ -37,9 +37,11 @@
 
 #include "application/project.h"
 #include "init_local_resources.h"
-#include "library/core/helpers.h"
+#include "library/core/file_system_utilities.h"
+
 #include "library/core/permissions.h"
 #include "library/core/resources.h"
+#include "library/core/string_utilities.h"
 #include "program_functions.h"
 
 namespace GodotObjectCompiler {
@@ -139,4 +141,4 @@ namespace GodotObjectCompiler {
     return ProgramError::OK;
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -55,4 +55,4 @@ namespace GodotObjectCompiler {
         Ref<Context> p_startup_content, Ref<Context> p_shutdown_content) = 0;
   };
 
-}  // namespace GodotObjectCompiler
+}

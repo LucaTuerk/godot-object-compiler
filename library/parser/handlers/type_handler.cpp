@@ -35,7 +35,7 @@
 
 #include "type_handler.h"
 
-#include "library/core/helpers.h"
+
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/enum.h"
@@ -94,4 +94,4 @@ namespace GodotObjectCompiler {
     }
   }
 
-}  // namespace GodotObjectCompiler
+}

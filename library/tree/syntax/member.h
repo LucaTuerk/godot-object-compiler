@@ -52,4 +52,4 @@ namespace GodotObjectCompiler {
     LAZY(Member, bool, is_private_member);
   };
 
-}  // namespace GodotObjectCompiler
+}

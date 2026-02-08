@@ -164,6 +164,6 @@ namespace GodotObjectCompiler {
     Ref<Node> PropertyInfoDefaultForType(
         const Ref<Type>& p_type, const String& p_property_name, DefaultsUsage p_usage = DEFAULTS_PROPERTY_BINDING);
 
-  };  // namespace GodotGeneratorUtils
+  };
 
-}  // namespace GodotObjectCompiler
+}

@@ -37,7 +37,8 @@
 
 #include "application/application_context.h"
 #include "library/core/config.h"
-#include "library/core/helpers.h"
+#include "library/core/file_system_utilities.h"
+#include "library/core/string_utilities.h"
 #include "library/parser/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/define.h"
@@ -105,4 +106,4 @@ namespace GodotObjectCompiler {
     return ProgramError::OK;
   }
 
-}  // namespace GodotObjectCompiler
+}

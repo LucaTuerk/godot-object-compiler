@@ -117,4 +117,4 @@ namespace GodotObjectCompiler {
     ErrorDetail _error_detail;
   };
 
-}  // namespace GodotObjectCompiler
+}

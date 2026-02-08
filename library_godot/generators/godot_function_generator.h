@@ -34,8 +34,8 @@
 /**************************************************************************/
 
 #pragma once
-#include "../../library/generator/generator.h"
-#include "../attributes/godot_attributes.h"
+#include "library/generator/generator.h"
+#include "library_godot/attributes/godot_attributes.h"
 
 namespace GodotObjectCompiler {
 
@@ -50,4 +50,4 @@ namespace GodotObjectCompiler {
 
   REGISTER_CLASS_GENERATOR(GodotFunctionGenerator)
 
-}  // namespace GodotObjectCompiler
+}

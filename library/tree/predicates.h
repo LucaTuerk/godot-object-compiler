@@ -52,7 +52,7 @@ namespace GodotObjectCompiler {
       return [p_qualified_name](Ref<T> node) { return node->qualified_name() == p_qualified_name; };
     }
 
-  }  // namespace NamedContextPredicates
+  }
 
   namespace ClassPredicates {
 
@@ -64,6 +64,6 @@ namespace GodotObjectCompiler {
       };
     }
 
-  }  // namespace ClassPredicates
+  }
 
-}  // namespace GodotObjectCompiler
+}

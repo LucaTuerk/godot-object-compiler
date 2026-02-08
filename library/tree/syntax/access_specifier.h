@@ -52,4 +52,4 @@ namespace GodotObjectCompiler {
     Type type = PUBLIC;
   };
 
-}  // namespace GodotObjectCompiler
+}

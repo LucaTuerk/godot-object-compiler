@@ -34,7 +34,7 @@
 /**************************************************************************/
 #include "application/application_context.h"
 #include "library/core/core.h"
-#include "library/core/helpers.h"
+
 #include "library/core/string_writer.h"
 #include "library/generator/attribute_parameter_type.h"
 #include "library/tree/output/output.h"
@@ -54,6 +54,7 @@
 #include "program.h"
 #ifdef DEV_BUILD
 #include "generate_assumptions.h"
+#include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/tree/output/output.h"
 #include "library/tree/output/output_transformator.h"
@@ -174,5 +175,5 @@ namespace GodotObjectCompiler {
     return ProgramError::OK;
   }
 
-}  // namespace GodotObjectCompiler
+}
 #endif

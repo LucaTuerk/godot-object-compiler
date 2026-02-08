@@ -110,4 +110,4 @@ namespace GodotObjectCompiler {
     return nullptr;
   }
 
-}  // namespace GodotObjectCompiler
+}

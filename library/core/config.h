@@ -76,4 +76,4 @@ namespace GodotObjectCompiler {
     Dictionary<Size, Dictionary<String, String>> config_values;
   };
 
-}  // namespace GodotObjectCompiler
+}

@@ -129,7 +129,7 @@ namespace GodotObjectCompiler {
     return T::next_step;
   }
 
-}  // namespace GodotObjectCompiler
+}
 
 #define NODE_HANDLER(name)                     \
  public:                                       \

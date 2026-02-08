@@ -55,4 +55,4 @@ namespace GodotObjectCompiler {
     void replace_non_output_children(Ref<Writer::IOutputNode> p_node);
   };
 
-}  // namespace GodotObjectCompiler
+}

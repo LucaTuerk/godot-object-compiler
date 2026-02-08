@@ -146,4 +146,4 @@ namespace GodotObjectCompiler {
     return make_ref<int>(string_to_int(literal->content));
   }
 
-}  // namespace GodotObjectCompiler
+}

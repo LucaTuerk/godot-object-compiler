@@ -94,4 +94,4 @@ namespace GodotObjectCompiler {
     NODE_TYPE(Long)
   };
 
-}  // namespace GodotObjectCompiler
+}

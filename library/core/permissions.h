@@ -58,4 +58,4 @@ namespace GodotObjectCompiler {
     HashSet<String> allowed_write_paths;
   };
 
-}  // namespace GodotObjectCompiler
+}

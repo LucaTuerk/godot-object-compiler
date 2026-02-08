@@ -86,4 +86,4 @@ namespace GodotObjectCompiler {
     static inline const Ref<ParserError> OK = nullptr;
   };
 
-}  // namespace GodotObjectCompiler
+}

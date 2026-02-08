@@ -41,4 +41,4 @@ namespace GodotObjectCompiler {
     NODE_TYPE(Operator)
   };
 
-}  // namespace GodotObjectCompiler
+}

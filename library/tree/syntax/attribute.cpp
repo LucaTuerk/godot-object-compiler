@@ -72,4 +72,4 @@ namespace GodotObjectCompiler {
 
   bool Attribute::_verify_target(Ref<Node> p_resolved) const { return true; }
 
-}  // namespace GodotObjectCompiler
+}

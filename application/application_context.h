@@ -55,4 +55,4 @@ namespace GodotObjectCompiler {
     bool validate() const;
   };
 
-}  // namespace GodotObjectCompiler
+}

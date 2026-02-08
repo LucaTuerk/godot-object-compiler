@@ -35,7 +35,7 @@
 
 #include "resources.h"
 
-#include "helpers.h"
+#include "string_utilities.h"
 
 namespace GodotObjectCompiler {
 
@@ -71,4 +71,4 @@ namespace GodotObjectCompiler {
     return false;
   }
 
-}  // namespace GodotObjectCompiler
+}

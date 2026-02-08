@@ -33,11 +33,10 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "../core/core.h"
-#include "../core/helpers.h"
+#include "library/core/core.h"
 
 namespace GodotObjectCompiler::Parser::Helpers {
 
   String remove_macros(const String& p_input);
 
-}  // namespace GodotObjectCompiler::Parser::Helpers
+}

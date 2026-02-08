@@ -35,7 +35,8 @@
 #include "type.h"
 
 #include "identifier.h"
-#include "library/core/helpers.h"
+
+#include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/tree/output/output_transformator.h"
 #include "modifiers.h"
@@ -88,4 +89,4 @@ namespace GodotObjectCompiler {
 
   Ref<TemplateArguments> Type::_template_arguments_lazy_get() { return find_child<TemplateArguments>(); }
 
-}  // namespace GodotObjectCompiler
+}

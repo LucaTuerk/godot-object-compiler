@@ -36,6 +36,7 @@
 #include "godot_class_type.h"
 
 #include "../assumptions.h"
+#include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler {
 
@@ -88,4 +89,4 @@ namespace GodotObjectCompiler {
     return value_names;
   }
 
-}  // namespace GodotObjectCompiler
+}

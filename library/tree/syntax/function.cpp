@@ -63,4 +63,4 @@ namespace GodotObjectCompiler {
 
   Ref<Literal> Parameter::_default_value_lazy_get() { return find_child<Literal>(); }
 
-}  // namespace GodotObjectCompiler
+}

@@ -33,7 +33,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "library/core/helpers.h"
+#include "library/core/collection_utilities.h"
+
 #include "library/core/string_writer.h"
 #include "library/tree/syntax/enum.h"
 #include "tests/test_registry.h"
