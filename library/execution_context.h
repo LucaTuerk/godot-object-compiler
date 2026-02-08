@@ -32,35 +32,35 @@ namespace GodotObjectCompiler {
 
     const Vector<String>& get_remove_macros();
 
-    void set_remove_macros(const Vector<String>& value);
+    void set_remove_macros(const Vector<String>& p_value);
 
-    String get_absolute_include_path(const String& included_from_path, const String& path) const;
+    String get_absolute_include_path(const String& p_included_from_path, const String& p_path) const;
 
     const Vector<String>& get_include_paths();
 
-    Ref<Node> get_include(const String& included_from_path, const String& path);
+    Ref<Node> get_include(const String& p_included_from_path, const String& p_path);
 
-    void set_include_paths(const Vector<String>& value);
+    void set_include_paths(const Vector<String>& p_value);
 
-    bool is_file_included(const String& include_path);
+    bool is_file_included(const String& p_include_path);
 
-    void set_error_level(ErrorLevel level, ErrorDetail error_detail);
+    void set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail);
 
     ErrorLevel get_error_level() const;
 
     ErrorDetail get_error_detail() const;
 
-    void print(ErrorLevel level, const String& message);
+    void print(ErrorLevel p_level, const String& p_message) const;
 
    private:
 
-    void set_file_included(const String& include_path);
+    void set_file_included(const String& p_include_path);
 
-    bool is_cached(const String& path);
+    bool is_cached(const String& p_path);
 
-    static Hash get_path_hash(const String& absolute_path);
+    static Hash get_path_hash(const String& p_absolute_path);
 
-    String get_cache_file_path(Hash hash);
+    String get_cache_file_path(Hash p_hash);
 
     ExecutionContext();
 

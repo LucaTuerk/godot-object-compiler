@@ -7,7 +7,7 @@
 namespace GodotObjectCompiler {
   namespace Writer {
 
-    void IndentNode::get_output(IStringWriter* writer) {
+    void IndentNode::get_output(IStringWriter* p_writer) {
       StreamWriter child_writer = StreamWriter();
 
       for (Ref<Node> child : get_children()) {
@@ -22,16 +22,16 @@ namespace GodotObjectCompiler {
       Vector<String> lines = string_split(child_result, "\n");
       for (const String& line : lines) {
         for (Size i = 0; i < total; ++i) {
-          writer->write(" ");
+          p_writer->write(" ");
         }
         if (!line.empty()) {
-          writer->write(line);
+          p_writer->write(line);
         }
-        writer->write("\n");
+        p_writer->write("\n");
       }
     }
 
-    bool IndentNode::copy_to(Ref<Node> other) const {
+    bool IndentNode::copy_to(Ref<Node> p_other) const {
       COPY_GUARD(IndentNode, Context)
 
       target->amount = amount;
@@ -48,18 +48,18 @@ namespace GodotObjectCompiler {
       return amount;
     }
 
-    void EnclosingNode::get_output(IStringWriter* writer) {
-      writer->write(before);
+    void EnclosingNode::get_output(IStringWriter* p_writer) {
+      p_writer->write(before);
       for (Ref<Node> child : get_children()) {
         Ref<IOutputNode> child_output = child->as<IOutputNode>();
         if (child_output) {
-          child_output->get_output(writer);
+          child_output->get_output(p_writer);
         }
       }
-      writer->write(after);
+      p_writer->write(after);
     }
 
-    bool EnclosingNode::copy_to(Ref<Node> other) const {
+    bool EnclosingNode::copy_to(Ref<Node> p_other) const {
       COPY_GUARD(EnclosingNode, Context)
 
       target->before = before;
@@ -67,7 +67,7 @@ namespace GodotObjectCompiler {
       return true;
     }
 
-    void ListNode::get_output(IStringWriter* writer) {
+    void ListNode::get_output(IStringWriter* p_writer) {
       if (get_child_count() == 0) {
         return;
       }
@@ -76,7 +76,7 @@ namespace GodotObjectCompiler {
 
       for (Index i = 0; i < get_child_count(); ++i) {
         if ((i != 0 && !last_empty) || before_first) {
-          writer->write(delimiter);
+          p_writer->write(delimiter);
         }
 
         Ref<Node> child = get_child(i);
@@ -86,18 +86,18 @@ namespace GodotObjectCompiler {
           StreamWriter child_writer;
           output->get_output(&child_writer);
           last_empty = child_writer.current_length() == 0 || child_writer.get_string() == delimiter;
-          writer->write(child_writer.get_string());
+          p_writer->write(child_writer.get_string());
         }
       }
 
       if (after_last) {
-        writer->write(delimiter);
+        p_writer->write(delimiter);
       }
 
       Brackets({});
     }
 
-    bool ListNode::copy_to(Ref<Node> other) const {
+    bool ListNode::copy_to(Ref<Node> p_other) const {
       COPY_GUARD(ListNode, Context)
 
       target->before_first = before_first;
@@ -106,18 +106,18 @@ namespace GodotObjectCompiler {
       return true;
     }
 
-    void ReplaceNode::get_output(IStringWriter* writer) {
+    void ReplaceNode::get_output(IStringWriter* p_writer) {
       for (Ref<Node> child : *this) {
         Ref<IOutputNode> output_node = child->as<IOutputNode>();
         if (output_node) {
           StreamWriter child_writer;
           output_node->get_output(&child_writer);
-          writer->write(string_replace(child_writer.get_string(), search, replace));
+          p_writer->write(string_replace(child_writer.get_string(), search, replace));
         }
       }
     }
 
-    bool ReplaceNode::copy_to(Ref<Node> other) const {
+    bool ReplaceNode::copy_to(Ref<Node> p_other) const {
       COPY_GUARD(ReplaceNode, Context)
 
       target->search = search;
@@ -125,9 +125,9 @@ namespace GodotObjectCompiler {
       return true;
     }
 
-    void SnippetNode::get_output(IStringWriter* writer) { writer->write(content); }
+    void SnippetNode::get_output(IStringWriter* p_writer) { p_writer->write(content); }
 
-    bool SnippetNode::copy_to(Ref<Node> other) const {
+    bool SnippetNode::copy_to(Ref<Node> p_other) const {
       COPY_GUARD(SnippetNode, Node)
 
       target->content = content;
@@ -136,7 +136,7 @@ namespace GodotObjectCompiler {
 
 #define ADD_CHILDREN_AND_RET(creator)                                 \
   auto result = ExecutionContext::instance()->get_node_db()->creator; \
-  for (Ref<IOutputNode> child : children) {                           \
+  for (Ref<IOutputNode> child : p_children) {                           \
     Ref<Node> node = std::dynamic_pointer_cast<Node>(child);          \
     if (node) {                                                       \
       result->add_child(node);                                        \
@@ -144,199 +144,202 @@ namespace GodotObjectCompiler {
   }                                                                   \
   return result
 
-    Ref<IndentNode> Indent(Size indent, std::initializer_list<Ref<IOutputNode>>&& children) {
-      ADD_CHILDREN_AND_RET(create<IndentNode>(indent));
+    Ref<IndentNode> Indent(Size p_indent, std::initializer_list<Ref<IOutputNode>>&& p_children) {
+      ADD_CHILDREN_AND_RET(create<IndentNode>(p_indent));
     }
 
-    Ref<EnclosingNode> Brackets(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<EnclosingNode> Brackets(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("(", ")"));
     }
 
-    Ref<EnclosingNode> SquareBrackets(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<EnclosingNode> SquareBrackets(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("[", "]"));
     }
 
-    Ref<EnclosingNode> Braces(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<EnclosingNode> Braces(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("{", "}"));
     }
 
-    Ref<EnclosingNode> Chevrons(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<EnclosingNode> Chevrons(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<EnclosingNode>("<", ">"));
     }
 
-    Ref<ListNode> Lines(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<ListNode> Lines(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<ListNode>("\n", false, false););
     }
 
-    Ref<ReplaceNode> EscapedLines(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<ReplaceNode> EscapedLines(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<ReplaceNode>("\n", "\\\n"););
     }
 
-    Ref<ListNode> Spaces(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<ListNode> Spaces(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<ListNode>(" ", false, false););
     }
 
-    Ref<ListNode> NoSep(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<ListNode> NoSep(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<ListNode>("", false, false););
     }
 
-    Ref<ListNode> Params(std::initializer_list<Ref<IOutputNode>>&& children) {
+    Ref<ListNode> Params(std::initializer_list<Ref<IOutputNode>>&& p_children) {
       ADD_CHILDREN_AND_RET(create<ListNode>(", ", false, false););
     }
 
-    Ref<ListNode> Param(const String& type, const String& name, Ref<IOutputNode> default_val) {
-      return default_val ? Spaces({Text(type), Text(name), Text("="), default_val}) : Spaces({Text(type), Text(name)});
+    Ref<ListNode> Param(const String& p_type, const String& p_name, Ref<IOutputNode> p_default_val) {
+      return p_default_val ? Spaces({Text(p_type), Text(p_name), Text("="), p_default_val})
+                           : Spaces({Text(p_type), Text(p_name)});
     }
 
-    Ref<ListNode> ConstRefParam(const String& type, const String& name, Ref<IOutputNode> default_val) {
-      return default_val ? Spaces({ConstRef(type), Text(name), Text("="), default_val})
-                         : Spaces({ConstRef(type), Text(name)});
+    Ref<ListNode> ConstRefParam(const String& p_type, const String& p_name, Ref<IOutputNode> p_default_val) {
+      return p_default_val ? Spaces({ConstRef(p_type), Text(p_name), Text("="), p_default_val})
+                           : Spaces({ConstRef(p_type), Text(p_name)});
     }
 
-    Ref<ListNode> LineOfCode(std::initializer_list<Ref<IOutputNode>>&& children) {
-      return NoSep({NoSep({std::move(children)}), Semicolon()});
+    Ref<ListNode> LineOfCode(std::initializer_list<Ref<IOutputNode>>&& p_children) {
+      return NoSep({NoSep({std::move(p_children)}), Semicolon()});
     }
 
-    Ref<SnippetNode> Text(const String& content) {
-      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(content);
+    Ref<SnippetNode> Text(const String& p_content) {
+      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(p_content);
     }
 
-    Ref<SnippetNode> BoldText(const String& content) {
-      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(format("<b>%s</b>", content.c_str()));
+    Ref<SnippetNode> BoldText(const String& p_content) {
+      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(format("<b>%s</b>", p_content.c_str()));
     }
 
-    Ref<SnippetNode> StringLiteral(const String& content) {
-      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>("\"" + content + "\"");
+    Ref<SnippetNode> StringLiteral(const String& p_content) {
+      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>("\"" + p_content + "\"");
     }
 
     Ref<SnippetNode> Semicolon() { return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(";"); }
 
     Ref<SnippetNode> NewLine() { return ExecutionContext::instance()->get_node_db()->create<SnippetNode>("\n"); }
 
-    Ref<ListNode> ParamDecl(const String& type, const String& name) {
+    Ref<ListNode> ParamDecl(const String& p_type, const String& p_name) {
       return Spaces({
-          Text(type),
-          Text(name),
+          Text(p_type),
+          Text(p_name),
       });
     }
 
-    Ref<ListNode> FuncDef(const String& modifiers_front, const String& return_type, const String& function_name,
-        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers) {
-      return Spaces({Text(return_type),
+    Ref<ListNode> FuncDef(const String& p_modifiers_front, const String& p_return_type, const String& p_function_name,
+        std::initializer_list<Ref<IOutputNode>>&& p_params, const String& p_modifiers) {
+      return Spaces({Text(p_return_type),
           NoSep({
-              Text(function_name),
-              Brackets({Params(std::move(params))}),
+              Text(p_function_name),
+              Brackets({Params(std::move(p_params))}),
           }),
-          Text(modifiers), Semicolon(), NewLine()});
+          Text(p_modifiers), Semicolon(), NewLine()});
     }
 
-    Ref<ListNode> FuncImpl(const String& modifiers_front, const String& return_type, const String& function_name,
-        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers,
-        std::initializer_list<Ref<IOutputNode>>&& lines) {
-      return Spaces({Text(return_type),
+    Ref<ListNode> FuncImpl(const String& p_modifiers_front, const String& p_return_type, const String& p_function_name,
+        std::initializer_list<Ref<IOutputNode>>&& p_params, const String& p_modifiers,
+        std::initializer_list<Ref<IOutputNode>>&& p_lines) {
+      return Spaces({Text(p_return_type),
           NoSep({
-              Text(function_name),
-              Brackets({Params(std::move(params))}),
+              Text(p_function_name),
+              Brackets({Params(std::move(p_params))}),
           }),
-          Text(modifiers),
+          Text(p_modifiers),
           Braces({
               NewLine(),
-              Indent(2, {Lines(std::move(lines))}),
+              Indent(2, {Lines(std::move(p_lines))}),
           }),
           NewLine()});
     }
 
-    Ref<ListNode> DeclAssign(const String& type, const String& name, Ref<IOutputNode> value) {
-      return LineOfCode({Spaces({Text(type), Text(name), Text("="), value})});
+    Ref<ListNode> DeclAssign(const String& p_type, const String& p_name, Ref<IOutputNode> p_value) {
+      return LineOfCode({Spaces({Text(p_type), Text(p_name), Text("="), p_value})});
     }
 
-    Ref<ListNode> Assign(const String& variable_name, Ref<IOutputNode> value) {
-      return NoSep({Spaces({Text(variable_name), Text("="), value}), Semicolon()});
+    Ref<ListNode> Assign(const String& p_variable_name, Ref<IOutputNode> p_value) {
+      return NoSep({Spaces({Text(p_variable_name), Text("="), p_value}), Semicolon()});
     }
 
-    Ref<ListNode> Return(const String& name) { return LineOfCode({Spaces({Text("return"), Text(name)})}); }
+    Ref<ListNode> Return(const String& p_name) { return LineOfCode({Spaces({Text("return"), Text(p_name)})}); }
 
-    Ref<ListNode> FuncCall(const String& function_name, std::initializer_list<Ref<IOutputNode>>&& parameters) {
-      return NoSep({Text(function_name), Brackets({Params(std::move(parameters))})});
+    Ref<ListNode> FuncCall(const String& p_function_name, std::initializer_list<Ref<IOutputNode>>&& p_parameters) {
+      return NoSep({Text(p_function_name), Brackets({Params(std::move(p_parameters))})});
     }
 
-    Ref<ListNode> MemberFuncDef(const String& type, const String& name,
-        std::initializer_list<Ref<IOutputNode>>&& parameters, const String& modifiers) {
-      return Spaces({Text(type), NoSep({
-                                     Text(name),
-                                     Brackets({Params(std::move(parameters))}),
-                                     Semicolon(),
-                                     NewLine(),
-                                 })});
+    Ref<ListNode> MemberFuncDef(const String& p_type, const String& p_name,
+        std::initializer_list<Ref<IOutputNode>>&& p_parameters, const String& p_modifiers) {
+      return Spaces({Text(p_type), NoSep({
+                                       Text(p_name),
+                                       Brackets({Params(std::move(p_parameters))}),
+                                       Semicolon(),
+                                       NewLine(),
+                                   })});
     }
 
-    Ref<ListNode> ConstRef(const String& type) { return Spaces({Text("const"), NoSep({Text(type), Text("&")})}); }
+    Ref<ListNode> ConstRef(const String& p_type) { return Spaces({Text("const"), NoSep({Text(p_type), Text("&")})}); }
 
-    Ref<ListNode> MemberFuncImpl(const String& return_type, const String& class_name, const String& name,
-        std::initializer_list<Ref<IOutputNode>>&& params, const String& modifiers,
+    Ref<ListNode> MemberFuncImpl(const String& p_return_type, const String& p_class_name, const String& p_name,
+        std::initializer_list<Ref<IOutputNode>>&& p_params, const String& modifiers,
         std::initializer_list<Ref<IOutputNode>>&& lines) {
-      return FuncImpl("", return_type, class_name + "::" + name, std::move(params), modifiers, std::move(lines));
+      return FuncImpl(
+          "", p_return_type, p_class_name + "::" + p_name, std::move(p_params), modifiers, std::move(lines));
     }
 
-    Ref<SnippetNode> Param(const String& name) {
-      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(name);
+    Ref<SnippetNode> Param(const String& p_name) {
+      return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(p_name);
     }
 
-    Ref<SnippetNode> Include(const String& path) { return node_new<SnippetNode>("#include \"" + path + "\""); }
+    Ref<SnippetNode> Include(const String& p_path) { return node_new<SnippetNode>("#include \"" + p_path + "\""); }
 
-    Ref<SnippetNode> SystemInclude(const String& path) { return node_new<SnippetNode>("#include <" + path + ">"); }
+    Ref<SnippetNode> SystemInclude(const String& p_path) { return node_new<SnippetNode>("#include <" + p_path + ">"); }
 
-    Ref<ListNode> Namespace(const String& name, Ref<IOutputNode> content) {
-      return Spaces({Text("namespace"), Text(name), Braces({NewLine(), Indent(4, {content})})});
+    Ref<ListNode> Namespace(const String& p_name, Ref<IOutputNode> p_content) {
+      return Spaces({Text("namespace"), Text(p_name), Braces({NewLine(), Indent(4, {p_content})})});
     }
 
-    Ref<ListNode> Enum(const String& name, Ref<IOutputNode> content) {
-      return Spaces({Text("enum"), Text(name),
+    Ref<ListNode> Enum(const String& p_name, Ref<IOutputNode> p_content) {
+      return Spaces({Text("enum"), Text(p_name),
           Braces({
               NewLine(),
-              Indent(2, {content}),
+              Indent(2, {p_content}),
           }),
           Semicolon()});
     }
 
-    Ref<ListNode> MacroDefine(const String& name, Ref<IOutputNode> content) { return Lines({}); }
+    Ref<ListNode> MacroDefine(const String& p_name, Ref<IOutputNode> p_content) { return Lines({}); }
 
-    Ref<ListNode> MacroFunctionDefine(const String& name, std::initializer_list<Ref<IOutputNode>> params,
-        std::initializer_list<Ref<IOutputNode>> lines) {
+    Ref<ListNode> MacroFunctionDefine(const String& p_name, std::initializer_list<Ref<IOutputNode>> p_params,
+        std::initializer_list<Ref<IOutputNode>> p_lines) {
       return Spaces({
           Text("#define"),
           NoSep({
-              Text(name),
-              Brackets({Params(std::move(params))}),
+              Text(p_name),
+              Brackets({Params(std::move(p_params))}),
           }),
-          Indent(2, {EscapedLines(std::move(lines))}),
+          Indent(2, {EscapedLines(std::move(p_lines))}),
       });
     }
 
-    Ref<EnclosingNode> DocComment(Ref<Node> content) {
+    Ref<EnclosingNode> DocComment(Ref<Node> p_content) {
       return build<EnclosingNode>("/**\n*", "/")
-          .with_child(build<ReplaceNode>("\n", "\n*").with_child(build<IndentNode>(2).with_child(content)));
-      return build<EnclosingNode>("/**\n*", "\n*/").with_child(build<ReplaceNode>("\n", "\n*").with_child(content));
+          .with_child(build<ReplaceNode>("\n", "\n*").with_child(build<IndentNode>(2).with_child(p_content)));
+      return build<EnclosingNode>("/**\n*", "\n*/").with_child(build<ReplaceNode>("\n", "\n*").with_child(p_content));
     }
 
-    Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params, const String& content) {
-      return Spaces({Text("#define"), NoSep({Text(name), Brackets({Params(std::move(params))})}),
-          EscapedLines({Text(content)}), NewLine(), NewLine()});
+    Ref<ListNode> Define(
+        const String& p_name, std::initializer_list<Ref<IOutputNode>> p_params, const String& p_content) {
+      return Spaces({Text("#define"), NoSep({Text(p_name), Brackets({Params(std::move(p_params))})}),
+          EscapedLines({Text(p_content)}), NewLine(), NewLine()});
     }
 
-    Ref<ListNode> Define(const String& name, std::initializer_list<Ref<IOutputNode>> params,
-        std::initializer_list<Ref<IOutputNode>>&& lines) {
-      return Spaces({Text("#define"), NoSep({Text(name), Brackets({Params(std::move(params))})}),
-          EscapedLines({std::move(lines)}), NewLine(), NewLine()});
+    Ref<ListNode> Define(const String& p_name, std::initializer_list<Ref<IOutputNode>> p_params,
+        std::initializer_list<Ref<IOutputNode>>&& p_lines) {
+      return Spaces({Text("#define"), NoSep({Text(p_name), Brackets({Params(std::move(p_params))})}),
+          EscapedLines({std::move(p_lines)}), NewLine(), NewLine()});
     }
 
     Ref<SnippetNode> PragmaOnce() { return node_new<SnippetNode>("#pragma once\n\n"); }
 
-    Ref<ListNode> Class(const String& name, Ref<IOutputNode> content) {
-      return Spaces({Text("class"), Text(name),
+    Ref<ListNode> Class(const String& p_name, Ref<IOutputNode> p_content) {
+      return Spaces({Text("class"), Text(p_name),
           Braces({
               NewLine(),
-              Indent(2, {content}),
+              Indent(2, {p_content}),
           }),
           Semicolon()});
     }

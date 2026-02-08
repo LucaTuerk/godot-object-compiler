@@ -9,9 +9,9 @@
 
 namespace GodotObjectCompiler {
 
-  void StreamWriter::write(const String& value) {
-    _stream << value;
-    _current_length += value.length();
+  void StreamWriter::write(const String& p_value) {
+    _stream << p_value;
+    _current_length += p_value.length();
   }
 
   String StreamWriter::get_string() { return _stream.str(); }
@@ -33,11 +33,11 @@ namespace GodotObjectCompiler {
     }
   }
 
-  void FileWriter::write(const String& value) {
+  void FileWriter::write(const String& p_value) {
     if (!do_not_write_same_content) {
-      _file << value;
+      _file << p_value;
     }
-    _stream.write(value);
+    _stream.write(p_value);
   }
 
   String FileWriter::get_string() { return _stream.get_string(); }

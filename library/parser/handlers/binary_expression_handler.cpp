@@ -7,26 +7,26 @@
 
 namespace GodotObjectCompiler {
 
-  bool BinaryExpressionHandler::handles_node(const Ref<TreeSitterNode>& current_src) {
-    return current_src->type == "binary_expression";
+  bool BinaryExpressionHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return p_current_src->type == "binary_expression";
   }
 
-  ParserStep BinaryExpressionHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    if (!current_target->is<EnumValue>()) {
+  ParserStep BinaryExpressionHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    if (!r_current_target->is<EnumValue>()) {
       // binary expression only supported for enum value resolution.
       return ParserStep::StepOver();
     }
 
-    const Ref<int> result = calculate_binary_expression(current_src->get_child<TreeSitterNode>(0),
-        current_src->get_child<TreeSitterNode>(1), current_src->get_child<TreeSitterNode>(2),
-        current_target->as<EnumValue>());
+    const Ref<int> result = calculate_binary_expression(p_current_src->get_child<TreeSitterNode>(0),
+        p_current_src->get_child<TreeSitterNode>(1), p_current_src->get_child<TreeSitterNode>(2),
+        r_current_target->as<EnumValue>());
 
     if (!result) {
-      node_new<ParserError>(ERROR, current_src, "Failed to parse binary expression.");
+      node_new<ParserError>(ERROR, p_current_src, "Failed to parse binary expression.");
       return ParserStep::StepOver();
     }
 
-    current_target->create_child<Literal>(std::to_string(*result));
+    r_current_target->create_child<Literal>(std::to_string(*result));
     return ParserStep::StepOver();
   }
 

@@ -16,14 +16,14 @@ namespace GodotObjectCompiler {
     return {{ARG_STRING, "hint_string", true}};
   }
 
-  bool GodotPropertyHintParameterType::get_godot_hint_for_value_name(const String& name, String& macro) {
+  bool GodotPropertyHintParameterType::get_godot_hint_for_value_name(const String& p_name, String& r_macro) {
     _value_names_lazy.poke();
 
-    if (auto itr = _godot_hint_types.find(name); itr != _godot_hint_types.end()) {
-      macro = itr->second;
+    if (auto itr = _godot_hint_types.find(p_name); itr != _godot_hint_types.end()) {
+      r_macro = itr->second;
       return true;
     }
-    macro = "";
+    r_macro = "";
     return false;
   }
 

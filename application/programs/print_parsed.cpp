@@ -8,13 +8,13 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<ProgramError> PrintParsed::run(ApplicationContext& context) {
-    if (context.program_arguments.size() != 1) {
+  Ref<ProgramError> PrintParsed::run(ApplicationContext& p_context) {
+    if (p_context.program_arguments.size() != 1) {
       return node_new<ProgramError>(
           ERROR, format("Invalid argument count for program %s. Expected 1 path argument.", get_type_static().c_str()));
     }
 
-    auto path = path_absolute(context.program_arguments[0]);
+    auto path = path_absolute(p_context.program_arguments[0]);
 
     if (!file_exists(path)) {
       return node_new<ProgramError>(

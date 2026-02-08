@@ -41,12 +41,12 @@ namespace GodotObjectCompiler {
     return _root ? _root : shared_from_this();
   }
 
-  void Node::reparent(Ref<Context> new_parent) {
+  void Node::reparent(Ref<Context> p_new_parent) {
     Ref<Context> parent = get_parent();
     if (parent) {
       parent->remove_child(shared_from_this());
     }
-    new_parent->add_child(shared_from_this());
+    p_new_parent->add_child(shared_from_this());
   }
 
   Ref<Node> Node::get_sibling(int p_offset) const {
@@ -71,16 +71,16 @@ namespace GodotObjectCompiler {
     }
   }
 
-  void Node::write_to(IStructuredWriter* writer) {
+  void Node::write_to(IStructuredWriter* p_writer) {
     Ref<Context> parent = get_parent();
-    writer->write("_class", get_type());
-    writer->write("_id", get_id());
-    writer->write("_parent", parent ? parent->get_id() : INVALID_ID);
+    p_writer->write("_class", get_type());
+    p_writer->write("_id", get_id());
+    p_writer->write("_parent", parent ? parent->get_id() : INVALID_ID);
   }
 
-  void Node::read_from(IStructuredReader* reader) {
+  void Node::read_from(IStructuredReader* p_reader) {
     UID before = _id;
-    UID new_id = reader->read<String, UID>("_id");
+    UID new_id = p_reader->read<String, UID>("_id");
     if (before != new_id) {
       _id = ExecutionContext::instance()->get_node_db()->request_id_change(before, new_id);
     }
@@ -97,7 +97,7 @@ namespace GodotObjectCompiler {
     return print_pretty_and_get_child_line(nullptr, dummy);
   }
 
-  String Node::print_pretty_and_get_child_line(Ref<Node> target, Size& line) const {
+  String Node::print_pretty_and_get_child_line(Ref<Node> p_child, Size& p_line) const {
     String result = "";
     String line_prefix = "";
 
@@ -134,12 +134,12 @@ namespace GodotObjectCompiler {
       for (Index i = 0; i < context->get_child_count(); i++) {
         auto child = context->get_child(i);
 
-        if (child == target && target != nullptr) {
-          line = 1;
+        if (child == p_child && p_child != nullptr) {
+          p_line = 1;
           std::stringstream strstr(result);
           String line_str;
           while (std::getline(strstr, line_str)) {
-            line++;
+            p_line++;
           }
         }
 

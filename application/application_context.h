@@ -17,7 +17,7 @@ namespace GodotObjectCompiler {
     Vector<String> application_arguments;
     Vector<String> program_arguments;
 
-    bool set_from_project(const Project& project);
+    bool set_from_project(const Project& p_project);
     bool validate() const;
   };
 

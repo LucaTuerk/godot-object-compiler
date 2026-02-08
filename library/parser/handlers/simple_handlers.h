@@ -45,15 +45,6 @@ namespace GodotObjectCompiler {
     static inline String skip_type = "preproc_call";
   };
 
-  //
-  // class PreprocIfDefInto : public IntoHandler<PreprocIfDefInto> {
-  //   NODE_HANDLER(PreprocIfDefInto);
-  //
-  //  public:
-  //
-  //   static inline String into_type = "preproc_ifdef";
-  // };
-
   class OperatorSkip : public SkipHandler<OperatorSkip> {
     NODE_HANDLER(OperatorSkip);
 

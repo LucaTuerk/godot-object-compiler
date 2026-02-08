@@ -3,54 +3,88 @@
 
 namespace GodotObjectCompiler {
 
-  String read_file(const String& path);
-  Vector<String> read_lines(const String& path);
-  void write_file(const String& path, const String& content);
-  void ensure_file_exists(const String& path, const String& initial_content);
-  bool create_dir_recursive(const String& path);
-  bool file_exists(const String& path);
-  bool remove_file(const String& path);
-  bool remove(const String& path);
-  bool dir_exists(const String& path);
-  Size file_write_time(const String& path);
-  String input(const String& prompt, const String& default_value = "");
+  String read_file(const String& p_path);
 
-  String path_base(const String& path);
-  String path_concat(const String& path1, const String& path2);
-  String path_concat_ext(const String& dir, const String& filename, const String& extension);
-  String path_relative(const String& path, const String& base);
-  String path_absolute(const String& path);
+  Vector<String> read_lines(const String& p_path);
+
+  void write_file(const String& p_path, const String& p_content);
+
+  void ensure_file_exists(const String& p_path, const String& p_initial_content);
+
+  bool create_dir_recursive(const String& p_path);
+
+  bool file_exists(const String& p_path);
+
+  bool remove_file(const String& p_path);
+
+  bool remove(const String& p_path);
+
+  bool directory_exits(const String& p_path);
+
+  Size file_write_time(const String& p_path);
+
+  String input(const String& p_prompt, const String& p_default_value = "");
+
+  String path_base(const String& p_path);
+
+  String path_concat(const String& p_left, const String& p_right);
+
+  String path_concat_ext(const String& p_dir, const String& p_filename, const String& p_extension);
+
+  String path_relative(const String& p_path, const String& p_base);
+
+  String path_absolute(const String& p_path);
+
   String path_cwd();
-  String path_stem(const String& path);
-  Vector<String> directory_files(const String& path);
-  Vector<String> directory_files_recursive(const String& path);
-  Vector<String> directory_dirs(const String& path);
-  Vector<String> directory_entries(const String& path);
 
-  String hash_string(Hash hash);
+  String path_stem(const String& p_path);
 
-  String generate_random_string(size_t length);
+  Vector<String> directory_files(const String& p_path);
 
-  bool is_whitespace(char c);
-  bool string_contains(const String& str, const String& str2);
-  bool string_suffix(const String& str, const String& suffix);
-  bool string_prefix(const String& str, const String& prefix);
-  bool string_only_contains(const String& str, char symbol);
+  Vector<String> directory_files_recursive(const String& p_path);
 
-  String string_vector_combine(const Vector<String>& vec, String delimiter);
-  String string_replace(const String& target, const String& search_str, const String& replace_with);
-  String extract_lines(const String& content, Size start_line, Size end_line, Size highlight_line);
-  String string_trim(const String& str);
-  String string_trim_left(const String& str);
-  String string_trim_right(const String& str);
-  String string_shrink_inner_space(const String& str);
-  int string_to_int(const String& str, const int base = 10);
-  String macro_case_to_pascal_case(const String& input);
-  String cpp_enum_case_to_exposed_enum_case(const String& input);
-  Vector<String> string_split(const String& str, const String& delimiter);
+  Vector<String> directory_dirs(const String& p_path);
+
+  Vector<String> directory_entries(const String& p_path);
+
+  String hash_string(Hash p_hash);
+
+  String generate_random_string(size_t p_length);
+
+  bool is_whitespace(char p_char);
+
+  bool string_contains(const String& p_content, const String& p_check);
+
+  bool string_suffix(const String& p_content, const String& p_suffix);
+
+  bool string_prefix(const String& p_content, const String& p_prefix);
+
+  bool string_only_contains(const String& p_content, char p_char);
+
+  String string_vector_combine(const Vector<String>& p_vector, String p_delimiter);
+
+  String string_replace(const String& p_target, const String& p_search_str, const String& p_replace_with);
+
+  String extract_lines(const String& p_content, Size p_start_line, Size p_end_line, Size p_highlight_line);
+
+  String string_trim(const String& p_content);
+
+  String string_trim_left(const String& p_content);
+
+  String string_trim_right(const String& p_content);
+
+  String string_shrink_inner_space(const String& p_content);
+
+  int string_to_int(const String& p_content);
+
+  String macro_case_to_pascal_case(const String& p_content);
+
+  String cpp_enum_case_to_exposed_enum_case(const String& p_content);
+
+  Vector<String> string_split(const String& p_content, const String& p_delimiter);
 
   template <typename T, typename X>
-  bool contains(const Vector<T>& vector, const X& item) {
+  bool vector_contains(const Vector<T>& vector, const X& item) {
     return std::find(vector.begin(), vector.end(), T(item)) != vector.end();
   }
 
@@ -80,12 +114,3 @@ namespace GodotObjectCompiler {
   }
 
 }  // namespace GodotObjectCompiler
-
-#define PANIC(...)                                                               \
-  print_err(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__)); \
-  abort()
-
-#define PANIC_COND(condition, ...) \
-  if ((condition)) {               \
-    PANIC(__VA_ARGS__);            \
-  }

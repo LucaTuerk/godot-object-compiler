@@ -12,9 +12,12 @@ namespace GodotObjectCompiler {
     }
 
     void clear();
-    void add_write_path(const String& path);
-    bool is_allowed_write_path(const String& path);
-    void ensure_is_allowed_write_path(const String& path);
+
+    void add_write_path(const String& p_path);
+
+    bool is_allowed_write_path(const String& p_path);
+
+    void ensure_is_allowed_write_path(const String& p_path);
 
    private:
 

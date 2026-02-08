@@ -7,32 +7,32 @@
 
 namespace GodotObjectCompiler {
 
-  UID NodeDB::request_id_change(UID from, UID to) {
-    if (from == INVALID_ID) {
+  UID NodeDB::request_id_change(UID p_from, UID p_to) {
+    if (p_from == INVALID_ID) {
       print_err("Trying to change a node id from invalid id. This is not possible.");
-      return from;
+      return p_from;
     }
 
-    if (to == INVALID_ID) {
-      to = _generate_unique_id();
+    if (p_to == INVALID_ID) {
+      p_to = _generate_unique_id();
     }
 
-    if (_nodes.find(from) == _nodes.end()) {
+    if (_nodes.find(p_from) == _nodes.end()) {
       print_err("Trying to change a node id, but no node is registered for this id.");
-      return from;
+      return p_from;
     }
 
-    _uids.erase(from);
-    _uids.insert(to);
-    _nodes[to] = _nodes[from];
-    _nodes.erase(from);
-    return to;
+    _uids.erase(p_from);
+    _uids.insert(p_to);
+    _nodes[p_to] = _nodes[p_from];
+    _nodes.erase(p_from);
+    return p_to;
   }
 
   NodeDB::~NodeDB() {}
 
-  Ref<Node> NodeDB::create(const String& type) {
-    auto itr = _node_constructors.find(type);
+  Ref<Node> NodeDB::create(const String& p_type) {
+    auto itr = _node_constructors.find(p_type);
 
     if (itr == _node_constructors.end()) {
       return nullptr;
@@ -41,8 +41,8 @@ namespace GodotObjectCompiler {
     return itr->second();
   }
 
-  bool NodeDB::register_node_constructor(const String& name, NodeCreator constructor) {
-    return _node_constructors.insert({name, constructor}).second;
+  bool NodeDB::register_node_constructor(const String& p_name, NodeCreator p_creator) {
+    return _node_constructors.insert({p_name, p_creator}).second;
   }
 
   UID NodeDB::_generate_unique_id() {
@@ -59,6 +59,6 @@ namespace GodotObjectCompiler {
     return generated;
   }
 
-  bool NodeDB::_has_uid(UID uid) { return _uids.find(uid) != _uids.end(); }
+  bool NodeDB::_has_uid(UID p_uid) { return _uids.find(p_uid) != _uids.end(); }
 
 }  // namespace GodotObjectCompiler

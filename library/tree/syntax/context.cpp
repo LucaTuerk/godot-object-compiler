@@ -12,7 +12,7 @@ namespace GodotObjectCompiler {
 
   Context::~Context() {}
 
-  bool Context::copy_to(Ref<Node> other) const {
+  bool Context::copy_to(Ref<Node> p_other) const {
     COPY_GUARD(Context, Node);
 
     for (Ref<Node> child : _children) {
@@ -97,60 +97,60 @@ namespace GodotObjectCompiler {
 
   Context::ChildIterator Context::end() { return _children.end(); }
 
-  void Context::merge_includes(Ref<Namespace> target, Size depth) {
+  void Context::merge_includes(Ref<Namespace> p_target, Size p_depth) {
     Ref<Context> parent = get_parent();
     if (!parent) {
-      ChildIterator _ = merge_includes(target, {}, depth);
+      ChildIterator _ = merge_includes(p_target, {}, p_depth);
     }
   }
 
-  Context::ChildIterator Context::merge_includes(Ref<Namespace> target, ChildIterator this_itr, Size depth) {
+  Context::ChildIterator Context::merge_includes(Ref<Namespace> p_target, ChildIterator p_this_itr, Size p_depth) {
     const Ref<Namespace> this_namespace = this->as<Namespace>();
     const Ref<Include> this_include = this->as<Include>();
 
-    if (this_include && depth != 0) {
+    if (this_include && p_depth != 0) {
       Include::Error _ = this_include->evaluate();
     }
 
     if ((this_namespace != nullptr && this_namespace->qualified_name().empty()) || this_include != nullptr) {
       for (auto itr = _children.begin(); itr != _children.end();) {
         if (Ref<Context> child_ctx = (*itr)->as<Context>()) {
-          itr = child_ctx->merge_includes(target, itr, depth == 0 ? 0 : depth - 1);
+          itr = child_ctx->merge_includes(p_target, itr, p_depth == 0 ? 0 : p_depth - 1);
         } else {
-          itr = reparent_child(itr, target);
+          itr = reparent_child(itr, p_target);
         }
       }
     }
 
     Ref<Context> parent = get_parent();
     if (parent) {
-      return parent->reparent_child(this_itr, target);
+      return parent->reparent_child(p_this_itr, p_target);
     }
 
     return {};
   }
 
-  Context::ChildIterator Context::remove_child(decltype(_children)::iterator itr) {
-    Ref<Node> child = *itr;
-    itr = _children.erase(itr);
+  Context::ChildIterator Context::remove_child(decltype(_children)::iterator p_itr) {
+    Ref<Node> child = *p_itr;
+    p_itr = _children.erase(p_itr);
     child->_index = 0;
     child->_parent = {};
 
-    auto next = itr;
+    auto next = p_itr;
     while (next != _children.end()) {
       (*next)->_index -= 1;
       ++next;
     }
 
-    return itr;
+    return p_itr;
   }
 
-  Context::ChildIterator Context::reparent_child(decltype(_children)::iterator itr, Ref<Context> new_parent) {
-    if (itr != _children.end()) {
-      Ref<Node> child = *itr;
-      itr = remove_child(itr);
-      new_parent->add_child(child);
-      return itr;
+  Context::ChildIterator Context::reparent_child(decltype(_children)::iterator p_itr, Ref<Context> p_new_parent) {
+    if (p_itr != _children.end()) {
+      Ref<Node> child = *p_itr;
+      p_itr = remove_child(p_itr);
+      p_new_parent->add_child(child);
+      return p_itr;
     }
 
     return _children.end();
@@ -195,7 +195,7 @@ namespace GodotObjectCompiler {
 
   bool Context::empty() const { return _children.empty(); }
 
-  void Context::write_to(IStructuredWriter* writer) { Node::write_to(writer); }
+  void Context::write_to(IStructuredWriter* p_writer) { Node::write_to(p_writer); }
 
   String NamedContext::_name_lazy_get() {
     Ref<Identifier> identifier = find_child<Identifier>();
@@ -223,23 +223,23 @@ namespace GodotObjectCompiler {
     return writer.get_string();
   }
 
-  bool NamedContext::copy_to(Ref<Node> other) const {
+  bool NamedContext::copy_to(Ref<Node> p_other) const {
     COPY_GUARD(NamedContext, Context);
     COPY_LAZY(name);
     COPY_LAZY(qualified_name);
     return true;
   }
 
-  void NamedContext::read_from(IStructuredReader* reader) {
-    Context::read_from(reader);
-    _qualified_name_lazy = reader->read<String, String>("_qualified_name");
-    _name_lazy = reader->read<String, String>("_name");
+  void NamedContext::read_from(IStructuredReader* p_reader) {
+    Context::read_from(p_reader);
+    _qualified_name_lazy = p_reader->read<String, String>("_qualified_name");
+    _name_lazy = p_reader->read<String, String>("_name");
   }
 
-  void NamedContext::write_to(IStructuredWriter* writer) {
-    Context::write_to(writer);
-    writer->write<String, String>("_qualified_name", qualified_name());
-    writer->write<String, String>("_name", name());
+  void NamedContext::write_to(IStructuredWriter* p_writer) {
+    Context::write_to(p_writer);
+    p_writer->write<String, String>("_qualified_name", qualified_name());
+    p_writer->write<String, String>("_name", name());
   }
 
   Vector<String> NamedContext::_namespaces_names_lazy_get() {

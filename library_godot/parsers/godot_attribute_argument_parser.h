@@ -11,10 +11,12 @@ namespace GodotObjectCompiler {
 
     explicit GodotAttributeArgumentParser(const Ref<Attribute>& attribute) : weak_attribute(attribute) {}
 
-    Ref<ParserError> parse_attribute_arguments(const String& content, Ref<Context> target) override;
-    Ref<ParserError> parse_attribute_argument(const String& content, Ref<Context> target);
+    Ref<ParserError> parse_attribute_arguments(const String& p_content, Ref<Context> p_target) override;
+
+    Ref<ParserError> parse_attribute_argument(const String& p_content, Ref<Context> p_target);
+
     Ref<ParserError> parse_inner_arguments(
-        const String& content, Ref<Context> target, const IAttributeParameterType::Argument& parameter);
+        const String& p_content, Ref<Context> p_target, const IAttributeParameterType::Argument& p_parameter);
 
    private:
 

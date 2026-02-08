@@ -20,11 +20,14 @@ namespace GodotObjectCompiler {
    public:
 
     String get_return_type() override;
+
     Vector<String> get_value_names() override;
+
     Vector<Argument> get_arguments() override;
+
     Ref<GodotObjectCompiler::Argument> create_argument() override;
 
-    bool get_godot_hint_for_value_name(const String& name, String& macro);
+    bool get_godot_hint_for_value_name(const String& p_name, String& r_macro);
 
    private:
 

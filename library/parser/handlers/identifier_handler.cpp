@@ -10,22 +10,22 @@
 
 namespace GodotObjectCompiler {
 
-  bool IdentifierHandler::handles_node(const Ref<TreeSitterNode>& current_src) {
-    return string_contains(current_src->type, "identifier") &&
-           !(current_src->type == "qualified_identifier" || current_src->type == "type_identifier");
+  bool IdentifierHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return string_contains(p_current_src->type, "identifier") &&
+           !(p_current_src->type == "qualified_identifier" || p_current_src->type == "type_identifier");
   }
 
-  ParserStep IdentifierHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    Ref<Context> target = current_target;
+  ParserStep IdentifierHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    Ref<Context> target = r_current_target;
 
-    if (current_target->is<Field>() && current_target->empty()) {
-      target = current_target->create_child<Field>();
+    if (r_current_target->is<Field>() && r_current_target->empty()) {
+      target = r_current_target->create_child<Field>();
     }
 
-    target->create_child<Identifier>(current_src->content());
+    target->create_child<Identifier>(p_current_src->content());
 
-    if (AttributeDB::instance()->is_known_macro(current_src->content())) {
-      return handle_known_attribute(current_src, current_target, current_src->content());
+    if (AttributeDB::instance()->is_known_macro(p_current_src->content())) {
+      return handle_known_attribute(p_current_src, r_current_target, p_current_src->content());
     }
 
     return ParserStep::StepOver();

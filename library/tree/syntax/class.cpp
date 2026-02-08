@@ -62,7 +62,7 @@ namespace GodotObjectCompiler {
     return find_descendant<GodotGeneratedBodyAttribute>() != nullptr;
   }
 
-  bool Class::copy_to(Ref<Node> other) const {
+  bool Class::copy_to(Ref<Node> p_other) const {
     COPY_GUARD(Class, Namespace);
     // COPY_LAZY(base_classes);
     return true;

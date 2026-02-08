@@ -16,7 +16,7 @@ namespace GodotObjectCompiler {
 
     virtual ~IAssumptionValidator() = default;
 
-    virtual AssumptionState validate_assumption(Assumption<T>& assumption) = 0;
+    virtual AssumptionState validate_assumption(Assumption<T>& p_assumption) = 0;
   };
 
   class IAssumptionSet {
@@ -37,8 +37,8 @@ namespace GodotObjectCompiler {
     ~Assumption();
 
     const T& operator()() const;
-    AssumptionState validate(Validator validator);
-    AssumptionState validate(IAssumptionValidator<T>* validator);
+    AssumptionState validate(Validator p_validator);
+    AssumptionState validate(IAssumptionValidator<T>* p_validator);
 
     [[nodiscard]] bool is_ok() const;
     [[nodiscard]] bool is_valid() const;
@@ -54,7 +54,7 @@ namespace GodotObjectCompiler {
   };
 
   template <typename T>
-  Assumption<T>::Assumption(const T& value, const String& unvalidated_message) {
+  Assumption<T>::Assumption(const T& value, const String& unvalidated_message) : was_validated(false) {
     this->value = value;
     message = unvalidated_message;
   }
@@ -86,22 +86,22 @@ namespace GodotObjectCompiler {
   }
 
   template <typename T>
-  AssumptionState Assumption<T>::validate(Validator validator) {
+  AssumptionState Assumption<T>::validate(Validator p_validator) {
     if (!state == STATE_INDETERMINATE) {
       return state;
     }
 
-    state = validator(value);
+    state = p_validator(value);
     return state;
   }
 
   template <typename T>
-  AssumptionState Assumption<T>::validate(IAssumptionValidator<T>* validator) {
+  AssumptionState Assumption<T>::validate(IAssumptionValidator<T>* p_validator) {
     if (!state == STATE_INDETERMINATE) {
       return state;
     }
 
-    state = validator->validate_assumption(*this);
+    state = p_validator->validate_assumption(*this);
     return state;
   }
 

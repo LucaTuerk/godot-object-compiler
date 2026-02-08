@@ -108,7 +108,7 @@ namespace GodotObjectCompiler {
 
     auto path = _get_cache_file_path(qualified_name);
     auto base = path_base(path);
-    if (!dir_exists(base) && !create_dir_recursive(base)) {
+    if (!directory_exits(base) && !create_dir_recursive(base)) {
       return;
     }
 
@@ -146,16 +146,16 @@ namespace GodotObjectCompiler {
     return get_type_data(type->name(), type->template_argument_count());
   }
 
-  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Enum>>& assumption) {
-    return validate_t<Enum>(assumption);
+  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Enum>>& p_assumption) {
+    return validate_t<Enum>(p_assumption);
   }
 
-  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Class>>& assumption) {
-    return validate_t<Class>(assumption);
+  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Class>>& p_assumption) {
+    return validate_t<Class>(p_assumption);
   }
 
-  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Define>>& assumption) {
-    return validate_t<Define>(assumption);
+  AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Define>>& p_assumption) {
+    return validate_t<Define>(p_assumption);
   }
 
   String TypeDB::mangle_name(const String& qualified_name, Size template_parameter_count) {

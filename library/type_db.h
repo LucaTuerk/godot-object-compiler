@@ -55,9 +55,9 @@ namespace GodotObjectCompiler {
     template <typename T>
     AssumptionState validate_t(Assumption<AssumeType<T>>& type_assumption);
 
-    AssumptionState validate_assumption(Assumption<AssumeType<Enum>>& assumption) override;
-    AssumptionState validate_assumption(Assumption<AssumeType<Class>>& assumption) override;
-    AssumptionState validate_assumption(Assumption<AssumeType<Define>>& assumption) override;
+    AssumptionState validate_assumption(Assumption<AssumeType<Enum>>& p_assumption) override;
+    AssumptionState validate_assumption(Assumption<AssumeType<Class>>& p_assumption) override;
+    AssumptionState validate_assumption(Assumption<AssumeType<Define>>& p_assumption) override;
 
     static String mangle_name(const String& qualified_name, Size template_parameter_count);
     static Vector<String> resolve_possible_namespaces(

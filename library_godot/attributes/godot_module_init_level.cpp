@@ -18,16 +18,16 @@ namespace GodotObjectCompiler {
   }
 
   bool GodotModuleInitializationLevelParameterType::get_godot_init_level_for_value_name(
-      const String& value_name, String& godot_init_level) {
+      const String& p_value_name, String& r_godot_init_level) {
     _value_names_lazy.poke();
 
-    auto itr = _godot_init_levels.find(value_name);
+    auto itr = _godot_init_levels.find(p_value_name);
     if (itr == _godot_init_levels.end()) {
-      godot_init_level = "";
+      r_godot_init_level = "";
       return false;
     }
 
-    godot_init_level = itr->second;
+    r_godot_init_level = itr->second;
     return true;
   }
 

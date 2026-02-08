@@ -12,21 +12,21 @@ namespace GodotObjectCompiler {
     return is_system_include ? "Include: " + include_path : "Include: \"" + include_path + "\"";
   }
 
-  void Include::read_from(IStructuredReader* reader) {
+  void Include::read_from(IStructuredReader* p_reader) {
     // intentionally read from Node as we do to want to copy the children
-    Node::read_from(reader);  // NOLINT(*-parent-virtual-call)
-    include_path = reader->read<String, String>("include_path");
-    is_system_include = reader->read<String, bool>("is_system_include");
+    Node::read_from(p_reader);  // NOLINT(*-parent-virtual-call)
+    include_path = p_reader->read<String, String>("include_path");
+    is_system_include = p_reader->read<String, bool>("is_system_include");
   }
 
-  void Include::write_to(IStructuredWriter* writer) {
+  void Include::write_to(IStructuredWriter* p_writer) {
     // intentionally write to Node as we do to want to copy the children
-    Node::write_to(writer);  // NOLINT(*-parent-virtual-call)
-    writer->write("include_path", include_path);
-    writer->write("is_system_include", is_system_include);
+    Node::write_to(p_writer);  // NOLINT(*-parent-virtual-call)
+    p_writer->write("include_path", include_path);
+    p_writer->write("is_system_include", is_system_include);
   }
 
-  bool Include::copy_to(Ref<Node> other) const {
+  bool Include::copy_to(Ref<Node> p_other) const {
     // intentionally copying from node as we do to want to copy the children
     COPY_GUARD(Include, Node)  // NOLINT(*-parent-virtual-call)
     target->include_path = include_path;

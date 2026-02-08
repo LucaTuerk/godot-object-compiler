@@ -5,14 +5,15 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> target_class, Ref<GodotSignalAttribute> attribute,
-      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
+  Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
+      Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
+      Ref<Context> p_generated_global) {
     using namespace GodotGeneratorUtils;
-    Ref<Body> bind_methods = get_or_create_bind_methods_body(target_class, generated_body, generated_sources);
-    GEN_ERROR_COND(!bind_methods, target_class, "Failed to get or generate bind methods body.");
+    Ref<Body> bind_methods = get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+    GEN_ERROR_COND(!bind_methods, p_target_class, "Failed to get or generate bind methods body.");
 
-    Ref<Function> target_function = attribute->TargetFunction();
-    GEN_ERROR_COND(!target_function, target_class, "Failed to get signal target function");
+    Ref<Function> target_function = p_attribute->TargetFunction();
+    GEN_ERROR_COND(!target_function, p_target_class, "Failed to get signal target function");
 
     bool is_void = target_function->type()->name() == "void";
     GEN_ERROR_COND(!is_void, target_function, "Signal target function does not return void.");
@@ -38,9 +39,9 @@ namespace GodotObjectCompiler {
     Ref<Parameters> func_parameters;
     Ref<Arguments> emit_arguments;
     // clang-format off
-    generated_sources->build_child<Function>().with_children({
+    p_generated_sources->build_child<Function>().with_children({
       build<Type>().with_child<Identifier>("void"),
-      build<Identifier>(target_class->name() + "::" + target_function->name()),
+      build<Identifier>(p_target_class->name() + "::" + target_function->name()),
       build_ref<Parameters>(&func_parameters),
       build<Body>().with_children({
         build<Function>().with_children({

@@ -1,4 +1,4 @@
-
+#if 0
 #pragma once
 #include "syntax/context.h"
 
@@ -174,3 +174,4 @@ namespace GodotObjectCompiler {
   }
 
 }  // namespace GodotObjectCompiler
+#endif

@@ -15,16 +15,17 @@ namespace GodotObjectCompiler {
 
   Ref<Argument> GodotVariantTypeParameterType::create_argument() { return node_new<GodotVariantTypeArgument>(); }
 
-  bool GodotVariantTypeParameterType::get_variant_type_for_value_name(const String& value_name, String& variant_type) {
+  bool GodotVariantTypeParameterType::get_variant_type_for_value_name(
+      const String& p_value_name, String& r_variant_type) {
     _value_names_lazy.poke();
 
-    auto itr = _value_name_to_godot_variant_type.find(value_name);
+    auto itr = _value_name_to_godot_variant_type.find(p_value_name);
     if (itr == _value_name_to_godot_variant_type.end()) {
-      variant_type = "";
+      r_variant_type = "";
       return false;
     }
 
-    variant_type = itr->second;
+    r_variant_type = itr->second;
     return true;
   }
 

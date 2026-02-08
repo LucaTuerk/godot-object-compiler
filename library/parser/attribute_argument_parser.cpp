@@ -10,7 +10,7 @@
 
 namespace GodotObjectCompiler {
 
-  Vector<String> IAttributeArgumentParser::split_arguments(const String& content) {
+  Vector<String> IAttributeArgumentParser::split_arguments(const String& p_content) {
     std::stringstream strstr;
     Vector<String> result;
 
@@ -18,11 +18,11 @@ namespace GodotObjectCompiler {
     Size quotes_open = 0;
     bool escaped = false;
 
-    if (string_trim(content).empty()) {
+    if (string_trim(p_content).empty()) {
       return {};
     }
 
-    for (char c : content) {
+    for (char c : p_content) {
       if (!escaped) {
         if (c == '(') {
           brackets_open++;
@@ -58,15 +58,15 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  void IAttributeArgumentParser::split_outer_inner(const String& content, String& outer, String& inner) {
+  void IAttributeArgumentParser::split_outer_inner(const String& p_content, String& r_outer, String& r_inner) {
     std::stringstream inner_strm;
     std::stringstream outer_strm;
-    outer = "";
-    inner = "";
+    r_outer = "";
+    r_inner = "";
 
     bool open = false;
     bool escaped = false;
-    for (char c : content) {
+    for (char c : p_content) {
       if (!escaped) {
         if (c == '(') {
           open = true;
@@ -88,12 +88,12 @@ namespace GodotObjectCompiler {
       }
     }
 
-    outer = string_trim(outer_strm.str());
-    inner = string_trim(inner_strm.str());
+    r_outer = string_trim(outer_strm.str());
+    r_inner = string_trim(inner_strm.str());
   }
 
-  Vector<String> IAttributeArgumentParser::split_flags(const String& content) {
-    Vector<String> split = string_split(content, "|");
+  Vector<String> IAttributeArgumentParser::split_flags(const String& p_content) {
+    Vector<String> split = string_split(p_content, "|");
     std::transform(split.cbegin(), split.cend(), split.begin(), &string_trim);
     return split;
   }

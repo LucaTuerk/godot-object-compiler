@@ -17,11 +17,14 @@ namespace GodotObjectCompiler {
    public:
 
     String get_return_type() override;
+
     Vector<String> get_value_names() override;
+
     Vector<Argument> get_arguments() override;
+
     Ref<GodotObjectCompiler::Argument> create_argument() override;
 
-    bool get_variant_type_for_value_name(const String& value_name, String& variant_type);
+    bool get_variant_type_for_value_name(const String& p_value_name, String& r_variant_type);
 
    private:
 

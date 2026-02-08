@@ -17,6 +17,8 @@ namespace GodotObjectCompiler {
   class IAttributeParameters {
    public:
 
+    virtual ~IAttributeParameters() = default;
+
     enum ReturnType {
       FLAG,  // Parameters of this type can be | combined
       SINGULAR,
@@ -39,26 +41,26 @@ namespace GodotObjectCompiler {
 
     using CreationFunc = Ref<Attribute> (*)();
 
-    bool register_attribute(const String& class_name, const String& macro, CreationFunc creator);
+    bool register_attribute(const String& p_class_name, const String& p_macro, CreationFunc p_creator);
 
-    bool register_attribute_parameter(const String& class_name, const Ref<IAttributeParameterType>& parameter);
+    bool register_attribute_parameter(const String& p_class_name, const Ref<IAttributeParameterType>& p_parameter);
 
-    bool is_known_macro(const String& macro);
+    bool is_known_macro(const String& p_macro);
 
-    Ref<Attribute> create_for_macro(const String& macro);
+    Ref<Attribute> create_for_macro(const String& p_macro);
 
-    Vector<Ref<IAttributeParameterType>> get_parameters_for_macro(const String& macro);
+    Vector<Ref<IAttributeParameterType>> get_parameters_for_macro(const String& p_macro);
 
     template <typename AttributeT, typename ParamT>
     Ref<ParamT> get_parameter_type();
 
-    String get_macro_for_attribute(const String& class_name);
+    String get_macro_for_attribute(const String& p_class_name);
 
     Vector<String> get_all_macros();
 
-    bool register_class_generator(const String& generator_name, Ref<ClassGenerator> generator);
+    bool register_class_generator(const String& p_generator_name, Ref<ClassGenerator> p_generator);
 
-    const Vector<Ref<ClassGenerator>>& class_generators() const;
+    [[nodiscard]] const Vector<Ref<ClassGenerator>>& class_generators() const;
 
    private:
 

@@ -15,7 +15,7 @@ namespace GodotObjectCompiler {
    public:
 
     virtual ~IParser() = default;
-    virtual Ref<ParserError> parse(const String& input, Ref<Context> target) = 0;
+    virtual Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) = 0;
   };
 
   class TreeSitterParser : public IParser {
@@ -23,13 +23,14 @@ namespace GodotObjectCompiler {
 
     ~TreeSitterParser() = default;
 
-    Ref<ParserError> parse_file(const String& path, Ref<Context> target);
-    Ref<ParserError> parse(const String& input, Ref<Context> target) override;
+    Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target);
+
+    Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
 
     template <typename T>
-    static bool register_handler(const String& name);
+    static bool register_handler(const String& p_name);
 
-    static String strip_known_macro_contents(const String& input, Dictionary<Size, String>& parameters);
+    static String strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters);
 
    private:
 
@@ -39,11 +40,11 @@ namespace GodotObjectCompiler {
   };
 
   template <typename T>
-  bool TreeSitterParser::register_handler(const String& name) {
-    if (_registered_handlers.find(name) != _registered_handlers.end()) {
+  bool TreeSitterParser::register_handler(const String& p_name) {
+    if (_registered_handlers.find(p_name) != _registered_handlers.end()) {
       return false;
     }
-    _registered_handlers.insert(name);
+    _registered_handlers.insert(p_name);
     _handlers.push_back(make_ref<T>());
     return true;
   }

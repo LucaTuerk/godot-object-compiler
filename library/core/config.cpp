@@ -10,40 +10,40 @@ namespace GodotObjectCompiler {
 
   const Vector<String>& Config::get_sections() { return _sections; }
 
-  bool Config::has_config_value(const String& key) {
-    return config_values[_current_section].find(key) != config_values[_current_section].end();
+  bool Config::has_config_value(const String& p_key) {
+    return config_values[_current_section].find(p_key) != config_values[_current_section].end();
   }
 
-  void Config::_write_to_section(const String& section) {
-    _current_section = _find_section_index(section);
+  void Config::_write_to_section(const String& p_section) {
+    _current_section = _find_section_index(p_section);
     if (_current_section == INVALID_ID) {
       _current_section = _sections.size();
-      _section_indices[section] = _current_section;
-      _sections.push_back(section);
+      _section_indices[p_section] = _current_section;
+      _sections.push_back(p_section);
     }
   }
 
-  void Config::_write(const String& key, const String& value) { config_values[_current_section][key] = value; }
+  void Config::_write(const String& p_key, const String& p_value) { config_values[_current_section][p_key] = p_value; }
 
-  void Config::_read_from_section(const String& section) {
-    _current_section = _find_section_index(section);
+  void Config::_read_from_section(const String& p_section) {
+    _current_section = _find_section_index(p_section);
     if (_current_section == INVALID_ID) {
       _current_section = 0;
     }
   }
 
-  String Config::_read(const String& key) { return config_values[_current_section][key]; }
+  String Config::_read(const String& p_key) { return config_values[_current_section][p_key]; }
 
-  Size Config::_find_section_index(const String& key) {
-    auto itr = _section_indices.find(key);
+  Size Config::_find_section_index(const String& p_key) {
+    auto itr = _section_indices.find(p_key);
     if (itr != _section_indices.end()) {
       return itr->second;
     }
     return INVALID_ID;
   }
 
-  bool Config::write_to_file(const String& path) {
-    std::ofstream file(path);
+  bool Config::write_to_file(const String& p_path) {
+    std::ofstream file(p_path);
     if (!file.is_open()) {
       return false;
     }
@@ -58,8 +58,8 @@ namespace GodotObjectCompiler {
     return true;
   }
 
-  bool Config::read_from_file(const String& path) {
-    std::ifstream file(path);
+  bool Config::read_from_file(const String& p_path) {
+    std::ifstream file(p_path);
     if (!file.is_open()) {
       return false;
     }

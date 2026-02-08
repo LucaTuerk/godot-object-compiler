@@ -5,7 +5,7 @@ namespace GodotObjectCompiler {
 
   namespace ProgramFunctions {
 
-    bool copy_resources_to_folder(const Vector<String>& resource_glob_paths, const String& target_folder);
+    bool copy_resources_to_folder(const Vector<String>& p_resource_glob_paths, const String& p_target_folder);
 
   };
 

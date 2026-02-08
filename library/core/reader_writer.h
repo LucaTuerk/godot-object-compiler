@@ -7,7 +7,7 @@ namespace GodotObjectCompiler {
    public:
 
     virtual ~IStringWriter() = default;
-    virtual void write(const String& value) = 0;
+    virtual void write(const String& p_value) = 0;
 
     template <typename T>
     void write_generic(const T& value);
@@ -27,12 +27,12 @@ namespace GodotObjectCompiler {
     template <typename S>
     void write_to_section(const S& section);
 
-    virtual bool write_to_file(const String& path) = 0;
+    virtual bool write_to_file(const String& p_path) = 0;
 
    protected:
 
-    virtual void _write_to_section(const String& section) = 0;
-    virtual void _write(const String& key, const String& value) = 0;
+    virtual void _write_to_section(const String& p_section) = 0;
+    virtual void _write(const String& p_key, const String& p_value) = 0;
   };
 
   class IStructuredReader {
@@ -46,12 +46,12 @@ namespace GodotObjectCompiler {
     template <typename S>
     void read_from_section(const S& section);
 
-    virtual bool read_from_file(const String& path) = 0;
+    virtual bool read_from_file(const String& p_path) = 0;
 
    protected:
 
-    virtual void _read_from_section(const String& section) = 0;
-    virtual String _read(const String& key) = 0;
+    virtual void _read_from_section(const String& p_section) = 0;
+    virtual String _read(const String& p_key) = 0;
   };
 
   template <typename T>
@@ -116,7 +116,7 @@ namespace GodotObjectCompiler {
     virtual Ref<Node> read_from_file(const String& path) = 0;
 
     template <typename T>
-    Ref<T> read_from_file(const String& path);
+    Ref<T> read_from_file(const String& p_path);
   };
 
 }  // namespace GodotObjectCompiler

@@ -5,28 +5,30 @@
 
 namespace GodotObjectCompiler {
 
-  bool AttributeDB::register_attribute(const String& class_name, const String& macro, CreationFunc creator) {
-    _macro_aliases[macro] = class_name;
-    _creation_funcs[class_name] = creator;
+  bool AttributeDB::register_attribute(const String& p_class_name, const String& p_macro, CreationFunc p_creator) {
+    _macro_aliases[p_macro] = p_class_name;
+    _creation_funcs[p_class_name] = p_creator;
     return true;
   }
 
   bool AttributeDB::register_attribute_parameter(
-      const String& class_name, const Ref<IAttributeParameterType>& parameter) {
-    HashSet<String>& registered = _registered_parameter_types[class_name];
-    if (registered.find(parameter->get_type()) != registered.end()) {
+      const String& p_class_name, const Ref<IAttributeParameterType>& p_parameter) {
+    HashSet<String>& registered = _registered_parameter_types[p_class_name];
+    if (registered.find(p_parameter->get_type()) != registered.end()) {
       return false;
     }
 
-    registered.insert(parameter->get_type());
-    _parameters[class_name].push_back(parameter);
+    registered.insert(p_parameter->get_type());
+    _parameters[p_class_name].push_back(p_parameter);
     return true;
   }
 
-  bool AttributeDB::is_known_macro(const String& macro) { return _macro_aliases.find(macro) != _macro_aliases.end(); }
+  bool AttributeDB::is_known_macro(const String& p_macro) {
+    return _macro_aliases.find(p_macro) != _macro_aliases.end();
+  }
 
-  Ref<Attribute> AttributeDB::create_for_macro(const String& macro) {
-    const auto name_itr = _macro_aliases.find(macro);
+  Ref<Attribute> AttributeDB::create_for_macro(const String& p_macro) {
+    const auto name_itr = _macro_aliases.find(p_macro);
     if (name_itr == _macro_aliases.end()) {
       return nullptr;
     }
@@ -39,8 +41,8 @@ namespace GodotObjectCompiler {
     return creator_itr->second();
   }
 
-  Vector<Ref<IAttributeParameterType>> AttributeDB::get_parameters_for_macro(const String& macro) {
-    const auto name_itr = _macro_aliases.find(macro);
+  Vector<Ref<IAttributeParameterType>> AttributeDB::get_parameters_for_macro(const String& p_macro) {
+    const auto name_itr = _macro_aliases.find(p_macro);
     if (name_itr == _macro_aliases.end()) {
       return {};
     }
@@ -48,9 +50,9 @@ namespace GodotObjectCompiler {
     return _parameters[name_itr->second];
   }
 
-  String AttributeDB::get_macro_for_attribute(const String& class_name) {
+  String AttributeDB::get_macro_for_attribute(const String& p_class_name) {
     for (const auto& [macro, name] : _macro_aliases) {
-      if (name == class_name) {
+      if (name == p_class_name) {
         return macro;
       }
     }
@@ -65,10 +67,10 @@ namespace GodotObjectCompiler {
     return macros;
   }
 
-  bool AttributeDB::register_class_generator(const String& generator_name, Ref<ClassGenerator> generator) {
-    if (_registered_generator_names.find(generator_name) == _registered_generator_names.end()) {
-      _registered_generator_names.insert(generator_name);
-      _class_generators.push_back(generator);
+  bool AttributeDB::register_class_generator(const String& p_generator_name, Ref<ClassGenerator> p_generator) {
+    if (_registered_generator_names.find(p_generator_name) == _registered_generator_names.end()) {
+      _registered_generator_names.insert(p_generator_name);
+      _class_generators.push_back(p_generator);
       return true;
     }
     return false;

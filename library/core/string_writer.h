@@ -9,9 +9,10 @@ namespace GodotObjectCompiler {
   class StreamWriter : public IStringWriter {
    public:
 
-    void write(const String& value) override;
+    void write(const String& p_value) override;
 
     String get_string() override;
+
     Size current_length() override;
 
    private:
@@ -26,8 +27,10 @@ namespace GodotObjectCompiler {
     explicit FileWriter(const String& path, bool do_not_write_same_content = true);
     ~FileWriter() override;
 
-    void write(const String& value) override;
+    void write(const String& p_value) override;
+
     String get_string() override;
+
     Size current_length() override;
 
    private:

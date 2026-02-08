@@ -88,3 +88,12 @@ template <typename T>
 void print_err(const T& message) {
   std::cerr << message << std::endl;
 }
+
+#define PANIC(...)                                                               \
+  print_err(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__)); \
+  abort()
+
+#define PANIC_COND(condition, ...) \
+  if ((condition)) {               \
+    PANIC(__VA_ARGS__);            \
+  }

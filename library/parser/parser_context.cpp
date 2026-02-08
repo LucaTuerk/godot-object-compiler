@@ -33,16 +33,16 @@ namespace GodotObjectCompiler {
     ts_parser_delete(parser);
   }
 
-  ParserContext ParserContext::from_path(const String& path) {
-    ParserContext result{read_file(path)};
-    result.file_path = path;
+  ParserContext ParserContext::from_path(const String& p_path) {
+    ParserContext result{read_file(p_path)};
+    result.file_path = p_path;
     return result;
   }
 
   ParserContext::~ParserContext() {}
 
-  Ref<TreeSitterNode> ParserContext::create_tree(TSTree* tree) {
-    TSNode ts_root = ts_tree_root_node(tree);
+  Ref<TreeSitterNode> ParserContext::create_tree(TSTree* p_tree) {
+    TSNode ts_root = ts_tree_root_node(p_tree);
     if (ts_node_is_null(ts_root)) {
       return nullptr;
     }
@@ -50,14 +50,14 @@ namespace GodotObjectCompiler {
     return create_node(ts_root);
   }
 
-  Ref<TreeSitterNode> ParserContext::create_node(TSNode ts_node) {
-    if (ts_node_is_null(ts_node) || String(ts_node_type(ts_node)) == "comment") {
+  Ref<TreeSitterNode> ParserContext::create_node(TSNode p_ts_node) {
+    if (ts_node_is_null(p_ts_node) || String(ts_node_type(p_ts_node)) == "comment") {
       return nullptr;
     }
 
-    Ref<TreeSitterNode> node = node_new<TreeSitterNode>(ts_node, this);
-    for (uint32_t i = 0; i < ts_node_child_count(ts_node); ++i) {
-      auto child = create_node(ts_node_child(ts_node, i));
+    Ref<TreeSitterNode> node = node_new<TreeSitterNode>(p_ts_node, this);
+    for (uint32_t i = 0; i < ts_node_child_count(p_ts_node); ++i) {
+      auto child = create_node(ts_node_child(p_ts_node, i));
       if (child) {
         node->add_child(child);
       }

@@ -6,15 +6,15 @@
 
 namespace GodotObjectCompiler {
 
-  bool VirtualHandler::handles_node(const Ref<TreeSitterNode>& current_src) {
-    return string_contains(current_src->type, "virtual") || string_contains(current_src->type, "virtual_specifier");
+  bool VirtualHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return string_contains(p_current_src->type, "virtual") || string_contains(p_current_src->type, "virtual_specifier");
   }
 
-  ParserStep VirtualHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    if (current_src->content() == "virtual") {
-      current_target->create_child<Virtual>();
-    } else if (current_src->content() == "override") {
-      current_target->create_child<Override>();
+  ParserStep VirtualHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    if (p_current_src->content() == "virtual") {
+      r_current_target->create_child<Virtual>();
+    } else if (p_current_src->content() == "override") {
+      r_current_target->create_child<Override>();
     }
     return ParserStep::StepOver();
   }

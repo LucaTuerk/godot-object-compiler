@@ -4,6 +4,6 @@
 
 namespace GodotObjectCompiler::Parser::Helpers {
 
-  String remove_macros(const String& input);
+  String remove_macros(const String& p_input);
 
 }  // namespace GodotObjectCompiler::Parser::Helpers

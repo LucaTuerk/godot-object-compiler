@@ -10,7 +10,7 @@ namespace GodotObjectCompiler {
 
    public:
 
-    Ref<ProgramError> run(ApplicationContext& context) override;
+    Ref<ProgramError> run(ApplicationContext& p_context) override;
   };
 
   class HelpEntry : public Context {
@@ -20,7 +20,9 @@ namespace GodotObjectCompiler {
         : path(path), name(name), is_program(is_program) {}
 
     String get_help_text() const;
+
     String to_string() const override;
+
     ProgramPath path;
     String name;
     bool is_program;

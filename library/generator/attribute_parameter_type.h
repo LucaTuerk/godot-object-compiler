@@ -34,12 +34,11 @@ namespace GodotObjectCompiler {
 
     virtual Ref<GodotObjectCompiler::Argument> create_argument() { return nullptr; };
 
-    AssumptionState validate_assumption(Assumption<std::string>& assumption) override;
+    AssumptionState validate_assumption(Assumption<std::string>& p_assumption) override;
   };
 
-  inline AssumptionState IAttributeParameterType::validate_assumption(Assumption<String>& assumption) {
-    if (Vector<String> values = get_value_names();
-        std::find(values.begin(), values.end(), assumption()) == values.end()) {
+  inline AssumptionState IAttributeParameterType::validate_assumption(Assumption<String>& p_assumption) {
+    if (Vector<String> values = get_value_names(); !vector_contains(values, p_assumption())) {
       return STATE_INVALID;
     }
 

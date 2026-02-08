@@ -21,10 +21,10 @@ namespace GodotObjectCompiler {
 
   bool ParserStep::is_step_out() const { return type == TYPE_STEP_OUT; }
 
-  bool ParserStep::is_go_to(Ref<TreeSitterNode>& target) const {
+  bool ParserStep::is_go_to(Ref<TreeSitterNode>& p_target) const {
     const bool result = type == TYPE_GO_TO;
     if (result) {
-      target = goto_target;
+      p_target = goto_target;
     }
     return result;
   }

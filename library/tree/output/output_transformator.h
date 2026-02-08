@@ -8,15 +8,17 @@ namespace GodotObjectCompiler {
   class IOutputTransformator {
    public:
 
-    virtual Ref<Writer::IOutputNode> transform(Ref<Node> tree) = 0;
+    virtual ~IOutputTransformator() = default;
+
+    virtual Ref<Writer::IOutputNode> transform(Ref<Node> p_tree) = 0;
   };
 
   class OutputTransformator : public IOutputTransformator {
    public:
 
-    Ref<Writer::IOutputNode> transform(Ref<Node> tree) override;
+    Ref<Writer::IOutputNode> transform(Ref<Node> p_tree) override;
 
-    void replace_non_output_children(Ref<Writer::IOutputNode> node);
+    void replace_non_output_children(Ref<Writer::IOutputNode> p_node);
   };
 
 }  // namespace GodotObjectCompiler

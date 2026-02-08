@@ -12,23 +12,23 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<ParserError> TreeSitterParser::parse_file(const String& path, Ref<Context> target) {
+  Ref<ParserError> TreeSitterParser::parse_file(const String& p_path, Ref<Context> r_target) {
     input_is_path = true;
-    return parse(path_absolute(path), std::move(target));
+    return parse(path_absolute(p_path), std::move(r_target));
   }
 
-  Ref<ParserError> TreeSitterParser::parse(const String& input, Ref<Context> target) {
+  Ref<ParserError> TreeSitterParser::parse(const String& p_input, Ref<Context> r_target) {
     Dictionary<Size, String> stripped_parameters;
     Dictionary<UID, UID> before_node;
     HashSet<UID> handled;
 
     String original_input =
-        input_is_path ? Parser::Helpers::remove_macros(read_file(input)) : Parser::Helpers::remove_macros(input);
+        input_is_path ? Parser::Helpers::remove_macros(read_file(p_input)) : Parser::Helpers::remove_macros(p_input);
     String local_input = strip_known_macro_contents(original_input, stripped_parameters);
     ParserContext context = ParserContext(local_input);
     context.stripped_parameters = stripped_parameters;
     if (input_is_path) {
-      context.file_path = input;
+      context.file_path = p_input;
     }
 
     if (!context.is_valid()) {
@@ -44,7 +44,7 @@ namespace GodotObjectCompiler {
       }
     }
 
-    auto global_namespace = target->as<Namespace>();
+    auto global_namespace = r_target->as<Namespace>();
     if (!global_namespace || !global_namespace->qualified_name().empty()) {
       return node_new<ParserError>(
           ERROR, "TreeSitterParser: Invalid target node, expected to be the global namespace.");
@@ -131,8 +131,8 @@ namespace GodotObjectCompiler {
 
   // TreeSitter does not handle macro parameters well
   // but it works if the parameters are empty, so strip them before processing
-  String TreeSitterParser::strip_known_macro_contents(const String& input, Dictionary<Size, String>& parameters) {
-    String local_input = input;
+  String TreeSitterParser::strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters) {
+    String local_input = p_input;
     Vector<String> macros = AttributeDB::instance()->get_all_macros();
 
     for (const String& macro : macros) {
@@ -202,7 +202,7 @@ namespace GodotObjectCompiler {
           ++closed_index;
         }
 
-        parameters.insert({position, content.get_string()});
+        r_parameters.insert({position, content.get_string()});
 
         writer.write(local_input.substr(index, open_index - index + 1));
         for (char c : content.get_string()) {

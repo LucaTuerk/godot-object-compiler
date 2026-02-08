@@ -20,7 +20,7 @@ namespace GodotObjectCompiler {
     return Resources::instance()->load_text_resource(res_path);
   }
 
-  Ref<ProgramError> Help::run(ApplicationContext& context) {
+  Ref<ProgramError> Help::run(ApplicationContext& p_context) {
     Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
 
     const Ref<Context> help = node_new<HelpEntry>(ProgramPath(), "Available Programs: ", false);
