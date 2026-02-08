@@ -112,4 +112,4 @@ namespace GodotObjectCompiler {
 
   const Vector<Ref<ClassGenerator>>& AttributeDB::class_generators() const { return _class_generators; }
 
-}  // namespace GodotObjectCompiler
+}

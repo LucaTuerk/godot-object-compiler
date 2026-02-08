@@ -48,4 +48,4 @@ namespace GodotObjectCompiler {
 
   Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() { return find_child<Arguments>(); }
 
-}  // namespace GodotObjectCompiler
+}

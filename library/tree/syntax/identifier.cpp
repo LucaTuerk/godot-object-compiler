@@ -54,4 +54,4 @@ namespace GodotObjectCompiler {
     name = p_reader->read<String, String>("name");
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -59,4 +59,4 @@ namespace GodotObjectCompiler {
     LAZY(Namespace, Vector<Ref<Function>>, functions);
   };
 
-}  // namespace GodotObjectCompiler
+}

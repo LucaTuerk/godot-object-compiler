@@ -56,4 +56,4 @@ namespace GodotObjectCompiler {
     return ProgramError::OK;
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -35,6 +35,7 @@
 
 #include "library_godot/generators/godot_generator_utils.h"
 
+#include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
 #include "library/tree/output/output.h"
 #include "library/tree/predicates.h"
@@ -559,4 +560,4 @@ namespace GodotObjectCompiler {
   }
 
 
-}  // namespace GodotObjectCompiler
+}

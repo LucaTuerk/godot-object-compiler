@@ -35,7 +35,8 @@
 
 #include "output.h"
 
-#include "library/core/helpers.h"
+
+#include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 
 namespace GodotObjectCompiler {
@@ -387,5 +388,5 @@ namespace GodotObjectCompiler {
           Semicolon()});
     }
 
-  }  // namespace Writer
-}  // namespace GodotObjectCompiler
+  }
+}

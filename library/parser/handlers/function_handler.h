@@ -55,4 +55,4 @@ namespace GodotObjectCompiler {
     static inline String into_type = "expression_statement";
   };
 
-}  // namespace GodotObjectCompiler
+}

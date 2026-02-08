@@ -62,4 +62,4 @@ namespace GodotObjectCompiler {
     bool is_program;
   };
 
-}  // namespace GodotObjectCompiler
+}

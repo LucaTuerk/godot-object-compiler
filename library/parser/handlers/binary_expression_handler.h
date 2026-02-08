@@ -55,4 +55,4 @@ namespace GodotObjectCompiler {
     static Ref<int> find_value_for_identifier(const String& identifier, const Ref<EnumValue>& current_target);
   };
 
-}  // namespace GodotObjectCompiler
+}

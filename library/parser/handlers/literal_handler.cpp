@@ -35,7 +35,7 @@
 
 #include "literal_handler.h"
 
-#include "library/core/helpers.h"
+
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/literal.h"
 
@@ -50,4 +50,4 @@ namespace GodotObjectCompiler {
     return ParserStep::StepOver();
   }
 
-}  // namespace GodotObjectCompiler
+}

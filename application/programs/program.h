@@ -81,7 +81,7 @@ namespace GodotObjectCompiler {
     Dictionary<ProgramPath, Ref<IProgram>> _programs;
   };
 
-}  // namespace GodotObjectCompiler
+}
 
 #define PROGRAM(type, name)                                     \
  public:                                                        \

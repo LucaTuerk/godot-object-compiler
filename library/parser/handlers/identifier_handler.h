@@ -49,4 +49,4 @@ namespace GodotObjectCompiler {
         const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target, const String& macro);
   };
 
-}  // namespace GodotObjectCompiler
+}

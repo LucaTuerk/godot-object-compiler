@@ -52,4 +52,4 @@ namespace GodotObjectCompiler {
     String content;
   };
 
-}  // namespace GodotObjectCompiler
+}

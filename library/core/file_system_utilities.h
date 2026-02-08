@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_tranformed.cpp                                                   */
+/* file_system_utilities.h                                                */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,37 +33,55 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "print_tranformed.h"
-
-#include "library/core/file_system_utilities.h"
-
-#include "library/core/string_utilities.h"
-#include "library/parser/parser.h"
-#include "library/tree/syntax/namespace.h"
+#pragma once
+#include "core.h"
 
 namespace GodotObjectCompiler {
 
-  Ref<ProgramError> PrintTransformed::run(ApplicationContext& p_context) {
-    if (p_context.program_arguments.size() != 1) {
-      return node_new<ProgramError>(
-          ERROR, format("Invalid argument count for program %s. Expected 1 path argument.", get_type_static().c_str()));
-    }
+  Vector<String> directory_files(const String& p_path);
 
-    auto path = path_absolute(p_context.program_arguments[0]);
+  Vector<String> directory_files_recursive(const String& p_path);
 
-    if (!file_exists(path)) {
-      return node_new<ProgramError>(
-          ERROR, format("Invalid path argument for program %s. File does not exist.", get_type_static().c_str()));
-    }
+  Vector<String> directory_dirs(const String& p_path);
 
-    TreeSitterParser parser;
-    Ref<Namespace> ns = node_new<Namespace>();
-    if (parser.parse_file(path, ns) != ParserError::OK) {
-      return node_new<ProgramError>(ERROR, format("Failed to parse file %s.", path.c_str()));
-    }
+  Vector<String> directory_entries(const String& p_path);
 
-    print_ln(ns->pretty_print());
-    return ProgramError::OK;
-  }
+  String read_file(const String& p_path);
+
+  Vector<String> read_lines(const String& p_path);
+
+  void write_file(const String& p_path, const String& p_content);
+
+  void ensure_file_exists(const String& p_path, const String& p_initial_content);
+
+  bool create_dir_recursive(const String& p_path);
+
+  bool file_exists(const String& p_path);
+
+  bool remove_file(const String& p_path);
+
+  bool remove(const String& p_path);
+
+  bool directory_exits(const String& p_path);
+
+  Size file_write_time(const String& p_path);
+
+  String input(const String& p_prompt, const String& p_default_value = "");
+
+  String path_base(const String& p_path);
+
+  String path_concat(const String& p_left, const String& p_right);
+
+  String path_concat_ext(const String& p_dir, const String& p_filename, const String& p_extension);
+
+  String path_relative(const String& p_path, const String& p_base);
+
+  String path_absolute(const String& p_path);
+
+  String path_file_name(const String& p_path);
+
+  String path_cwd();
+
+  String path_stem(const String& p_path);
 
 }

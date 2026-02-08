@@ -136,4 +136,4 @@ namespace GodotObjectCompiler {
     return STATE_VALID;
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -35,7 +35,8 @@
 
 #include "permissions.h"
 
-#include "helpers.h"
+#include "file_system_utilities.h"
+#include "string_utilities.h"
 
 namespace GodotObjectCompiler {
 
@@ -58,4 +59,4 @@ namespace GodotObjectCompiler {
         path_absolute(p_path).c_str())
   }
 
-}  // namespace GodotObjectCompiler
+}

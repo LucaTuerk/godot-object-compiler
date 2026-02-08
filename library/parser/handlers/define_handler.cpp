@@ -56,4 +56,4 @@ namespace GodotObjectCompiler {
     return ParserStep::StepOver();
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -34,6 +34,7 @@
 /**************************************************************************/
 #include "helpers.h"
 
+#include "library/core/string_utilities.h"
 #include "library/execution_context.h"
 
 namespace GodotObjectCompiler {
@@ -48,4 +49,4 @@ namespace GodotObjectCompiler {
     return output;
   }
 
-}  // namespace GodotObjectCompiler
+}

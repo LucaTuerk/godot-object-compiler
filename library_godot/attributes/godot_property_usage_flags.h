@@ -69,4 +69,4 @@ namespace GodotObjectCompiler {
     Dictionary<String, String> _godot_usage_flags;
   };
 
-}  // namespace GodotObjectCompiler
+}

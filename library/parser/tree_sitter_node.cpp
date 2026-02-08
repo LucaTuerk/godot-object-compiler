@@ -77,4 +77,4 @@ namespace GodotObjectCompiler {
 
   String TreeSitterNode::_content_lazy_get() { return context->buffer.substr(start_byte, end_byte - start_byte); }
 
-}  // namespace GodotObjectCompiler
+}

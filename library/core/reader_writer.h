@@ -153,4 +153,4 @@ namespace GodotObjectCompiler {
     Ref<T> read_from_file(const String& p_path);
   };
 
-}  // namespace GodotObjectCompiler
+}

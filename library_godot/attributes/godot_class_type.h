@@ -63,4 +63,4 @@ namespace GodotObjectCompiler {
     Dictionary<String,String> _value_name_to_macro;
   };
 
-}  // namespace GodotObjectCompiler
+}

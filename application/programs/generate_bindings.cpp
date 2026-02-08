@@ -35,7 +35,8 @@
 #include "generate_bindings.h"
 
 #include "library/attribute_db.h"
-#include "library/core/helpers.h"
+#include "library/core/file_system_utilities.h"
+#include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/execution_context.h"
 #include "library/generator/generator.h"
@@ -332,4 +333,4 @@ namespace GodotObjectCompiler {
     return ProgramError::OK;
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -41,6 +41,7 @@
 #include "handlers/all.h"
 #include "helpers.h"
 #include "library/attribute_db.h"
+#include "library/core/file_system_utilities.h"
 #include "node_handler.h"
 #include "tree_sitter_node.h"
 
@@ -254,4 +255,4 @@ namespace GodotObjectCompiler {
     return local_input;
   }
 
-}  // namespace GodotObjectCompiler
+}

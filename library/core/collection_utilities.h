@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_tranformed.cpp                                                   */
+/* collection_utilities.h                                                 */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,37 +33,19 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "print_tranformed.h"
-
-#include "library/core/file_system_utilities.h"
-
-#include "library/core/string_utilities.h"
-#include "library/parser/parser.h"
-#include "library/tree/syntax/namespace.h"
+#pragma once
+#include "core.h"
 
 namespace GodotObjectCompiler {
 
-  Ref<ProgramError> PrintTransformed::run(ApplicationContext& p_context) {
-    if (p_context.program_arguments.size() != 1) {
-      return node_new<ProgramError>(
-          ERROR, format("Invalid argument count for program %s. Expected 1 path argument.", get_type_static().c_str()));
-    }
+  template <typename T, typename X>
+  bool vector_contains(const Vector<T>& vector, const X& item) {
+    return std::find(vector.begin(), vector.end(), T(item)) != vector.end();
+  }
 
-    auto path = path_absolute(p_context.program_arguments[0]);
-
-    if (!file_exists(path)) {
-      return node_new<ProgramError>(
-          ERROR, format("Invalid path argument for program %s. File does not exist.", get_type_static().c_str()));
-    }
-
-    TreeSitterParser parser;
-    Ref<Namespace> ns = node_new<Namespace>();
-    if (parser.parse_file(path, ns) != ParserError::OK) {
-      return node_new<ProgramError>(ERROR, format("Failed to parse file %s.", path.c_str()));
-    }
-
-    print_ln(ns->pretty_print());
-    return ProgramError::OK;
+  template <typename T>
+  typename Vector<T>::iterator find(const Vector<T>& vector, const T& item) {
+    return std::find(vector.begin(), vector.end(), item);
   }
 
 }

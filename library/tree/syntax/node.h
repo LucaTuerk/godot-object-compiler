@@ -124,7 +124,7 @@ namespace GodotObjectCompiler {
     return ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
   }
 
-}  // namespace GodotObjectCompiler
+}
 
 template <class T>
 bool GodotObjectCompiler::Node::is() const {
@@ -132,22 +132,22 @@ bool GodotObjectCompiler::Node::is() const {
 }
 
 template <class T>
-Ref<T> GodotObjectCompiler::Node::as() {
+GodotObjectCompiler::Ref<T> GodotObjectCompiler::Node::as() {
   return std::dynamic_pointer_cast<T>(shared_from_this());
 }
 
 template <class T>
-Ref<const T> GodotObjectCompiler::Node::const_as() const {
+GodotObjectCompiler::Ref<const T> GodotObjectCompiler::Node::const_as() const {
   return std::dynamic_pointer_cast<const T>(shared_from_this());
 }
 
 template <typename T>
-Ref<GodotObjectCompiler::Node> GodotObjectCompiler::default_construct() {
+GodotObjectCompiler::Ref<GodotObjectCompiler::Node> GodotObjectCompiler::default_construct() {
   return ExecutionContext::instance()->get_node_db()->create<T>();
 }
 
 template <typename T>
-Ref<T> GodotObjectCompiler::INodeReader::read_from_file(const String& p_path) {
+GodotObjectCompiler::Ref<T> GodotObjectCompiler::INodeReader::read_from_file(const String& p_path) {
   Ref<Node> result = read_from_file(p_path);
   if (!result) {
     return nullptr;

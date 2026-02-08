@@ -59,4 +59,4 @@ namespace GodotObjectCompiler {
     transformed->get_output(writer);
   }
 
-}  // namespace GodotObjectCompiler
+}

@@ -57,4 +57,4 @@ namespace GodotObjectCompiler {
     WeakRef<Attribute> weak_attribute;
   };
 
-}  // namespace GodotObjectCompiler
+}

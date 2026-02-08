@@ -65,4 +65,4 @@ namespace GodotObjectCompiler {
     String to_comma_separated_string(const Vector<String>& p_str);
   };
 
-}  // namespace GodotObjectCompiler
+}

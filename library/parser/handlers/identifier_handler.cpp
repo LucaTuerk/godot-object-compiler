@@ -35,7 +35,7 @@
 #include "identifier_handler.h"
 
 #include "library/attribute_db.h"
-#include "library/core/helpers.h"
+
 #include "library/parser/attribute_argument_parser.h"
 #include "library/parser/parser.h"
 #include "library/parser/tree_sitter_node.h"
@@ -105,4 +105,4 @@ namespace GodotObjectCompiler {
     return ParserStep::StepOver();
   }
 
-}  // namespace GodotObjectCompiler
+}

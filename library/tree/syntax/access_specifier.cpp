@@ -65,4 +65,4 @@ namespace GodotObjectCompiler {
     p_writer->write("type", type);
   }
 
-}  // namespace GodotObjectCompiler
+}

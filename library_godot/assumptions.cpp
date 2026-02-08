@@ -60,5 +60,5 @@ namespace GodotObjectCompiler {
       return success;
     }
 
-  }  // namespace AssumedGodotTypes
-}  // namespace GodotObjectCompiler
+  }
+}

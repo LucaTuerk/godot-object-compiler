@@ -43,4 +43,4 @@ namespace GodotObjectCompiler {
 
   };
 
-}  // namespace GodotObjectCompiler
+}

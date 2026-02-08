@@ -35,8 +35,10 @@
 
 #include "application_context.h"
 
-#include "library/core/helpers.h"
+#include "library/core/collection_utilities.h"
+#include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
+#include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler {
 
@@ -103,4 +105,4 @@ namespace GodotObjectCompiler {
     return success;
   }
 
-}  // namespace GodotObjectCompiler
+}

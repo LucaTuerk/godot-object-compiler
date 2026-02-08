@@ -62,4 +62,4 @@ namespace GodotObjectCompiler {
     NODE_TYPE(PlaceholderType);
   };
 
-}  // namespace GodotObjectCompiler
+}

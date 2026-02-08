@@ -35,8 +35,8 @@
 
 #pragma once
 #include "library/core/assumption.h"
+#include "library/core/collection_utilities.h"
 #include "library/core/core.h"
-#include "library/core/helpers.h"
 #include "library/tree/syntax/function.h"
 
 namespace GodotObjectCompiler {
@@ -91,4 +91,4 @@ namespace GodotObjectCompiler {
                                                     \
  private:
 
-}  // namespace GodotObjectCompiler
+}

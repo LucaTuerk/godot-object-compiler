@@ -47,4 +47,4 @@ namespace GodotObjectCompiler {
     LAZY(Field, bool, is_volatile);
   };
 
-}  // namespace GodotObjectCompiler
+}

@@ -34,7 +34,7 @@
 /**************************************************************************/
 
 #pragma once
-#include "../../library/generator/attribute_parameter_type.h"
+#include "library/generator/attribute_parameter_type.h"
 #include "library/core/lazy.h"
 #include "library/tree/syntax/node.h"
 
@@ -69,4 +69,4 @@ namespace GodotObjectCompiler {
     Dictionary<String, String> _godot_hint_types;
   };
 
-}  // namespace GodotObjectCompiler
+}

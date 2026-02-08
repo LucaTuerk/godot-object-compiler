@@ -51,4 +51,4 @@ namespace GodotObjectCompiler {
     Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) override;
   };
 
-}  // namespace GodotObjectCompiler
+}

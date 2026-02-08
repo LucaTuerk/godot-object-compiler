@@ -209,5 +209,5 @@ namespace GodotObjectCompiler {
 
     Ref<SnippetNode> PragmaOnce();
 
-  }  // namespace Writer
-}  // namespace GodotObjectCompiler
+  }
+}

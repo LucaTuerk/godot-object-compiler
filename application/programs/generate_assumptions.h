@@ -47,5 +47,5 @@ namespace GodotObjectCompiler {
     Ref<ProgramError> run(ApplicationContext& context) override;
   };
 
-}  // namespace GodotObjectCompiler
+}
 #endif

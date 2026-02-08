@@ -57,4 +57,4 @@ namespace GodotObjectCompiler {
     LAZY(EnumValue, Ref<Literal>, literal);
   };
 
-}  // namespace GodotObjectCompiler
+}

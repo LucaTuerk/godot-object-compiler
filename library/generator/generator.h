@@ -156,7 +156,7 @@ namespace GodotObjectCompiler {
     return GeneratorError::OK;
   }
 
-}  // namespace GodotObjectCompiler
+}
 
 #define GENERATOR(type)                             \
  public:                                            \

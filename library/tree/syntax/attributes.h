@@ -72,4 +72,4 @@ namespace GodotObjectCompiler {
     ATTRIBUTE_TYPE(HintAttribute, Attribute, NONE)
   };
 
-}  // namespace GodotObjectCompiler
+}

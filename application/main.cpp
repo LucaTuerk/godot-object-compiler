@@ -37,7 +37,7 @@
 #include "application_context.h"
 #include "compiled_resources/res.gen.h"
 #include "library/core/core.h"
-#include "library/core/helpers.h"
+#include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
 #include "library/core/resources.h"
 #include "library/parser/parser.h"

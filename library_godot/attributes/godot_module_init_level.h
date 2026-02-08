@@ -33,8 +33,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "../../library/generator/attribute_parameter_type.h"
-#include "../../library/tree/syntax/node.h"
+#include "library/generator/attribute_parameter_type.h"
+#include "library/tree/syntax/node.h"
 
 namespace GodotObjectCompiler {
 
@@ -65,4 +65,4 @@ namespace GodotObjectCompiler {
     Dictionary<String, String> _godot_init_levels;
   };
 
-}  // namespace GodotObjectCompiler
+}

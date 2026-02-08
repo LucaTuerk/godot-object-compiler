@@ -55,4 +55,4 @@ namespace GodotObjectCompiler {
     p_reader->read<String, String>("preprocessor_name");
   }
 
-}  // namespace GodotObjectCompiler
+}

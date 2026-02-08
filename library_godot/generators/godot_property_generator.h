@@ -53,4 +53,4 @@ namespace GodotObjectCompiler {
 
   REGISTER_CLASS_GENERATOR(GodotPropertyGenerator);
 
-}  // namespace GodotObjectCompiler
+}

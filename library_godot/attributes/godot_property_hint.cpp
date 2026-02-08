@@ -37,7 +37,7 @@
 
 #include "../../library/type_db.h"
 #include "../assumptions.h"
-#include "library/core/helpers.h"
+#include "library/core/string_utilities.h"
 #include "library/tree/syntax/enum.h"
 
 namespace GodotObjectCompiler {
@@ -117,4 +117,4 @@ namespace GodotObjectCompiler {
     return hint.substr(1, hint.size() - 2);
   }
 
-}  // namespace GodotObjectCompiler
+}

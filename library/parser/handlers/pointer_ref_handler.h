@@ -79,4 +79,4 @@ namespace GodotObjectCompiler {
     ParserStep handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) override;
   };
 
-}  // namespace GodotObjectCompiler
+}
