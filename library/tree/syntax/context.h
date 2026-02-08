@@ -66,6 +66,10 @@ namespace GodotObjectCompiler {
     bool empty() const;
     Size get_child_count() const;
     Size get_descendant_count() const;
+
+    template <typename T>
+    Ref<T> get_child(SignedIndex p_idx) const;
+
     Ref<Node> get_child(SignedIndex p_idx) const;
     Ref<Node> get_child_strict(SignedIndex p_idx) const;
     List<Ref<Node>>& get_children();
@@ -95,6 +99,9 @@ namespace GodotObjectCompiler {
     template <class T>
     Ref<T> find_descendant(BranchExplorationType order = BFS, Predicate<T> predicate = default_node_predicate<T>);
 
+    template <class T>
+    Ref<T> find_previous_sibling(Predicate<T> predicate = default_node_predicate<T>);
+
     template <class T, typename... Args>
     Ref<T> create_child(Args&&... args);
 
@@ -117,6 +124,8 @@ namespace GodotObjectCompiler {
   class NamedContext : public Context {
     NODE_TYPE(NamedContext)
     bool copy_to(Ref<Node> other) const override;
+    void read_from(IStructuredReader* reader) override;
+    void write_to(IStructuredWriter* writer) override;
 
    private:
 
@@ -124,6 +133,7 @@ namespace GodotObjectCompiler {
     LAZY(NamedContext, String, name);
     LAZY(NamedContext, String, qualified_name);
     LAZY(NamedContext, String, mangled_name);
+    LAZY(NamedContext, Vector<String>, namespaces_names)
   };
 
   template <class T>
@@ -186,6 +196,21 @@ namespace GodotObjectCompiler {
   }
 
   template <typename T>
+  Ref<T> Context::get_child(SignedIndex p_idx) const {
+    Ref<Node> node = get_child(p_idx);
+    if (!node) {
+      return nullptr;
+    }
+
+    Ref<T> node_t = node->as<T>();
+    if (!node_t) {
+      return nullptr;
+    }
+
+    return node_t;
+  }
+
+  template <typename T>
   std::shared_ptr<T> Context::find_child(Index p_start_idx, Predicate<T> predicate) const {
     for (Ref<Node> child : _children) {
       Ref<T> tChild = std::dynamic_pointer_cast<T>(child);
@@ -230,6 +255,24 @@ namespace GodotObjectCompiler {
         }
         break;
     }
+    return nullptr;
+  }
+
+  template <class T>
+  Ref<T> Context::find_previous_sibling(Predicate<T> predicate) {
+    if (get_parent() == nullptr) {
+      return nullptr;
+    }
+
+    Ref<Node> current = get_previous_sibling();
+    while (current) {
+      Ref<T> current_t = current->as<T>();
+      if (current_t && predicate(current_t)) {
+        return current_t;
+      }
+      current = current->get_previous_sibling();
+    }
+
     return nullptr;
   }
 

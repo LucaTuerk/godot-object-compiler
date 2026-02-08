@@ -1,5 +1,6 @@
 #pragma once
 #include "access_specifier_handler.h"
+#include "binary_expression_handler.h"
 #include "class_handler.h"
 #include "define_handler.h"
 #include "enum_handler.h"

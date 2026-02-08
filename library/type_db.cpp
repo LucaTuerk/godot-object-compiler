@@ -2,6 +2,7 @@
 
 #include "core/config.h"
 #include "core/helpers.h"
+#include "core/string_writer.h"
 #include "tree/syntax/class.h"
 #include "tree/syntax/define.h"
 #include "tree/syntax/enum.h"
@@ -114,31 +115,34 @@ namespace GodotObjectCompiler {
     writer.write_to_file(root, path);
   }
 
-  Ref<Node> TypeDB::get_type_data(const String& qualified_name, Size template_argument_count) {
+  Ref<Node> TypeDB::get_type_data(
+      const String& qualified_name, Size template_argument_count, const Ref<Namespace>& from_namespace) {
     Reader reader;
-    String mangled_name = mangle_name(qualified_name, template_argument_count);
 
-    if (auto itr = _cache.find(mangled_name); itr != _cache.end()) {
-      return itr->second;
-    }
+    for (const String& name : resolve_possible_namespaces(qualified_name, from_namespace)) {
+      String mangled_name = mangle_name(name, template_argument_count);
 
-    const String& cache_file_path = _get_cache_file_path(mangled_name);
-    const String& godot_cache_file_path = _get_cache_file_path("godot::" + mangled_name);
+      if (auto itr = _cache.find(mangled_name); itr != _cache.end()) {
+        return itr->second;
+      }
+      const String& cache_file_path = _get_cache_file_path(mangled_name);
+      const String& godot_cache_file_path = _get_cache_file_path("godot::" + mangled_name);
 
-    if (file_exists(cache_file_path)) {
-      Ref<Node> root = reader.read_from_file(cache_file_path);
-      _cache[mangled_name] = root;
-      return root;
-    } else if (file_exists(godot_cache_file_path)) {
-      Ref<Node> root = reader.read_from_file(godot_cache_file_path);
-      _cache[mangled_name] = root;
-      return root;
+      if (file_exists(cache_file_path)) {
+        Ref<Node> root = reader.read_from_file(cache_file_path);
+        _cache[mangled_name] = root;
+        return root;
+      } else if (file_exists(godot_cache_file_path)) {
+        Ref<Node> root = reader.read_from_file(godot_cache_file_path);
+        _cache[mangled_name] = root;
+        return root;
+      }
     }
 
     return nullptr;
   }
 
-  Ref<Node> TypeDB::get_type_data(const Ref<Type>& type) {
+  Ref<Node> TypeDB::get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace) {
     return get_type_data(type->name(), type->template_argument_count());
   }
 
@@ -159,6 +163,27 @@ namespace GodotObjectCompiler {
       return qualified_name;
     }
     return format("%s_T_ARGS_%d_", qualified_name.c_str(), template_parameter_count);
+  }
+
+  Vector<String> TypeDB::resolve_possible_namespaces(
+      const String& qualified_name, const Ref<Namespace>& from_namespace) {
+    Vector<String> result;
+
+    if (from_namespace == nullptr) {
+      return {qualified_name};
+    }
+
+    const Vector<String> namespaces_names = from_namespace->namespaces_names();
+    for (Size current_size = 0; current_size <= namespaces_names.size(); current_size++) {
+      StreamWriter writer;
+      for (Size i = 0; i < current_size; ++i) {
+        writer.write(namespaces_names[i]);
+        writer.write("::");
+      }
+      writer.write(qualified_name);
+      result.push_back(writer.get_string());
+    }
+    return result;
   }
 
 }  // namespace GodotObjectCompiler

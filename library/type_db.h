@@ -40,14 +40,17 @@ namespace GodotObjectCompiler {
     void set_cache_directory(const String& path);
     void save_type_data(Ref<NamedContext> root);
 
-    Ref<Node> get_type_data(const String& qualified_name, Size template_parameter_count = 0);
-    Ref<Node> get_type_data(const Ref<Type>& type);
+    Ref<Node> get_type_data(const String& qualified_name, Size template_parameter_count = 0,
+        const Ref<Namespace>& from_namespace = nullptr);
+
+    Ref<Node> get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace = nullptr);
 
     template <typename T>
-    Ref<T> get_type_data(const String& qualified_name, Size template_parameter_count = 0);
+    Ref<T> get_type_data(const String& qualified_name, Size template_parameter_count = 0,
+        const Ref<Namespace>& from_namespace = nullptr);
 
     template <typename T>
-    Ref<T> get_type_data(const Ref<Type>& type);
+    Ref<T> get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace = nullptr);
 
     template <typename T>
     AssumptionState validate_t(Assumption<AssumeType<T>>& type_assumption);
@@ -57,6 +60,8 @@ namespace GodotObjectCompiler {
     AssumptionState validate_assumption(Assumption<AssumeType<Define>>& assumption) override;
 
     static String mangle_name(const String& qualified_name, Size template_parameter_count);
+    static Vector<String> resolve_possible_namespaces(
+        const String& qualified_name, const Ref<Namespace>& from_namespace);
 
    private:
 
@@ -69,8 +74,9 @@ namespace GodotObjectCompiler {
   };
 
   template <typename T>
-  Ref<T> TypeDB::get_type_data(const String& qualified_name, Size template_parameter_count) {
-    Ref<Node> result = get_type_data(qualified_name, template_parameter_count);
+  Ref<T> TypeDB::get_type_data(
+      const String& qualified_name, Size template_parameter_count, const std::shared_ptr<Namespace>& from_namespace) {
+    Ref<Node> result = get_type_data(qualified_name, template_parameter_count, from_namespace);
     if (!result) {
       return nullptr;
     }
@@ -79,8 +85,8 @@ namespace GodotObjectCompiler {
   }
 
   template <typename T>
-  Ref<T> TypeDB::get_type_data(const Ref<Type>& type) {
-    Ref<Node> result = get_type_data(type);
+  Ref<T> TypeDB::get_type_data(const Ref<Type>& type, const std::shared_ptr<Namespace>& from_namespace) {
+    Ref<Node> result = get_type_data(type, from_namespace);
     if (!result) {
       return nullptr;
     }

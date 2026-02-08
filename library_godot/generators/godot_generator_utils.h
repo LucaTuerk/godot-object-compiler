@@ -1,6 +1,7 @@
 
 #pragma once
 #include "library/core/core.h"
+#include "library/tree/syntax/namespace.h"
 #include "library/tree/syntax/type.h"
 #include "library/type_db.h"
 #include "library_godot/attributes/godot_property_hint.h"
@@ -71,23 +72,38 @@ namespace GodotObjectCompiler {
       DEFAULTS_SIGNAL_ARGUMENT,
     };
 
-    bool get_defaults_for_type(const Ref<Type>& target_type, Ref<GodotVariantTypeArgument>& variant_type, Ref<GodotPropertyHintArgument>& property_hint, Ref<GodotPropertyUsageFlagsArgument>& property_usage_flags, DefaultsUsage defaults_usage = DEFAULTS_PROPERTY_BINDING);
+    bool get_defaults_for_type(const Ref<Type>& target_type, Ref<GodotVariantTypeArgument>& variant_type,
+        Ref<GodotPropertyHintArgument>& property_hint, Ref<GodotPropertyUsageFlagsArgument>& property_usage_flags,
+        const Ref<Namespace>& from_namespace = nullptr, DefaultsUsage defaults_usage = DEFAULTS_PROPERTY_BINDING);
 
-    bool type_is_godot_ref_type(const Ref<Type>& target_type, Ref<Type>& inner_type);
-    bool type_is_godot_typed_array_type(const Ref<Type>& target_type, Ref<Type>& inner_type);
-    bool type_is_godot_typed_dictionary_type(const Ref<Type>& target_type, Ref<Type>& key_type, Ref<Type>& value_type);
+    bool type_is_godot_ref_type(
+        const Ref<Type>& target_type, Ref<Type>& inner_type, const Ref<Namespace>& from_namespace = nullptr);
 
-    bool type_is_ref_counted_type(const Ref<Type>& inner_type);
-    bool type_is_object_type(const Ref<Type>& target_type);
-    bool type_is_godot_collection_type(const Ref<Type>& target_type);
-    bool type_is_node_type(const Ref<Type>& target_type);
-    bool type_is_enum_type(const Ref<Type>& target_type, Ref<Enum>& enum_object);
-    bool type_is_variant_type(const Ref<Type>& target_type);
+    bool type_is_godot_typed_array_type(
+        const Ref<Type>& target_type, Ref<Type>& inner_type, const Ref<Namespace>& from_namespace = nullptr);
+
+    bool type_is_godot_typed_dictionary_type(const Ref<Type>& target_type, Ref<Type>& key_type, Ref<Type>& value_type,
+        const Ref<Namespace>& from_namespace = nullptr);
+
+    bool type_is_ref_counted_type(const Ref<Type>& inner_type, const Ref<Namespace>& from_namespace = nullptr);
+
+    bool type_is_object_type(const Ref<Type>& target_type, const Ref<Namespace>& from_namespace = nullptr);
+
+    bool type_is_godot_collection_type(const Ref<Type>& target_type, const Ref<Namespace>& from_namespace = nullptr);
+
+    bool type_is_node_type(const Ref<Type>& target_type, const Ref<Namespace>& from_namespace = nullptr);
+
+    bool type_is_enum_type(
+        const Ref<Type>& target_type, Ref<Enum>& enum_object, const Ref<Namespace>& from_namespace = nullptr);
+
+    bool type_is_variant_type(const Ref<Type>& target_type, const Ref<Namespace>& from_namespace = nullptr);
+
     bool get_variant_type_from_type(const Ref<Type>& target_type, String& variant_type);
 
     Ref<GodotVariantTypeArgument> VariantTypeFromType(const Ref<Type>& type);
     Ref<GodotVariantTypeArgument> VariantType(const String& variant_type);
-    Ref<GodotPropertyHintArgument> PropertyHint(const String& value, const String& hint_string = "", bool is_string_literal = true);
+    Ref<GodotPropertyHintArgument> PropertyHint(
+        const String& value, const String& hint_string = "", bool is_string_literal = true);
     Ref<GodotPropertyUsageFlagsArgument> PropertyUsageFlag(const String& usage);
 
     Ref<Node> PropertyInfo(const Ref<GodotVariantTypeArgument>& variant_type,
@@ -95,7 +111,8 @@ namespace GodotObjectCompiler {
         const String& property_name);
 
     Ref<Node> PropertyInfo(const Ref<GodotVariantTypeArgument>& variant_type, const String& property_name);
-    Ref<Node> PropertyInfoDefaultForType(const Ref<Type>& type, const String& property_name, DefaultsUsage usage = DEFAULTS_PROPERTY_BINDING);
+    Ref<Node> PropertyInfoDefaultForType(
+        const Ref<Type>& type, const String& property_name, DefaultsUsage usage = DEFAULTS_PROPERTY_BINDING);
 
   };  // namespace GodotGeneratorUtils
 

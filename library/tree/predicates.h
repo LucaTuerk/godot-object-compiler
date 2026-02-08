@@ -2,6 +2,7 @@
 #pragma once
 
 #include "library/core/core.h"
+#include "library/parser/tree_sitter_node.h"
 
 namespace GodotObjectCompiler {
 
@@ -18,6 +19,13 @@ namespace GodotObjectCompiler {
     }
 
   }  // namespace NamedContextPredicates
+
+  namespace TreeSitterNodePredicates {
+
+    Predicate<TreeSitterNode> types(std::initializer_list<const char*>&& types);
+    Predicate<TreeSitterNode> type(const char* type);
+
+  }  // namespace TreeSitterNodePredicates
 
   namespace ClassPredicates {
 

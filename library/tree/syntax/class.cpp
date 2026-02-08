@@ -68,4 +68,80 @@ namespace GodotObjectCompiler {
     return true;
   }
 
+  Vector<Ref<Function>> Class::_member_functions_lazy_get() {
+    if (!body()) {
+      return {};
+    }
+
+    return body()->find_children<Function>();
+  }
+
+  Vector<Ref<Function>> Class::_public_member_functions_lazy_get() {
+    Vector<Ref<Function>> result;
+    for (const Ref<Function>& member_function : member_functions()) {
+      if (member_function->is_public_member()) {
+        result.push_back(member_function);
+      }
+    }
+    return result;
+  }
+
+  Vector<Ref<Function>> Class::_protected_member_functions_lazy_get() {
+    Vector<Ref<Function>> result;
+    for (const Ref<Function>& member_function : member_functions()) {
+      if (member_function->is_protected_member()) {
+        result.push_back(member_function);
+      }
+    }
+    return result;
+  }
+
+  Vector<Ref<Function>> Class::_private_member_functions_lazy_get() {
+    Vector<Ref<Function>> result;
+    for (const Ref<Function>& member_function : member_functions()) {
+      if (member_function->is_private_member()) {
+        result.push_back(member_function);
+      }
+    }
+    return result;
+  }
+
+  Vector<Ref<Field>> Class::_member_fields_lazy_get() {
+    if (!body()) {
+      return {};
+    }
+
+    return body()->find_children<Field>();
+  }
+
+  Vector<Ref<Field>> Class::_public_member_fields_lazy_get() {
+    Vector<Ref<Field>> result;
+    for (const Ref<Field>& member_field : member_fields()) {
+      if (member_field->is_public_member()) {
+        result.push_back(member_field);
+      }
+    }
+    return result;
+  }
+
+  Vector<Ref<Field>> Class::_protected_member_fields_lazy_get() {
+    Vector<Ref<Field>> result;
+    for (const Ref<Field>& member_field : member_fields()) {
+      if (member_field->is_protected_member()) {
+        result.push_back(member_field);
+      }
+    }
+    return result;
+  }
+
+  Vector<Ref<Field>> Class::_private_member_fields_lazy_get() {
+    Vector<Ref<Field>> result;
+    for (const Ref<Field>& member_field : member_fields()) {
+      if (member_field->is_private_member()) {
+        result.push_back(member_field);
+      }
+    }
+    return result;
+  }
+
 }  // namespace GodotObjectCompiler

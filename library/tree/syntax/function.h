@@ -1,8 +1,10 @@
 #pragma once
 
+#include "access_specifier.h"
 #include "context.h"
 #include "library/core/lazy.h"
 #include "literal.h"
+#include "member.h"
 
 namespace GodotObjectCompiler {
 
@@ -35,19 +37,13 @@ namespace GodotObjectCompiler {
     LAZY(Parameter, Ref<Literal>, default_value);
   };
 
-  class Function : public NamedContext {
+  class Function : public Member {
     NODE_TYPE(Function);
 
     /* child nodes */
     LAZY(Function, Ref<Type>, type);
     LAZY(Function, Ref<Parameters>, parameters);
     LAZY(Function, Ref<Arguments>, arguments);
-
-    /* info */
-    LAZY(Function, bool, is_virtual);
-    LAZY(Function, bool, is_override);
-    LAZY(Function, bool, is_static);
-    LAZY(Function, bool, is_const);
 
    public:
 

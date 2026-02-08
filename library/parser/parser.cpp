@@ -14,7 +14,7 @@ namespace GodotObjectCompiler {
 
   Ref<ParserError> TreeSitterParser::parse_file(const String& path, Ref<Context> target) {
     input_is_path = true;
-    return parse(path, std::move(target));
+    return parse(path_absolute(path), std::move(target));
   }
 
   Ref<ParserError> TreeSitterParser::parse(const String& input, Ref<Context> target) {

@@ -140,6 +140,9 @@ library_godot_folders = glob.glob("library_godot/**/",recursive=True)
 application_files = glob.glob("application/**/*.cpp", recursive=True)
 application_folders = glob.glob("application/**/",recursive=True)
 
+test_files = glob.glob("tests/**/*.cpp", recursive=True)
+test_folders = glob.glob("tests/**/", recursive=True)
+
 library_files.append(library_godot_files)
 
 env.Library("goc", library_files, CPPPATH=["."], LINKFLAGS=["-g"])
@@ -153,6 +156,9 @@ for folder in library_folders:
 for folder in application_folders:
     create_all_h(this_dir + '/' + folder)
 
+for folder in test_folders:
+    create_all_h(this_dir + '/' + folder)
+
 env.Program(
     "goc",
     application_files,
@@ -162,4 +168,12 @@ env.Program(
     LINKFLAGS=["-g"],
 )
 
+env.Program(
+    "goc_tests",
+    test_files,
+    CPPPATH=["."],
+    LIBS=["goc", "tree-sitter", "tree-sitter-cpp"],
+    LIBPATH=["."],
+    LINKFLAGS=["-g"],
+)
 

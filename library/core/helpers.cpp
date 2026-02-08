@@ -300,6 +300,21 @@ namespace GodotObjectCompiler {
     return writer.get_string();
   }
 
+  int string_to_int(const String& str, const int base) {
+    // if (string_prefix(str, "0x")) {
+    //   String substr = str.substr(2);
+    //   return std::stoi(substr, nullptr, 8);
+    // } else if (string_prefix(str, "0b")) {
+    //   String substr = str.substr(2);
+    //   return std::stoi(substr, nullptr, 2);
+    // } else if (string_prefix(str, "0X")) {
+    //   String substr = str.substr(2);
+    //   return std::stoi(substr, nullptr, 16);
+    // }else {
+    return stoi(str, nullptr, 0);
+    // }
+  }
+
   String macro_case_to_pascal_case(const String& input) {
     std::stringstream strstr;
 
@@ -320,28 +335,29 @@ namespace GodotObjectCompiler {
 
   String cpp_enum_case_to_exposed_enum_case(const String& input) {
     StreamWriter writer;
-    bool last_is_space = true;
-    bool last_is_num = false;
+
+    enum Type { NONE, SPACE, DIGIT, LETTER };
+
+    Type last = NONE;
 
     for (char c : input) {
-      if (c == '_' && !last_is_space) {
+      Type current = isdigit(c) ? DIGIT : isalpha(c) ? LETTER : SPACE;
+
+      if (current != last && last != SPACE && last != NONE) {
         writer.write(" ");
-        last_is_num = false;
-        last_is_space = true;
-      } else if (isdigit(c) && !last_is_num) {
-        writer.write(" ");
-        writer.write_generic(c);
-        last_is_num = true;
-        last_is_space = false;
-      } else if (!isdigit(c) && (last_is_space || last_is_num)) {
-        writer.write_generic(static_cast<char>(toupper(c)));
-        last_is_num = false;
-        last_is_space = false;
-      } else {
-        writer.write_generic(static_cast<char>(tolower(c)));
-        last_is_num = false;
-        last_is_space = false;
       }
+
+      if (current == LETTER) {
+        if (current != last) {
+          writer.write_generic(static_cast<char>(toupper(c)));
+        } else {
+          writer.write_generic(static_cast<char>(tolower(c)));
+        }
+      } else if (current == DIGIT) {
+        writer.write_generic(c);
+      }
+
+      last = current;
     }
     return writer.get_string();
   }

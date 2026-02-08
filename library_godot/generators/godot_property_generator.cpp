@@ -29,7 +29,7 @@ namespace GodotObjectCompiler {
     Ref<GodotPropertyHintArgument> property_hint;
     Ref<GodotPropertyUsageFlagsArgument> property_usage_flags;
 
-    if (!get_defaults_for_type(field_type, variant_type, property_hint, property_usage_flags)) {
+    if (!get_defaults_for_type(field_type, variant_type, property_hint, property_usage_flags, target_class)) {
       GEN_ERROR(target_field, "Unknown type. Failed to determine default property info.");
     }
 
@@ -60,10 +60,10 @@ namespace GodotObjectCompiler {
 
       Ref<Type> ref_inner;
       Ref<Enum> enum_object;
-      bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner);
-      bool is_obj_type = type_is_object_type(field_type);
-      bool is_enum_type = type_is_enum_type(field_type, enum_object);
-      bool is_collection_type = type_is_godot_collection_type(field_type);
+      bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner, target_class);
+      bool is_obj_type = type_is_object_type(field_type, target_class);
+      bool is_enum_type = type_is_enum_type(field_type, enum_object, target_class);
+      bool is_collection_type = type_is_godot_collection_type(field_type, target_class);
       bool use_const_ref = !(is_obj_type || is_ref_type || is_collection_type);
 
       bind_methods_body->add_child(bind_method(target_class->name(), getter_name, {}));
