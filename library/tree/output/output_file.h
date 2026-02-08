@@ -1,6 +1,4 @@
 #pragma once
-#include <utility>
-
 #include "../syntax/function.h"
 #include "../syntax/node.h"
 #include "library/core/string_writer.h"

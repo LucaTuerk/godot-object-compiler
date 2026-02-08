@@ -8,12 +8,12 @@
 
 namespace GodotObjectCompiler {
 
-  bool NamespaceHandler::handles_node(const Ref<TreeSitterNode>& current_src) {
-    return current_src->type == "namespace_definition";
+  bool NamespaceHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return p_current_src->type == "namespace_definition";
   }
 
-  ParserStep NamespaceHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    current_target = current_target->build_child<Namespace>();
+  ParserStep NamespaceHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    r_current_target = r_current_target->build_child<Namespace>();
     return ParserStep::StepInto();
   }
 

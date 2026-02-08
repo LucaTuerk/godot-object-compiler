@@ -9,13 +9,16 @@ namespace GodotObjectCompiler {
   class Class;
 
   class IGodotInitializationGenerator {
+   public:
 
-    virtual Ref<GeneratorError> generate_initialization(Ref<Class> target_class,
-        Ref<GodotClassAttribute> class_attribute, Ref<Context> initialize_content,
-        Ref<Context> uninitialize_content) = 0;
+    virtual ~IGodotInitializationGenerator() = default;
 
-    virtual Ref<GeneratorError> generate_startup(Ref<Class> target_class, Ref<GodotClassAttribute> class_attribute,
-        Ref<Context> startup_content, Ref<Context> shutdown_content) = 0;
+    virtual Ref<GeneratorError> generate_initialization(Ref<Class> p_target_class,
+        Ref<GodotClassAttribute> p_class_attribute, Ref<Context> p_initialize_content,
+        Ref<Context> p_uninitialize_content) = 0;
+
+    virtual Ref<GeneratorError> generate_startup(Ref<Class> p_target_class, Ref<GodotClassAttribute> p_class_attribute,
+        Ref<Context> p_startup_content, Ref<Context> p_shutdown_content) = 0;
   };
 
 }  // namespace GodotObjectCompiler

@@ -25,10 +25,11 @@ namespace GodotObjectCompiler {
 
     String to_string() const override;
 
-    bool type_in(std::initializer_list<String>&& type_names) const;
+    bool type_in(std::initializer_list<String>&& p_type_names) const;
 
     bool is_handled() const;
-    void set_handled(bool handled = true);
+
+    void set_handled(bool p_handled = true);
 
     ParserContext* context;
     String type;
@@ -38,7 +39,7 @@ namespace GodotObjectCompiler {
     Point end_point;
     bool handled = false;
 
-    bool copy_to(Ref<Node> other) const override;
+    bool copy_to(Ref<Node> p_other) const override;
 
     LAZY(TreeSitterNode, String, content);
   };

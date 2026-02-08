@@ -7,27 +7,27 @@
 
 namespace GodotObjectCompiler {
 
-  bool ListHandler::handles_node(const Ref<TreeSitterNode>& current_src) {
+  bool ListHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
     // TODO: Should the be string_suffix?
-    return string_contains(current_src->type, "list");
+    return string_contains(p_current_src->type, "list");
   }
 
-  ParserStep ListHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    if (current_target->is<Attribute>()) {
+  ParserStep ListHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    if (r_current_target->is<Attribute>()) {
       // Parameters are handled by attributes parser.
       return ParserStep::StepOver();
     }
 
-    if (current_src->type_in({"declaration_list", "field_declaration_list"})) {
-      current_target = current_target->create_child<Body>();
-    } else if (current_src->type == "parameter_list") {
-      current_target = current_target->create_child<Parameters>();
-    } else if (current_src->type == "template_argument_list") {
-      current_target = current_target->create_child<TemplateArguments>();
-    } else if (current_src->type == "template_parameter_list") {
-      current_target = current_target->create_child<TemplateParameters>();
+    if (p_current_src->type_in({"declaration_list", "field_declaration_list"})) {
+      r_current_target = r_current_target->create_child<Body>();
+    } else if (p_current_src->type == "parameter_list") {
+      r_current_target = r_current_target->create_child<Parameters>();
+    } else if (p_current_src->type == "template_argument_list") {
+      r_current_target = r_current_target->create_child<TemplateArguments>();
+    } else if (p_current_src->type == "template_parameter_list") {
+      r_current_target = r_current_target->create_child<TemplateParameters>();
     } else {
-      current_target = current_target->create_child<Context>();
+      r_current_target = r_current_target->create_child<Context>();
     }
 
     return ParserStep::StepInto();

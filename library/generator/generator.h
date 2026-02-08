@@ -1,6 +1,5 @@
 #pragma once
 
-#include "library/tree/output/generator_error.h"
 #include "library/tree/syntax/attributes.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/parser_error.h"
@@ -13,7 +12,7 @@ namespace GodotObjectCompiler {
 
     virtual ~IGenerator() = default;
 
-    virtual Ref<Context> generate(Ref<Context> tree, Ref<Node> entry_point) = 0;
+    virtual Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) = 0;
   };
 
   class ClassGenerator {
@@ -21,44 +20,47 @@ namespace GodotObjectCompiler {
 
     virtual ~ClassGenerator() = default;
 
-    bool handles(const Ref<Class>& target_class, const Ref<Attribute>& attribute);
+    bool handles(const Ref<Class>& p_target_class, const Ref<Attribute>& p_attribute);
+
     static void merge_default_attribute_arguments(
-        const Ref<Attribute>& target_attribute, const Ref<Context>& default_values);
+        const Ref<Attribute>& p_target_attribute, const Ref<Context>& p_default_values);
 
     Ref<GeneratorError> generate_default_attribute_arguments(
-        const Ref<Class>& target_class, const Ref<Attribute>& attribute, const Ref<Context>& default_values);
+        const Ref<Class>& p_target_class, const Ref<Attribute>& p_attribute, const Ref<Context>& r_default_values);
 
-    Ref<GeneratorError> generate(const Ref<Class>& target_class, const Ref<Attribute>& attribute,
-        const Ref<Context>& generated_body, const Ref<Context>& generated_sources,
-        const Ref<Context>& generated_global);
+    Ref<GeneratorError> generate(const Ref<Class>& p_target_class, const Ref<Attribute>& p_attribute,
+        const Ref<Context>& r_generated_body, const Ref<Context>& r_generated_sources,
+        const Ref<Context>& r_generated_global);
 
    protected:
 
-    virtual bool _handles(Ref<Class> target_class, Ref<Attribute> attribute) = 0;
+    virtual bool _handles(Ref<Class> p_target_class, Ref<Attribute> p_attribute) = 0;
+
     virtual Ref<GeneratorError> _generate_default_attribute_arguments(
-        Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> default_values) = 0;
-    virtual Ref<GeneratorError> _generate(Ref<Class> target_class, Ref<Attribute> attribute,
-        Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
+        Ref<Class> p_target_class, Ref<Attribute> p_attribute, Ref<Context> r_default_values) = 0;
+
+    virtual Ref<GeneratorError> _generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute,
+        Ref<Context> r_generated_body, Ref<Context> r_generated_sources, Ref<Context> r_generated_global) = 0;
   };
 
-  inline bool ClassGenerator::handles(const Ref<Class>& target_class, const Ref<Attribute>& attribute) {
-    return _handles(target_class, attribute);
+  inline bool ClassGenerator::handles(const Ref<Class>& p_target_class, const Ref<Attribute>& p_attribute) {
+    return _handles(p_target_class, p_attribute);
   }
 
   inline void ClassGenerator::merge_default_attribute_arguments(
-      const Ref<Attribute>& target_attribute, const Ref<Context>& default_values) {
+      const Ref<Attribute>& p_target_attribute, const Ref<Context>& p_default_values) {
     HashSet<String> had_value_set;
 
-    Ref<Arguments> arguments = target_attribute->find_child<Arguments>();
+    Ref<Arguments> arguments = p_target_attribute->find_child<Arguments>();
     if (!arguments) {
-      arguments = target_attribute->build_child<Arguments>();
+      arguments = p_target_attribute->build_child<Arguments>();
     }
 
     for (const Ref<Node>& child : arguments->get_children()) {
       had_value_set.insert(child->get_type());
     }
 
-    for (const Ref<Node>& child : *default_values) {
+    for (const Ref<Node>& child : *p_default_values) {
       if (had_value_set.find(child->get_type()) == had_value_set.end()) {
         arguments->add_child(child->clone());
       }
@@ -66,56 +68,57 @@ namespace GodotObjectCompiler {
   }
 
   inline Ref<GeneratorError> ClassGenerator::generate_default_attribute_arguments(
-      const Ref<Class>& target_class, const Ref<Attribute>& attribute, const Ref<Context>& default_values) {
-    return _generate_default_attribute_arguments(target_class, attribute, default_values);
+      const Ref<Class>& p_target_class, const Ref<Attribute>& p_attribute, const Ref<Context>& r_default_values) {
+    return _generate_default_attribute_arguments(p_target_class, p_attribute, r_default_values);
   }
 
-  inline Ref<GeneratorError> ClassGenerator::generate(const Ref<Class>& target_class, const Ref<Attribute>& attribute,
-      const Ref<Context>& generated_body, const Ref<Context>& generated_sources, const Ref<Context>& generated_global) {
-    return _generate(target_class, attribute, generated_body, generated_sources, generated_global);
+  inline Ref<GeneratorError> ClassGenerator::generate(const Ref<Class>& p_target_class,
+      const Ref<Attribute>& p_attribute, const Ref<Context>& r_generated_body, const Ref<Context>& r_generated_sources,
+      const Ref<Context>& r_generated_global) {
+    return _generate(p_target_class, p_attribute, r_generated_body, r_generated_sources, r_generated_global);
   }
 
   template <typename AttrT>
   class IClassGenerator : public ClassGenerator {
    protected:
 
-    bool _handles(Ref<Class> target_class, Ref<Attribute> attribute) override;
+    bool _handles(Ref<Class> p_target_class, Ref<Attribute> p_attribute) override;
     Ref<GeneratorError> _generate_default_attribute_arguments(
-        Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> default_values) override;
+        Ref<Class> p_target_class, Ref<Attribute> p_attribute, Ref<Context> r_default_values) override;
 
-    Ref<GeneratorError> _generate(Ref<Class> target_class, Ref<Attribute> attribute, Ref<Context> generated_body,
-        Ref<Context> generated_sources, Ref<Context> generated_global) override;
+    Ref<GeneratorError> _generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute, Ref<Context> r_generated_body,
+        Ref<Context> r_generated_sources, Ref<Context> r_generated_global) override;
 
    public:
 
     ~IClassGenerator() override = default;
     virtual Ref<GeneratorError> do_generate_default_attribute_arguments(
-        Ref<Class> target_class, Ref<AttrT> attribute, Ref<Context> default_values);
-    virtual Ref<GeneratorError> do_generate(Ref<Class> target_class, Ref<AttrT> attribute, Ref<Context> generated_body,
-        Ref<Context> generated_sources, Ref<Context> generated_global) = 0;
+        Ref<Class> p_target_class, Ref<AttrT> p_attribute, Ref<Context> p_default_values);
+    virtual Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<AttrT> p_attribute,
+        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) = 0;
   };
 
   template <typename AttrT>
-  bool IClassGenerator<AttrT>::_handles(Ref<Class> target_class, Ref<Attribute> attribute) {
-    return attribute->template is<AttrT>();
+  bool IClassGenerator<AttrT>::_handles(Ref<Class> p_target_class, Ref<Attribute> p_attribute) {
+    return p_attribute->template is<AttrT>();
   }
 
   template <typename AttrT>
   Ref<GeneratorError> IClassGenerator<AttrT>::_generate_default_attribute_arguments(
-      Ref<Class> target_class, Ref<Attribute> attribute, std::shared_ptr<Context> default_values) {
-    return do_generate_default_attribute_arguments(target_class, attribute->as<AttrT>(), default_values);
+      Ref<Class> p_target_class, Ref<Attribute> p_attribute, std::shared_ptr<Context> r_default_values) {
+    return do_generate_default_attribute_arguments(p_target_class, p_attribute->as<AttrT>(), r_default_values);
   }
 
   template <typename AttrT>
-  Ref<GeneratorError> IClassGenerator<AttrT>::_generate(Ref<Class> target_class, Ref<Attribute> attribute,
-      Ref<Context> generated_body, Ref<Context> generated_sources, Ref<Context> generated_global) {
+  Ref<GeneratorError> IClassGenerator<AttrT>::_generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute,
+      Ref<Context> r_generated_body, Ref<Context> r_generated_sources, Ref<Context> r_generated_global) {
     return do_generate(
-        target_class, attribute->template as<AttrT>(), generated_body, generated_sources, generated_global);
+        p_target_class, p_attribute->template as<AttrT>(), r_generated_body, r_generated_sources, r_generated_global);
   }
 
   template <typename AttrT>
   Ref<GeneratorError> IClassGenerator<AttrT>::do_generate_default_attribute_arguments(
-      Ref<Class> target_class, Ref<AttrT> attribute, Ref<Context> default_values) {
+      Ref<Class> p_target_class, Ref<AttrT> p_attribute, Ref<Context> p_default_values) {
     return GeneratorError::OK;
   }
 

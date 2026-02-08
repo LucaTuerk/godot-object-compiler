@@ -14,16 +14,16 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& context) {
+  Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context) {
     TreeSitterParser parser;
 
     Config times;
-    auto time_path = path_concat(context.paths_cache, "last_modified_times.goct");
+    auto time_path = path_concat(p_context.paths_cache, "last_modified_times.goct");
     if (file_exists(time_path)) {
       times.read_from_file(time_path);
     }
 
-    for (const String& include_path : context.paths_include) {
+    for (const String& include_path : p_context.paths_include) {
       for (const String& file : directory_files_recursive(include_path)) {
         if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp")) {
           continue;

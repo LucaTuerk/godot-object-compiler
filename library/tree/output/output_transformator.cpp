@@ -18,12 +18,12 @@ namespace GodotObjectCompiler {
   }
 
 #define ADD_TEXT_IF_TYPE(type, text) \
-  if (tree->is<type>()) {            \
+  if (p_tree->is<type>()) {            \
     return Writer::Text(text);       \
   }
 
-  Ref<Writer::IOutputNode> OutputTransformator::transform(Ref<Node> tree) {
-    if (tree == nullptr) {
+  Ref<Writer::IOutputNode> OutputTransformator::transform(Ref<Node> p_tree) {
+    if (p_tree == nullptr) {
       return Writer::Text("");
     }
 
@@ -42,18 +42,18 @@ namespace GodotObjectCompiler {
     ADD_TEXT_IF_TYPE(Short, "short")
     ADD_TEXT_IF_TYPE(Long, "long")
 
-    if (Ref<Namespace> _namespace = tree->as<Namespace>()) {
+    if (Ref<Namespace> _namespace = p_tree->as<Namespace>()) {
       return Writer::Spaces(
           {Writer::Text("namespace"), Writer::Text(_namespace->name()), transform(_namespace->body())});
     }
 
-    if (Ref<Body> body = tree->as<Body>()) {
+    if (Ref<Body> body = p_tree->as<Body>()) {
       Ref<Writer::ListNode> into = Writer::Lines({});
       ADD_TRANSFORM_CHILDREN(body, into)
       return Writer::NoSep({Writer::NewLine(), Writer::Braces({Writer::NewLine(), Writer::Indent(2, {into})})});
     }
 
-    if (Ref<Parameters> parameters = tree->as<Parameters>()) {
+    if (Ref<Parameters> parameters = p_tree->as<Parameters>()) {
       Ref<Writer::ListNode> into = Writer::Params({});
 
       for (Ref<Node> child : *parameters) {
@@ -69,31 +69,31 @@ namespace GodotObjectCompiler {
       return Writer::Brackets({into});
     }
 
-    if (Ref<Arguments> arguments = tree->as<Arguments>()) {
+    if (Ref<Arguments> arguments = p_tree->as<Arguments>()) {
       Ref<Writer::ListNode> into = Writer::Params({});
       ADD_TRANSFORM_CHILDREN(arguments, into)
       return Writer::Brackets({into});
     }
 
-    if (Ref<Argument> argument = tree->as<Argument>()) {
+    if (Ref<Argument> argument = p_tree->as<Argument>()) {
       Ref<Writer::ListNode> into = Writer::NoSep({});
       ADD_TRANSFORM_CHILDREN(argument, into)
       return into;
     }
 
-    if (Ref<TemplateParameters> arguments = tree->as<TemplateParameters>()) {
+    if (Ref<TemplateParameters> arguments = p_tree->as<TemplateParameters>()) {
       Ref<Writer::ListNode> into = Writer::Params({});
       ADD_TRANSFORM_CHILDREN(arguments, into)
       return Writer::Chevrons({into});
     }
 
-    if (Ref<TemplateArguments> arguments = tree->as<TemplateArguments>()) {
+    if (Ref<TemplateArguments> arguments = p_tree->as<TemplateArguments>()) {
       Ref<Writer::ListNode> into = Writer::Params({});
       ADD_TRANSFORM_CHILDREN(arguments, into)
       return Writer::Chevrons({into});
     }
 
-    if (Ref<Parameter> parameter = tree->as<Parameter>()) {
+    if (Ref<Parameter> parameter = p_tree->as<Parameter>()) {
       Ref<Writer::ListNode> into = Writer::Spaces({});
       for (Ref<Node> child : *parameter) {
         Ref<Literal> literal = child->as<Literal>();
@@ -108,13 +108,13 @@ namespace GodotObjectCompiler {
       return into;
     }
 
-    if (Ref<Type> type = tree->as<Type>()) {
+    if (Ref<Type> type = p_tree->as<Type>()) {
       Ref<Writer::ListNode> into = Writer::Spaces({});
       ADD_TRANSFORM_CHILDREN(type, into)
       return into;
     }
 
-    if (Ref<Identifier> identifier = tree->as<Identifier>()) {
+    if (Ref<Identifier> identifier = p_tree->as<Identifier>()) {
       Ref<Node> next = identifier->get_next_sibling();
       if (next && (next->is<Parameter>() || next->is<Argument>())) {
         return Writer::NoSep({Writer::Text(identifier->name), transform(next)});
@@ -123,7 +123,7 @@ namespace GodotObjectCompiler {
       }
     }
 
-    if (Ref<Writer::IOutputNode> existing = tree->as<Writer::IOutputNode>()) {
+    if (Ref<Writer::IOutputNode> existing = p_tree->as<Writer::IOutputNode>()) {
       Ref<Node> node = std::dynamic_pointer_cast<Node>(existing);
       if (!node) {
         return Writer::Text("");
@@ -138,23 +138,23 @@ namespace GodotObjectCompiler {
       return output_node;
     }
 
-    if (Ref<Literal> literal = tree->as<Literal>()) {
+    if (Ref<Literal> literal = p_tree->as<Literal>()) {
       return Writer::Text(literal->content);
     }
 
-    if (Ref<Field> arguments = tree->as<Field>()) {
+    if (Ref<Field> arguments = p_tree->as<Field>()) {
       Ref<Writer::ListNode> into = Writer::Spaces({});
       ADD_TRANSFORM_CHILDREN(arguments, into)
       return into;
     }
 
-    if (Ref<Function> function = tree->as<Function>()) {
+    if (Ref<Function> function = p_tree->as<Function>()) {
       Ref<Writer::ListNode> into = Writer::Spaces({});
       ADD_TRANSFORM_CHILDREN(function, into);
       return into;
     }
 
-    if (Ref<Context> context = tree->as<Context>()) {
+    if (Ref<Context> context = p_tree->as<Context>()) {
       Ref<Writer::ListNode> into = Writer::Lines({});
       ADD_TRANSFORM_CHILDREN(context, into)
       return into;
@@ -163,8 +163,8 @@ namespace GodotObjectCompiler {
     return Writer::Text("");
   }
 
-  void OutputTransformator::replace_non_output_children(Ref<Writer::IOutputNode> node) {
-    if (Ref<Context> context = std::dynamic_pointer_cast<Context>(node)) {
+  void OutputTransformator::replace_non_output_children(Ref<Writer::IOutputNode> p_node) {
+    if (Ref<Context> context = std::dynamic_pointer_cast<Context>(p_node)) {
       for (Ref<Node> child : *context) {
         Ref<Writer::IOutputNode> output_child = child->as<Writer::IOutputNode>();
         if (output_child) {

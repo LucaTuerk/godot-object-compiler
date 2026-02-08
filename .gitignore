@@ -5,6 +5,7 @@ libgoc.a
 .zed
 .sconsign.dblite
 .goc
+.goc_tests
 compile_commands.json
 *.o
 *.h.generated

@@ -11,36 +11,33 @@
 
 namespace GodotObjectCompiler {
 
-  bool EnumHandler::handles_node(const Ref<TreeSitterNode>& current_src) {
-    return current_src->type_in({"enum_specifier", "enumerator_list", "enumerator"});
+  bool EnumHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return p_current_src->type_in({"enum_specifier", "enumerator_list", "enumerator"});
   }
 
-  ParserStep EnumHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    if (current_src->type == "enum_specifier") {
-      current_target = current_target->create_child<Enum>();
+  ParserStep EnumHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    if (p_current_src->type == "enum_specifier") {
+      r_current_target = r_current_target->create_child<Enum>();
     }
-    if (current_src->type == "enumerator_list") {
-      current_target = current_target->create_child<EnumValues>();
+    if (p_current_src->type == "enumerator_list") {
+      r_current_target = r_current_target->create_child<EnumValues>();
     }
-    if (current_src->type == "enumerator") {
-      current_target = current_target->create_child<EnumValue>();
-      if (current_src
-              ->find_children<TreeSitterNode>(
-                  true, TreeSitterNodePredicates::types({"number_literal", "binary_expression"}))
+    if (p_current_src->type == "enumerator") {
+      r_current_target = r_current_target->create_child<EnumValue>();
+      if (p_current_src->find_children<TreeSitterNode>(true, type_in({"number_literal", "binary_expression"}))
               .empty()) {
-        if (const Ref<TreeSitterNode> identifier =
-                current_src->find_child(0, TreeSitterNodePredicates::type("identifier"))) {
-          current_target->create_child<Identifier>(identifier->content());
+        if (const Ref<TreeSitterNode> identifier = p_current_src->find_child(0, type_is("identifier"))) {
+          r_current_target->create_child<Identifier>(identifier->content());
           identifier->set_handled();
         }
 
-        if (const Ref<EnumValue> prev = current_target->find_previous_sibling<EnumValue>()) {
+        if (const Ref<EnumValue> prev = r_current_target->find_previous_sibling<EnumValue>()) {
           if (const Ref<Literal> literal = prev->find_child<Literal>()) {
             const int val = string_to_int(literal->content);
-            current_target->create_child<Literal>(std::to_string(val + 1));
+            r_current_target->create_child<Literal>(std::to_string(val + 1));
           }
         } else {
-          current_target->create_child<Literal>(std::to_string(0));
+          r_current_target->create_child<Literal>(std::to_string(0));
         }
       }
     }

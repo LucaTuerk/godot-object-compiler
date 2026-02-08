@@ -27,10 +27,10 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  bool GodotMacroIncludeGenerator::generate_macros(Ref<Context> write_to) {
-    write_to->add_child(Writer::Define("GOC_BODY_COMBINE_INNER",
+  bool GodotMacroIncludeGenerator::generate_macros(Ref<Context> p_write_to) {
+    p_write_to->add_child(Writer::Define("GOC_BODY_COMBINE_INNER",
         {Writer::Text("A"), Writer::Text("B"), Writer::Text("C"), Writer::Text("D")}, "A##B##C##D"));
-    write_to->add_child(
+    p_write_to->add_child(
         Writer::Define("GOC_BODY_COMBINE", {Writer::Text("A"), Writer::Text("B"), Writer::Text("C"), Writer::Text("D")},
             "GOC_BODY_COMBINE_INNER(A, B, C, D)"));
     String generated_content = "GOC_BODY_COMBINE(GOC_GENERATED_, __LINE__, _, GOC_FILE_ID())()";
@@ -52,7 +52,7 @@ namespace GodotObjectCompiler {
           Writer::Spaces({Writer::BoldText("Available Parameters: "), params_docu->as<Writer::IOutputNode>() })}
         ));
         // clang-format on
-        write_to->add_child(comment);
+        p_write_to->add_child(comment);
 
         Size index = 0;
         Vector<Ref<IAttributeParameterType>> params = AttributeDB::instance()->get_parameters_for_macro(macro);
@@ -67,10 +67,10 @@ namespace GodotObjectCompiler {
 
       Ref<Attribute> attr = AttributeDB::instance()->create_for_macro(macro);
       if (attr->is<GeneratedBodyAttribute>() || attr->is<GeneratedGlobalAttribute>()) {
-        write_to->add_child(Writer::Define(macro, {Writer::Text("...")},
+        p_write_to->add_child(Writer::Define(macro, {Writer::Text("...")},
             generated_content + "; static_assert(" + macro + "_prototype(__VA_ARGS__),\"\");"));
       } else {
-        write_to->add_child(
+        p_write_to->add_child(
             Writer::Define(macro, {Writer::Text("...")}, "static_assert(" + macro + "_prototype(__VA_ARGS__),\"\")"));
       }
     }
@@ -78,8 +78,8 @@ namespace GodotObjectCompiler {
   }
 
   bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
-      Ref<IAttributeParameterType> type, Ref<Context> write_to) {
-    String type_name = type->get_return_type();
+      Ref<IAttributeParameterType> p_type, Ref<Context> p_write_to) {
+    String type_name = p_type->get_return_type();
 
     String doc_res_path = "res://" + path_concat("doc", type_name + ".txt");
     String doc_res_dir = "res://" + path_concat("doc", type_name);
@@ -95,9 +95,9 @@ namespace GodotObjectCompiler {
     type_documentation->add_child(
         Writer::Spaces({Writer::BoldText("Possible Values:"), value_names_documentation->as<Writer::IOutputNode>()}));
 
-    write_to->add_child(Writer::DocComment(type_documentation));
-    write_to->build_child<Writer::SnippetNode>("class " + type_name + " {};");
-    write_to->add_child(Writer::NewLine());
+    p_write_to->add_child(Writer::DocComment(type_documentation));
+    p_write_to->build_child<Writer::SnippetNode>("class " + type_name + " {};");
+    p_write_to->add_child(Writer::NewLine());
 
 #ifdef DEV_BUILD
     auto doc_file = path_concat_ext("resources/doc", type_name, "txt");
@@ -106,9 +106,9 @@ namespace GodotObjectCompiler {
     ensure_file_exists(doc_file, "No documentation available");
 #endif
 
-    if ((type->get_features() & IAttributeParameterType::FEATURE_FLAG)) {
+    if ((p_type->get_features() & IAttributeParameterType::FEATURE_FLAG)) {
       // clang-format off
-      write_to->build_child<Function>().with_children({
+      p_write_to->build_child<Function>().with_children({
         build<ConstExpression>(),
         build<Type>().with_child<Identifier>(type_name),
         build<Identifier>("operator |"),
@@ -128,8 +128,8 @@ namespace GodotObjectCompiler {
     }
 
     Size index = 0;
-    const Vector<IAttributeParameterType::Argument> arguments = type->get_arguments();
-    for (const String& value_name : type->get_value_names()) {
+    const Vector<IAttributeParameterType::Argument> arguments = p_type->get_arguments();
+    for (const String& value_name : p_type->get_value_names()) {
 #ifdef DEV_BUILD
       auto value_doc_path = path_concat_ext(doc_dir, value_name, "txt");
       ensure_file_exists(value_doc_path, "No documentation available");
@@ -139,7 +139,7 @@ namespace GodotObjectCompiler {
 
       if (Resources::instance()->has_resource(value_res_path)) {
         String content = Resources::instance()->load_text_resource(value_res_path);
-        write_to->add_child(Writer::DocComment(Writer::Text(content)));
+        p_write_to->add_child(Writer::DocComment(Writer::Text(content)));
       }
       if ((++index % 5) == 0) {
         value_names_documentation->add_child(Writer::Text("\n" + value_name));
@@ -149,7 +149,7 @@ namespace GodotObjectCompiler {
 
       if (arguments.empty()) {
         // clang-format off
-        write_to->build_child<Field>().with_children({
+        p_write_to->build_child<Field>().with_children({
           build<ConstExpression>(),
           build<Type>().with_child<Identifier>(type_name),
           build<Identifier>(value_name),
@@ -159,7 +159,7 @@ namespace GodotObjectCompiler {
       } else {
         Ref<Parameters> parameters;
         // clang-format off
-        write_to->build_child<Function>().with_children({
+        p_write_to->build_child<Function>().with_children({
         build<ConstExpression>(),
         build<Type>().with_child<Identifier>(type_name),
         build<Identifier>(value_name),
@@ -189,38 +189,38 @@ namespace GodotObjectCompiler {
         }
       }
 
-      write_to->add_child(Writer::NewLine());
+      p_write_to->add_child(Writer::NewLine());
     }
     return true;
   }
 
   bool GodotMacroIncludeGenerator::generate_prototype_methods(
-      const Ref<Context>& write_to, const String& macro, const Vector<Ref<IAttributeParameterType>>& params) {
-    Vector<Vector<Size>> subsets = find_all_subsets(params.size());
+      const Ref<Context>& p_write_to, const String& p_macro, const Vector<Ref<IAttributeParameterType>>& p_params) {
+    Vector<Vector<Size>> subsets = find_all_subsets(p_params.size());
     for (Vector<Size>& subset : subsets) {
       do {
         Ref<Parameters> parameters;
         // clang-format off
-        write_to->build_child<Function>().with_children({
+        p_write_to->build_child<Function>().with_children({
           build<ConstExpression>(),
           build<Type>().with_child<Identifier>("bool"),
-          build<Identifier>(macro+"_prototype"),
+          build<Identifier>(p_macro+"_prototype"),
           build_ref<Parameters>(&parameters),
           build<Body>().with_child(Writer::Return("true"))
         });
-        write_to->add_child(Writer::NewLine());
+        p_write_to->add_child(Writer::NewLine());
         // clang-format on
 
         for (Size index : subset) {
-          parameters->build_child<Parameter>().with_child(Writer::Text(params[index]->get_return_type()));
+          parameters->build_child<Parameter>().with_child(Writer::Text(p_params[index]->get_return_type()));
         }
       } while (std::next_permutation(subset.begin(), subset.end()));
     }
     return true;
   }
 
-  Ref<Context> GodotMacroIncludeGenerator::generate(Ref<Context> tree, Ref<Node> entry_point) {
-    Ref<Context> entry = entry_point->as<Context>();
+  Ref<Context> GodotMacroIncludeGenerator::generate(Ref<Context> p_tree, Ref<Node> p_entry_point) {
+    Ref<Context> entry = p_entry_point->as<Context>();
     if (!entry) {
       return nullptr;
     }

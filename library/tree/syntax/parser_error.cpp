@@ -16,20 +16,20 @@ namespace GodotObjectCompiler {
 
   String Error::to_string() const { return get_type_static(); };
 
-  bool Error::copy_to(Ref<Node> other) const {
+  bool Error::copy_to(Ref<Node> p_other) const {
     COPY_GUARD(ParserError, Node);
     target->message = message;
     return true;
   }
 
-  void Error::write_to(IStructuredWriter* writer) {
-    Node::write_to(writer);
-    writer->write("error_offending", message);
+  void Error::write_to(IStructuredWriter* p_writer) {
+    Node::write_to(p_writer);
+    p_writer->write("error_offending", message);
   }
 
-  void Error::read_from(IStructuredReader* reader) {
-    Node::read_from(reader);
-    reader->read<String, String>("error_offending");
+  void Error::read_from(IStructuredReader* p_reader) {
+    Node::read_from(p_reader);
+    p_reader->read<String, String>("error_offending");
   }
 
   void Error::set_handled() { handled = true; }

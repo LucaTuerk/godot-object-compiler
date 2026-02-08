@@ -20,7 +20,6 @@
 #include "sized_specifier_handler.h"
 #include "storage_class_handler.h"
 #include "struct_handler.h"
-#include "template_handler.h"
 #include "type_handler.h"
 #include "type_qualifier_handler.h"
 #include "virtual_handler.h"

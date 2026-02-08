@@ -16,28 +16,28 @@
 
 namespace GodotObjectCompiler {
 
-  String GenerateBindings::file_id(const String& file_name) {
+  String GenerateBindings::file_id(const String& p_file_name) {
     Hasher<String> hasher;
-    return hash_string(hasher(file_name));
+    return hash_string(hasher(p_file_name));
   }
 
-  String GenerateBindings::generated_macro_name(const String& file, Size line) {
+  String GenerateBindings::generated_macro_name(const String& p_file, Size p_line) {
     StreamWriter stream;
     stream.write("GOC_GENERATED_");
-    stream.write_generic(line);
+    stream.write_generic(p_line);
     stream.write("_");
-    stream.write(file_id(file));
+    stream.write(file_id(p_file));
     return stream.get_string();
   }
 
-  Ref<ProgramError> GenerateBindings::run(ApplicationContext& context) {
+  Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context) {
     OutputTransformator transformator;
 
     GodotMacroIncludeGenerator macro_include_generator;
     Ref<Context> macro_include_content = node_new<Context>();
     macro_include_generator.generate(nullptr, macro_include_content);
 
-    FileWriter marco_writer{path_concat(context.paths_generated, "macros.h")};
+    FileWriter marco_writer{path_concat(p_context.paths_generated, "macros.h")};
     Ref<Writer::IOutputNode> macro_output = transformator.transform(macro_include_content);
     macro_output->get_output(&marco_writer);
 
@@ -94,7 +94,7 @@ namespace GodotObjectCompiler {
       Writer::SystemInclude("gdextension_interface.h"),
       Writer::SystemInclude("godot_cpp/core/class_db.hpp"),
       Writer::SystemInclude("godot_cpp/core/defs.hpp"),
-      Writer::Include(path_concat_ext(context.paths_generated, register_file_name, "h")),
+      Writer::Include(path_concat_ext(p_context.paths_generated, register_file_name, "h")),
       register_class_includes,
       Writer::NewLine(),
       build<Function>().with_children({
@@ -122,7 +122,7 @@ namespace GodotObjectCompiler {
     });
     // clang-format on
 
-    for (const String& input_file : context.files_input) {
+    for (const String& input_file : p_context.files_input) {
       if (!string_suffix(input_file, ".h") && !string_suffix(input_file, ".hpp")) {
         continue;
       }
@@ -135,15 +135,15 @@ namespace GodotObjectCompiler {
         continue;
       }
 
-      String relative_path = path_relative(input_file, context.paths_root);
+      String relative_path = path_relative(input_file, p_context.paths_root);
 
-      String in_generated_path = path_concat(context.paths_generated, relative_path);
+      String in_generated_path = path_concat(p_context.paths_generated, relative_path);
       String in_generated_base = path_base(in_generated_path);
       String in_generated_stem = path_stem(in_generated_path);
       String source_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.cpp");
       String generated_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
 
-      if (!dir_exists(in_generated_base)) {
+      if (!directory_exits(in_generated_base)) {
         create_dir_recursive(in_generated_base);
       }
 
@@ -291,8 +291,8 @@ namespace GodotObjectCompiler {
     Ref<Writer::IOutputNode> register_header_output = transformator.transform(register_types_header);
     Ref<Writer::IOutputNode> register_source_output = transformator.transform(register_types_source);
 
-    FileWriter register_header_writer(path_concat_ext(context.paths_generated, "generated_register_types", "h"));
-    FileWriter register_source_writer(path_concat_ext(context.paths_generated, "generated_register_types", "cpp"));
+    FileWriter register_header_writer(path_concat_ext(p_context.paths_generated, "generated_register_types", "h"));
+    FileWriter register_source_writer(path_concat_ext(p_context.paths_generated, "generated_register_types", "cpp"));
 
     register_header_output->get_output(&register_header_writer);
     register_source_output->get_output(&register_source_writer);

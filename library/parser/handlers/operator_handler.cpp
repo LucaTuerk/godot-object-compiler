@@ -7,17 +7,17 @@
 
 namespace GodotObjectCompiler {
 
-  bool OperatorHandler::handles_node(const Ref<TreeSitterNode>& current_src) {
-    return current_src->type == "operator_cast";
+  bool OperatorHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return p_current_src->type == "operator_cast";
   }
 
-  ParserStep OperatorHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    if (current_target->is<Field>()) {
-      Ref<Context> parent = current_target->get_parent();
+  ParserStep OperatorHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    if (r_current_target->is<Field>()) {
+      Ref<Context> parent = r_current_target->get_parent();
       if (parent) {
         Ref<Operator> operator_node = node_new<Operator>();
-        parent->replace_child(current_target, operator_node, true);
-        current_target = operator_node;
+        parent->replace_child(r_current_target, operator_node, true);
+        r_current_target = operator_node;
       }
     }
     return ParserStep::StepInto();

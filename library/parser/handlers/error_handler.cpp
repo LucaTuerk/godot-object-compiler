@@ -8,11 +8,11 @@
 
 namespace GodotObjectCompiler {
 
-  bool ErrorHandler::handles_node(const Ref<TreeSitterNode>& current_src) { return current_src->type == "ERROR"; }
+  bool ErrorHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) { return p_current_src->type == "ERROR"; }
 
-  ParserStep ErrorHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    current_target->create_child<ParserError>(ERROR, "TreeSitterParser", "", current_src->context->file_path,
-        current_src->context->buffer, current_src->start_point.row + 1, current_src->start_point.column + 1);
+  ParserStep ErrorHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    r_current_target->create_child<ParserError>(ERROR, "TreeSitterParser", "", p_current_src->context->file_path,
+        p_current_src->context->buffer, p_current_src->start_point.row + 1, p_current_src->start_point.column + 1);
     return ParserStep::StepOver();
   }
 

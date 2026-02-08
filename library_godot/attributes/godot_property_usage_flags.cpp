@@ -17,14 +17,14 @@ namespace GodotObjectCompiler {
   Vector<IAttributeParameterType::Argument> GodotPropertyUsageFlagsParameterType::get_arguments() { return {}; }
 
   bool GodotPropertyUsageFlagsParameterType::get_godot_usage_flag_for_value_name(
-      const String& name, String& usage_flag) {
+      const String& p_name, String& r_usage_flag) {
     _value_names_lazy.poke();
 
-    if (auto itr = _godot_usage_flags.find(name); itr != _godot_usage_flags.end()) {
-      usage_flag = itr->second;
+    if (auto itr = _godot_usage_flags.find(p_name); itr != _godot_usage_flags.end()) {
+      r_usage_flag = itr->second;
       return true;
     }
-    usage_flag = "";
+    r_usage_flag = "";
     return false;
   }
 

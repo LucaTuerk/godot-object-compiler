@@ -20,15 +20,15 @@ namespace GodotObjectCompiler {
     return "AccessSpecifier: " + value;
   }
 
-  bool AccessSpecifier::copy_to(Ref<Node> other) const {
+  bool AccessSpecifier::copy_to(Ref<Node> p_other) const {
     COPY_GUARD(AccessSpecifier, Node);
     target->type = type;
     return true;
   }
 
-  void AccessSpecifier::write_to(IStructuredWriter* writer) {
-    Node::write_to(writer);
-    writer->write("type", type);
+  void AccessSpecifier::write_to(IStructuredWriter* p_writer) {
+    Node::write_to(p_writer);
+    p_writer->write("type", type);
   }
 
 }  // namespace GodotObjectCompiler

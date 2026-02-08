@@ -13,9 +13,9 @@ namespace GodotObjectCompiler {
     enum Error { OK, ALREADY_INCLUDED, FILE_NOT_FOUND, PARSE_ERROR };
 
     String to_string() const override;
-    void read_from(IStructuredReader* reader) override;
-    bool copy_to(Ref<Node> other) const override;
-    void write_to(IStructuredWriter* writer) override;
+    void read_from(IStructuredReader* p_reader) override;
+    bool copy_to(Ref<Node> p_other) const override;
+    void write_to(IStructuredWriter* p_writer) override;
 
     LAZY(Include, Error, evaluate);
 

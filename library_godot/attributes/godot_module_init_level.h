@@ -16,11 +16,14 @@ namespace GodotObjectCompiler {
    public:
 
     String get_return_type() override;
+
     Vector<String> get_value_names() override;
+
     Vector<Argument> get_arguments() override;
+
     Ref<GodotObjectCompiler::Argument> create_argument() override;
 
-    bool get_godot_init_level_for_value_name(const String& value_name, String& godot_init_level);
+    bool get_godot_init_level_for_value_name(const String& p_value_name, String& r_godot_init_level);
 
    private:
 

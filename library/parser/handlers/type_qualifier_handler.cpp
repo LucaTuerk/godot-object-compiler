@@ -5,13 +5,13 @@
 
 namespace GodotObjectCompiler {
 
-  ParserStep TypeQualifierHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    if (current_src->content() == "const") {
-      current_target->create_child<Const>();
-    } else if (current_src->content() == "mutable") {
-      current_target->create_child<Mutable>();
-    } else if (current_src->content() == "volatile") {
-      current_target->create_child<Volatile>();
+  ParserStep TypeQualifierHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    if (p_current_src->content() == "const") {
+      r_current_target->create_child<Const>();
+    } else if (p_current_src->content() == "mutable") {
+      r_current_target->create_child<Mutable>();
+    } else if (p_current_src->content() == "volatile") {
+      r_current_target->create_child<Volatile>();
     }
     return ParserStep::StepInto();
   }

@@ -11,8 +11,8 @@ namespace GodotObjectCompiler {
     NODE_HANDLER(BinaryExpressionHandler)
    public:
 
-    bool handles_node(const Ref<TreeSitterNode>& current_src) override;
-    ParserStep handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) override;
+    bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
+    ParserStep handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) override;
 
     static Ref<int> calculate_binary_expression(const Ref<TreeSitterNode>& left_operand,
         const Ref<TreeSitterNode>& expr_operator, const Ref<TreeSitterNode>& right_operand,

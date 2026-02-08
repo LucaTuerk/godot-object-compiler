@@ -17,16 +17,16 @@ namespace GodotObjectCompiler {
     return {};
   }
 
-  bool GodotClassTypeParameterType::get_macro_for_value_name(const String& value_name, String& macro) {
+  bool GodotClassTypeParameterType::get_macro_for_value_name(const String& p_value_name, String& r_macro) {
     _value_names_lazy.poke();
 
-    auto itr = _value_name_to_macro.find(value_name);
+    auto itr = _value_name_to_macro.find(p_value_name);
     if (itr == _value_name_to_macro.end()) {
-      macro = "";
+      r_macro = "";
       return false;
     }
 
-    macro = itr->second;
+    r_macro = itr->second;
     return true;
   }
 

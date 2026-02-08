@@ -20,7 +20,7 @@ namespace GodotObjectCompiler {
     virtual ~IProgram() = default;
     [[nodiscard]] virtual String get_type() const = 0;
     [[nodiscard]] virtual String program_name() const = 0;
-    virtual Ref<ProgramError> run(ApplicationContext& context) = 0;
+    virtual Ref<ProgramError> run(ApplicationContext& p_context) = 0;
   };
 
   using ProgramPath = Vector<String>;
@@ -33,9 +33,9 @@ namespace GodotObjectCompiler {
       return &instance;
     }
 
-    bool register_program(const Ref<IProgram>& program);
+    bool register_program(const Ref<IProgram>& p_program);
 
-    Ref<IProgram> find_program(const Vector<String>& application_arguments, Vector<String>& program_arguments);
+    Ref<IProgram> find_program(const Vector<String>& p_application_arguments, Vector<String>& r_program_arguments);
 
     const Dictionary<ProgramPath, Ref<IProgram>>& get_programs();
 

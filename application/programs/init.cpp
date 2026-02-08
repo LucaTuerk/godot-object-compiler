@@ -10,7 +10,7 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<ProgramError> Init::run(ApplicationContext& context) {
+  Ref<ProgramError> Init::run(ApplicationContext& p_context) {
     String path = path_base(path_absolute("."));
     String ignore_path = path_concat(path, "gitikadgnore");
     bool ignore_exists = file_exists(ignore_path);
@@ -63,7 +63,7 @@ namespace GodotObjectCompiler {
       project.paths_cache = cache_root;
       project.write_to_file("generated.goc_project");
 
-      if (!context.set_from_project(project)) {
+      if (!p_context.set_from_project(project)) {
         return make_ref<ProgramError>(
             ERROR, "Failed to setup ApplicationContext from provided project settings. Abort!");
       }
@@ -97,7 +97,7 @@ namespace GodotObjectCompiler {
         print_ln(format("|-> Folders written to \"%s\".", ignore_path.c_str()));
       }
 
-      Ref<ProgramError> init_resources_error = InitLocalResources().run(context);
+      Ref<ProgramError> init_resources_error = InitLocalResources().run(p_context);
 
       String _ = input(format("\n|-> Successfully generated project file \"%s\" (enter to exit)",
           path_absolute("generated.goc_project").c_str()));

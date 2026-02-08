@@ -5,12 +5,12 @@
 
 namespace GodotObjectCompiler {
 
-  bool StructHandler::handles_node(const Ref<TreeSitterNode>& current_src) {
-    return current_src->type == "struct_specifier";
+  bool StructHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return p_current_src->type == "struct_specifier";
   }
 
-  ParserStep StructHandler::handle(const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target) {
-    current_target = current_target->build_child<Struct>();
+  ParserStep StructHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    r_current_target = r_current_target->build_child<Struct>();
     return ParserStep::StepInto();
   }
 

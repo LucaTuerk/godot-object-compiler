@@ -21,15 +21,15 @@ namespace GodotObjectCompiler {
 
   String TreeSitterNode::to_string() const { return type; }
 
-  bool TreeSitterNode::type_in(std::initializer_list<String>&& type_names) const {
-    return std::find(type_names.begin(), type_names.end(), type) != type_names.end();
+  bool TreeSitterNode::type_in(std::initializer_list<String>&& p_type_names) const {
+    return std::find(p_type_names.begin(), p_type_names.end(), type) != p_type_names.end();
   }
 
   bool TreeSitterNode::is_handled() const { return handled; }
 
-  void TreeSitterNode::set_handled(bool handled) { this->handled = handled; }
+  void TreeSitterNode::set_handled(bool p_handled) { this->handled = p_handled; }
 
-  bool TreeSitterNode::copy_to(Ref<Node> other) const {
+  bool TreeSitterNode::copy_to(Ref<Node> p_other) const {
     COPY_GUARD(TreeSitterNode, Context)
 
     target->context = context;

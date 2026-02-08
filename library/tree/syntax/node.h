@@ -18,7 +18,7 @@ namespace GodotObjectCompiler {
 
     virtual String to_string() const { return get_type(); }
 
-    virtual bool copy_to(Ref<Node> other) const { return true; }
+    virtual bool copy_to(Ref<Node> p_other) const { return true; }
 
     virtual Ref<Node> create() { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
 
@@ -29,15 +29,15 @@ namespace GodotObjectCompiler {
 
     Ref<Node> clone();
 
-    virtual void write_to(IStructuredWriter* writer);
-    virtual void read_from(IStructuredReader* reader);
+    virtual void write_to(IStructuredWriter* p_writer);
+    virtual void read_from(IStructuredReader* p_reader);
 
     bool has_parent();
     bool has_next_sibling();
     bool has_previous_sibling();
 
     String pretty_print() const;
-    String print_pretty_and_get_child_line(Ref<Node> child, Size& line) const;
+    String print_pretty_and_get_child_line(Ref<Node> p_child, Size& p_line) const;
 
     UID get_id() const;
     Index get_index() const;
@@ -45,7 +45,7 @@ namespace GodotObjectCompiler {
     Ref<Context> get_parent() const;
     Ref<Node> get_root();
 
-    void reparent(Ref<Context> new_parent);
+    void reparent(Ref<Context> p_new_parent);
 
     Ref<Node> get_sibling(int p_offset) const;
     Ref<Node> get_next_sibling() const;
@@ -57,7 +57,7 @@ namespace GodotObjectCompiler {
     }
 
     template <class T>
-    Ref<T> find_parent(Predicate<T> predicate = default_node_predicate<T>) const;
+    Ref<T> find_parent(Predicate<T> p_predicate = default_node_predicate<T>) const;
 
     template <class T>
     Ref<T> find_previous_sibling();
@@ -113,8 +113,8 @@ Ref<GodotObjectCompiler::Node> GodotObjectCompiler::default_construct() {
 }
 
 template <typename T>
-Ref<T> GodotObjectCompiler::INodeReader::read_from_file(const String& path) {
-  Ref<Node> result = read_from_file(path);
+Ref<T> GodotObjectCompiler::INodeReader::read_from_file(const String& p_path) {
+  Ref<Node> result = read_from_file(p_path);
   if (!result) {
     return nullptr;
   }
@@ -134,7 +134,7 @@ Ref<T> GodotObjectCompiler::INodeReader::read_from_file(const String& path) {
       NodeDB::register_node_constructor(#type, &GodotObjectCompiler::default_construct<type>);
 
 #define COPY_GUARD(type, parent)   \
-  auto target = other->as<type>(); \
+  auto target = p_other->as<type>(); \
   if (!target) {                   \
     return false;                  \
   }                                \
