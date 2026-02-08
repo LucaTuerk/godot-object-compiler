@@ -11,6 +11,7 @@
 #include "identifier.h"
 #include "include.h"
 #include "literal.h"
+#include "member.h"
 #include "misc_keywords.h"
 #include "modifiers.h"
 #include "namespace.h"

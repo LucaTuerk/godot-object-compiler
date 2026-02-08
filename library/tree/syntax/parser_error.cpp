@@ -4,6 +4,7 @@
 #include "context.h"
 #include "library/core/helpers.h"
 #include "library/core/string_writer.h"
+#include "library/parser/tree_sitter_node.h"
 
 namespace GodotObjectCompiler {
 
@@ -42,6 +43,7 @@ namespace GodotObjectCompiler {
     writer.write(generator_name);
     writer.write(": ");
     writer.write(user_message);
+    writer.write("\n");
 
     if (ExecutionContext::instance()->get_error_detail() == ErrorDetail::FULL) {
       writer.write("\nOccurred while processing node:\n");
@@ -63,6 +65,10 @@ namespace GodotObjectCompiler {
     message = writer.get_string();
   }
 
+  ParserError::ParserError(ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message)
+      : ParserError(level, "TreeSitterParser", message, node->context->file_path, node->context->buffer,
+            node->start_point.row + 1, node->start_point.column + 1) {}
+
   ParserError::ParserError(ErrorLevel level, const String& parser_name, const String& user_message,
       const String& file_path, const String& file_content, Size line, Size column) {
     error_level = level;
@@ -77,7 +83,9 @@ namespace GodotObjectCompiler {
     writer.write(":");
     writer.write_generic(column);
     writer.write(" ");
+    writer.write("\n");
     writer.write(user_message);
+    writer.write("\n");
 
     if (ExecutionContext::instance()->get_error_detail() == ErrorDetail::FULL) {
       writer.write("\nOccurred while processing source:\n");

@@ -1,6 +1,7 @@
 #pragma once
 #include "library/core/core.h"
 #include "library/core/reader_writer.h"
+#include "library/parser/parser_context.h"
 #include "node.h"
 
 namespace GodotObjectCompiler {
@@ -42,6 +43,8 @@ namespace GodotObjectCompiler {
     NODE_TYPE(ParserError);
 
     explicit ParserError(ErrorLevel level, const String& message) : Error(level, message) {}
+
+    explicit ParserError(ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message);
 
     explicit ParserError(ErrorLevel level, const String& parser_name, const String& message, const String& file_path,
         const String& file_content, Size line, Size column);

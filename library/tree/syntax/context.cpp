@@ -225,9 +225,41 @@ namespace GodotObjectCompiler {
 
   bool NamedContext::copy_to(Ref<Node> other) const {
     COPY_GUARD(NamedContext, Context);
-    // COPY_LAZY(name);
-    // COPY_LAZY(qualified_name);
+    COPY_LAZY(name);
+    COPY_LAZY(qualified_name);
     return true;
+  }
+
+  void NamedContext::read_from(IStructuredReader* reader) {
+    Context::read_from(reader);
+    _qualified_name_lazy = reader->read<String, String>("_qualified_name");
+    _name_lazy = reader->read<String, String>("_name");
+  }
+
+  void NamedContext::write_to(IStructuredWriter* writer) {
+    Context::write_to(writer);
+    writer->write<String, String>("_qualified_name", qualified_name());
+    writer->write<String, String>("_name", name());
+  }
+
+  Vector<String> NamedContext::_namespaces_names_lazy_get() {
+    Vector<String> names;
+    Ref<NamedContext> current = shared_from_this()->as<NamedContext>();
+    if (current->is<Namespace>()) {
+      names.push_back(current->name());
+    }
+
+    while (const Ref<Namespace>& namespace_ = current->find_ancestor<Namespace>()) {
+      if (!namespace_->name().empty()) {
+        names.push_back(namespace_->name());
+      }
+      current = namespace_;
+    }
+
+    Vector<String> reversed(names.size());
+    std::copy(names.rbegin(), names.rend(), reversed.begin());
+
+    return reversed;
   }
 
   String NamedContext::_mangled_name_lazy_get() {

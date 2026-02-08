@@ -1,6 +1,9 @@
 #include "function.h"
 
+#include "access_specifier.h"
+#include "class.h"
 #include "modifiers.h"
+#include "struct.h"
 #include "type.h"
 
 namespace GodotObjectCompiler {
@@ -10,14 +13,6 @@ namespace GodotObjectCompiler {
   Ref<Parameters> Function::_parameters_lazy_get() { return find_child<Parameters>(); }
 
   Ref<Arguments> Function::_arguments_lazy_get() { return find_child<Arguments>(); }
-
-  bool Function::_is_virtual_lazy_get() { return find_child<Virtual>() != nullptr; }
-
-  bool Function::_is_override_lazy_get() { return find_child<Override>() != nullptr; }
-
-  bool Function::_is_static_lazy_get() { return find_child<Static>() != nullptr; }
-
-  bool Function::_is_const_lazy_get() { return find_child<Const>() != nullptr; }
 
   bool Function::copy_to(Ref<Node> other) const {
     COPY_GUARD(Function, NamedContext);

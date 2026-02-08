@@ -188,7 +188,8 @@ namespace GodotObjectCompiler {
   }
 
   bool GodotGeneratorUtils::class_has_base_class(const Ref<Class>& target_class, const String& base_class_qualified) {
-    if (target_class->qualified_name() == base_class_qualified) {
+    if (target_class->qualified_name() == base_class_qualified ||
+        target_class->qualified_name() == "godot::" + base_class_qualified) {
       return true;
     }
 
@@ -224,17 +225,18 @@ namespace GodotObjectCompiler {
 
   bool GodotGeneratorUtils::get_defaults_for_type(const Ref<Type>& target_type,
       Ref<GodotVariantTypeArgument>& variant_type, Ref<GodotPropertyHintArgument>& property_hint,
-      Ref<GodotPropertyUsageFlagsArgument>& property_usage_flags, DefaultsUsage usage) {
+      Ref<GodotPropertyUsageFlagsArgument>& property_usage_flags, const Ref<Namespace>& from_namespace,
+      DefaultsUsage usage) {
     using namespace AssumedParameterValues;
-    if (Ref<Type> ref_inner_type;
-        type_is_godot_ref_type(target_type, ref_inner_type) && type_is_ref_counted_type(ref_inner_type)) {
+    if (Ref<Type> ref_inner_type; type_is_godot_ref_type(target_type, ref_inner_type, from_namespace) &&
+                                  type_is_ref_counted_type(ref_inner_type, from_namespace)) {
       variant_type = VariantType(VariantTypeObject());
       property_hint = PropertyHint(HintResourceType(), ref_inner_type->name());
       property_usage_flags = PropertyUsageFlag(UsageDefault());
       return true;
     }
 
-    if (type_is_node_type(target_type)) {
+    if (type_is_node_type(target_type, from_namespace)) {
       variant_type = VariantType(VariantTypeObject());
       property_hint = PropertyHint(HintNodeType(), target_type->name());
       property_usage_flags = PropertyUsageFlag(UsageDefault());
@@ -248,21 +250,24 @@ namespace GodotObjectCompiler {
       return true;
     }
 
-    if (Ref<Enum> enum_object; type_is_enum_type(target_type,enum_object)) {
+    if (Ref<Enum> enum_object; type_is_enum_type(target_type, enum_object, from_namespace)) {
       variant_type = VariantType(VariantTypeInt());
-      Vector<String> value_names = enum_object->value_names();
-      std::transform(value_names.begin(), value_names.end(), value_names.begin(),cpp_enum_case_to_exposed_enum_case);
-      property_hint = PropertyHint(HintEnum(), string_vector_combine(value_names,","));
+      Vector<String> hints;
+      for (const Ref<EnumValue>& value : enum_object->values()) {
+        hints.push_back(format(
+            "%s:%s", cpp_enum_case_to_exposed_enum_case(value->name()).c_str(), value->literal()->content.c_str()));
+      }
+      property_hint = PropertyHint(HintEnum(), string_vector_combine(hints, ","));
       property_usage_flags = PropertyUsageFlag(UsageDefault());
       return true;
     }
 
-    if (Ref<Type> inner_type; type_is_godot_typed_array_type(target_type, inner_type)) {
+    if (Ref<Type> inner_type; type_is_godot_typed_array_type(target_type, inner_type, from_namespace)) {
       Ref<GodotVariantTypeArgument> inner_variant_type;
       Ref<GodotPropertyHintArgument> inner_property_hint;
       Ref<GodotPropertyUsageFlagsArgument> _;
 
-      if (!get_defaults_for_type(inner_type, inner_variant_type, inner_property_hint, _)) {
+      if (!get_defaults_for_type(inner_type, inner_variant_type, inner_property_hint, _, from_namespace)) {
         return false;
       }
 
@@ -285,15 +290,16 @@ namespace GodotObjectCompiler {
       return true;
     }
 
-    if (Ref<Type> key_type, value_type; type_is_godot_typed_dictionary_type(target_type, key_type, value_type)) {
+    if (Ref<Type> key_type, value_type;
+        type_is_godot_typed_dictionary_type(target_type, key_type, value_type, from_namespace)) {
       Ref<GodotVariantTypeArgument> key_variant_type;
       Ref<GodotPropertyHintArgument> key_property_hint;
       Ref<GodotVariantTypeArgument> value_variant_type;
       Ref<GodotPropertyHintArgument> value_property_hint;
       Ref<GodotPropertyUsageFlagsArgument> _;
 
-      if (!get_defaults_for_type(key_type, key_variant_type, key_property_hint, _) ||
-          !get_defaults_for_type(value_type, value_variant_type, value_property_hint, _)) {
+      if (!get_defaults_for_type(key_type, key_variant_type, key_property_hint, _, from_namespace) ||
+          !get_defaults_for_type(value_type, value_variant_type, value_property_hint, _, from_namespace)) {
         return false;
       }
       variant_type = VariantType(VariantTypeDictionary());
@@ -328,7 +334,8 @@ namespace GodotObjectCompiler {
     return false;
   }
 
-  bool GodotGeneratorUtils::type_is_godot_ref_type(const Ref<Type>& target_type, Ref<Type>& inner_type) {
+  bool GodotGeneratorUtils::type_is_godot_ref_type(
+      const Ref<Type>& target_type, Ref<Type>& inner_type, const Ref<Namespace>& from_namespace) {
     Vector<Ref<Type>> inner_types;
     if (type_is_assumed_template_type(target_type, AssumedGodotTypes::GodotRef(), inner_types)) {
       inner_type = inner_types[0];
@@ -338,7 +345,8 @@ namespace GodotObjectCompiler {
     return false;
   }
 
-  bool GodotGeneratorUtils::type_is_godot_typed_array_type(const Ref<Type>& target_type, Ref<Type>& inner_type) {
+  bool GodotGeneratorUtils::type_is_godot_typed_array_type(
+      const Ref<Type>& target_type, Ref<Type>& inner_type, const Ref<Namespace>& from_namespace) {
     Vector<Ref<Type>> inner_types;
     if (type_is_assumed_template_type(target_type, AssumedGodotTypes::TypedArray(), inner_types)) {
       inner_type = inner_types[0];
@@ -349,7 +357,7 @@ namespace GodotObjectCompiler {
   }
 
   bool GodotGeneratorUtils::type_is_godot_typed_dictionary_type(
-      const Ref<Type>& target_type, Ref<Type>& key_type, Ref<Type>& value_type) {
+      const Ref<Type>& target_type, Ref<Type>& key_type, Ref<Type>& value_type, const Ref<Namespace>& from_namespace) {
     Vector<Ref<Type>> inner_types;
     if (type_is_assumed_template_type(target_type, AssumedGodotTypes::TypedDictionary(), inner_types)) {
       key_type = inner_types[0];
@@ -361,8 +369,10 @@ namespace GodotObjectCompiler {
     return false;
   }
 
-  bool GodotGeneratorUtils::type_is_ref_counted_type(const Ref<Type>& inner_type) {
-    const Ref<Class> _class = TypeDB::instance()->get_type_data<Class>(inner_type->type_name_unmodified());
+  bool GodotGeneratorUtils::type_is_ref_counted_type(
+      const Ref<Type>& inner_type, const Ref<Namespace>& from_namespace) {
+    const Ref<Class> _class =
+        TypeDB::instance()->get_type_data<Class>(inner_type->type_name_unmodified(), 0, from_namespace);
     if (!_class) {
       return false;
     }
@@ -370,8 +380,9 @@ namespace GodotObjectCompiler {
     return class_is_ref_counted_type(_class);
   }
 
-  bool GodotGeneratorUtils::type_is_object_type(const Ref<Type>& target_type) {
-    const Ref<Class> _class = TypeDB::instance()->get_type_data<Class>(target_type->type_name_unmodified());
+  bool GodotGeneratorUtils::type_is_object_type(const Ref<Type>& target_type, const Ref<Namespace>& from_namespace) {
+    const Ref<Class> _class =
+        TypeDB::instance()->get_type_data<Class>(target_type->type_name_unmodified(), 0, from_namespace);
     if (!_class) {
       return false;
     }
@@ -379,7 +390,8 @@ namespace GodotObjectCompiler {
     return class_is_godot_object_type(_class);
   }
 
-  bool GodotGeneratorUtils::type_is_godot_collection_type(const Ref<Type>& target_type) {
+  bool GodotGeneratorUtils::type_is_godot_collection_type(
+      const Ref<Type>& target_type, const Ref<Namespace>& from_namespace) {
     Vector<Ref<Type>> inner_types;
     return target_type->type_name_unmodified() == AssumedGodotTypes::Array().qualified_name ||
            target_type->type_name_unmodified() == AssumedGodotTypes::Dictionary().qualified_name ||
@@ -387,8 +399,9 @@ namespace GodotObjectCompiler {
            type_is_assumed_template_type(target_type, AssumedGodotTypes::TypedDictionary(), inner_types);
   }
 
-  bool GodotGeneratorUtils::type_is_node_type(const Ref<Type>& target_type) {
-    const Ref<Class> _class = TypeDB::instance()->get_type_data<Class>(target_type->type_name_unmodified());
+  bool GodotGeneratorUtils::type_is_node_type(const Ref<Type>& target_type, const Ref<Namespace>& from_namespace) {
+    const Ref<Class> _class =
+        TypeDB::instance()->get_type_data<Class>(target_type->type_name_unmodified(), 0, from_namespace);
     if (!_class) {
       return false;
     }
@@ -396,8 +409,10 @@ namespace GodotObjectCompiler {
     return class_is_node_type(_class);
   }
 
-  bool GodotGeneratorUtils::type_is_enum_type(const Ref<Type>& target_type, Ref<Enum>& enum_object) {
-    const Ref<Enum> _enum = TypeDB::instance()->get_type_data<Enum>(target_type->type_name_unmodified());
+  bool GodotGeneratorUtils::type_is_enum_type(
+      const Ref<Type>& target_type, Ref<Enum>& enum_object, const Ref<Namespace>& from_namespace) {
+    const Ref<Enum> _enum =
+        TypeDB::instance()->get_type_data<Enum>(target_type->type_name_unmodified(), 0, from_namespace);
     if (!_enum) {
       enum_object = nullptr;
       return false;
@@ -406,7 +421,7 @@ namespace GodotObjectCompiler {
     return true;
   }
 
-  bool GodotGeneratorUtils::type_is_variant_type(const Ref<Type>& target_type) {
+  bool GodotGeneratorUtils::type_is_variant_type(const Ref<Type>& target_type, const Ref<Namespace>& from_namespace) {
     ensure_type_dicts_initialized();
     return _type_to_variant_type.find(target_type->type_name_unmodified()) != _type_to_variant_type.end();
   }
@@ -487,7 +502,7 @@ namespace GodotObjectCompiler {
     Ref<GodotPropertyHintArgument> property_hint;
     Ref<GodotPropertyUsageFlagsArgument> usage_flags;
 
-    if (!get_defaults_for_type(type, variant_type, property_hint, usage_flags, usage)) {
+    if (!get_defaults_for_type(type, variant_type, property_hint, usage_flags, nullptr, usage)) {
       return nullptr;
     }
 

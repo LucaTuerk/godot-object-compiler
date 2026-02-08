@@ -30,7 +30,7 @@ namespace GodotObjectCompiler {
   Vector<Ref<Namespace>> Namespace::_child_namespaces_lazy_get() {
     Vector<Ref<Namespace>> _namespaces;
 
-    for (Ref<Node> child : *this) {
+    for (const Ref<Node>& child : *this) {
       if (child->is<Namespace>()) {
         _namespaces.push_back(child->as<Namespace>());
       }
