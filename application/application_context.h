@@ -42,6 +42,8 @@ namespace GodotObjectCompiler {
   class ApplicationContext {
    public:
 
+    String project_name;
+    ProjectTarget project_target;
     String paths_root;
     String paths_goc;
     String paths_cache;

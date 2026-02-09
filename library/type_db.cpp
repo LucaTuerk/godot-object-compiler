@@ -70,7 +70,8 @@ namespace GodotObjectCompiler {
 
   Ref<Node> ConfigNodeReaderWriter::read_from_file(const String& path) {
     Config config;
-    Vector<Ref<Node>> local_store;
+    Dictionary<UID, Ref<Node>> local;
+    HashSet<UID> was_existing;
 
     if (!config.read_from_file(path)) {
       return nullptr;
@@ -84,14 +85,16 @@ namespace GodotObjectCompiler {
 
       String node_class = config.read<String, String>("_class");
       UID uid = config.read<String, UID>("_id");
-      if (ExecutionContext::instance()->get_node_db()->get<Node>(uid) != nullptr) {
+      if (Ref<Node> existing = ExecutionContext::instance()->get_node_db()->get<Node>(uid); existing != nullptr) {
+        local.insert({uid, existing->clone()});
+        was_existing.insert(uid);
         continue;
       }
 
       Ref<Node> node = NodeDB::create(node_class);
       if (node) {
         node->read_from(&config);
-        local_store.push_back(node);
+        local.insert({uid, node});
       }
     }
 
@@ -104,8 +107,20 @@ namespace GodotObjectCompiler {
       UID uid = config.read<String, UID>("_id");
       UID parent_uid = config.read<String, UID>("_parent");
 
-      Ref<Node> self = ExecutionContext::instance()->get_node_db()->get<Node>(uid);
-      Ref<Context> parent = ExecutionContext::instance()->get_node_db()->get<Context>(parent_uid);
+      auto self_itr = local.find(uid);
+      auto parent_itr = local.find(parent_uid);
+
+      if (was_existing.find(parent_uid) != was_existing.end()) {
+        local.erase(self_itr);
+        continue;
+      }
+
+      if (self_itr == local.end() || parent_itr == local.end()) {
+        continue;
+      }
+
+      Ref<Node> self = self_itr->second;
+      Ref<Context> parent = parent_itr->second->as<Context>();
 
       if (parent && self) {
         parent->add_child(self);
@@ -113,7 +128,7 @@ namespace GodotObjectCompiler {
     }
 
     Ref<Node> root;
-    for (const Ref<Node>& node : local_store) {
+    for (const auto& [uid, node] : local) {
       if (node->get_parent() == nullptr) {
         if (root != nullptr) {
           print_err("Multiple root nodes found in read config file. Invalid.");

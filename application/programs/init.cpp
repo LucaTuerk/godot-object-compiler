@@ -93,6 +93,7 @@ namespace GodotObjectCompiler {
       Permissions::instance()->add_write_path(path_cwd());
       Project project;
       project.project_name = project_name;
+      project.project_target = TARGET_GDEXTENSION;
       project.paths_root = root_folder;
       project.paths_generated = generate_folder;
       project.paths_cache = cache_root;

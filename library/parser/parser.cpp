@@ -216,8 +216,7 @@ namespace GodotObjectCompiler {
         Size closed_index = open_index + 1;
 
         if (itr == local_input.end()) {
-          // EHH Fix this
-          return "";
+          continue;
         }
 
         ++itr;

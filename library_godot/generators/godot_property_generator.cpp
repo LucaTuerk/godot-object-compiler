@@ -161,7 +161,7 @@ namespace GodotObjectCompiler {
         build<Identifier>("ADD_PROPERTY"),
         build<Arguments>().with_children({
           build<Argument>().with_children({
-            PropertyInfo(variant_type, property_hint, usage_flags, property_name)
+            build_property_info(variant_type, property_hint, usage_flags, property_name)
           }),
           build<Argument>().with_child(Writer::StringLiteral(setter_name)),
           build<Argument>().with_child(Writer::StringLiteral(getter_name)),

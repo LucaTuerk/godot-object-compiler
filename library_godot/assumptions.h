@@ -96,14 +96,11 @@ namespace GodotObjectCompiler {
     inline Assumption<AssumeType<Define>> GDREGISTER_RUNTIME_CLASS{{"GDREGISTER_RUNTIME_CLASS"},
         "Assume that a macro of name \"GDREGISTER_RUNTIME_CLASS\" exisits in the TypeDB."};
 
-    inline Assumption<AssumeType<Define>> GDREGISTER_NATIVE_STRUCT{{"GDREGISTER_NATIVE_STRUCT"},
-        "Assume that a macro of name \"GDREGISTER_NATIVE_STRUCT\" exisits in the TypeDB."};
-
     inline Assumption<AssumeType<Define>> GDVIRTUAL_CALL{
         {"GDVIRTUAL_CALL"}, "Assume that a macro of name \"GDVIRTUAL_CALL\" exisits in the TypeDB."};
 
     inline Assumption<AssumeType<Define>> GDVIRTUAL_BIND{
-        {"GDVIRTUAL_CALL"}, "Assume that a macro of name \"GDVIRTUAL_BIND\" exisits in the TypeDB."};
+        {"GDVIRTUAL_BIND"}, "Assume that a macro of name \"GDVIRTUAL_BIND\" exisits in the TypeDB."};
 
     bool validate_assumptions();
 

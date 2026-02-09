@@ -72,11 +72,6 @@ namespace GodotObjectCompiler {
 
     for (const String& macro : AttributeDB::instance()->get_all_macros()) {
 
-#ifdef DEV_BUILD
-      String doc_file = path_concat_ext("./resources/doc", macro, "txt");
-      ensure_file_exists(doc_file, "No documentation available");
-#endif
-
       String res_file = "res://" + path_concat_ext("doc", macro, "txt");
       if (Resources::instance()->has_resource(res_file)) {
         Ref<Context> params_docu = Writer::Params({});
@@ -134,12 +129,6 @@ namespace GodotObjectCompiler {
     p_write_to->build_child<Writer::SnippetNode>("class " + type_name + " {};");
     p_write_to->add_child(Writer::NewLine());
 
-#ifdef DEV_BUILD
-    auto doc_file = path_concat_ext("resources/doc", type_name, "txt");
-    auto doc_dir = path_concat("resources/doc", type_name);
-    create_dir_recursive(doc_dir);
-    ensure_file_exists(doc_file, "No documentation available");
-#endif
 
     if ((p_type->get_features() & IAttributeParameterType::FEATURE_FLAG)) {
       // clang-format off
@@ -165,10 +154,7 @@ namespace GodotObjectCompiler {
     Size index = 0;
     const Vector<IAttributeParameterType::Argument> arguments = p_type->get_arguments();
     for (const String& value_name : p_type->get_value_names()) {
-#ifdef DEV_BUILD
-      auto value_doc_path = path_concat_ext(doc_dir, value_name, "txt");
-      ensure_file_exists(value_doc_path, "No documentation available");
-#endif
+
 
       auto value_res_path = path_concat_ext(doc_res_dir, value_name, "txt");
 

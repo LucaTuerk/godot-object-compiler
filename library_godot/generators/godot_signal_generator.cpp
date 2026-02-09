@@ -96,7 +96,7 @@ namespace GodotObjectCompiler {
       Ref<Identifier> identifier = parameter->find_child<Identifier>();
       String name = identifier ? "p_" + identifier->name : format("p_param_%d", i);
 
-      arguments->build_child<Argument>().with_child(PropertyInfoDefaultForType(type, name, DEFAULTS_SIGNAL_ARGUMENT));
+      arguments->build_child<Argument>().with_child(build_property_info_defaults(type, name, DEFAULTS_SIGNAL_ARGUMENT));
 
       func_parameters->build_child<Parameter>().with_children({
           type->clone(),

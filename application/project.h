@@ -39,8 +39,16 @@
 
 namespace GodotObjectCompiler {
 
+  enum ProjectTarget {
+    TARGET_MODULE,
+    TARGET_GDEXTENSION,
+    TARGET_UNDEFINED = TARGET_GDEXTENSION
+  };
+
   struct Project {
     String project_name;
+    ProjectTarget project_target = TARGET_UNDEFINED;
+    Vector<String> godot_include_paths;
     Size godot_target_major_version = 4;
     Size godot_target_minor_version = 2;
     String paths_root;
