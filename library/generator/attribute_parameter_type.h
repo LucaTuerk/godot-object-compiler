@@ -65,8 +65,7 @@ namespace GodotObjectCompiler {
     virtual String get_return_type() = 0;
     virtual Vector<String> get_value_names() = 0;
     virtual Vector<Argument> get_arguments() = 0;
-
-    virtual Ref<GodotObjectCompiler::Argument> create_argument() { return nullptr; };
+    virtual Ref<GodotObjectCompiler::Argument> create_argument() = 0;
 
     AssumptionState validate_assumption(Assumption<std::string>& p_assumption) override;
   };

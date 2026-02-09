@@ -157,7 +157,7 @@ namespace GodotObjectCompiler {
 
   Vector<String> directory_files_recursive(const String& p_path) {
     if (!std::filesystem::is_directory(p_path)) {
-      print_err(p_path + " is not a directory!");
+      fmt_print_err(p_path + " is not a directory!");
       return {};
     }
 

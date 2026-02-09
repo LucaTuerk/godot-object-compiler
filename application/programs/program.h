@@ -54,6 +54,7 @@ namespace GodotObjectCompiler {
     virtual ~IProgram() = default;
     [[nodiscard]] virtual String get_type() const = 0;
     [[nodiscard]] virtual String program_name() const = 0;
+    [[nodiscard]] virtual bool requires_project() const = 0;
     virtual Ref<ProgramError> run(ApplicationContext& p_context) = 0;
   };
 
@@ -83,14 +84,28 @@ namespace GodotObjectCompiler {
 
 }
 
-#define PROGRAM(type, name)                                     \
- public:                                                        \
-                                                                \
-  static String get_type_static() { return #type; }             \
-  virtual String get_type() const override { return #type; }    \
-  virtual String program_name() const override { return name; } \
-                                                                \
- private:                                                       \
-                                                                \
-  static inline bool __program_registered_##type =              \
+#define PROGRAM(type, name)                                       \
+ public:                                                          \
+                                                                  \
+  static String get_type_static() { return #type; }               \
+  virtual String get_type() const override { return #type; }      \
+  virtual String program_name() const override { return name; }   \
+  virtual bool requires_project() const override { return true; } \
+                                                                  \
+ private:                                                         \
+                                                                  \
+  static inline bool __program_registered_##type =                \
+      Programs::instance()->register_program(std::dynamic_pointer_cast<IProgram>(make_ref<type>()));
+
+#define PROJECTLESS_PROGRAM(type, name)                            \
+ public:                                                           \
+                                                                   \
+  static String get_type_static() { return #type; }                \
+  virtual String get_type() const override { return #type; }       \
+  virtual String program_name() const override { return name; }    \
+  virtual bool requires_project() const override { return false; } \
+                                                                   \
+ private:                                                          \
+                                                                   \
+  static inline bool __program_registered_##type =                 \
       Programs::instance()->register_program(std::dynamic_pointer_cast<IProgram>(make_ref<type>()));

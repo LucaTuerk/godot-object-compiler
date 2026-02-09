@@ -81,6 +81,9 @@ namespace GodotObjectCompiler {
     inline Assumption<AssumeType<Enum>> VariantTypeEnum{
         {"Variant::Type"}, "Assume that an enum type of name \"Variant::Type\" exists in the TypeDB"};
 
+    inline Assumption<AssumeType<Define>> GDCLASS{
+        {"GDCLASS"}, "Assume that a macro of name \"GDCLASS\" exisits in the TypeDB."};
+
     inline Assumption<AssumeType<Define>> GDREGISTER_CLASS{
         {"GDREGISTER_CLASS"}, "Assume that a macro of name \"GDREGISTER_CLASS\" exisits in the TypeDB."};
 
@@ -101,6 +104,18 @@ namespace GodotObjectCompiler {
 
     inline Assumption<AssumeType<Define>> GDVIRTUAL_BIND{
         {"GDVIRTUAL_BIND"}, "Assume that a macro of name \"GDVIRTUAL_BIND\" exisits in the TypeDB."};
+
+    inline Assumption<AssumeType<Define>> BIND_ENUM_CONSTANT{
+        {"BIND_ENUM_CONSTANT"}, "Assume that a macro of name \"BIND_ENUM_CONSTANT\" exisits in the TypeDB."};
+
+    inline Assumption<AssumeType<Define>> BIND_BITFIELD_FLAG{
+        {"BIND_BITFIELD_FLAG"}, "Assume that a macro of name \"BIND_BITFIELD_FLAG\" exisits in the TypeDB."};
+
+    inline Assumption<AssumeType<Define>> VARIANT_ENUM_CAST{
+        {"VARIANT_ENUM_CAST"}, "Assume that a macro of name \"VARIANT_ENUM_CAST\" exisits in the TypeDB."};
+
+    inline Assumption<AssumeType<Define>> VARIANT_BITFIELD_CAST{
+          {"VARIANT_BITFIELD_CAST"}, "Assume that a macro of name \"VARIANT_BITFIELD_CAST\" exisits in the TypeDB."};
 
     bool validate_assumptions();
 

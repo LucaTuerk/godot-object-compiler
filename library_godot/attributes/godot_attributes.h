@@ -33,6 +33,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "enum_generator_options.h"
 #include "godot_class_type.h"
 #include "godot_module_init_level.h"
 #include "godot_property_hint.h"
@@ -74,6 +75,8 @@ namespace GodotObjectCompiler {
   class GodotEnumAttribute : public GodotAttributeWithParams {
     ATTRIBUTE_TYPE(GodotEnumAttribute, Enum, NEXT)
     ATTRIBUTE_DEFAULT_MACRO(GODOT_ENUM)
+
+    ATTRIBUTE_REGISTER_PARAMETERS(EnumGeneratorOptions)
   };
 
   class GodotPropertyAttribute : public GodotAttributeWithParams {

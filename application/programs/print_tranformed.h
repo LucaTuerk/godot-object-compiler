@@ -39,7 +39,7 @@
 namespace GodotObjectCompiler {
 
   class PrintTransformed : public IProgram {
-    PROGRAM(PrintTransformed, "print/transformed")
+    PROJECTLESS_PROGRAM(PrintTransformed, "print/transformed")
 
    public:
 

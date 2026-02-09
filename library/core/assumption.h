@@ -94,16 +94,17 @@ namespace GodotObjectCompiler {
 
   template <typename T>
   Assumption<T>::~Assumption() {
+    if (value_access_count == 0) {
+      return;
+    }
+
     if (state == STATE_INDETERMINATE) {
-      print_err("Assumption was left in a indeterminate state: " + message);
+      fmt_print_err("Assumption was left in a indeterminate state: " + message);
     }
 
     if (state == STATE_INVALID) {
-      if (value_access_count == 0) {
-        print_err(format("Assumption did not hold but was never accessed: %s", message.c_str()));
-      } else {
-        print_err(format("Assumption did not hold and was accessed %d times: %s", value_access_count, message.c_str()));
-      }
+      fmt_print_err(
+          format("Assumption did not hold and was accessed %d times: %s", value_access_count, message.c_str()));
     }
   }
 

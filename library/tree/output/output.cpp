@@ -298,12 +298,13 @@ namespace GodotObjectCompiler {
 
     Ref<ListNode> MemberFuncDef(const String& p_type, const String& p_name,
         std::initializer_list<Ref<IOutputNode>>&& p_parameters, const String& p_modifiers) {
-      return Spaces({Text(p_type), NoSep({
-                                       Text(p_name),
-                                       Brackets({Params(std::move(p_parameters))}),
-                                       Semicolon(),
-                                       NewLine(),
-                                   })});
+      return Spaces({Text(p_type),
+          NoSep({
+              Text(p_name),
+              Brackets({Params(std::move(p_parameters))}),
+              Semicolon(),
+              NewLine(),
+          })});
     }
 
     Ref<ListNode> ConstRef(const String& p_type) { return Spaces({Text("const"), NoSep({Text(p_type), Text("&")})}); }

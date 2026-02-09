@@ -40,7 +40,7 @@
 namespace GodotObjectCompiler {
 
   class Help : public IProgram {
-    PROGRAM(Help, "help")
+    PROJECTLESS_PROGRAM(Help, "help")
 
    public:
 

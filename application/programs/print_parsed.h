@@ -39,7 +39,7 @@
 namespace GodotObjectCompiler {
 
   class PrintParsed : public IProgram {
-    PROGRAM(PrintParsed, "print/parsed")
+    PROJECTLESS_PROGRAM(PrintParsed, "print/parsed")
 
    public:
 

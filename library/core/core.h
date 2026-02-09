@@ -128,6 +128,15 @@ namespace GodotObjectCompiler {
   template <typename... Args>
   String format(const String& format_str, Args&&... args);
 
+  template <typename... Args>
+  void fmt_print(const String& format_str, Args&&... args);
+
+  template <typename... Args>
+  void fmt_print_ln(const String& format_str, Args&&... args);
+
+  template <typename... Args>
+  void fmt_print_err(const String& format_str, Args&&... args);
+
 }
 
 template <typename... Args>
@@ -145,6 +154,21 @@ GodotObjectCompiler::String GodotObjectCompiler::format(const String& format_str
   std::unique_ptr<char[]> buf(new char[size]);
   std::snprintf(buf.get(), size, format_str.c_str(), args...);
   return String(buf.get(), buf.get() + size - 1);
+}
+
+template <typename... Args>
+void GodotObjectCompiler::fmt_print(const String& format_str, Args&&... args) {
+  print(format(format_str, std::forward<Args>(args)...));
+}
+
+template <typename... Args>
+void GodotObjectCompiler::fmt_print_err(const String& format_str, Args&&... args) {
+  print_err(format(format_str, std::forward<Args>(args)...));
+}
+
+template <typename... Args>
+void GodotObjectCompiler::fmt_print_ln(const String& format_str, Args&&... args) {
+  print_ln(format(format_str, std::forward<Args>(args)...));
 }
 
 #define PANIC(...)                                                               \

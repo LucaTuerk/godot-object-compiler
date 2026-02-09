@@ -101,7 +101,7 @@ namespace GodotObjectCompiler {
 
     if (absolute.empty()) {
       print_err("Could not find absolute path for include \"" + p_path + "\" included from file \"" +
-                p_included_from_path + "\"");
+          p_included_from_path + "\"");
     }
 
     if (is_file_included(absolute)) {

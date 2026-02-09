@@ -37,6 +37,8 @@
 #include "library/core/string_writer.h"
 #include "library/parser/parser_context.h"
 #include "library/parser/tree_sitter_node.h"
+#include "library/tree/output/output.h"
+#include "library/tree/syntax/define.h"
 #include "library/tree/syntax/node.h"
 #include "library/tree/syntax/parser_error.h"
 
@@ -45,8 +47,23 @@ namespace GodotObjectCompiler {
   bool ErrorHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) { return p_current_src->type == "ERROR"; }
 
   ParserStep ErrorHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    Vector<Ref<TreeSitterNode>> children = p_current_src->find_children<TreeSitterNode>();
+
+    if (children.size() >= 2 && children[0]->type == "#define" && children[1]->type == "identifier") {
+      Ref<Define> define = r_current_target->build_child<Define>().with_child<Identifier>(children[1]->content());
+      if (children.size() >= 3 && children[2]->type == "preproc_params") {
+        define->build_child<Parameters>();
+      }
+      return ParserStep::StepOver();
+    }
+
+    if (std::all_of(children.begin(), children.end(), type_in({"function_declarator", "field_declarator"}))) {
+      return ParserStep::StepOver();
+    }
+
     r_current_target->create_child<ParserError>(ERROR, "TreeSitterParser", "", p_current_src->context->file_path,
         p_current_src->context->buffer, p_current_src->start_point.row + 1, p_current_src->start_point.column + 1);
+
     return ParserStep::StepOver();
   }
 

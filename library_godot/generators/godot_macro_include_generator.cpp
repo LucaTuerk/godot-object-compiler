@@ -37,7 +37,6 @@
 
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
-
 #include "library/core/resources.h"
 #include "library/tree/output/output.h"
 #include "library/tree/output/output_file.h"
@@ -71,7 +70,6 @@ namespace GodotObjectCompiler {
     String generated_content = "GOC_BODY_COMBINE(GOC_GENERATED_, __LINE__, _, GOC_FILE_ID())()";
 
     for (const String& macro : AttributeDB::instance()->get_all_macros()) {
-
       String res_file = "res://" + path_concat_ext("doc", macro, "txt");
       if (Resources::instance()->has_resource(res_file)) {
         Ref<Context> params_docu = Writer::Params({});
@@ -98,10 +96,10 @@ namespace GodotObjectCompiler {
       Ref<Attribute> attr = AttributeDB::instance()->create_for_macro(macro);
       if (attr->is<GeneratedBodyAttribute>() || attr->is<GeneratedGlobalAttribute>()) {
         p_write_to->add_child(Writer::Define(macro, {Writer::Text("...")},
-            generated_content + "; static_assert(" + macro + "_prototype(__VA_ARGS__),\"\");"));
+            generated_content + "; static_assert( [](){ using namespace GOC_Macros; return " + macro + "_prototype(__VA_ARGS__);},\"\")"));
       } else {
-        p_write_to->add_child(
-            Writer::Define(macro, {Writer::Text("...")}, "static_assert(" + macro + "_prototype(__VA_ARGS__),\"\")"));
+        p_write_to->add_child(Writer::Define(macro, {Writer::Text("...")},
+            "static_assert( [](){ using namespace GOC_Macros; return " + macro + "_prototype(__VA_ARGS__);},\"\")"));
       }
     }
     return true;
@@ -129,7 +127,6 @@ namespace GodotObjectCompiler {
     p_write_to->build_child<Writer::SnippetNode>("class " + type_name + " {};");
     p_write_to->add_child(Writer::NewLine());
 
-
     if ((p_type->get_features() & IAttributeParameterType::FEATURE_FLAG)) {
       // clang-format off
       p_write_to->build_child<Function>().with_children({
@@ -154,8 +151,6 @@ namespace GodotObjectCompiler {
     Size index = 0;
     const Vector<IAttributeParameterType::Argument> arguments = p_type->get_arguments();
     for (const String& value_name : p_type->get_value_names()) {
-
-
       auto value_res_path = path_concat_ext(doc_res_dir, value_name, "txt");
 
       if (Resources::instance()->has_resource(value_res_path)) {
@@ -249,6 +244,9 @@ namespace GodotObjectCompiler {
 
     generate_macros(entry);
 
+    Ref<Body> namespace_body;
+    entry->build_child<Namespace>().with_children({build<Identifier>("GOC_Macros"), build_ref<Body>(&namespace_body)});
+
     HashSet<String> generated_param_types;
     for (const String& macro : AttributeDB::instance()->get_all_macros()) {
       Ref<Attribute> attribute = AttributeDB::instance()->create_for_macro(macro);
@@ -257,11 +255,11 @@ namespace GodotObjectCompiler {
       for (const auto& param : params) {
         if (generated_param_types.find(param->get_return_type()) == generated_param_types.end()) {
           generated_param_types.insert(param->get_return_type());
-          generate_attribute_parameter_type(param, entry);
+          generate_attribute_parameter_type(param, namespace_body);
         }
       }
 
-      generate_prototype_methods(entry, macro, params);
+      generate_prototype_methods(namespace_body, macro, params);
     }
 
     return entry;

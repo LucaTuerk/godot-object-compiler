@@ -40,9 +40,15 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class,
-      Ref<GodotEnumAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-      Ref<Context> p_generated_global) {
+  Ref<GeneratorError> GodotEnumGenerator::do_generate_default_attribute_arguments(
+      Ref<Class> p_target_class, Ref<GodotEnumAttribute> p_attribute, Ref<Context> p_default_values) {
+    p_default_values->build_child<EnumGeneratorOptionsArgument>().with_child<Identifier>(
+        EnumGeneratorOptionsArgument::EnumDefault);
+    return GeneratorError::OK;
+  }
+
+  Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, Ref<GodotEnumAttribute> p_attribute,
+      Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) {
     Ref<Node> target_node = p_attribute->resolve_target();
     GEN_ERROR_COND(!target_node, p_target_class, "Could not find target for Enum marco.");
 
@@ -50,34 +56,53 @@ namespace GodotObjectCompiler {
     GEN_ERROR_COND(
         !target_enum, p_target_class, "Resolved target for enum macro is not an enum, but " + target_node->get_type());
 
-    Ref<Body> bind_methods_body =
-        GodotGeneratorUtils::get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+    Ref<EnumGeneratorOptionsArgument> enum_options = p_attribute->find_descendant<EnumGeneratorOptionsArgument>();
+    GEN_ERROR_COND(!enum_options, p_attribute, "Failed to get enum options argument");
 
-    for (const String& name : target_enum->value_names()) {
-      // clang-format off
-      bind_methods_body->build_child<Function>().with_children({
-        build<Identifier>("BIND_ENUM_CONSTANT"),
-        build<Arguments>().with_child(
-          build<Argument>().with_child(
-            Writer::Text(name)
+    Ref<Identifier> enum_options_identifier = enum_options->find_child<Identifier>();
+    GEN_ERROR_COND(!enum_options_identifier, enum_options, "Invalid enum options argument. No identifier found");
+
+    String cast_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
+        ? AssumedGodotTypes::VARIANT_ENUM_CAST().qualified_name
+        : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
+        ? AssumedGodotTypes::VARIANT_BITFIELD_CAST().qualified_name
+        : "";
+    String bind_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
+        ? AssumedGodotTypes::BIND_ENUM_CONSTANT().qualified_name
+        : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
+        ? AssumedGodotTypes::BIND_BITFIELD_FLAG().qualified_name
+        : "";
+    GEN_ERROR_COND(cast_macro.empty() || bind_macro.empty(), enum_options, "Unknown enum options name");
+
+    if (p_target_class) {
+      Ref<Body> bind_methods_body =
+          GodotGeneratorUtils::get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+
+      for (const String& name : target_enum->value_names()) {
+        // clang-format off
+        bind_methods_body->build_child<Function>().with_children({
+          build<Identifier>(bind_macro),
+          build<Arguments>().with_child(
+            build<Argument>().with_child(
+              Writer::Text(name)
+            )
           )
-        )
-      }).with_child(Writer::Semicolon());
-      // clang-format on
+        }).with_child(Writer::Semicolon());
+        // clang-format on
+      }
     }
 
     // clang-format off
-
     p_generated_global->build_child<Function>().with_children({
-      build<Identifier>("VARIANT_ENUM_CAST"),
+      build<Identifier>(cast_macro),
       build<Arguments>().with_child(
         build<Argument>().with_child(
           Writer::Text(target_enum->qualified_name())
           )
         )
     }).with_child(Writer::Semicolon());
-
     // clang-format on
+
     return GeneratorError::OK;
   }
 

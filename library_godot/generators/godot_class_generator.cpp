@@ -49,18 +49,18 @@ namespace GodotObjectCompiler {
       Ref<Context> p_uninitialize_content) {
     using namespace GodotGeneratorUtils;
 
-    Ref<Arguments> arguments = p_class_attribute->find_child<Arguments>();
+    const Ref<Arguments> arguments = p_class_attribute->find_child<Arguments>();
     GEN_ERROR_COND(!arguments, p_target_class, "No arguments found.");
 
-    Ref<GodotModuleInitializationLevelArgument> init_level =
+    const Ref<GodotModuleInitializationLevelArgument> init_level =
         arguments->find_child<GodotModuleInitializationLevelArgument>();
     GEN_ERROR_COND(!init_level, p_target_class, "Initialization level argument does not exist.");
 
-    Ref<Identifier> init_level_identifier = init_level->find_child<Identifier>();
+    const Ref<Identifier> init_level_identifier = init_level->find_child<Identifier>();
     GEN_ERROR_COND(
         !init_level_identifier, p_target_class, "Could not determine GodotModuleInitializationLevelArgument identifier.");
 
-    String init_level_name = init_level_identifier->name;
+    const String init_level_name = init_level_identifier->name;
     Ref<GodotModuleInitializationLevelParameterType> init_level_type =
         AttributeDB::instance()->get_parameter_type<GodotClassAttribute, GodotModuleInitializationLevelParameterType>();
 
@@ -69,20 +69,20 @@ namespace GodotObjectCompiler {
       GEN_ERROR(p_target_class, "Failed to get ModuleInitializationLevel enum value for value name " + init_level_name)
     }
 
-    Ref<GodotClassTypeArgument> class_type = arguments->find_child<GodotClassTypeArgument>();
+    const Ref<GodotClassTypeArgument> class_type = arguments->find_child<GodotClassTypeArgument>();
     GEN_ERROR_COND(!class_type, p_target_class, "Class type argument does not exists.");
 
-    Ref<Identifier> class_type_identifier = class_type->find_child<Identifier>();
+    const Ref<Identifier> class_type_identifier = class_type->find_child<Identifier>();
     GEN_ERROR_COND(!class_type_identifier, p_target_class, "Could not determine GodotClassTypeArgument identifier.");
 
-    String class_type_name = class_type_identifier->name;
-    Ref<GodotClassTypeParameterType> class_type_type =
+    const String class_type_name = class_type_identifier->name;
+    const Ref<GodotClassTypeParameterType> class_type_type =
         AttributeDB::instance()->get_parameter_type<GodotClassAttribute, GodotClassTypeParameterType>();
 
-    String godot_registration_macro;
-    if (class_type_type->get_macro_for_value_name(class_type_name, godot_registration_macro)) {
-      Ref<Context> if_clause = Writer::Spaces({Writer::Text(format("if (p_level == %s) ", godot_init_level.c_str()))});
-      Ref<Body> body = if_clause->build_child<Body>();
+    if (String godot_registration_macro;
+        class_type_type->get_macro_for_value_name(class_type_name, godot_registration_macro)) {
+      const Ref<Context> if_clause = Writer::Spaces({Writer::Text(format("if (p_level == %s) ", godot_init_level.c_str()))});
+      const Ref<Body> body = if_clause->build_child<Body>();
       p_initialize_content->add_child(if_clause);
       // clang-format off
       body->add_child(build<Function>().with_children({
@@ -133,7 +133,7 @@ namespace GodotObjectCompiler {
 
     // clang-format off
     Ref<Function> gd_class = build<Function>().with_children({
-      build<Identifier>("GDCLASS"),
+      build<Identifier>(AssumedGodotTypes::GDCLASS().qualified_name),
       build<Arguments>().with_children({
         build<Argument>().with_child(Writer::Text(p_target_class->name())),
         build<Argument>().with_child(Writer::Text(bases[0])),

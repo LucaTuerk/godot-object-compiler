@@ -55,7 +55,6 @@ namespace GodotObjectCompiler
                     success &= AbstractClass.validate(validator.get()) == STATE_VALID;
                     success &= InternalClass.validate(validator.get()) == STATE_VALID;
                     success &= RuntimeClass.validate(validator.get()) == STATE_VALID;
-                    success &= NativeStruct.validate(validator.get()) == STATE_VALID;
             }
             
             {
@@ -153,10 +152,6 @@ namespace GodotObjectCompiler
                     success &= HintDictionaryType.validate(validator.get()) == STATE_VALID;
                     success &= HintToolButton.validate(validator.get()) == STATE_VALID;
                     success &= HintOneshot.validate(validator.get()) == STATE_VALID;
-                    success &= HintNoNodepath.validate(validator.get()) == STATE_VALID;
-                    success &= HintGroupEnable.validate(validator.get()) == STATE_VALID;
-                    success &= HintInputName.validate(validator.get()) == STATE_VALID;
-                    success &= HintFilePath.validate(validator.get()) == STATE_VALID;
                     success &= HintMax.validate(validator.get()) == STATE_VALID;
             }
             
