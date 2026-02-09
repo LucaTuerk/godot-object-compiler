@@ -76,7 +76,6 @@ namespace GodotObjectCompiler {
       AssumedGodotTypes::GDREGISTER_ABSTRACT_CLASS().qualified_name,
       AssumedGodotTypes::GDREGISTER_INTERNAL_CLASS().qualified_name,
       AssumedGodotTypes::GDREGISTER_RUNTIME_CLASS().qualified_name,
-      AssumedGodotTypes::GDREGISTER_NATIVE_STRUCT().qualified_name,
     };
 
     Vector<String> value_names = {"RegisterCustom"};

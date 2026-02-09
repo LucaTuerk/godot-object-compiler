@@ -44,7 +44,7 @@ namespace GodotObjectCompiler {
       success &= RefCounted.validate(TypeDB::instance()) == STATE_VALID;
       success &= Resource.validate(TypeDB::instance()) == STATE_VALID;
       success &= Node.validate(TypeDB::instance()) == STATE_VALID;
-      // success &= GodotRef.validate(TypeDB::instance()) == STATE_VALID; // TODO: Fix this
+      success &= GodotRef.validate(TypeDB::instance()) == STATE_VALID;
       success &= ModuleInitializationLevel.validate(TypeDB::instance()) == STATE_VALID;
       success &= PropertyHintEnum.validate(TypeDB::instance()) == STATE_VALID;
       success &= PropertyUsageFlagsEnum.validate(TypeDB::instance()) == STATE_VALID;
@@ -55,7 +55,6 @@ namespace GodotObjectCompiler {
       success &= GDREGISTER_ABSTRACT_CLASS.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDREGISTER_INTERNAL_CLASS.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDREGISTER_RUNTIME_CLASS.validate(TypeDB::instance()) == STATE_VALID;
-      success &= GDREGISTER_NATIVE_STRUCT.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDVIRTUAL_CALL.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDVIRTUAL_BIND.validate(TypeDB::instance()) == STATE_VALID;
 

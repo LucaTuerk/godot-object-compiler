@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* generate_type_db.cpp                                                   */
+/* generate_resources.cpp                                                 */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,72 +33,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "generate_type_db.h"
+#ifdef DEV_BUILD
+#include "generate_resources.h"
 
-#include "application/application_context.h"
-#include "library/core/config.h"
+#include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
-#include "library/parser/parser.h"
-#include "library/tree/syntax/class.h"
-#include "library/tree/syntax/define.h"
-#include "library/tree/syntax/enum.h"
-#include "library/tree/syntax/namespace.h"
-#include "library/tree/syntax/struct.h"
-#include "library/type_db.h"
+#include "library/core/string_writer.h"
 
 namespace GodotObjectCompiler {
 
-  Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context) {
-    TreeSitterParser parser;
-
-    Config times;
-    auto time_path = path_concat(p_context.paths_cache, "last_modified_times.goct");
-    if (file_exists(time_path)) {
-      times.read_from_file(time_path);
+  Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
+    // Generate Program help resources
+    Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
+    for (const auto& [path, program] : programs) {
+      String file_stem = string_vector_combine(path, "_");
+      String file_path = path_concat_ext("resources/help", file_stem, "txt");
+      if (!file_exists(file_path)) {
+        FileWriter writer(file_path);
+        writer.write("No help available");
+      }
     }
 
-    for (const String& include_path : p_context.paths_include) {
-      for (const String& file : directory_files_recursive(include_path)) {
-        if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") && !string_suffix(file, ".gen.inc")) {
-          continue;
-        }
+    // Generate macro help docs
+    for (const String& macro : AttributeDB::instance()->get_all_macros()) {
+      String doc_file = path_concat_ext("./resources/doc", macro, "txt");
+      ensure_file_exists(doc_file, "No documentation available");
 
-        if (string_contains(file, "thirdparty") || string_contains(file, ".gen.h") ||
-            string_contains(file, ".generated.h") || string_contains(file, "godot/platform") ||
-            string_contains(file, "godot/drivers") || string_contains(file, "godot/tests")) {
-          // make this configurable
-          continue;
-        }
+      Vector<Ref<IAttributeParameterType>> params = AttributeDB::instance()->get_parameters_for_macro(macro);
 
-        Size current_modified = file_write_time(file);
-        if (times.has_config_value(file)) {
-          Size last_modified = times.read<String, Size>(file);
+      for (const auto& param : params) {
+        auto doc_file = path_concat_ext("resources/doc", param->get_type(), "txt");
+        auto doc_dir = path_concat("resources/doc", param->get_type());
+        create_dir_recursive(doc_dir);
+        ensure_file_exists(doc_file, "No documentation available");
 
-          if (last_modified == current_modified) {
-            continue;
-          }
-        }
-
-        times.write<String, Size>(file, current_modified);
-        times.write_to_file(time_path);
-
-        Ref<Namespace> global_namespace = node_new<Namespace>();
-        Ref<ParserError> error = parser.parse_file(file, global_namespace);
-
-        if (error != ParserError::OK) {
-          continue;
-        }
-
-        if (global_namespace) {
-          Vector<Ref<NamedContext>> found =
-              global_namespace->find_children<NamedContext>(true, [](Ref<NamedContext> node) {
-                return node->is<Class>() || node->is<Struct>() || node->is<Enum>() || node->is<Define>();
-              });
-
-          for (const Ref<NamedContext>& node : found) {
-            TypeDB::instance()->save_type_data(node);
-          }
+        for (const auto& value_name : param->get_value_names()) {
+          auto value_doc_path = path_concat_ext(doc_dir, value_name, "txt");
+          ensure_file_exists(value_doc_path, "No documentation available");
         }
       }
     }
@@ -107,3 +79,4 @@ namespace GodotObjectCompiler {
   }
 
 }
+#endif

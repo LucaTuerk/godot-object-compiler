@@ -43,6 +43,8 @@
 namespace GodotObjectCompiler {
 
   bool ApplicationContext::set_from_project(const Project& p_project) {
+    project_name = p_project.project_name;
+    project_target = p_project.project_target;
     paths_root = path_absolute(p_project.paths_root);
     paths_generated = path_absolute(p_project.paths_generated);
     paths_cache = path_absolute(p_project.paths_cache);
@@ -51,6 +53,11 @@ namespace GodotObjectCompiler {
     paths_include = p_project.paths_include;
     if (!vector_contains(paths_include, p_project.paths_root)) {
       paths_include.push_back(p_project.paths_root);
+    }
+    for (const auto& godot_include_path : p_project.godot_include_paths ) {
+      if (!vector_contains(paths_include, godot_include_path)) {
+        paths_include.push_back(godot_include_path);
+      }
     }
 
     for (const String& file_path : directory_files_recursive(p_project.paths_root)) {

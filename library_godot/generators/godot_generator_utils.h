@@ -146,22 +146,22 @@ namespace GodotObjectCompiler {
 
     bool get_variant_type_from_type(const Ref<Type>& p_target_type, String& p_variant_type);
 
-    Ref<GodotVariantTypeArgument> VariantTypeFromType(const Ref<Type>& p_type);
+    Ref<GodotVariantTypeArgument> build_variant_type_argument(const Ref<Type>& p_type);
 
-    Ref<GodotVariantTypeArgument> VariantType(const String& p_variant_type);
+    Ref<GodotVariantTypeArgument> build_variant_type_argument(const String& p_variant_type);
 
-    Ref<GodotPropertyHintArgument> PropertyHint(
+    Ref<GodotPropertyHintArgument> build_property_hint_argument(
         const String& p_value, const String& p_hint_string = "", bool p_is_string_literal = true);
 
-    Ref<GodotPropertyUsageFlagsArgument> PropertyUsageFlag(const String& p_usage);
+    Ref<GodotPropertyUsageFlagsArgument> build_property_usage_flags_argument(const String& p_usage);
 
-    Ref<Node> PropertyInfo(const Ref<GodotVariantTypeArgument>& p_variant_type,
+    Ref<Node> build_property_info(const Ref<GodotVariantTypeArgument>& p_variant_type,
         const Ref<GodotPropertyHintArgument>& p_hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages,
         const String& p_property_name);
 
-    Ref<Node> PropertyInfo(const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name);
+    Ref<Node> build_property_info(const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name);
 
-    Ref<Node> PropertyInfoDefaultForType(
+    Ref<Node> build_property_info_defaults(
         const Ref<Type>& p_type, const String& p_property_name, DefaultsUsage p_usage = DEFAULTS_PROPERTY_BINDING);
 
   };

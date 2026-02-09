@@ -67,6 +67,15 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context) {
+    bool assumptions_valid = AssumedGodotTypes::validate_assumptions();
+    if (!assumptions_valid) {
+      return node_new<ProgramError>(ERROR,
+          "Failed to validate some assumptions on available Godot types and macros, probably because the TypeDB "
+          "generator has not found the relevant files.\n\n"
+          "For modules please add the godot source to the GOC projects include paths.\n"
+          "For gdextensions please add the godot-cpp generated includes to the GOC projects include paths.\n");
+    }
+
     OutputTransformator transformator;
 
     GodotMacroIncludeGenerator macro_include_generator;
@@ -86,13 +95,24 @@ namespace GodotObjectCompiler {
     String register_file_name = "generated_register_types";
     Vector<String> registered_classes_headers;
 
+    register_types_header->add_child(Writer::PragmaOnce());
+
+    switch (p_context.project_target) {
+      case TARGET_MODULE:
+        return node_new<ProgramError>(ERROR, "Unimplemented");
+        break;
+      case TARGET_GDEXTENSION:
+        register_types_header->add_children({
+            Writer::SystemInclude("godot_cpp/godot.hpp"),
+            Writer::Text("using namespace godot;"),
+        });
+        register_types_source->add_children({Writer::SystemInclude("gdextension_interface.h"),
+            Writer::SystemInclude("godot_cpp/core/class_db.hpp"), Writer::SystemInclude("godot_cpp/core/defs.hpp")});
+        break;
+    }
+
     // clang-format off
     register_types_header->add_children({
-      Writer::PragmaOnce(),
-      // Writer::Include("modules/register_module_types.h"),
-      // Writer::Include("core/object/class_db.h"),
-      Writer::SystemInclude("godot_cpp/godot.hpp"),
-      Writer::Text("using namespace godot;"),
       Writer::NewLine(),
       build<Function>().with_children({
         build<Type>().with_child<Identifier>("void"),
@@ -122,9 +142,6 @@ namespace GodotObjectCompiler {
     Ref<Body> unregister_body;
 
     register_types_source->add_children({
-      Writer::SystemInclude("gdextension_interface.h"),
-      Writer::SystemInclude("godot_cpp/core/class_db.hpp"),
-      Writer::SystemInclude("godot_cpp/core/defs.hpp"),
       Writer::Include(path_concat_ext(p_context.paths_generated, register_file_name, "h")),
       register_class_includes,
       Writer::NewLine(),

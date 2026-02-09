@@ -266,35 +266,35 @@ namespace GodotObjectCompiler {
     using namespace AssumedParameterValues;
     if (Ref<Type> ref_inner_type; type_is_godot_ref_type(p_target_type, ref_inner_type, p_from_namespace) &&
                                   type_is_ref_counted_type(ref_inner_type, p_from_namespace)) {
-      p_variant_type = VariantType(VariantTypeObject());
-      p_property_hint = PropertyHint(HintResourceType(), ref_inner_type->name());
-      p_property_usage_flags = PropertyUsageFlag(UsageDefault());
+      p_variant_type = build_variant_type_argument(VariantTypeObject());
+      p_property_hint = build_property_hint_argument(HintResourceType(), ref_inner_type->name());
+      p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
       return true;
     }
 
     if (type_is_node_type(p_target_type, p_from_namespace)) {
-      p_variant_type = VariantType(VariantTypeObject());
-      p_property_hint = PropertyHint(HintNodeType(), p_target_type->name());
-      p_property_usage_flags = PropertyUsageFlag(UsageDefault());
+      p_variant_type = build_variant_type_argument(VariantTypeObject());
+      p_property_hint = build_property_hint_argument(HintNodeType(), p_target_type->name());
+      p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
       return true;
     }
 
     if (type_is_object_type(p_target_type)) {
-      p_variant_type = VariantType(VariantTypeObject());
-      p_property_hint = PropertyHint(HintResourceType(), p_target_type->name());
-      p_property_usage_flags = PropertyUsageFlag(UsageDefault());
+      p_variant_type = build_variant_type_argument(VariantTypeObject());
+      p_property_hint = build_property_hint_argument(HintResourceType(), p_target_type->name());
+      p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
       return true;
     }
 
     if (Ref<Enum> enum_object; type_is_enum_type(p_target_type, enum_object, p_from_namespace)) {
-      p_variant_type = VariantType(VariantTypeInt());
+      p_variant_type = build_variant_type_argument(VariantTypeInt());
       Vector<String> hints;
       for (const Ref<EnumValue>& value : enum_object->values()) {
         hints.push_back(format(
             "%s:%s", cpp_enum_case_to_exposed_enum_case(value->name()).c_str(), value->literal()->content.c_str()));
       }
-      p_property_hint = PropertyHint(HintEnum(), string_vector_combine(hints, ","));
-      p_property_usage_flags = PropertyUsageFlag(UsageDefault());
+      p_property_hint = build_property_hint_argument(HintEnum(), string_vector_combine(hints, ","));
+      p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
       return true;
     }
 
@@ -307,22 +307,22 @@ namespace GodotObjectCompiler {
         return false;
       }
 
-      p_variant_type = VariantType(VariantTypeArray());
+      p_variant_type = build_variant_type_argument(VariantTypeArray());
 
       switch (p_defaults_usage) {
         case DEFAULTS_PROPERTY_BINDING: {
-          p_property_hint = PropertyHint(HintArrayType(),
+          p_property_hint = build_property_hint_argument(HintArrayType(),
               "vformat(\"%s/%s:%s\", " +
                   format("%s,%s,%s)", ("Variant::" + inner_variant_type->godot_variant_type()).c_str(),
                       inner_property_hint->godot_property_hint().c_str(), inner_property_hint->hint_string().c_str()),
               false);
         } break;
         case DEFAULTS_SIGNAL_ARGUMENT: {
-          p_property_hint = PropertyHint(HintArrayType(), inner_type->name(), true);
+          p_property_hint = build_property_hint_argument(HintArrayType(), inner_type->name(), true);
         } break;
       }
 
-      p_property_usage_flags = PropertyUsageFlag(UsageDefault());
+      p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
       return true;
     }
 
@@ -338,12 +338,12 @@ namespace GodotObjectCompiler {
           !get_defaults_for_type(value_type, value_variant_type, value_property_hint, _, p_from_namespace)) {
         return false;
       }
-      p_variant_type = VariantType(VariantTypeDictionary());
-      p_property_usage_flags = PropertyUsageFlag(UsageDefault());
+      p_variant_type = build_variant_type_argument(VariantTypeDictionary());
+      p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
 
       switch (p_defaults_usage) {
         case DEFAULTS_PROPERTY_BINDING: {
-          p_property_hint = PropertyHint(HintDictionaryType(),
+          p_property_hint = build_property_hint_argument(HintDictionaryType(),
               "vformat(\"%s/%s:%s;%s/%s:%s\", " +
                   format("%s,%s,%s,%s,%s,%s)", ("Variant::" + key_variant_type->godot_variant_type()).c_str(),
                       key_property_hint->godot_property_hint().c_str(), key_property_hint->hint_string().c_str(),
@@ -352,7 +352,7 @@ namespace GodotObjectCompiler {
               false);
         } break;
         case DEFAULTS_SIGNAL_ARGUMENT: {
-          p_property_hint = PropertyHint(
+          p_property_hint = build_property_hint_argument(
               HintDictionaryType(), format("%s;%s", key_type->name().c_str(), value_type->name().c_str()), true);
         } break;
       }
@@ -361,9 +361,9 @@ namespace GodotObjectCompiler {
     }
 
     if (String variant_type_name; get_variant_type_from_type(p_target_type, variant_type_name)) {
-      p_variant_type = VariantType(variant_type_name);
-      p_property_hint = PropertyHint(HintNone());
-      p_property_usage_flags = PropertyUsageFlag(UsageDefault());
+      p_variant_type = build_variant_type_argument(variant_type_name);
+      p_property_hint = build_property_hint_argument(HintNone());
+      p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
       return true;
     }
 
@@ -476,26 +476,26 @@ namespace GodotObjectCompiler {
     return false;
   }
 
-  Ref<GodotVariantTypeArgument> GodotGeneratorUtils::VariantTypeFromType(const Ref<Type>& p_type) {
+  Ref<GodotVariantTypeArgument> GodotGeneratorUtils::build_variant_type_argument(const Ref<Type>& p_type) {
     Ref<Type> inner_type;
     if (type_is_object_type(p_type) || type_is_godot_ref_type(p_type, inner_type)) {
-      return VariantType(AssumedParameterValues::VariantTypeObject());
+      return build_variant_type_argument(AssumedParameterValues::VariantTypeObject());
     } else if (String variant_type; get_variant_type_from_type(p_type, variant_type)) {
-      return VariantType(variant_type);
+      return build_variant_type_argument(variant_type);
     }
 
-    return VariantType(AssumedParameterValues::VariantTypeNil());
+    return build_variant_type_argument(AssumedParameterValues::VariantTypeNil());
   }
 
-  Ref<GodotVariantTypeArgument> GodotGeneratorUtils::VariantType(const String& p_variant_type) {
+  Ref<GodotVariantTypeArgument> GodotGeneratorUtils::build_variant_type_argument(const String& p_variant_type) {
     return build<GodotVariantTypeArgument>().with_child<Identifier>(p_variant_type);
   }
 
-  Ref<GodotPropertyUsageFlagsArgument> GodotGeneratorUtils::PropertyUsageFlag(const String& p_usage) {
+  Ref<GodotPropertyUsageFlagsArgument> GodotGeneratorUtils::build_property_usage_flags_argument(const String& p_usage) {
     return build<GodotPropertyUsageFlagsArgument>().with_child<Identifier>(p_usage);
   }
 
-  Ref<Node> GodotGeneratorUtils::PropertyInfo(const Ref<GodotVariantTypeArgument>& p_variant_type,
+  Ref<Node> GodotGeneratorUtils::build_property_info(const Ref<GodotVariantTypeArgument>& p_variant_type,
       const Ref<GodotPropertyHintArgument>& p_hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages,
       const String& p_property_name) {
     Ref<Arguments> arguments;
@@ -522,7 +522,7 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  Ref<Node> GodotGeneratorUtils::PropertyInfo(
+  Ref<Node> GodotGeneratorUtils::build_property_info(
       const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name) {
     // clang-format off
     return build<Function>().with_children({
@@ -534,7 +534,7 @@ namespace GodotObjectCompiler {
     // clang-format on
   }
 
-  Ref<Node> GodotGeneratorUtils::PropertyInfoDefaultForType(
+  Ref<Node> GodotGeneratorUtils::build_property_info_defaults(
       const Ref<Type>& p_type, const String& p_property_name, DefaultsUsage p_usage) {
     Ref<GodotVariantTypeArgument> variant_type;
     Ref<GodotPropertyHintArgument> property_hint;
@@ -544,10 +544,10 @@ namespace GodotObjectCompiler {
       return nullptr;
     }
 
-    return PropertyInfo(variant_type, property_hint, {usage_flags}, p_property_name);
+    return build_property_info(variant_type, property_hint, {usage_flags}, p_property_name);
   }
 
-  Ref<GodotPropertyHintArgument> GodotGeneratorUtils::PropertyHint(
+  Ref<GodotPropertyHintArgument> GodotGeneratorUtils::build_property_hint_argument(
       const String& p_value, const String& p_hint_string, bool p_is_string_literal) {
     // clang-format off
     return build<GodotPropertyHintArgument>().with_children({
