@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* helpers.cpp                                                            */
+/* godot_enum_generator_options.cpp                                       */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,27 +32,21 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#include "helpers.h"
 
-#include "library/core/string_utilities.h"
-#include "library/core/string_writer.h"
-#include "library/execution_context.h"
+#include "enum_generator_options.h"
 
 namespace GodotObjectCompiler {
 
-  String Parser::Helpers::remove_macros(const String& p_input) {
-    StreamWriter writer;
-    for (String line : string_split(p_input, "\n")) {
-      if (!string_prefix(string_trim(line), "#")) {
-        for (const String& macro : ExecutionContext::instance()->get_remove_macros()) {
-          line = string_replace(line, macro, "");
-        }
-      }
-      writer.write(line);
-      writer.write("\n");
-    }
+  String EnumGeneratorOptionsParameterType::get_return_type() { return "GOC_EnumGeneratorOptions"; }
 
-    return writer.get_string();
+  Vector<String> EnumGeneratorOptionsParameterType::get_value_names() {
+    return {EnumGeneratorOptionsArgument::EnumDefault, EnumGeneratorOptionsArgument::EnumFlags};
+  }
+
+  Vector<IAttributeParameterType::Argument> EnumGeneratorOptionsParameterType::get_arguments() { return {}; }
+
+  Ref<Argument> EnumGeneratorOptionsParameterType::create_argument() {
+    return node_new<EnumGeneratorOptionsArgument>();
   }
 
 }

@@ -67,15 +67,13 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context) {
-    bool assumptions_valid = AssumedGodotTypes::validate_assumptions();
-    if (!assumptions_valid) {
+    if (!AssumedGodotTypes::validate_assumptions() || !AssumedParameterValues::validate_assumptions()) {
       return node_new<ProgramError>(ERROR,
           "Failed to validate some assumptions on available Godot types and macros, probably because the TypeDB "
           "generator has not found the relevant files.\n\n"
-          "For modules please add the godot source to the GOC projects include paths.\n"
-          "For gdextensions please add the godot-cpp generated includes to the GOC projects include paths.\n");
+          "For modules please add the godot source to the GOC projects godot include paths.\n"
+          "For gdextensions please add the godot-cpp generated includes to the GOC projects godot include paths.\n");
     }
-
     OutputTransformator transformator;
 
     GodotMacroIncludeGenerator macro_include_generator;
@@ -326,14 +324,14 @@ namespace GodotObjectCompiler {
 
         source_output->get_output(&source_writer);
         body_output->get_output(&generated_writer);
-
-        Ref<Writer::IOutputNode> global_output = Writer::Define(
-            generated_macro_name(input_file, generated_global_attribute ? generated_global_attribute->line : 0), {},
-            {transformator.transform(global_generated)});
-
-        generated_writer.write("\n");
-        global_output->get_output(&generated_writer);
       }
+
+      Ref<Writer::IOutputNode> global_output = Writer::Define(
+          generated_macro_name(input_file, generated_global_attribute ? generated_global_attribute->line : 0), {},
+          {transformator.transform(global_generated)});
+
+      generated_writer.write("\n");
+      global_output->get_output(&generated_writer);
     }
 
     Ref<Writer::IOutputNode> register_header_output = transformator.transform(register_types_header);

@@ -75,7 +75,7 @@ namespace GodotObjectCompiler {
                                                    : "");
 
     p_writer->write_to_section("Godot");
-    p_writer->write<String,String>("IncludePaths", to_comma_separated_string(godot_include_paths));
+    p_writer->write<String, String>("IncludePaths", to_comma_separated_string(godot_include_paths));
     p_writer->write<String, Size>("TargetMajorVersion", godot_target_major_version);
     p_writer->write<String, Size>("TargetMinorVersion", godot_target_minor_version);
 

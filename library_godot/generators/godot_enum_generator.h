@@ -43,6 +43,9 @@ namespace GodotObjectCompiler {
     GENERATOR(GodotEnumGenerator)
    public:
 
+    Ref<GeneratorError> do_generate_default_attribute_arguments(
+        Ref<Class> p_target_class, Ref<GodotEnumAttribute> p_attribute, Ref<Context> p_default_values) override;
+
     Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotEnumAttribute> p_attribute,
         Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
   };

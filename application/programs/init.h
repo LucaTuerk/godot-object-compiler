@@ -39,7 +39,7 @@
 namespace GodotObjectCompiler {
 
   class Init : public IProgram {
-    PROGRAM(Init, "init");
+    PROJECTLESS_PROGRAM(Init, "init");
 
    public:
 

@@ -50,6 +50,8 @@ using namespace GodotObjectCompiler;
 int main(int argc, char* argv[]) {
   ApplicationContext context;
   Resources::instance()->load_pack(&GOC_Resources::Pack);
+  ExecutionContext::instance()->set_error_level(ERROR, FULL);
+
   Vector<String> application_arguments;
 
   for (int i = 1; i < argc; i++) {
@@ -67,32 +69,25 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  if (program->program_name() == "init") {
-    Ref<ProgramError> init_error = program->run(context);
-    if (init_error != ProgramError::OK) {
+  if (program->requires_project()) {
+    Project project;
+    if (!project.read_from_file("goc_project.conf")) {
+      print_err("Could not find project file.");
       return 1;
     }
-    return 0;
-  }
 
-  Project project;
-  if (!project.read_from_file("goc_project.conf")) {
-    print_err("Could not find project file.");
-    return 1;
-  }
+    if (!context.set_from_project(project)) {
+      return 1;
+    }
 
-  if (!context.set_from_project(project)) {
-    return 1;
+    TypeDB::instance()->set_cache_directory(context.paths_cache);
+    ExecutionContext::instance()->set_remove_macros(read_lines(path_absolute(".goc/macros/macro_remove.txt")));
+    ExecutionContext::instance()->set_include_paths(context.paths_include);
   }
 
 #ifdef DEV_BUILD
   Permissions::instance()->add_write_path("resources");
 #endif
-
-  TypeDB::instance()->set_cache_directory(context.paths_cache);
-  ExecutionContext::instance()->set_error_level(ERROR, FULL);
-  ExecutionContext::instance()->set_remove_macros(read_lines(path_absolute(".goc/macros/macro_remove.txt")));
-  ExecutionContext::instance()->set_include_paths(context.paths_include);
 
   Ref<ProgramError> error = program->run(context);
   if (error != ProgramError::OK) {

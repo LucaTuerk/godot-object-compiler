@@ -54,7 +54,7 @@ namespace GodotObjectCompiler {
     if (!vector_contains(paths_include, p_project.paths_root)) {
       paths_include.push_back(p_project.paths_root);
     }
-    for (const auto& godot_include_path : p_project.godot_include_paths ) {
+    for (const auto& godot_include_path : p_project.godot_include_paths) {
       if (!vector_contains(paths_include, godot_include_path)) {
         paths_include.push_back(godot_include_path);
       }

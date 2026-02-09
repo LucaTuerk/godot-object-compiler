@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* helpers.cpp                                                            */
+/* version.cpp                                                            */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,27 +32,16 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#include "helpers.h"
 
-#include "library/core/string_utilities.h"
-#include "library/core/string_writer.h"
-#include "library/execution_context.h"
+#include "version.h"
+
+#include "application/version.h"
 
 namespace GodotObjectCompiler {
 
-  String Parser::Helpers::remove_macros(const String& p_input) {
-    StreamWriter writer;
-    for (String line : string_split(p_input, "\n")) {
-      if (!string_prefix(string_trim(line), "#")) {
-        for (const String& macro : ExecutionContext::instance()->get_remove_macros()) {
-          line = string_replace(line, macro, "");
-        }
-      }
-      writer.write(line);
-      writer.write("\n");
-    }
-
-    return writer.get_string();
+  Ref<ProgramError> Version::run(ApplicationContext& p_context) {
+    fmt_print_ln("%d.%d", GOC_MAJOR_VERSION, GOC_MINOR_VERSION);
+    return ProgramError::OK;
   }
 
-}
+}  // GodotObjectCompiler

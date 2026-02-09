@@ -50,6 +50,11 @@ namespace GodotObjectCompiler {
       success &= PropertyUsageFlagsEnum.validate(TypeDB::instance()) == STATE_VALID;
       success &= Variant.validate(TypeDB::instance()) == STATE_VALID;
       success &= VariantTypeEnum.validate(TypeDB::instance()) == STATE_VALID;
+      success &= Array.validate(TypeDB::instance()) == STATE_VALID;
+      success &= TypedArray.validate(TypeDB::instance()) == STATE_VALID;
+      success &= Dictionary.validate(TypeDB::instance()) == STATE_VALID;
+      success &= TypedDictionary.validate(TypeDB::instance()) == STATE_VALID;
+      success &= GDCLASS.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDREGISTER_CLASS.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDREGISTER_VIRTUAL_CLASS.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDREGISTER_ABSTRACT_CLASS.validate(TypeDB::instance()) == STATE_VALID;
@@ -57,6 +62,9 @@ namespace GodotObjectCompiler {
       success &= GDREGISTER_RUNTIME_CLASS.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDVIRTUAL_CALL.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDVIRTUAL_BIND.validate(TypeDB::instance()) == STATE_VALID;
+      success &= BIND_ENUM_CONSTANT.validate(TypeDB::instance()) == STATE_VALID;
+      success &= VARIANT_ENUM_CAST.validate(TypeDB::instance()) == STATE_VALID;
+      success &= VARIANT_BITFIELD_CAST.validate(TypeDB::instance()) == STATE_VALID;
 
       return success;
     }

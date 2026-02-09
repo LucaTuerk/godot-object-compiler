@@ -39,11 +39,7 @@
 
 namespace GodotObjectCompiler {
 
-  enum ProjectTarget {
-    TARGET_MODULE,
-    TARGET_GDEXTENSION,
-    TARGET_UNDEFINED = TARGET_GDEXTENSION
-  };
+  enum ProjectTarget { TARGET_MODULE, TARGET_GDEXTENSION, TARGET_UNDEFINED = TARGET_GDEXTENSION };
 
   struct Project {
     String project_name;
