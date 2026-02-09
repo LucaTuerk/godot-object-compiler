@@ -39,7 +39,6 @@
 #include "program_functions.h"
 
 #include "library/core/file_system_utilities.h"
-
 #include "library/core/resources.h"
 #include "library/core/string_utilities.h"
 

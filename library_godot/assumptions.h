@@ -57,13 +57,14 @@ namespace GodotObjectCompiler {
 
     inline Assumption<AssumeType<Class>> Array{{"Array"}, "Assume that a class named \"Array\" exists in the TypeDB."};
 
-    inline Assumption<AssumeType<Class>> TypedArray {
-            {"TypedArray", 1}, "Assume that a class named \"TypedArray\" with 1 template parameter exists in the TypeDB."};
+    inline Assumption<AssumeType<Class>> TypedArray{
+        {"TypedArray", 1}, "Assume that a class named \"TypedArray\" with 1 template parameter exists in the TypeDB."};
 
-    inline Assumption<AssumeType<Class>> Dictionary{{"Dictionary"}, "Assume that a class named \"Dictionary\" exists in the TypeDB."};
+    inline Assumption<AssumeType<Class>> Dictionary{
+        {"Dictionary"}, "Assume that a class named \"Dictionary\" exists in the TypeDB."};
 
-    inline Assumption<AssumeType<Class>> TypedDictionary {
-            {"TypedDictionary", 2}, "Assume that a class named \"TypedDictionary\" with 2 template parameter exists in the TypeDB."};
+    inline Assumption<AssumeType<Class>> TypedDictionary{{"TypedDictionary", 2},
+        "Assume that a class named \"TypedDictionary\" with 2 template parameter exists in the TypeDB."};
 
     inline Assumption<AssumeType<Enum>> ModuleInitializationLevel{{"ModuleInitializationLevel"},
         "Assume that an enum type of name \"ModuleInitializationLevel\" exists in the TypeDB."};
@@ -75,7 +76,7 @@ namespace GodotObjectCompiler {
         {"PropertyUsageFlags"}, "Assume that an enum type of name \"ModuleInitializationLevel\" exists in the TypeDB."};
 
     inline Assumption<AssumeType<Class>> Variant{
-          {"Variant"}, "Assume that a class named \"Variant\" exists in the TypeDB"};
+        {"Variant"}, "Assume that a class named \"Variant\" exists in the TypeDB"};
 
     inline Assumption<AssumeType<Enum>> VariantTypeEnum{
         {"Variant::Type"}, "Assume that an enum type of name \"Variant::Type\" exists in the TypeDB"};
@@ -98,7 +99,14 @@ namespace GodotObjectCompiler {
     inline Assumption<AssumeType<Define>> GDREGISTER_NATIVE_STRUCT{{"GDREGISTER_NATIVE_STRUCT"},
         "Assume that a macro of name \"GDREGISTER_NATIVE_STRUCT\" exisits in the TypeDB."};
 
+    inline Assumption<AssumeType<Define>> GDVIRTUAL_CALL{
+        {"GDVIRTUAL_CALL"}, "Assume that a macro of name \"GDVIRTUAL_CALL\" exisits in the TypeDB."};
+
+    inline Assumption<AssumeType<Define>> GDVIRTUAL_BIND{
+        {"GDVIRTUAL_CALL"}, "Assume that a macro of name \"GDVIRTUAL_BIND\" exisits in the TypeDB."};
+
     bool validate_assumptions();
+
   }
 
 }

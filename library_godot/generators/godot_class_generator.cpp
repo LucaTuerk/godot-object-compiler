@@ -115,8 +115,9 @@ namespace GodotObjectCompiler {
     return GeneratorError::OK;
   }
 
-  Ref<GeneratorError> GodotClassGenerator::do_generate(Ref<Class> p_target_class, Ref<GodotClassAttribute> p_attribute,
-      Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) {
+  Ref<GeneratorError> GodotClassGenerator::do_generate(Ref<Class> p_target_class,
+      Ref<GodotClassAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
+      Ref<Context> p_generated_global) {
     using namespace GodotGeneratorUtils;
 
     GEN_ERROR_COND(

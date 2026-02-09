@@ -37,7 +37,6 @@
 #include "function.h"
 #include "identifier.h"
 #include "include.h"
-
 #include "library/core/string_writer.h"
 #include "library/type_db.h"
 #include "namespace.h"

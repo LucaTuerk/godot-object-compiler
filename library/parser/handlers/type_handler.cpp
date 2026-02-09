@@ -35,7 +35,6 @@
 
 #include "type_handler.h"
 
-
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/enum.h"
@@ -65,9 +64,6 @@ namespace GodotObjectCompiler {
       return ParserStep::Undecided();
     }
 
-    Ref<Node> last = r_current_target->get_child(-1);
-    bool last_is_qualifier = last && last->is<TypeQualifier>();
-
     Ref<Type> type_node;
     if (r_current_target->is<Type>()) {
       type_node = r_current_target->as<Type>();
@@ -80,11 +76,13 @@ namespace GodotObjectCompiler {
       }
     }
 
+    Ref<Node> last = type_node->get_previous_sibling();
+    bool last_is_qualifier = last && last->is<TypeQualifier>();
+
     if (last_is_qualifier) {
       last->reparent(type_node);
     }
 
-    // current_target = type_node;
     type_node->create_child<Identifier>(p_current_src->content());
 
     if (p_current_src->type == "qualified_identifier") {

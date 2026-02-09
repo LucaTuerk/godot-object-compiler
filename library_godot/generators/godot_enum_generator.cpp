@@ -40,8 +40,9 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, Ref<GodotEnumAttribute> p_attribute,
-      Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) {
+  Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class,
+      Ref<GodotEnumAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
+      Ref<Context> p_generated_global) {
     Ref<Node> target_node = p_attribute->resolve_target();
     GEN_ERROR_COND(!target_node, p_target_class, "Could not find target for Enum marco.");
 
