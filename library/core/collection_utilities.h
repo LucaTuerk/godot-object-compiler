@@ -48,4 +48,15 @@ namespace GodotObjectCompiler {
     return std::find(vector.begin(), vector.end(), item);
   }
 
+  template <typename T, typename X>
+  Vector<X> vector_transform(const Vector<T>& vector, std::function<bool(const T&, X&)> function) {
+    Vector<X> result;
+    for (const T& item : vector) {
+      if (X out; function(item, out)) {
+        result.push_back(out);
+      }
+    }
+    return result;
+  }
+
 }

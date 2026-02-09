@@ -35,7 +35,6 @@
 #include "type.h"
 
 #include "identifier.h"
-
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/tree/output/output_transformator.h"
@@ -68,6 +67,21 @@ namespace GodotObjectCompiler {
     Ref<Type> temp = node_new<Type>();
     for (const Ref<Node>& child : *this) {
       if (child->is<TypeQualifier>() || child->is<Pointer>() || child->is<Reference>()) {
+        continue;
+      }
+
+      temp->add_child(child->clone());
+    }
+
+    OutputTransformator().transform(temp)->get_output(&writer);
+    return string_shrink_inner_space(string_trim(writer.get_string()));
+  }
+
+  String Type::_type_name_unmodified_ptr_lazy_get() {
+    StreamWriter writer;
+    Ref<Type> temp = node_new<Type>();
+    for (const Ref<Node>& child : *this) {
+      if (child->is<TypeQualifier>() || child->is<Reference>()) {
         continue;
       }
 

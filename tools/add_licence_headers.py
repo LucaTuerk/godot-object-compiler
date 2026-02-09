@@ -13,7 +13,7 @@ def add_licence_headers(path: pathlib.Path):
         write = ''
         if file.name == 'all.h':
             continue
-            
+
         with open(file, 'r') as current:
             content = current.read()
             if "This file is part of Godot Object Compiler" in content:

@@ -38,7 +38,6 @@
 
 #include "output_transformator.h"
 
-
 #include "library/core/string_writer.h"
 
 namespace GodotObjectCompiler {

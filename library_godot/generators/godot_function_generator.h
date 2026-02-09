@@ -46,6 +46,10 @@ namespace GodotObjectCompiler {
 
     Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
         Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
+
+    Ref<GeneratorError> generate_virtual(const Ref<Class>& p_target_class, const Ref<Function>& p_target_function,
+        const Ref<GodotFunctionAttribute>& p_attribute, const Ref<Context>& p_generated_body,
+        const Ref<Context>& p_generated_sources, const Ref<Context>& p_bind_methods_body);
   };
 
   REGISTER_CLASS_GENERATOR(GodotFunctionGenerator)

@@ -36,7 +36,6 @@
 #include "print_parsed.h"
 
 #include "library/core/file_system_utilities.h"
-
 #include "library/core/string_utilities.h"
 #include "library/parser/parser.h"
 #include "library/parser/tree_sitter_node.h"

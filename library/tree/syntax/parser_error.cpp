@@ -36,7 +36,6 @@
 #include "parser_error.h"
 
 #include "context.h"
-
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/parser/tree_sitter_node.h"

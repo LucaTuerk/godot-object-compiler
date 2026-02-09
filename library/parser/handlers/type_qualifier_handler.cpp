@@ -39,6 +39,10 @@
 
 namespace GodotObjectCompiler {
 
+  bool TypeQualifierHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return p_current_src->type == "type_qualifier";
+  }
+
   ParserStep TypeQualifierHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
     if (p_current_src->content() == "const") {
       r_current_target->create_child<Const>();

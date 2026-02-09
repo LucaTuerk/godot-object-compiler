@@ -35,7 +35,6 @@
 
 #include "program.h"
 
-
 #include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler {

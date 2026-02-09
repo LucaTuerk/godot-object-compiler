@@ -126,8 +126,10 @@ namespace GodotObjectCompiler {
    public:
 
     ~IClassGenerator() override = default;
+
     virtual Ref<GeneratorError> do_generate_default_attribute_arguments(
         Ref<Class> p_target_class, Ref<AttrT> p_attribute, Ref<Context> p_default_values);
+
     virtual Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<AttrT> p_attribute,
         Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) = 0;
   };
@@ -139,7 +141,7 @@ namespace GodotObjectCompiler {
 
   template <typename AttrT>
   Ref<GeneratorError> IClassGenerator<AttrT>::_generate_default_attribute_arguments(
-      Ref<Class> p_target_class, Ref<Attribute> p_attribute, std::shared_ptr<Context> r_default_values) {
+      Ref<Class> p_target_class, Ref<Attribute> p_attribute, Ref<Context> r_default_values) {
     return do_generate_default_attribute_arguments(p_target_class, p_attribute->as<AttrT>(), r_default_values);
   }
 

@@ -34,8 +34,6 @@
 /**************************************************************************/
 #include "enum.h"
 
-
-
 namespace GodotObjectCompiler {
 
   Vector<Ref<EnumValue>> Enum::_values_lazy_get() { return find_children<EnumValue>(true); }

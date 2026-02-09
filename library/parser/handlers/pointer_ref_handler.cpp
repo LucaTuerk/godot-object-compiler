@@ -34,7 +34,6 @@
 /**************************************************************************/
 #include "pointer_ref_handler.h"
 
-
 #include "library/parser/node_handler.h"
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/type.h"

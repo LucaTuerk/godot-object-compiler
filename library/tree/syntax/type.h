@@ -53,6 +53,7 @@ namespace GodotObjectCompiler {
     LAZY(Type, String, type_name);
     LAZY(Type, String, type_name_untemplated);
     LAZY(Type, String, type_name_unmodified);
+    LAZY(Type, String, type_name_unmodified_ptr);
     LAZY(Type, bool, is_template_type);
     LAZY(Type, Size, template_argument_count);
     LAZY(Type, Ref<TemplateArguments>, template_arguments);

@@ -35,9 +35,9 @@
 
 #include "output.h"
 
-
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
+#include "output_transformator.h"
 
 namespace GodotObjectCompiler {
   namespace Writer {
@@ -369,6 +369,17 @@ namespace GodotObjectCompiler {
     }
 
     Ref<SnippetNode> PragmaOnce() { return node_new<SnippetNode>("#pragma once\n\n"); }
+
+    Ref<ListNode> If(const Ref<Node>& p_condition, std::initializer_list<Ref<Node>> p_children) {
+      Ref<ListNode> result = node_new<ListNode>();
+      result->add_children({
+          Text("if("),
+          p_condition,
+          Text(")"),
+          build<Body>().with_children(std::move(p_children)),
+      });
+      return result;
+    }
 
     Ref<ListNode> Class(const String& p_name, Ref<IOutputNode> p_content) {
       return Spaces({Text("class"), Text(p_name),

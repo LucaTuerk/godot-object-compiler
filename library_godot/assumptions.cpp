@@ -56,6 +56,8 @@ namespace GodotObjectCompiler {
       success &= GDREGISTER_INTERNAL_CLASS.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDREGISTER_RUNTIME_CLASS.validate(TypeDB::instance()) == STATE_VALID;
       success &= GDREGISTER_NATIVE_STRUCT.validate(TypeDB::instance()) == STATE_VALID;
+      success &= GDVIRTUAL_CALL.validate(TypeDB::instance()) == STATE_VALID;
+      success &= GDVIRTUAL_BIND.validate(TypeDB::instance()) == STATE_VALID;
 
       return success;
     }

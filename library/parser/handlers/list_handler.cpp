@@ -34,7 +34,6 @@
 /**************************************************************************/
 #include "list_handler.h"
 
-
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/attribute.h"
 #include "library/tree/syntax/function.h"

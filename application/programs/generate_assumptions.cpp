@@ -34,7 +34,6 @@
 /**************************************************************************/
 #include "application/application_context.h"
 #include "library/core/core.h"
-
 #include "library/core/string_writer.h"
 #include "library/generator/attribute_parameter_type.h"
 #include "library/tree/output/output.h"

@@ -39,6 +39,8 @@
 namespace GodotObjectCompiler {
 
   class TypeQualifierHandler : public INodeHandler {
+    NODE_HANDLER(TypeQualifierHandler);
+
    public:
 
     bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;

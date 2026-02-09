@@ -36,7 +36,6 @@
 
 #include "../tree/syntax/all.h"
 #include "library/core/file_system_utilities.h"
-
 #include "parser.h"
 #include "tree_sitter_node.h"
 

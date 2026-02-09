@@ -35,7 +35,6 @@
 #include "include.h"
 
 #include "../../type_db.h"
-
 #include "library/execution_context.h"
 #include "library/parser/parser.h"
 #include "namespace.h"

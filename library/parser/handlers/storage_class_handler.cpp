@@ -34,7 +34,6 @@
 /**************************************************************************/
 #include "storage_class_handler.h"
 
-
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/modifiers.h"
 

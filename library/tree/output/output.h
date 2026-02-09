@@ -209,5 +209,7 @@ namespace GodotObjectCompiler {
 
     Ref<SnippetNode> PragmaOnce();
 
+    Ref<ListNode> If(const Ref<Node>& p_condition, std::initializer_list<Ref<Node>> p_children);
+
   }
 }
