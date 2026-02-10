@@ -38,6 +38,7 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/enum.h"
+#include "library/tree/syntax/identifier.h"
 #include "library/tree/syntax/modifiers.h"
 #include "library/tree/syntax/struct.h"
 #include "library/tree/syntax/type.h"

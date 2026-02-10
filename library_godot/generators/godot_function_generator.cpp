@@ -62,11 +62,17 @@ namespace GodotObjectCompiler {
         parameters->find_children<Parameter>(), [](const Ref<Parameter>& parameter, String& out) {
           out = parameter->name();
           return true;
+    });
+
+    const Vector<String> default_values = vector_transform<Ref<Literal>, String>(
+        target_function->default_values(), [](const Ref<Literal>& literal, String& out) {
+          out = literal->content;
+          return true;
         });
 
     if (target_function->is_static()) {
       bind_methods_body->add_child(
-          GodotGeneratorUtils::bind_static_method(p_target_class->name(), target_function->name(), parameter_names));
+          GodotGeneratorUtils::bind_static_method(p_target_class->name(), target_function->name(), parameter_names,default_values));
     } else if (target_function->is_virtual()) {
       Ref<GeneratorError> error = generate_virtual(
           p_target_class, target_function, p_attribute, p_generated_body, p_generated_sources, bind_methods_body);
@@ -74,8 +80,9 @@ namespace GodotObjectCompiler {
         return error;
       }
     } else {
-      bind_methods_body->add_child(
-          GodotGeneratorUtils::bind_method(p_target_class->name(), target_function->name(), parameter_names));
+
+      bind_methods_body->add_child(GodotGeneratorUtils::bind_method(
+          p_target_class->name(), target_function->name(), parameter_names, default_values));
     }
 
     return GeneratorError::OK;
@@ -94,6 +101,12 @@ namespace GodotObjectCompiler {
     Vector<String> parameter_names = vector_transform<Ref<Parameter>, String>(
         p_target_function->parameters()->find_children<Parameter>(), [](const Ref<Parameter>& parameter, String& out) {
           out = parameter->name();
+          return true;
+    });
+
+    const Vector<String> default_values = vector_transform<Ref<Literal>, String>(
+        p_target_function->default_values(), [](const Ref<Literal>& literal, String& out) {
+          out = literal->content;
           return true;
         });
 
@@ -117,8 +130,8 @@ namespace GodotObjectCompiler {
 
     String virtual_name = p_target_function->name();
     String virtual_caller_name = string_prefix(p_target_function->name(), "_")
-                                     ? p_target_function->name().substr(1)
-                                     : format("%_virtual", p_target_function->name().c_str());
+        ? p_target_function->name().substr(1)
+        : format("%_virtual", p_target_function->name().c_str());
 
     // clang-format off
       Ref<Arguments> arguments;
@@ -142,12 +155,22 @@ namespace GodotObjectCompiler {
       }).with_child(Writer::Semicolon());
 
       Ref<Body> func_body;
+      Ref<Parameters> func_parameters;
       Ref<Function> func_implementation = build<Function>().with_children({
         p_target_function->type()->clone(),
         build<Identifier>(p_target_class->qualified_name()+ "::" + virtual_caller_name),
-        p_target_function->parameters()->clone(),
+      build_ref<Parameters>(&func_parameters),
         build_ref<Body>(&func_body),
       });
+
+      if (p_target_function->parameters()) {
+        for (const Ref<Parameter>& parameter : p_target_function->parameters()->find_children<Parameter>()) {
+          func_parameters->build_child<Parameter>().with_children({
+            parameter->type()->clone(),
+            build<Identifier>(parameter->name()),
+          });
+        }
+      }
 
       if (!is_void) {
         func_body->create_child<Writer::SnippetNode>(format("%s __ret_val__ = {};", p_target_function->type()->type_name().c_str()));
@@ -198,7 +221,7 @@ namespace GodotObjectCompiler {
     p_generated_sources->add_child(func_implementation);
     p_generated_body->add_children({virtual_caller, gdvirtual});
     p_bind_methods_body->add_children({gdvirtual_bind,
-        GodotGeneratorUtils::bind_method(p_target_class->name(), virtual_caller_name, parameter_names)});
+        GodotGeneratorUtils::bind_method(p_target_class->name(), virtual_caller_name, parameter_names, default_values)});
 
     return GeneratorError::OK;
   }

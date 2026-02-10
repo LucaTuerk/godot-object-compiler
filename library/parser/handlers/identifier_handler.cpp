@@ -40,6 +40,7 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/attribute.h"
 #include "library/tree/syntax/field.h"
+#include "library/tree/syntax/identifier.h"
 
 namespace GodotObjectCompiler {
 

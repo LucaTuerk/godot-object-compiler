@@ -63,4 +63,19 @@ namespace GodotObjectCompiler {
 
   Ref<Literal> Parameter::_default_value_lazy_get() { return find_child<Literal>(); }
 
+  Vector<Ref<Literal>> Function::_default_values_lazy_get() {
+    Vector<Ref<Literal>> default_value_literals;
+    if (!parameters()) {
+      return {};
+    }
+
+    for (const Ref<Parameter>& parameter : parameters()->find_children<Parameter>()) {
+      if (parameter->default_value()) {
+        default_value_literals.push_back(parameter->default_value());
+      }
+    }
+
+    return default_value_literals;
+  }
+
 }

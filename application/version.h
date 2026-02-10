@@ -36,3 +36,4 @@
 
 #define GOC_MAJOR_VERSION 0
 #define GOC_MINOR_VERSION 0
+#define GOC_VERSION_NAME "experimental"

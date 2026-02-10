@@ -36,9 +36,6 @@
 #include "attribute_argument_parser.h"
 
 #include "library/core/string_utilities.h"
-#include "library/tree/syntax/all.h"
-#include "library/tree/syntax/function.h"
-#include "library/tree/syntax/identifier.h"
 
 namespace GodotObjectCompiler {
 

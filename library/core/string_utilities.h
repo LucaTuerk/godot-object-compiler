@@ -66,6 +66,8 @@ namespace GodotObjectCompiler {
 
   String string_pad_right(const String& p_content, char p_padding, Size p_size);
 
+  String string_pad_left(const String& p_content, char p_padding, Size p_size);
+
   String string_shrink_inner_space(const String& p_content);
 
   int string_to_int(const String& p_content);
@@ -75,5 +77,7 @@ namespace GodotObjectCompiler {
   String cpp_enum_case_to_exposed_enum_case(const String& p_content);
 
   Vector<String> string_split(const String& p_content, const String& p_delimiter);
+
+  Vector<String> string_split_length(const String& p_content, Size length);
 
 }

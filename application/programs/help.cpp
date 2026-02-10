@@ -35,6 +35,7 @@
 
 #include "help.h"
 
+#include "application/version.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
 #include "library/core/string_utilities.h"
@@ -42,14 +43,14 @@
 
 namespace GodotObjectCompiler {
 
-  String HelpEntry::get_help_text() const {
-    if (path.empty()) {
+  String Help::get_help_text(const ProgramPath& p_path) {
+    if (p_path.empty()) {
       return "";
     }
-    String file_stem = string_vector_combine(path, "_");
+    String file_stem = string_vector_combine(p_path, "_");
     String res_path = "res://" + path_concat_ext("help", file_stem, "txt");
     if (!Resources::instance()->has_resource(res_path)) {
-      return "";
+      return "-";
     }
 
     return Resources::instance()->load_text_resource(res_path);
@@ -58,40 +59,61 @@ namespace GodotObjectCompiler {
   Ref<ProgramError> Help::run(ApplicationContext& p_context) {
     Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
 
-    const Ref<Context> help = node_new<HelpEntry>(ProgramPath(), "Available Programs: ", false);
+    auto cmp = [](const Pair<ProgramPath, Ref<IProgram>>& a, const Pair<ProgramPath, Ref<IProgram>>& b) {
+      return string_vector_combine(a.first, "") < string_vector_combine(b.first, "");
+    };
+    Vector<Pair<ProgramPath, Ref<IProgram>>> programs_sorted;
+    std::copy(programs.begin(), programs.end(), std::back_inserter(programs_sorted));
+    std::sort(programs_sorted.begin(), programs_sorted.end(), cmp);
 
-    for (const auto& [path, program] : programs) {
-      Ref<Context> current = help;
-      for (Size i = 0; i < path.size(); ++i) {
-        String val = path.at(i);
-        if (const Ref<HelpEntry> existing =
-                current->find_child<HelpEntry>(0, [val](Ref<HelpEntry> entry) { return entry->name == val; })) {
-          if (i == path.size() - 1) {
-            existing->path = path;
-            existing->is_program = true;
-          } else {
-            current = existing;
-          }
-        } else {
-          if (i == path.size() - 1) {
-            current->build_child<HelpEntry>(path, val, true);
-          } else {
-            const Ref<HelpEntry> new_entry = current->build_child<HelpEntry>(path, val, false);
-            current = new_entry;
-          }
-        }
+    fmt_print_ln("Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MAJOR_VERSION, GOC_VERSION_NAME);
+
+    print_ln("Usage: goc [PROGRAM PATH...] [OPTIONS...]");
+    print_ln("");
+    print_ln("Available Programs:");
+    print_ln(string_pad_right("", '-', 71));
+
+    for (const auto& [path, program] : programs_sorted) {
+      if (path.empty()) {
+        continue;
       }
+
+      StreamWriter identifier_writer;
+      for (Size i = 0; i < path.size() - 1; ++i) {
+        identifier_writer.write("  ");
+      }
+      identifier_writer.write(path.back());
+
+      print_ln("");
+      print_help_columns({20, identifier_writer.get_string()}, {50, get_help_text(path)});
     }
 
-    print_ln(help->pretty_print());
     return ProgramError::OK;
   }
 
-  String HelpEntry::to_string() const {
-    if (!path.empty()) {
-      return format("%s\n%s", name.c_str(), get_help_text().c_str());
-    } else {
-      return name;
+  void Help::print_help_columns(Column column1, Column column2) {
+    Vector<String> rows1;
+    Vector<String> rows2;
+
+    Vector<String> lines1 = string_split(column1.second, "\n");
+    Vector<String> lines2 = string_split(column2.second, "\n");
+
+    for (const String& line1 : lines1) {
+      Vector<String> line_split = string_split_length(line1, column1.first);
+      rows1.insert(rows1.end(), line_split.begin(), line_split.end());
+    }
+
+    for (const String& line2 : lines2) {
+      Vector<String> line_split = string_split_length(line2, column2.first);
+      rows2.insert(rows2.end(), line_split.begin(), line_split.end());
+    }
+
+    for (Size i = 0; i < std::max(rows1.size(), rows2.size()); ++i) {
+      String row1 = i < rows1.size() ? rows1[i] : "";
+      String row2 = i < rows2.size() ? rows2[i] : "";
+      row1 = string_pad_right(row1, ' ', column1.first);
+      row2 = string_pad_right(row2, ' ', column2.first);
+      fmt_print_ln("%s %s", row1.c_str(), row2.c_str());
     }
   }
 

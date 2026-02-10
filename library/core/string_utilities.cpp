@@ -110,6 +110,20 @@ namespace GodotObjectCompiler {
     return writer.get_string();
   }
 
+  String string_pad_left(const String& p_content, char p_padding, Size p_size) {
+    if (p_content.size() >= p_size) {
+      return p_content;
+    }
+
+    StreamWriter writer;
+    for (Size i = p_content.length(); i < p_size; i++) {
+      writer.write_generic(p_padding);
+    }
+    writer.write(p_content);
+
+    return writer.get_string();
+  }
+
   String string_shrink_inner_space(const String& p_content) {
     StreamWriter writer;
     Size whitespace_count = 0;
@@ -191,6 +205,20 @@ namespace GodotObjectCompiler {
 
     if (result.empty()) {
       result.emplace_back(p_content);
+    }
+
+    return result;
+  }
+
+  Vector<String> string_split_length(const String& p_content, Size length) {
+    if (p_content.empty()) {
+      return {""};
+    }
+    Size current = 0;
+    Vector<String> result;
+    while (current < p_content.length()) {
+      result.push_back(p_content.substr(current, length));
+      current += length;
     }
 
     return result;

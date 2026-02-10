@@ -35,7 +35,7 @@
 
 #include "godot_attribute_argument_parser.h"
 
-
+#include "library/tree/syntax/identifier.h"
 
 namespace GodotObjectCompiler {
 
@@ -119,7 +119,7 @@ namespace GodotObjectCompiler {
       }
 
       Vector<String> arguments = split_arguments(inner);
-      auto parameters = type->get_arguments();  //
+      auto parameters = type->get_arguments();
 
       if (arguments.size() > parameters.size()) {
         return node_new<ParserError>(

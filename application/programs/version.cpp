@@ -40,7 +40,7 @@
 namespace GodotObjectCompiler {
 
   Ref<ProgramError> Version::run(ApplicationContext& p_context) {
-    fmt_print_ln("%d.%d", GOC_MAJOR_VERSION, GOC_MINOR_VERSION);
+    fmt_print_ln("%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MINOR_VERSION, GOC_VERSION_NAME);
     return ProgramError::OK;
   }
 

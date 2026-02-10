@@ -1,0 +1,2 @@
+Generate Godot bindings for files in the projects root folder.
+Only processes files with .h and .hpp file extension.
