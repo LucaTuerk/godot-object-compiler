@@ -46,6 +46,7 @@
 #include "library/tree/syntax/type.h"
 #include "library/type_db.h"
 #include "library_godot/assumptions.h"
+#include "library_godot/attributes/godot_attributes.h"
 #include "library_godot/attributes/godot_property_hint.h"
 #include "library_godot/attributes/godot_variant_type.h"
 
@@ -307,8 +308,26 @@ namespace GodotObjectCompiler {
         hints.push_back(format(
             "%s:%s", cpp_enum_case_to_exposed_enum_case(value->name()).c_str(), value->literal()->content.c_str()));
       }
-      p_property_hint = build_property_hint_argument(HintEnum(), string_vector_combine(hints, ","));
+
+      Ref<GodotEnumAttribute> attribute =
+          TypeDB::instance()->get_type_attribute<GodotEnumAttribute>(p_target_type, p_from_namespace);
+
+      bool is_flags = false;
+
+      if (attribute) {
+        if (const Ref<Identifier> argument_identifier =
+                attribute->find_chain<Identifier, Arguments, EnumGeneratorOptionsArgument>()) {
+          is_flags = argument_identifier->name == EnumGeneratorOptionsArgument::EnumFlags;
+        }
+      }
+
+      if (is_flags) {
+        p_property_hint = build_property_hint_argument(HintFlags(), string_vector_combine(hints, ","));
+      } else {
+        p_property_hint = build_property_hint_argument(HintEnum(), string_vector_combine(hints, ","));
+      }
       p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
+
       return true;
     }
 

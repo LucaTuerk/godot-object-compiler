@@ -51,13 +51,14 @@ namespace GodotObjectCompiler {
     paths_goc = path_absolute(p_project.paths_goc);
 
     paths_include = p_project.paths_include;
-    if (!vector_contains(paths_include, p_project.paths_root)) {
-      paths_include.push_back(p_project.paths_root);
-    }
     for (const auto& godot_include_path : p_project.godot_include_paths) {
       if (!vector_contains(paths_include, godot_include_path)) {
         paths_include.push_back(godot_include_path);
       }
+    }
+
+    if (!vector_contains(paths_include, p_project.paths_root)) {
+      paths_include.push_back(p_project.paths_root);
     }
 
     for (const String& file_path : directory_files_recursive(p_project.paths_root)) {

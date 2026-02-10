@@ -55,15 +55,12 @@ namespace GodotObjectCompiler {
         return find_parent<Node>([this](Ref<Node> p_parent) { return verify_target(p_parent); });
       } break;
       default:
-        print_err("UNIMPLEMENTED");
-        return nullptr;
-        break;
+        PANIC("UNIMPLEMENTED");
     }
   }
 
   bool Attribute::verify_target(Ref<Node> p_resolved) const {
     if (!_verify_target_class(p_resolved)) {
-      print_err("WRONG CLASS LUL");
       return false;
     }
 
