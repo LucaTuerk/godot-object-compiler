@@ -91,13 +91,24 @@ namespace GodotObjectCompiler {
         }
 
         if (global_namespace) {
-          Vector<Ref<NamedContext>> found =
-              global_namespace->find_children<NamedContext>(true, [](Ref<NamedContext> node) {
-                return node->is<Class>() || node->is<Struct>() || node->is<Enum>() || node->is<Define>();
+          auto is_valid_type_target = [](const Ref<NamedContext>& node) {
+            return node->is<Class>() || node->is<Struct>() || node->is<Enum>() || node->is<Define>();
+          };
+
+          Vector<Ref<NamedContext>> found = global_namespace->find_children<NamedContext>(
+              true, [is_valid_type_target](const Ref<NamedContext>& node) {
+                return is_valid_type_target(node) || node->is<Attribute>();
               });
 
           for (const Ref<NamedContext>& node : found) {
-            TypeDB::instance()->save_type_data(node);
+            if (Ref<Attribute> attr = node->as<Attribute>(); attr && attr->resolve_target()) {
+              if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
+                  type && is_valid_type_target(type)) {
+                TypeDB::instance()->save_type_attribute(type, attr);
+              }
+            } else {
+              TypeDB::instance()->save_type_data(node);
+            }
           }
         }
       }

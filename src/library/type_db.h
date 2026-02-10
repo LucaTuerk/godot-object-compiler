@@ -36,8 +36,12 @@
 #include "core/assumption.h"
 #include "core/core.h"
 #include "library/tree/syntax/context.h"
+#include "tree/syntax/attribute.h"
+#include "tree/syntax/type.h"
 
 namespace GodotObjectCompiler {
+
+  class Attribute;
 
   class Type;
 
@@ -72,10 +76,14 @@ namespace GodotObjectCompiler {
 
     static TypeDB* instance();
     void set_cache_directory(const String& path);
-    void save_type_data(Ref<NamedContext> root);
+    void save_type_data(const Ref<NamedContext>& p_type);
+    void save_type_attribute(const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute);
 
     Ref<Node> get_type_data(const String& qualified_name, Size template_parameter_count = 0,
         const Ref<Namespace>& from_namespace = nullptr);
+
+    Ref<Attribute> get_type_attribute(const String& p_qualified_name, const String& p_attribute_name,
+        Size p_template_parameter_count = 0, const Ref<Namespace>& p_from_namespace = nullptr);
 
     Ref<Node> get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace = nullptr);
 
@@ -85,6 +93,9 @@ namespace GodotObjectCompiler {
 
     template <typename T>
     Ref<T> get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace = nullptr);
+
+    template <typename T>
+    Ref<T> get_type_attribute(const Ref<Type>& type, const Ref<Namespace>& from_namespace = nullptr);
 
     template <typename T>
     AssumptionState validate_t(Assumption<AssumeType<T>>& type_assumption);
@@ -103,13 +114,14 @@ namespace GodotObjectCompiler {
     using Writer = ConfigNodeReaderWriter;
 
     [[nodiscard]] String _get_cache_file_path(const String& qualified_name) const;
+    [[nodiscard]] String _get_attribute_cache_file_path(const String& p_qualified_name, const String& p_attribute_name);
     Dictionary<String, Ref<Node>> _cache;
     String _cache_directory;
   };
 
   template <typename T>
   Ref<T> TypeDB::get_type_data(
-      const String& qualified_name, Size template_parameter_count, const std::shared_ptr<Namespace>& from_namespace) {
+      const String& qualified_name, Size template_parameter_count, const Ref<Namespace>& from_namespace) {
     Ref<Node> result = get_type_data(qualified_name, template_parameter_count, from_namespace);
     if (!result) {
       return nullptr;
@@ -119,11 +131,22 @@ namespace GodotObjectCompiler {
   }
 
   template <typename T>
-  Ref<T> TypeDB::get_type_data(const Ref<Type>& type, const std::shared_ptr<Namespace>& from_namespace) {
+  Ref<T> TypeDB::get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace) {
     Ref<Node> result = get_type_data(type, from_namespace);
     if (!result) {
       return nullptr;
     }
+    return result->as<T>();
+  }
+
+  template <typename T>
+  Ref<T> TypeDB::get_type_attribute(const Ref<Type>& type, const Ref<Namespace>& from_namespace) {
+    Ref<Attribute> result = get_type_attribute(
+        type->qualified_name(), T::get_type_static(), type->template_argument_count(), from_namespace);
+    if (!result) {
+      return nullptr;
+    }
+
     return result->as<T>();
   }
 

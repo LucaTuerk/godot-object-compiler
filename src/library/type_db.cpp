@@ -152,9 +152,15 @@ namespace GodotObjectCompiler {
     return path_concat(_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
   }
 
-  void TypeDB::save_type_data(Ref<NamedContext> root) {
+  String TypeDB::_get_attribute_cache_file_path(const String& p_qualified_name, const String& p_attribute_name) {
+    String base = path_concat(_cache_directory, string_replace(p_qualified_name, "::", "/"));
+    String path = path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
+    return path;
+  }
+
+  void TypeDB::save_type_data(const Ref<NamedContext>& p_type) {
     Writer writer;
-    String qualified_name = root->mangled_name();
+    String qualified_name = p_type->mangled_name();
 
     auto path = _get_cache_file_path(qualified_name);
     auto base = path_base(path);
@@ -162,7 +168,18 @@ namespace GodotObjectCompiler {
       return;
     }
 
-    writer.write_to_file(root, path);
+    writer.write_to_file(p_type, path);
+  }
+
+  void TypeDB::save_type_attribute(const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute) {
+    Writer writer;
+    String qualified_name = p_type->mangled_name();
+    String path = _get_attribute_cache_file_path(qualified_name, p_attribute->get_type());
+    String base = path_base(path);
+    if (!directory_exits(base) && !create_dir_recursive(base)) {
+      return;
+    }
+    writer.write_to_file(p_attribute, path);
   }
 
   Ref<Node> TypeDB::get_type_data(
@@ -171,20 +188,21 @@ namespace GodotObjectCompiler {
 
     for (const String& name : resolve_possible_namespaces(qualified_name, from_namespace)) {
       String mangled_name = mangle_name(name, template_argument_count);
-
-      if (auto itr = _cache.find(mangled_name); itr != _cache.end()) {
-        return itr->second;
-      }
       const String& cache_file_path = _get_cache_file_path(mangled_name);
+
+      if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
+        return itr->second->clone();
+      }
+
       const String& godot_cache_file_path = _get_cache_file_path("godot::" + mangled_name);
 
       if (file_exists(cache_file_path)) {
         Ref<Node> root = reader.read_from_file(cache_file_path);
-        _cache[mangled_name] = root;
+        _cache[cache_file_path] = root->clone();
         return root;
       } else if (file_exists(godot_cache_file_path)) {
         Ref<Node> root = reader.read_from_file(godot_cache_file_path);
-        _cache[mangled_name] = root;
+        _cache[cache_file_path] = root->clone();
         return root;
       }
     }
@@ -192,8 +210,41 @@ namespace GodotObjectCompiler {
     return nullptr;
   }
 
+  Ref<Attribute> TypeDB::get_type_attribute(const String& p_qualified_name, const String& p_attribute_name,
+      Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace) {
+    Reader reader;
+
+    for (const String& name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
+      String mangled_name = mangle_name(name, p_template_parameter_count);
+      const String& cache_file_path = _get_attribute_cache_file_path(mangled_name, p_attribute_name);
+
+      if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
+        return itr->second->as<Attribute>();
+      }
+
+      const String& godot_cache_file_path = _get_attribute_cache_file_path("godot::" + mangled_name, p_attribute_name);
+
+      if (file_exists(cache_file_path)) {
+        Ref<Node> root = reader.read_from_file(cache_file_path);
+        if (!root) {
+          return nullptr;
+        }
+        _cache[cache_file_path] = root->clone();
+        return root->as<Attribute>();
+      } else if (file_exists(godot_cache_file_path)) {
+        Ref<Node> root = reader.read_from_file(godot_cache_file_path);
+        if (!root) {
+          return nullptr;
+        }
+        _cache[cache_file_path] = root->clone();
+        return root->as<Attribute>();
+      }
+    }
+    return nullptr;
+  }
+
   Ref<Node> TypeDB::get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace) {
-    return get_type_data(type->name(), type->template_argument_count(), from_namespace);
+    return get_type_data(type->qualified_name(), type->template_argument_count(), from_namespace);
   }
 
   AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Enum>>& p_assumption) {

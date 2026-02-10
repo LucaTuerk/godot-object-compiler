@@ -49,14 +49,8 @@ namespace GodotObjectCompiler {
     UNUSED(p_uninitialize_content);
     using namespace GodotGeneratorUtils;
 
-    const Ref<Arguments> arguments = p_class_attribute->find_child<Arguments>();
-    GEN_ERROR_COND(!arguments, p_target_class, "No arguments found.");
-
-    const Ref<GodotModuleInitializationLevelArgument> init_level =
-        arguments->find_child<GodotModuleInitializationLevelArgument>();
-    GEN_ERROR_COND(!init_level, p_target_class, "Initialization level argument does not exist.");
-
-    const Ref<Identifier> init_level_identifier = init_level->find_child<Identifier>();
+    const Ref<Identifier> init_level_identifier =
+        p_class_attribute->find_chain<Identifier, Arguments, GodotModuleInitializationLevelArgument>();
     GEN_ERROR_COND(!init_level_identifier, p_target_class,
         "Could not determine GodotModuleInitializationLevelArgument identifier.");
 
@@ -69,10 +63,8 @@ namespace GodotObjectCompiler {
       GEN_ERROR(p_target_class, "Failed to get ModuleInitializationLevel enum value for value name " + init_level_name)
     }
 
-    const Ref<GodotClassTypeArgument> class_type = arguments->find_child<GodotClassTypeArgument>();
-    GEN_ERROR_COND(!class_type, p_target_class, "Class type argument does not exists.");
-
-    const Ref<Identifier> class_type_identifier = class_type->find_child<Identifier>();
+    const Ref<Identifier> class_type_identifier =
+        p_class_attribute->find_chain<Identifier, Arguments, GodotClassTypeArgument>();
     GEN_ERROR_COND(!class_type_identifier, p_target_class, "Could not determine GodotClassTypeArgument identifier.");
 
     const String class_type_name = class_type_identifier->name;

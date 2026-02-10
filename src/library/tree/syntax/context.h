@@ -137,6 +137,12 @@ namespace GodotObjectCompiler {
     void remove_all_children();
 
     template <typename T>
+    Ref<T> find_chain(Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+    template <typename T, typename C, typename... Args>
+    Ref<T> find_chain(Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+    template <typename T>
     Ref<T> find_child(Index p_start_idx = 0, Predicate<T> p_predicate = default_node_predicate<T>) const;
 
     template <class T>
@@ -213,7 +219,7 @@ namespace GodotObjectCompiler {
   }
 
   template <class T>
-  std::shared_ptr<T> Context::find_ancestor(StemExplorationType p_type, Predicate<T> p_predicate) {
+  Ref<T> Context::find_ancestor(StemExplorationType p_type, Predicate<T> p_predicate) {
     Ref<Node> current = get_parent();
 
     while (current) {
@@ -258,7 +264,22 @@ namespace GodotObjectCompiler {
   }
 
   template <typename T>
-  std::shared_ptr<T> Context::find_child(Index p_start_idx, Predicate<T> p_predicate) const {
+  Ref<T> Context::find_chain(Predicate<T> p_predicate) const {
+    return find_child<T>(0, p_predicate);
+  }
+
+  template <typename T, typename C, typename... Args>
+  Ref<T> Context::find_chain(Predicate<T> p_predicate) const {
+    Ref<C> current = find_child<C>();
+    if (!current) {
+      return nullptr;
+    }
+
+    return current->template find_chain<T, Args...>(p_predicate);
+  }
+
+  template <typename T>
+  Ref<T> Context::find_child(Index p_start_idx, Predicate<T> p_predicate) const {
     for (const Ref<Node>& child : _children) {
       Ref<T> tChild = std::dynamic_pointer_cast<T>(child);
       if (tChild && p_predicate(tChild)) {
@@ -270,7 +291,7 @@ namespace GodotObjectCompiler {
   }
 
   template <class T>
-  std::shared_ptr<T> Context::find_descendant(BranchExplorationType p_order, Predicate<T> p_predicate) {
+  Ref<T> Context::find_descendant(BranchExplorationType p_order, Predicate<T> p_predicate) {
     switch (p_order) {
       case DFS:
         for (const Ref<Node>& child : _children) {
@@ -323,7 +344,7 @@ namespace GodotObjectCompiler {
   }
 
   template <class T, typename... Args>
-  std::shared_ptr<T> Context::create_child(Args&&... args) {
+  Ref<T> Context::create_child(Args&&... args) {
     Ref<T> child = ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
     add_child(child);
     return child;

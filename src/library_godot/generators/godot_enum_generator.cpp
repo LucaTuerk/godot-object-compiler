@@ -58,11 +58,8 @@ namespace GodotObjectCompiler {
     GEN_ERROR_COND(
         !target_enum, p_target_class, "Resolved target for enum macro is not an enum, but " + target_node->get_type());
 
-    Ref<EnumGeneratorOptionsArgument> enum_options = p_attribute->find_descendant<EnumGeneratorOptionsArgument>();
-    GEN_ERROR_COND(!enum_options, p_attribute, "Failed to get enum options argument");
-
-    Ref<Identifier> enum_options_identifier = enum_options->find_child<Identifier>();
-    GEN_ERROR_COND(!enum_options_identifier, enum_options, "Invalid enum options argument. No identifier found");
+    Ref<Identifier> enum_options_identifier = p_attribute->find_chain<Identifier, Arguments, EnumGeneratorOptionsArgument>();
+    GEN_ERROR_COND(!enum_options_identifier, p_attribute, "Invalid enum options argument. No identifier found");
 
     String cast_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
         ? AssumedGodotTypes::VARIANT_ENUM_CAST().qualified_name
@@ -74,7 +71,7 @@ namespace GodotObjectCompiler {
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
         ? AssumedGodotTypes::BIND_BITFIELD_FLAG().qualified_name
         : "";
-    GEN_ERROR_COND(cast_macro.empty() || bind_macro.empty(), enum_options, "Unknown enum options name");
+    GEN_ERROR_COND(cast_macro.empty() || bind_macro.empty(), p_attribute, "Unknown enum options name");
 
     if (p_target_class) {
       Ref<Body> bind_methods_body =
