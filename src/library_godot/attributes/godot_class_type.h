@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* godot_class_type.h                                                     */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,23 +32,36 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
+#include "library/generator/attribute_parameter_type.h"
+#include "library/tree/syntax/function.h"
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
+namespace GodotObjectCompiler {
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+  class GodotClassTypeArgument : public Argument {
+    NODE_TYPE(GodotClassTypeArgument);
+  };
 
-  TreeSitterParser parser;
+  class GodotClassTypeParameterType : public IAttributeParameterType {
+    PARAM_TYPE(GodotClassTypeParameterType);
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
-  }
+   public:
 
-  return TEST_RESULT_SUCCESS;
-};
+    String get_return_type() override;
+
+    Vector<String> get_value_names() override;
+
+    Vector<Argument> get_arguments() override;
+
+    Ref<GodotObjectCompiler::Argument> create_argument() override;
+
+    bool get_macro_for_value_name(const String& p_value_name, String& r_macro);
+
+   private:
+
+    LAZY(GodotClassTypeParameterType, Vector<String>, value_names);
+    Dictionary<String, String> _value_name_to_macro;
+  };
+
+}

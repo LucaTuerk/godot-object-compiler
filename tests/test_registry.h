@@ -74,7 +74,7 @@ namespace GodotObjectCompiler {
 
 #define GOC_TEST(name)                                                                        \
   static inline bool __##name##__test_registered__ = GodotObjectCompiler::TestRegister(#name) \
-                                                     << []() -> GodotObjectCompiler::TestResult
+      << []()->GodotObjectCompiler::TestResult
 
 #define GOC_TEST_IGNORE() return GodotObjectCompiler::TEST_RESULT_IGNORED;
 
@@ -113,5 +113,4 @@ namespace GodotObjectCompiler {
     Ref<ParserError> error = parser.parse_file(path, global_namespace); \
     GOC_TEST_EQ(error, ParserError::OK, "Parser error occurred");       \
   }                                                                     \
-  GOC_TEST_ASSERT(global_namespace, "Global Namespace is invalid.");\
-
+  GOC_TEST_ASSERT(global_namespace, "Global Namespace is invalid.");

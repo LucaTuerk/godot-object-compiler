@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* godot_class_generator.h                                                */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,23 +32,32 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
+#include "godot_initialization_generator.h"
+#include "library/generator/generator.h"
+#include "library_godot/attributes/godot_attributes.h"
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
+namespace GodotObjectCompiler {
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+  class GodotClassGenerator : public IClassGenerator<GodotClassAttribute>, public IGodotInitializationGenerator {
+    GENERATOR(GodotClassGenerator);
 
-  TreeSitterParser parser;
+   public:
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
-  }
+    Ref<GeneratorError> generate_initialization(Ref<Class> p_target_class, Ref<GodotClassAttribute> p_class_attribute,
+        Ref<Context> p_initialize_content, Ref<Context> p_uninitialize_content) override;
 
-  return TEST_RESULT_SUCCESS;
-};
+    Ref<GeneratorError> generate_startup(Ref<Class> p_target_class, Ref<GodotClassAttribute> p_class_attribute,
+        Ref<Context> p_startup_content, Ref<Context> p_shutdown_content) override;
+
+   private:
+
+    Ref<GeneratorError> do_generate_default_attribute_arguments(
+        Ref<Class> p_target_class, Ref<GodotClassAttribute> p_attribute, Ref<Context> p_default_values) override;
+
+    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotClassAttribute> p_attribute,
+        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
+  };
+
+}

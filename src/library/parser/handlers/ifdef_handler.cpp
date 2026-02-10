@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* ifdef_handler.cpp                                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,23 +32,23 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#pragma once
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
+#include "ifdef_handler.h"
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+#include <utility>
 
-  TreeSitterParser parser;
+namespace GodotObjectCompiler {
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
+  void IfDefHandler::set_step(ParserStep step) { this->step = std::move(step); }
+
+  bool IfDefHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+    return p_current_src->type == "preproc_ifdef";
   }
 
-  return TEST_RESULT_SUCCESS;
-};
+  ParserStep IfDefHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    UNUSED(p_current_src);
+    UNUSED(r_current_target);
+    return step;
+  }
+
+}

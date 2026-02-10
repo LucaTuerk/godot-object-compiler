@@ -33,13 +33,13 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-
-
+#include "test_registry.h"
 
 GOC_TEST(StringReplace) {
   using namespace GodotObjectCompiler;
   return TEST_RESULT_SUCCESS;
 };
+
 GOC_TEST(StringTrim) {
   using namespace GodotObjectCompiler;
 
@@ -53,8 +53,10 @@ GOC_TEST(StringTrim) {
 
 GOC_TEST(StringShinkInnerSpace) {
   using namespace GodotObjectCompiler;
-  GOC_TEST_EQ(string_shrink_inner_space("a     b     c   d   e   f  g"), "a b c d e f g", "Failed to shrink inner space.")
-  GOC_TEST_EQ(string_shrink_inner_space("a   \n  b   \n  c   d   e \t  f \r g"), "a b c d e f g", "Failed to shrink inner space.")
+  GOC_TEST_EQ(
+      string_shrink_inner_space("a     b     c   d   e   f  g"), "a b c d e f g", "Failed to shrink inner space.")
+  GOC_TEST_EQ(string_shrink_inner_space("a   \n  b   \n  c   d   e \t  f \r g"), "a b c d e f g",
+      "Failed to shrink inner space.")
   return TEST_RESULT_SUCCESS;
 };
 
@@ -113,8 +115,11 @@ GOC_TEST(StringMacroToPascal) {
 GOC_TEST(StringEnumToExposedName) {
   using namespace GodotObjectCompiler;
   GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TEST_VALUE"), "Test Value", "Failed to convert to exposed enum name.")
-  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TEST_VALUE_123_Test"), "Test Value 123 Test", "Failed to convert to exposed enum name.")
-  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TESTVALUE12345"), "Testvalue 12345", "Failed to convert to  exposed enum name.")
-  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TESTVALUE123TEST"), "Testvalue 123 Test", "Failed to convert to  exposed enum name.")
+  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TEST_VALUE_123_Test"), "Test Value 123 Test",
+      "Failed to convert to exposed enum name.")
+  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TESTVALUE12345"), "Testvalue 12345",
+      "Failed to convert to  exposed enum name.")
+  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TESTVALUE123TEST"), "Testvalue 123 Test",
+      "Failed to convert to  exposed enum name.")
   return TEST_RESULT_SUCCESS;
 };

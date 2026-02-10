@@ -39,7 +39,7 @@
 #include "library/tree/syntax/field.h"
 #include "library/tree/syntax/namespace.h"
 #include "library/tree/syntax/type.h"
-#include "tests/test_registry.h"
+#include "test_registry.h"
 
 GOC_TEST(ClassSimple) {
   using namespace GodotObjectCompiler;

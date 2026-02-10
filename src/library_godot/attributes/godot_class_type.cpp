@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* godot_class_type.cpp                                                   */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,23 +32,52 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#pragma once
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
+#include "godot_class_type.h"
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+#include "../assumptions.h"
+#include "library/core/string_utilities.h"
 
-  TreeSitterParser parser;
+namespace GodotObjectCompiler {
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
+  String GodotClassTypeParameterType::get_return_type() { return "GOC_GodotClassType"; }
+
+  Vector<String> GodotClassTypeParameterType::get_value_names() { return value_names(); }
+
+  Vector<IAttributeParameterType::Argument> GodotClassTypeParameterType::get_arguments() { return {}; }
+
+  bool GodotClassTypeParameterType::get_macro_for_value_name(const String& p_value_name, String& r_macro) {
+    _value_names_lazy.poke();
+
+    auto itr = _value_name_to_macro.find(p_value_name);
+    if (itr == _value_name_to_macro.end()) {
+      r_macro = "";
+      return false;
+    }
+
+    r_macro = itr->second;
+    return true;
   }
 
-  return TEST_RESULT_SUCCESS;
-};
+  Ref<Argument> GodotClassTypeParameterType::create_argument() { return node_new<GodotClassTypeArgument>(); }
+
+  Vector<String> GodotClassTypeParameterType::_value_names_lazy_get() {
+    Vector<String> godot_macros = {
+        AssumedGodotTypes::GDREGISTER_CLASS().qualified_name,
+        AssumedGodotTypes::GDREGISTER_VIRTUAL_CLASS().qualified_name,
+        AssumedGodotTypes::GDREGISTER_ABSTRACT_CLASS().qualified_name,
+        AssumedGodotTypes::GDREGISTER_INTERNAL_CLASS().qualified_name,
+        AssumedGodotTypes::GDREGISTER_RUNTIME_CLASS().qualified_name,
+    };
+
+    Vector<String> value_names = {"RegisterCustom"};
+    for (const String& macro : godot_macros) {
+      auto value_name = macro_case_to_pascal_case(string_replace(macro, "GDREGISTER_", ""));
+      value_name = value_name == "Class" ? "GodotClass" : value_name;
+      _value_name_to_macro[value_name] = macro;
+      value_names.push_back(value_name);
+    }
+    return value_names;
+  }
+
+}
