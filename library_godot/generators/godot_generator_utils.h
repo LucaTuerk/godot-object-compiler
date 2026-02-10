@@ -55,11 +55,11 @@ namespace GodotObjectCompiler {
 
     Ref<Type> const_ref(const String& p_type_name);
 
-    Ref<Function> bind_method(
-        const String& p_class_name, const String& p_method_name, const Vector<String>& p_parameter_names);
+    Ref<Function> bind_method(const String& p_class_name, const String& p_method_name,
+        const Vector<String>& p_parameter_names, const Vector<String>& p_default_values = {});
 
-    Ref<Function> bind_static_method(
-        const String& p_class_name, const String& p_method_name, const Vector<String>& p_parameter_names);
+    Ref<Function> bind_static_method(const String& p_class_name, const String& p_method_name,
+        const Vector<String>& p_parameter_names, const Vector<String>& p_default_values ={});
 
     Ref<Body> get_or_create_bind_methods_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
         const Ref<Context>& p_generated_sources);

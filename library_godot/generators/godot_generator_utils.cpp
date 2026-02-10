@@ -84,17 +84,18 @@ namespace GodotObjectCompiler {
     return build<Type>().with_children({build<Const>(), build<Identifier>(p_type_name), build<Reference>()});
   }
 
-  Ref<Function> GodotGeneratorUtils::bind_method(
-      const String& p_class_name, const String& p_method_name, const Vector<String>& p_parameter_names) {
+  Ref<Function> GodotGeneratorUtils::bind_method(const String& p_class_name, const String& p_method_name,
+      const Vector<String>& p_parameter_names, const Vector<String>& p_default_values) {
     // clang-format off
-    Ref<Arguments> arguments;
+    Ref<Arguments> bind_args;
+    Ref<Arguments> d_method_args;
 
     Ref<Function> result =  build<Function>().with_children({
     build<Identifier>("ClassDB::bind_method"),
-    build<Arguments>().with_children({
+    build_ref<Arguments>(&bind_args).with_children({
       build<Function>().with_children({
         build<Identifier>("D_METHOD"),
-        build_ref<Arguments>(&arguments).with_children({
+        build_ref<Arguments>(&d_method_args).with_children({
             build<Argument>().with_child(Writer::StringLiteral(p_method_name))
           })
         }),
@@ -106,25 +107,32 @@ namespace GodotObjectCompiler {
     })})}).with_child(Writer::Semicolon());
 
     for ( const String& parameter_name : p_parameter_names) {
-      arguments->build_child<Argument>().with_child(Writer::StringLiteral(parameter_name));
+      d_method_args->build_child<Argument>().with_child(Writer::StringLiteral(parameter_name));
+    }
+
+    for (const String& def_val : p_default_values) {
+      bind_args->build_child<Argument>().with_child(
+        Writer::Text(format("DEFVAL(%s)", def_val.c_str())
+      ));
     }
 
     return result;
     // clang-format on
   }
 
-  Ref<Function> GodotGeneratorUtils::bind_static_method(
-      const String& p_class_name, const String& p_method_name, const Vector<String>& p_parameter_names) {
+  Ref<Function> GodotGeneratorUtils::bind_static_method(const String& p_class_name, const String& p_method_name,
+      const Vector<String>& p_parameter_names, const Vector<String>& p_default_values) {
     // clang-format off
-    Ref<Arguments> arguments = node_new<Arguments>();
+    Ref<Arguments> bind_args;
+    Ref<Arguments> d_method_args;
 
     Ref<Function> result =  build<Function>().with_children({
     build<Identifier>("ClassDB::bind_static_method"),
-    build<Arguments>().with_children({
+    build_ref<Arguments>(&bind_args).with_children({
       build<Argument>().with_child(Writer::StringLiteral(p_class_name)),
       build<Function>().with_children({
         build<Identifier>("D_METHOD"),
-        build_ref<Arguments>(&arguments).with_children({
+        build_ref<Arguments>(&d_method_args).with_children({
             build<Argument>().with_child(Writer::StringLiteral(p_method_name))
           })
         }),
@@ -136,7 +144,13 @@ namespace GodotObjectCompiler {
     })})}).with_child(Writer::Semicolon());
 
     for ( const String& parameter_name : p_parameter_names) {
-      arguments->build_child<Argument>().with_child(Writer::StringLiteral(parameter_name));
+      d_method_args->build_child<Argument>().with_child(Writer::StringLiteral(parameter_name));
+    }
+
+    for (const String& def_val : p_default_values) {
+      bind_args->build_child<Argument>().with_child(
+        Writer::Text(format("DEFVAL(%s)", def_val.c_str())
+      ));
     }
 
     return result;
@@ -265,7 +279,7 @@ namespace GodotObjectCompiler {
       DefaultsUsage p_defaults_usage) {
     using namespace AssumedParameterValues;
     if (Ref<Type> ref_inner_type; type_is_godot_ref_type(p_target_type, ref_inner_type, p_from_namespace) &&
-                                  type_is_ref_counted_type(ref_inner_type, p_from_namespace)) {
+        type_is_ref_counted_type(ref_inner_type, p_from_namespace)) {
       p_variant_type = build_variant_type_argument(VariantTypeObject());
       p_property_hint = build_property_hint_argument(HintResourceType(), ref_inner_type->name());
       p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
@@ -431,9 +445,9 @@ namespace GodotObjectCompiler {
       const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace) {
     Vector<Ref<Type>> inner_types;
     return p_target_type->type_name_unmodified() == AssumedGodotTypes::Array().qualified_name ||
-           p_target_type->type_name_unmodified() == AssumedGodotTypes::Dictionary().qualified_name ||
-           type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedArray(), inner_types) ||
-           type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedDictionary(), inner_types);
+        p_target_type->type_name_unmodified() == AssumedGodotTypes::Dictionary().qualified_name ||
+        type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedArray(), inner_types) ||
+        type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedDictionary(), inner_types);
   }
 
   bool GodotGeneratorUtils::type_is_node_type(const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace) {

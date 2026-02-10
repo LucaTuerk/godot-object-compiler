@@ -1,0 +1,2 @@
+Initialize local resources such a macro_remove file and VariantType files from
+the resource files compiled into the program.

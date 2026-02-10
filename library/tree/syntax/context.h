@@ -244,7 +244,7 @@ namespace GodotObjectCompiler {
 
   template <typename T>
   Ref<T> Context::get_child(SignedIndex p_idx) const {
-    Ref<Node> node = get_child(p_idx);
+    const Ref<Node> node = get_child(p_idx);
     if (!node) {
       return nullptr;
     }
@@ -259,7 +259,7 @@ namespace GodotObjectCompiler {
 
   template <typename T>
   std::shared_ptr<T> Context::find_child(Index p_start_idx, Predicate<T> p_predicate) const {
-    for (Ref<Node> child : _children) {
+    for (const Ref<Node>& child : _children) {
       Ref<T> tChild = std::dynamic_pointer_cast<T>(child);
       if (tChild && p_predicate(tChild)) {
         return tChild;
@@ -273,7 +273,7 @@ namespace GodotObjectCompiler {
   std::shared_ptr<T> Context::find_descendant(BranchExplorationType p_order, Predicate<T> p_predicate) {
     switch (p_order) {
       case DFS:
-        for (auto child : _children) {
+        for (const Ref<Node>& child : _children) {
           Ref<T> child_t = child->as<T>();
           if (child_t && p_predicate(child_t)) {
             return child_t;
@@ -286,16 +286,15 @@ namespace GodotObjectCompiler {
         }
         break;
       case BFS:
-        for (auto child : _children) {
+        for (const Ref<Node>& child : _children) {
           Ref<T> child_t = child->as<T>();
           if (child_t && p_predicate(child_t)) {
             return child_t;
           }
         }
-        for (auto child : _children) {
+        for (const Ref<Node>& child : _children) {
           if (child->is<Context>()) {
-            Ref<T> child_res = child->as<Context>()->find_descendant<T>(p_order, p_predicate);
-            if (child_res) {
+            if (Ref<T> child_res = child->as<Context>()->find_descendant<T>(p_order, p_predicate)) {
               return child_res;
             }
           }
@@ -345,7 +344,7 @@ namespace GodotObjectCompiler {
     }
 
     if (recursive && node_context) {
-      for (Ref<Node> child : *node_context) {
+      for (const Ref<Node>& child : *node_context) {
         find_recursive_helper(child.get(), recursive, results, predicate);
       }
     }
@@ -354,7 +353,7 @@ namespace GodotObjectCompiler {
   template <class T>
   Vector<Ref<T>> Context::find_children(bool p_recursive, Predicate<T> p_predicate) {
     Vector<Ref<T>> results;
-    for (auto child : *this) {
+    for (const Ref<Node>& child : *this) {
       find_recursive_helper(child.get(), p_recursive, results, p_predicate);
     }
     return results;
@@ -385,7 +384,7 @@ namespace GodotObjectCompiler {
   }
 
   template <typename T, typename... Args>
-  Builder<T, Args...>::operator std::shared_ptr<Node>() {
+  Builder<T, Args...>::operator Ref<Node>() {
     return std::dynamic_pointer_cast<Node>(_created);
   }
 

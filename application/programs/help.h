@@ -45,21 +45,13 @@ namespace GodotObjectCompiler {
    public:
 
     Ref<ProgramError> run(ApplicationContext& p_context) override;
-  };
 
-  class HelpEntry : public Context {
-    NODE_TYPE(HelpEntry)
+   private:
 
-    HelpEntry(const ProgramPath& path, const String& name, bool is_program)
-        : path(path), name(name), is_program(is_program) {}
+    using Column = Pair<Size, String>;
 
-    String get_help_text() const;
-
-    String to_string() const override;
-
-    ProgramPath path;
-    String name;
-    bool is_program;
+    static void print_help_columns(Column column1, Column column2);
+    static String get_help_text(const ProgramPath& p_path);
   };
 
 }

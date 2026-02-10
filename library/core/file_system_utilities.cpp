@@ -39,7 +39,6 @@
 
 #include "core.h"
 #include "permissions.h"
-#include "string_utilities.h"
 #include "string_writer.h"
 
 namespace GodotObjectCompiler {

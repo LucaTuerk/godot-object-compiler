@@ -41,6 +41,7 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax/enum.h"
+#include "library/tree/syntax/identifier.h"
 #include "library/tree/syntax/literal.h"
 
 namespace GodotObjectCompiler {

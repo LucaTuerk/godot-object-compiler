@@ -78,6 +78,7 @@ namespace GodotObjectCompiler {
     LAZY(Function, Ref<Type>, type);
     LAZY(Function, Ref<Parameters>, parameters);
     LAZY(Function, Ref<Arguments>, arguments);
+    LAZY(Function, Vector<Ref<Literal>>, default_values);
 
    public:
 

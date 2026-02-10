@@ -37,6 +37,7 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/function.h"
+#include "library/tree/syntax/identifier.h"
 
 namespace GodotObjectCompiler {
 

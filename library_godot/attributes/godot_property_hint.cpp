@@ -39,6 +39,7 @@
 #include "../assumptions.h"
 #include "library/core/string_utilities.h"
 #include "library/tree/syntax/enum.h"
+#include "library/tree/syntax/identifier.h"
 
 namespace GodotObjectCompiler {
 

@@ -1,0 +1,1 @@
+DEV: Auto generate assumptions from the current type db.
