@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* attribute.cpp                                                          */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,23 +32,47 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#pragma once
+//
+// Created by luca on 20.01.26.
+//
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
+#include "attribute.h"
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+namespace GodotObjectCompiler {
 
-  TreeSitterParser parser;
+  Ref<IAttributeArgumentParser> Attribute::get_argument_parser() { return nullptr; }
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
+  Ref<Node> Attribute::resolve_target() const {
+    switch (_get_target()) {
+      case NEXT: {
+        Ref<Node> target = get_next_sibling();
+        if (verify_target(target)) {
+          return target;
+        }
+        return nullptr;
+      } break;
+      case CONTAINING: {
+        return find_parent<Node>([this](Ref<Node> p_parent) { return verify_target(p_parent); });
+      } break;
+      default:
+        print_err("UNIMPLEMENTED");
+        return nullptr;
+        break;
+    }
   }
 
-  return TEST_RESULT_SUCCESS;
-};
+  bool Attribute::verify_target(Ref<Node> p_resolved) const {
+    if (!_verify_target_class(p_resolved)) {
+      print_err("WRONG CLASS LUL");
+      return false;
+    }
+
+    return _verify_target(p_resolved);
+  }
+
+  bool Attribute::_verify_target(Ref<Node> p_resolved) const {
+    UNUSED(p_resolved);
+    return true;
+  }
+
+}

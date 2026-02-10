@@ -13,3 +13,4 @@ compile_commands.json
 *.generated.h
 *.generated.cpp
 .generated
+cmake*

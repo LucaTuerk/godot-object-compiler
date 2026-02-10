@@ -35,12 +35,13 @@
 
 #include "main.h"
 
-
+#include "core/all.h"
+#include "parser/all.h"
 #include "test_registry.h"
-#include "tests/parser/all.h"
-#include "tests/core/all.h"
 
 int main(int argc, char* argv[]) {
+  UNUSED(argc);
+  UNUSED(argv);
   using namespace GodotObjectCompiler;
   Size failed_count = 0;
   Size success_count = 0, ignore_count = 0, all_count = 0;

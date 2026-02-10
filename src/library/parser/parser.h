@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* parser.h                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,21 +34,62 @@
 /**************************************************************************/
 #pragma once
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
+#include "../tree/syntax/node.h"
+#include "library/core/core.h"
+#include "library/parser/parser_context.h"
 #include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+namespace GodotObjectCompiler {
 
-  TreeSitterParser parser;
+  class INodeHandler;
+  class TreeSitterNode;
+  struct ParserContext;
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
+  class IParser {
+   public:
+
+    virtual ~IParser() = default;
+    virtual Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) = 0;
+  };
+
+  class TreeSitterParser : public IParser {
+   public:
+
+    ~TreeSitterParser() = default;
+
+    Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target);
+
+    Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
+
+    template <typename T>
+    static bool register_handler(const String& p_name);
+
+    static String strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters);
+
+   private:
+
+    bool input_is_path = false;
+    static inline HashSet<String> _registered_handlers;
+    static inline Vector<Ref<INodeHandler>> _handlers;
+  };
+
+  template <typename T>
+  bool TreeSitterParser::register_handler(const String& p_name) {
+    if (_registered_handlers.find(p_name) != _registered_handlers.end()) {
+      return false;
+    }
+    _registered_handlers.insert(p_name);
+    _handlers.push_back(make_ref<T>());
+    return true;
   }
 
-  return TEST_RESULT_SUCCESS;
-};
+}
+
+#define HANDLER_ERROR(...)                           \
+  node_new<ParserError>(ERROR, format(__VA_ARGS__)); \
+  return ParserStep::StepOver();
+
+#define HANDLER_ERROR_COND(condition, ...) \
+  if ((condition)) {                       \
+    HANDLER_ERROR(__VA_ARGS__)             \
+  }

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* help.h                                                                 */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,23 +32,26 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
+#include "program.h"
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
+namespace GodotObjectCompiler {
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+  class Help : public IProgram {
+    PROJECTLESS_PROGRAM(Help, "help")
 
-  TreeSitterParser parser;
+   public:
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
-  }
+    Ref<ProgramError> run(ApplicationContext& p_context) override;
 
-  return TEST_RESULT_SUCCESS;
-};
+   private:
+
+    using Column = Pair<Size, String>;
+
+    static void print_title(const String& p_title, Size width);
+    static void print_help_columns(const Column& column1, const Column& column2);
+    static String get_help_text(const ProgramPath& p_path);
+  };
+
+}

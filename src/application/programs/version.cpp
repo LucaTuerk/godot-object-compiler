@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* version.cpp                                                            */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,23 +32,17 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#pragma once
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
+#include "version.h"
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+#include "application/version.h"
 
-  TreeSitterParser parser;
+namespace GodotObjectCompiler {
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
+  Ref<ProgramError> Version::run(ApplicationContext& p_context) {
+    UNUSED(p_context);
+    fmt_print_ln("%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MINOR_VERSION, GOC_VERSION_NAME);
+    return ProgramError::OK;
   }
 
-  return TEST_RESULT_SUCCESS;
-};
+}  // GodotObjectCompiler

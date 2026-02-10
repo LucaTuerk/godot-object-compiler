@@ -36,7 +36,7 @@
 #include "library/parser/parser.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax//namespace.h"
-#include "tests/test_registry.h"
+#include "test_registry.h"
 
 GOC_TEST(ParserSimpleNamespace) {
   using namespace GodotObjectCompiler;
@@ -80,7 +80,7 @@ GOC_TEST(ParseNestedNamespaces2) {
   using namespace NamedContextPredicates;
   TreeSitterParser parser;
   Ref<Namespace> global_namespace = node_new<Namespace>();
-  Ref<ParserError> error = parser.parse_file("tests/files/namespace_tests/10_nested_namespaces.h",global_namespace);
+  Ref<ParserError> error = parser.parse_file("tests/files/namespace_tests/10_nested_namespaces.h", global_namespace);
   GOC_TEST_EQ(error, ParserError::OK, "ParserError occurred!");
 
   Vector<Ref<Namespace>> namespaces = global_namespace->find_children<Namespace>(true);

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* godot_property_hint.h                                                  */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,23 +32,41 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
+#include "library/core/lazy.h"
+#include "library/generator/attribute_parameter_type.h"
+#include "library/tree/syntax/node.h"
 
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
-#include "test_registry.h"
+namespace GodotObjectCompiler {
 
-GOC_TEST(ParserRandStringFuzz) {
-  using namespace GodotObjectCompiler;
+  class GodotPropertyHintArgument : public Argument {
+    NODE_TYPE(GodotPropertyHintArgument);
 
-  TreeSitterParser parser;
+    LAZY(GodotPropertyHintArgument, String, godot_property_hint)
+    LAZY(GodotPropertyHintArgument, String, hint_string)
+    LAZY(GodotPropertyHintArgument, String, hint_content)
+  };
 
-  for (Size i = 0; i < 100; ++i) {
-    Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-    // GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
-  }
+  class GodotPropertyHintParameterType : public IAttributeParameterType {
+    PARAM_TYPE(GodotPropertyHintParameterType);
 
-  return TEST_RESULT_SUCCESS;
-};
+   public:
+
+    String get_return_type() override;
+
+    Vector<String> get_value_names() override;
+
+    Vector<Argument> get_arguments() override;
+
+    Ref<GodotObjectCompiler::Argument> create_argument() override;
+
+    bool get_godot_hint_for_value_name(const String& p_name, String& r_macro);
+
+   private:
+
+    LAZY(GodotPropertyHintParameterType, Vector<String>, value_names);
+    Dictionary<String, String> _godot_hint_types;
+  };
+
+}

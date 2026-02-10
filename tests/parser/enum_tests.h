@@ -34,10 +34,9 @@
 /**************************************************************************/
 #pragma once
 #include "library/core/collection_utilities.h"
-
 #include "library/core/string_writer.h"
 #include "library/tree/syntax/enum.h"
-#include "tests/test_registry.h"
+#include "test_registry.h"
 
 GOC_TEST(EnumValues) {
   using namespace GodotObjectCompiler;
