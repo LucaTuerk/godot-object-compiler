@@ -32,9 +32,6 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-//
-// Created by luca on 03.02.26.
-//
 
 #include "init_local_resources.h"
 

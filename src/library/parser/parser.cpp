@@ -36,14 +36,14 @@
 
 #include <utility>
 
-#include "../core/string_writer.h"
-#include "../tree/syntax/all.h"
-#include "handlers/all.h"
-#include "helpers.h"
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
-#include "node_handler.h"
-#include "tree_sitter_node.h"
+#include "library/core/string_writer.h"
+#include "library/parser/handlers/all.h"
+#include "library/parser/helpers.h"
+#include "library/parser/node_handler.h"
+#include "library/parser/tree_sitter_node.h"
+#include "library/tree/syntax/all.h"
 
 namespace GodotObjectCompiler {
 

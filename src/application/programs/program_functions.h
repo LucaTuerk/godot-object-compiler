@@ -33,7 +33,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "../../library/core/core.h"
+#include "library/core/core.h"
 
 namespace GodotObjectCompiler {
 

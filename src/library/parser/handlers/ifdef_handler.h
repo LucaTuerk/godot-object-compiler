@@ -34,7 +34,7 @@
 /**************************************************************************/
 
 #pragma once
-#include "../node_handler.h"
+#include "library/parser/node_handler.h"
 
 namespace GodotObjectCompiler {
 

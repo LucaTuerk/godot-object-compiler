@@ -36,7 +36,7 @@
 
 #include <utility>
 
-#include "../syntax/all.h"
+#include "library/tree/syntax/all.h"
 #include "library/core/core.h"
 
 namespace GodotObjectCompiler {
