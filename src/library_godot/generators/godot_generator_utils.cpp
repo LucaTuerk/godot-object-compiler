@@ -62,7 +62,7 @@ namespace GodotObjectCompiler {
     }
     _variant_types_initialized = true;
 
-    Ref<GodotVariantTypeParameterType> ptype = GodotVariantTypeParameterType::instance();
+    const Ref<GodotVariantTypeParameterType> ptype = GodotVariantTypeParameterType::instance();
 
     for (const String& value_name : ptype->value_names()) {
       String res_path = "res://" + path_concat_ext("variant_types", value_name, "txt");
@@ -70,7 +70,7 @@ namespace GodotObjectCompiler {
         String content = Resources::instance()->load_text_resource(res_path);
         for (const String& line : string_split(content, "\n")) {
           String trimmed = string_trim(line);
-          if (trimmed.length() == 0) {
+          if (trimmed.empty()) {
             continue;
           }
 
@@ -160,15 +160,20 @@ namespace GodotObjectCompiler {
 
   Ref<Body> GodotGeneratorUtils::get_or_create_bind_methods_body(
       const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources) {
-    Ref<Function> bind_methods = p_generated_sources->find_child(
-        0, NamedContextPredicates::name<Function>((p_target_class->name() + "::_bind_methods").c_str()));
+    bool bind_methods_defined = p_target_class->has_function_named("_bind_methods");
+    const String bind_methods_name = bind_methods_defined ? "_generated_bind_methods" : "_bind_methods";
+    const String qualified_bind_methods_name =
+        format("%s::%s", p_target_class->name().c_str(), bind_methods_name.c_str());
+
+    Ref<Function> bind_methods =
+        p_generated_sources->find_child(0, NamedContextPredicates::name<Function>(qualified_bind_methods_name.c_str()));
     Ref<Body> bind_methods_body;
 
     if (!bind_methods) {
       // clang-format off
       p_generated_sources->build_child<Function>().with_children({
       build<Type>().with_child<Identifier>("void"),
-      build<Identifier>(p_target_class->name() + "::" + "_bind_methods"),
+      build<Identifier>(qualified_bind_methods_name),
       build<Parameters>(),
       build_ref<Body>(&bind_methods_body)}
       );
@@ -176,14 +181,106 @@ namespace GodotObjectCompiler {
       p_generated_body->build_child<Function>().with_children({
         build<Static>(),
         build<Type>().with_child<Identifier>("void"),
-        build<Identifier>("_bind_methods"),
+        build<Identifier>(bind_methods_name),
         build<Parameters>()
       }).with_child(Writer::Semicolon());
       // clang-format on
     } else {
       bind_methods_body = bind_methods->find_child<Body>();
+      PANIC_COND(!bind_methods_body, "Body not found.");
     }
     return bind_methods_body;
+  }
+
+  Ref<Body> GodotGeneratorUtils::get_or_create_function_names_body(
+      const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
+    Ref<Struct> function_names = p_generated_body->find_child(0, NamedContextPredicates::name<Struct>("FunctionNames"));
+    Ref<Body> function_names_body;
+
+    if (!function_names) {
+      // clang-format off
+      auto base_names = p_target_class->direct_bases_names();
+      if (base_names.size() == 1 && TypeDB::instance()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+        p_generated_body->build_child<Struct>().with_children({
+          build<Identifier>("FunctionNames"),
+          build<BaseClasses>().with_child(
+            build<Type>().with_child<Identifier>(base_names[0] + "::FunctionNames")
+          ),
+          build_ref<Body>(&function_names_body)
+        });
+      } else {
+        p_generated_body->build_child<Struct>().with_children({
+          build<Identifier>("FunctionNames"),
+          build_ref<Body>(&function_names_body)
+        });
+      }
+      // clang-format on
+    } else {
+      function_names_body = function_names->find_child<Body>();
+      PANIC_COND(!function_names_body, "Body not found.");
+    }
+
+    return function_names_body;
+  }
+
+  Ref<Body> GodotGeneratorUtils::get_or_create_property_names_body(
+      const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
+    Ref<Struct> property_names = p_generated_body->find_child(0, NamedContextPredicates::name<Struct>("PropertyNames"));
+    Ref<Body> property_names_body;
+    if (!property_names) {
+      // clang-format off
+      auto base_names = p_target_class->direct_bases_names();
+      if (base_names.size() == 1 && TypeDB::instance()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+        p_generated_body->build_child<Struct>().with_children({
+          build<Identifier>("PropertyNames"),
+          build<BaseClasses>().with_child(
+            build<Type>().with_child<Identifier>(base_names[0] + "::PropertyNames")
+          ),
+          build_ref<Body>(&property_names_body)
+        });
+      } else {
+        p_generated_body->build_child<Struct>().with_children({
+          build<Identifier>("PropertyNames"),
+          build_ref<Body>(&property_names_body)
+        });
+      }
+      // clang-format on
+    } else {
+      property_names_body = property_names->find_child<Body>();
+      PANIC_COND(!property_names_body, "Body not found.");
+    }
+
+    return property_names_body;
+  }
+
+  Ref<Body> GodotGeneratorUtils::get_or_create_signal_names_body(
+      const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
+    Ref<Struct> signal_names = p_generated_body->find_child(0, NamedContextPredicates::name<Struct>("SignalNames"));
+    Ref<Body> signal_names_body;
+    if (!signal_names) {
+      // clang-format off
+      auto base_names = p_target_class->direct_bases_names();
+      if (base_names.size() == 1 && TypeDB::instance()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+        p_generated_body->build_child<Struct>().with_children({
+          build<Identifier>("SignalNames"),
+          build<BaseClasses>().with_child(
+            build<Type>().with_child<Identifier>(base_names[0] + "::SignalNames")
+          ),
+          build_ref<Body>(&signal_names_body)
+        });
+      } else {
+        p_generated_body->build_child<Struct>().with_children({
+          build<Identifier>("SignalNames"),
+          build_ref<Body>(&signal_names_body)
+        });
+      }
+      // clang-format on
+    } else {
+      signal_names_body = signal_names->find_child<Body>();
+      PANIC_COND(!signal_names_body, "Body not found.");
+    }
+
+    return signal_names_body;
   }
 
   bool GodotGeneratorUtils::check_is_valid_named_argument(const Ref<Node>& p_node, String& p_name) {

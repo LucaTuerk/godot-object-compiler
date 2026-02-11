@@ -181,3 +181,13 @@ void GodotObjectCompiler::fmt_print_ln(const String& format_str, Args&&... args)
   if ((condition)) {               \
     PANIC(__VA_ARGS__);            \
   }
+
+#ifdef PANIC_ON_ERR
+#define ERR(...) PANIC(__VA_ARGS__)
+#else
+#define ERR(...) print_err(format("%s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__));
+#endif
+#define ERR_COND(condition, ...) \
+  if ((condition)) {             \
+    ERR(__VA_ARGS__);            \
+  }

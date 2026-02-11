@@ -39,7 +39,6 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
 #include "library/tree/output/output.h"
-#include "library/tree/output/output_file.h"
 #include "library/type_db.h"
 
 namespace GodotObjectCompiler {
@@ -61,7 +60,7 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  bool GodotMacroIncludeGenerator::generate_macros(Ref<Context> p_write_to) {
+  bool GodotMacroIncludeGenerator::generate_macros(const Ref<Context>& p_write_to) {
     p_write_to->add_child(Writer::Define("GOC_BODY_COMBINE_INNER",
         {Writer::Text("A"), Writer::Text("B"), Writer::Text("C"), Writer::Text("D")}, "A##B##C##D"));
     p_write_to->add_child(
@@ -107,17 +106,21 @@ namespace GodotObjectCompiler {
   }
 
   bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
-      Ref<IAttributeParameterType> p_type, Ref<Context> p_write_to) {
-    String type_name = p_type->get_return_type();
+      const Ref<IAttributeParameterType>& p_type, const Ref<Context>& p_write_to) {
+    if (p_type->is_builtin()) {
+      return true;
+    }
 
-    String doc_res_path = "res://" + path_concat("doc", type_name + ".txt");
-    String doc_res_dir = "res://" + path_concat("doc", type_name);
+    const String type_name = p_type->get_return_type();
 
-    Ref<Context> value_names_documentation = Writer::Params({});
-    Ref<Context> type_documentation = Writer::Lines({});
+    const String doc_res_path = "res://" + path_concat("doc", type_name + ".txt");
+    const String doc_res_dir = "res://" + path_concat("doc", type_name);
+
+    const Ref<Context> value_names_documentation = Writer::Params({});
+    const Ref<Context> type_documentation = Writer::Lines({});
 
     if (Resources::instance()->has_resource(doc_res_path)) {
-      String content = Resources::instance()->load_text_resource(doc_res_path);
+      const String content = Resources::instance()->load_text_resource(doc_res_path);
       type_documentation->add_child(Writer::Text(content));
       type_documentation->add_child(Writer::NewLine());
     }

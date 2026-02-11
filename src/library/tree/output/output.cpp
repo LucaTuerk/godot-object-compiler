@@ -66,7 +66,7 @@ namespace GodotObjectCompiler {
       }
     }
 
-    bool IndentNode::copy_to(Ref<Node> p_other) const {
+    bool IndentNode::copy_to(const Ref<Node>& p_other) const {
       COPY_GUARD(IndentNode, Context)
 
       target->amount = amount;
@@ -94,7 +94,7 @@ namespace GodotObjectCompiler {
       p_writer->write(after);
     }
 
-    bool EnclosingNode::copy_to(Ref<Node> p_other) const {
+    bool EnclosingNode::copy_to(const Ref<Node>& p_other) const {
       COPY_GUARD(EnclosingNode, Context)
 
       target->before = before;
@@ -132,7 +132,7 @@ namespace GodotObjectCompiler {
       Brackets({});
     }
 
-    bool ListNode::copy_to(Ref<Node> p_other) const {
+    bool ListNode::copy_to(const Ref<Node>& p_other) const {
       COPY_GUARD(ListNode, Context)
 
       target->before_first = before_first;
@@ -152,7 +152,7 @@ namespace GodotObjectCompiler {
       }
     }
 
-    bool ReplaceNode::copy_to(Ref<Node> p_other) const {
+    bool ReplaceNode::copy_to(const Ref<Node>& p_other) const {
       COPY_GUARD(ReplaceNode, Context)
 
       target->search = search;
@@ -162,7 +162,7 @@ namespace GodotObjectCompiler {
 
     void SnippetNode::get_output(IStringWriter* p_writer) { p_writer->write(content); }
 
-    bool SnippetNode::copy_to(Ref<Node> p_other) const {
+    bool SnippetNode::copy_to(const Ref<Node>& p_other) const {
       COPY_GUARD(SnippetNode, Node)
 
       target->content = content;

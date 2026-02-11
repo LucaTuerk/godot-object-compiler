@@ -50,7 +50,7 @@ namespace GodotObjectCompiler {
 
   String Error::to_string() const { return get_type_static(); };
 
-  bool Error::copy_to(Ref<Node> p_other) const {
+  bool Error::copy_to(const Ref<Node>& p_other) const {
     COPY_GUARD(ParserError, Node);
     target->message = message;
     return true;

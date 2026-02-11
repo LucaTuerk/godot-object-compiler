@@ -33,7 +33,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "library//core/config.h"
+#include "library/core/config.h"
 #include "node.h"
 
 namespace GodotObjectCompiler {
@@ -45,7 +45,7 @@ namespace GodotObjectCompiler {
 
     explicit AccessSpecifier(Type type) : type(type) {}
 
-    bool copy_to(Ref<Node> p_other) const override;
+    bool copy_to(const Ref<Node>& p_other) const override;
     String to_string() const override;
     void write_to(IStructuredWriter* p_writer) override;
 

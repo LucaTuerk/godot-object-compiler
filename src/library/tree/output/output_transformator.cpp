@@ -75,6 +75,20 @@ namespace GodotObjectCompiler {
     ADD_TEXT_IF_TYPE(Short, "short")
     ADD_TEXT_IF_TYPE(Long, "long")
 
+    if (Ref<Class> _class = p_tree->as<Class>()) {
+      String specifier = _class->is<Struct>() ? "struct" : "class";
+
+      auto base_names = _class->direct_bases_names();
+      if (base_names.size() == 1) {
+        return Writer::Spaces({Writer::Text(specifier), Writer::Text(_class->name()),
+            Writer::Text(format(" : public %s", base_names[0].c_str())), transform(_class->body()),
+            Writer::Semicolon()});
+      }
+      ERR_COND(!base_names.empty(), "Classes with multiple inheritance are not supported by the OutputTransformator");
+      return Writer::Spaces(
+          {Writer::Text(specifier), Writer::Text(_class->name()), transform(_class->body()), Writer::Semicolon()});
+    }
+
     if (Ref<Namespace> _namespace = p_tree->as<Namespace>()) {
       return Writer::Spaces(
           {Writer::Text("namespace"), Writer::Text(_namespace->name()), transform(_namespace->body())});
@@ -89,9 +103,8 @@ namespace GodotObjectCompiler {
     if (Ref<Parameters> parameters = p_tree->as<Parameters>()) {
       Ref<Writer::ListNode> into = Writer::Params({});
 
-      for (Ref<Node> child : *parameters) {
-        Ref<Parameter> parameter = child->as<Parameter>();
-        if (parameter) {
+      for (const Ref<Node>& child : *parameters) {
+        if (Ref<Parameter> parameter = child->as<Parameter>()) {
           Ref<Writer::IOutputNode> transformed = transform(parameter);
           if (Ref<Node> node = std::dynamic_pointer_cast<Node>(transformed)) {
             into->add_child(node);
@@ -128,9 +141,8 @@ namespace GodotObjectCompiler {
 
     if (Ref<Parameter> parameter = p_tree->as<Parameter>()) {
       Ref<Writer::ListNode> into = Writer::Spaces({});
-      for (Ref<Node> child : *parameter) {
-        Ref<Literal> literal = child->as<Literal>();
-        if (literal) {
+      for (const Ref<Node>& child : *parameter) {
+        if (Ref<Literal> literal = child->as<Literal>()) {
           into->add_child(Writer::Text(" = "));
         }
         Ref<Writer::IOutputNode> transformed = transform(child);
@@ -196,16 +208,14 @@ namespace GodotObjectCompiler {
     return Writer::Text("");
   }
 
-  void OutputTransformator::replace_non_output_children(Ref<Writer::IOutputNode> p_node) {
-    if (Ref<Context> context = std::dynamic_pointer_cast<Context>(p_node)) {
-      for (Ref<Node> child : *context) {
-        Ref<Writer::IOutputNode> output_child = child->as<Writer::IOutputNode>();
-        if (output_child) {
+  void OutputTransformator::replace_non_output_children(const Ref<Writer::IOutputNode>& p_node) {
+    if (const Ref<Context> context = std::dynamic_pointer_cast<Context>(p_node)) {
+      for (const Ref<Node>& child : *context) {
+        if (Ref<Writer::IOutputNode> output_child = child->as<Writer::IOutputNode>()) {
           replace_non_output_children(output_child);
         } else {
           Ref<Writer::IOutputNode> transformed = transform(child);
-          Ref<Node> casted = std::dynamic_pointer_cast<Node>(transformed);
-          if (casted) {
+          if (Ref<Node> casted = std::dynamic_pointer_cast<Node>(transformed)) {
             context->replace_child(child, casted);
           }
         }

@@ -40,8 +40,6 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<IAttributeArgumentParser> Attribute::get_argument_parser() { return nullptr; }
-
   Ref<Node> Attribute::resolve_target() const {
     switch (_get_target()) {
       case NEXT: {
@@ -52,14 +50,18 @@ namespace GodotObjectCompiler {
         return nullptr;
       } break;
       case CONTAINING: {
-        return find_parent<Node>([this](Ref<Node> p_parent) { return verify_target(p_parent); });
+        return find_parent<Node>([this](const Ref<Node>& p_parent) { return verify_target(p_parent); });
       } break;
-      default:
+      case NONE: {
+        return nullptr;
+      } break;
+      default: {
         PANIC("UNIMPLEMENTED");
+      }
     }
   }
 
-  bool Attribute::verify_target(Ref<Node> p_resolved) const {
+  bool Attribute::verify_target(const Ref<Node>& p_resolved) const {
     if (!_verify_target_class(p_resolved)) {
       return false;
     }
@@ -67,7 +69,9 @@ namespace GodotObjectCompiler {
     return _verify_target(p_resolved);
   }
 
-  bool Attribute::_verify_target(Ref<Node> p_resolved) const {
+  Ref<IAttributeArgumentParser> Attribute::get_argument_parser() { return nullptr; }
+
+  bool Attribute::_verify_target(const Ref<Node>& p_resolved) const {
     UNUSED(p_resolved);
     return true;
   }

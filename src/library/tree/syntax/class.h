@@ -69,7 +69,8 @@ namespace GodotObjectCompiler {
 
    public:
 
-    bool copy_to(Ref<Node> p_other) const override;
+    bool has_function_named(const String& name) const;
+    bool copy_to(const Ref<Node>& p_other) const override;
   };
 
 }

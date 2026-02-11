@@ -73,7 +73,7 @@ namespace GodotObjectCompiler {
     Point end_point;
     bool handled = false;
 
-    bool copy_to(Ref<Node> p_other) const override;
+    bool copy_to(const Ref<Node>& p_other) const override;
 
     LAZY(TreeSitterNode, String, content);
   };

@@ -67,6 +67,8 @@ namespace GodotObjectCompiler {
     virtual Vector<Argument> get_arguments() = 0;
     virtual Ref<GodotObjectCompiler::Argument> create_argument() = 0;
 
+    virtual bool is_builtin() { return false; }
+
     AssumptionState validate_assumption(Assumption<std::string>& p_assumption) override;
   };
 

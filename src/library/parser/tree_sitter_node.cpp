@@ -63,7 +63,7 @@ namespace GodotObjectCompiler {
 
   void TreeSitterNode::set_handled(bool p_handled) { this->handled = p_handled; }
 
-  bool TreeSitterNode::copy_to(Ref<Node> p_other) const {
+  bool TreeSitterNode::copy_to(const Ref<Node>& p_other) const {
     COPY_GUARD(TreeSitterNode, Context)
 
     target->context = context;

@@ -61,7 +61,7 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* p_writer) override;
 
-      bool copy_to(Ref<Node> p_other) const override;
+      bool copy_to(const Ref<Node>& p_other) const override;
 
       Size amount = 0;
     };
@@ -72,7 +72,7 @@ namespace GodotObjectCompiler {
       EnclosingNode(String before, String after) : before(std::move(before)), after(std::move(after)) {}
 
       void get_output(IStringWriter* p_writer) override;
-      bool copy_to(Ref<Node> p_other) const override;
+      bool copy_to(const Ref<Node>& p_other) const override;
 
       String before;
       String after;
@@ -86,7 +86,7 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* p_writer) override;
 
-      bool copy_to(Ref<Node> p_other) const override;
+      bool copy_to(const Ref<Node>& p_other) const override;
 
       String delimiter;
       bool before_first = false;
@@ -100,7 +100,7 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* p_writer) override;
 
-      bool copy_to(Ref<Node> p_other) const override;
+      bool copy_to(const Ref<Node>& p_other) const override;
 
       String search;
       String replace;
@@ -113,7 +113,7 @@ namespace GodotObjectCompiler {
 
       void get_output(IStringWriter* p_writer) override;
 
-      bool copy_to(Ref<Node> p_other) const override;
+      bool copy_to(const Ref<Node>& p_other) const override;
 
       String content;
     };
@@ -147,6 +147,14 @@ namespace GodotObjectCompiler {
     Ref<ListNode> ParamDecl(const String& p_type, const String& p_name);
 
     Ref<SnippetNode> Text(const String& p_content);
+
+    template <typename... Args>
+    Ref<SnippetNode> FmtText(const String& p_fmt_string, Args&&... args);
+
+    template <typename... Args>
+    Ref<SnippetNode> FmtText(const String& p_fmt_string, Args&&... args) {
+      return Text(format(p_fmt_string, std::forward<Args>(args)...));
+    }
 
     Ref<SnippetNode> BoldText(const String& p_content);
 

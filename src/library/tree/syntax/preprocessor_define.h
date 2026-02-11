@@ -43,7 +43,7 @@ namespace GodotObjectCompiler {
     explicit PreprocessorDefine(const String& name) : name(name) {}
 
     String to_string() const override;
-    bool copy_to(Ref<Node> p_other) const override;
+    bool copy_to(const Ref<Node>& p_other) const override;
     void write_to(IStructuredWriter* p_writer) override;
     void read_from(IStructuredReader* p_reader) override;
 

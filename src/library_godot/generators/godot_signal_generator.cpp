@@ -70,11 +70,10 @@ namespace GodotObjectCompiler {
         })
       }))
     }).with_child(Writer::Semicolon());
-    // clang-format on
 
     Ref<Parameters> func_parameters;
     Ref<Arguments> emit_arguments;
-    // clang-format off
+
     p_generated_sources->build_child<Function>().with_children({
       build<Type>().with_child<Identifier>("void"),
       build<Identifier>(p_target_class->name() + "::" + target_function->name()),
@@ -111,6 +110,12 @@ namespace GodotObjectCompiler {
 
       i += 1;
     }
+
+    Ref<Body> signal_names_body = get_or_create_signal_names_body(p_target_class, p_generated_body);
+    GEN_ERROR_COND(!signal_names_body, p_attribute, "Failed to get signal names body.");
+    signal_names_body->add_child(
+        Writer::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
+            target_function->name().c_str(), target_function->name().c_str())));
 
     return GeneratorError::OK;
   }

@@ -43,62 +43,8 @@
 
 namespace GodotObjectCompiler {
 
-  UID Node::get_id() const { return _id; }
-
-  Index Node::get_index() const { return _index; }
-
-  Index Node::get_depth() const {
-    Ref<const Node> current = shared_from_this();
-    Size i = 0;
-
-    do {
-      current = current->get_parent();
-      if (i++ > 16) {
-        return 16;
-      }
-    } while (current);
-
-    return i;
-  }
-
-  Ref<Context> Node::get_parent() const { return _parent.lock(); }
-
-  Ref<Node> Node::get_root() {
-    if (!_root) {
-      Ref<Node> current = shared_from_this();
-      while (current) {
-        _root = current;
-        current = current->get_parent();
-      }
-    }
-
-    return _root ? _root : shared_from_this();
-  }
-
-  void Node::reparent(Ref<Context> p_new_parent) {
-    Ref<Context> parent = get_parent();
-    if (parent) {
-      parent->remove_child(shared_from_this());
-    }
-    p_new_parent->add_child(shared_from_this());
-  }
-
-  Ref<Node> Node::get_sibling(int p_offset) const {
-    Ref<Context> parent = get_parent();
-    if (parent == nullptr) {
-      return nullptr;
-    }
-
-    return parent->get_child_strict((SignedIndex)_index + p_offset);
-  }
-
-  Ref<Node> Node::get_next_sibling() const { return get_sibling(+1); }
-
-  Ref<Node> Node::get_previous_sibling() const { return get_sibling(-1); }
-
   Ref<Node> Node::clone() {
-    Ref<Node> new_node = create();
-    if (copy_to(new_node)) {
+    if (Ref<Node> new_node = create(); copy_to(new_node)) {
       return new_node;
     } else {
       return nullptr;
@@ -120,20 +66,20 @@ namespace GodotObjectCompiler {
     }
   }
 
-  bool Node::has_parent() { return _parent.lock() != nullptr; }
+  bool Node::has_parent() const { return _parent.lock() != nullptr; }
 
-  bool Node::has_next_sibling() { return has_parent() && _index != get_parent()->get_child_count() - 1; }
+  bool Node::has_next_sibling() const { return has_parent() && _index != get_parent()->get_child_count() - 1; }
 
-  bool Node::has_previous_sibling() { return has_parent() && _index > 0; }
+  bool Node::has_previous_sibling() const { return has_parent() && _index > 0; }
 
   String Node::pretty_print() const {
     Size dummy;
     return print_pretty_and_get_child_line(nullptr, dummy);
   }
 
-  String Node::print_pretty_and_get_child_line(Ref<Node> p_child, Size& p_line) const {
-    String result = "";
-    String line_prefix = "";
+  String Node::print_pretty_and_get_child_line(const Ref<Node>& p_child, Size& p_line) const {
+    String result;
+    String line_prefix;
 
     Index depth = get_depth();
     for (Index i = 0; i < depth; i++) {
@@ -183,5 +129,57 @@ namespace GodotObjectCompiler {
 
     return result;
   }
+
+  UID Node::get_id() const { return _id; }
+
+  Index Node::get_index() const { return _index; }
+
+  Index Node::get_depth() const {
+    Ref<const Node> current = shared_from_this();
+    Size i = 0;
+
+    do {
+      current = current->get_parent();
+      if (i++ > 16) {
+        return 16;
+      }
+    } while (current);
+
+    return i;
+  }
+
+  Ref<Context> Node::get_parent() const { return _parent.lock(); }
+
+  Ref<Node> Node::get_root() {
+    if (!_root) {
+      Ref<Node> current = shared_from_this();
+      while (current) {
+        _root = current;
+        current = current->get_parent();
+      }
+    }
+
+    return _root ? _root : shared_from_this();
+  }
+
+  void Node::reparent(const Ref<Context>& p_new_parent) {
+    if (Ref<Context> parent = get_parent()) {
+      parent->remove_child(shared_from_this());
+    }
+    p_new_parent->add_child(shared_from_this());
+  }
+
+  Ref<Node> Node::get_sibling(int p_offset) const {
+    const Ref<Context> parent = get_parent();
+    if (parent == nullptr) {
+      return nullptr;
+    }
+
+    return parent->get_child_strict(static_cast<SignedIndex>(_index) + p_offset);
+  }
+
+  Ref<Node> Node::get_next_sibling() const { return get_sibling(+1); }
+
+  Ref<Node> Node::get_previous_sibling() const { return get_sibling(-1); }
 
 }

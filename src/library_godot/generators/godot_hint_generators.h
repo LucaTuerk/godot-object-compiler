@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* member.cpp                                                             */
+/* godot_hint_generators.h                                                */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,66 +33,36 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "member.h"
-
-#include "access_specifier.h"
-#include "class.h"
-#include "modifiers.h"
-#include "struct.h"
+#pragma once
+#include "library/generator/generator.h"
 
 namespace GodotObjectCompiler {
 
-  bool Member::_is_virtual_lazy_get() { return find_child<Virtual>() != nullptr; }
+  class GodotGroupGenerator : public IClassGenerator<GodotPropertyGroupAttribute> {
+    GENERATOR(GodotGroupGenerator);
 
-  bool Member::_is_override_lazy_get() { return find_child<Override>() != nullptr; }
+   public:
 
-  bool Member::_is_static_lazy_get() { return find_child<Static>() != nullptr; }
+    Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class,
+        Ref<GodotPropertyGroupAttribute> p_attribute, Ref<Context> p_default_values) override;
 
-  bool Member::_is_const_lazy_get() { return find_child<Const>() != nullptr; }
+    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
+        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
+  };
 
-  Ref<AccessSpecifier::Type> Member::_access_specifier_type_lazy_get() {
-    if (!get_parent()) {
-      return nullptr;
-    }
+  class GodotSubgroupGenerator : public IClassGenerator<GodotPropertySubgroupAttribute> {
+    GENERATOR(GodotSubgroupGenerator);
 
-    const bool is_in_class = get_parent()->is<Class>();
-    const bool is_in_struct = get_parent()->is<Struct>();
+   public:
 
-    if (!is_in_class && !is_in_struct) {
-      return nullptr;
-    }
+    Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class,
+        Ref<GodotPropertySubgroupAttribute> p_attribute, Ref<Context> p_default_values) override;
 
-    const Ref<AccessSpecifier> specifier = find_previous_sibling<AccessSpecifier>();
-    if (!specifier) {
-      if (is_in_class) {
-        return make_ref<AccessSpecifier::Type>(AccessSpecifier::PUBLIC);
-      } else {
-        return make_ref<AccessSpecifier::Type>(AccessSpecifier::PRIVATE);
-      }
-    }
+    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
+        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
+  };
 
-    return make_ref<AccessSpecifier::Type>(specifier->type);
-  }
-
-  bool Member::_is_public_member_lazy_get() {
-    return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PUBLIC;
-  }
-
-  bool Member::_is_protected_member_lazy_get() {
-    return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PROTECTED;
-  }
-
-  bool Member::_is_private_member_lazy_get() {
-    return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PRIVATE;
-  }
-
-  bool Member::copy_to(const Ref<Node>& p_other) const {
-    COPY_GUARD(Member, NamedContext);
-    COPY_LAZY(access_specifier_type);
-    COPY_LAZY(is_private_member);
-    COPY_LAZY(is_protected_member);
-    COPY_LAZY(is_public_member);
-    return true;
-  }
+  REGISTER_CLASS_GENERATOR(GodotGroupGenerator);
+  REGISTER_CLASS_GENERATOR(GodotSubgroupGenerator);
 
 }

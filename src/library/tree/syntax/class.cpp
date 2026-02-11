@@ -60,15 +60,14 @@ namespace GodotObjectCompiler {
   Vector<Ref<Class>> Class::_base_classes_lazy_get() {
     Vector<Ref<Identifier>> identifiers;
 
-    Ref<BaseClasses> bases = find_child<BaseClasses>();
+    const Ref<BaseClasses> bases = find_child<BaseClasses>();
     if (!bases) {
       return {};
     }
 
     Vector<Ref<Class>> result;
     for (const Ref<Type>& type : bases->find_children<Type>()) {
-      Ref<Class> base_class = TypeDB::instance()->get_type_data<Class>(type);
-      if (base_class) {
+      if (Ref<Class> base_class = TypeDB::instance()->get_type_data<Class>(type, this->as<Class>())) {
         result.push_back(base_class);
       }
     }
@@ -82,9 +81,8 @@ namespace GodotObjectCompiler {
       return attributes;
     }
 
-    for (Ref<Node> child : body()->get_children()) {
-      Ref<Attribute> child_attribute = child->as<Attribute>();
-      if (child_attribute) {
+    for (const Ref<Node>& child : body()->get_children()) {
+      if (const Ref<Attribute> child_attribute = child->as<Attribute>()) {
         attributes.push_back(child_attribute->as<Attribute>());
       }
     }
@@ -96,7 +94,16 @@ namespace GodotObjectCompiler {
     return find_descendant<GodotGeneratedBodyAttribute>() != nullptr;
   }
 
-  bool Class::copy_to(Ref<Node> p_other) const {
+  bool Class::has_function_named(const String& name) const {
+    for (const Ref<Function>& member_function : member_functions()) {
+      if (member_function->name() == name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool Class::copy_to(const Ref<Node>& p_other) const {
     COPY_GUARD(Class, Namespace);
     // COPY_LAZY(base_classes);
     return true;

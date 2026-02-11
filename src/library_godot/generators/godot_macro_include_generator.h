@@ -43,12 +43,15 @@ namespace GodotObjectCompiler {
 
    public:
 
-    bool generate_macros(Ref<Context> p_write_to);
-    bool generate_attribute_parameter_type(Ref<IAttributeParameterType> p_type, Ref<Context> p_write_to);
-    bool generate_prototype_methods(
-        const Ref<Context>& p_write_to, const String& p_macro, const Vector<Ref<IAttributeParameterType>>& p_params);
-
     Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) override;
+
+   private:
+
+    static bool generate_macros(const Ref<Context>& p_write_to);
+    static bool generate_attribute_parameter_type(
+        const Ref<IAttributeParameterType>& p_type, const Ref<Context>& p_write_to);
+    static bool generate_prototype_methods(
+        const Ref<Context>& p_write_to, const String& p_macro, const Vector<Ref<IAttributeParameterType>>& p_params);
   };
 
 }

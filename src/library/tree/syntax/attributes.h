@@ -56,16 +56,6 @@ namespace GodotObjectCompiler {
     ATTRIBUTE_TYPE(GeneratedGlobalAttribute, Namespace, CONTAINING);
   };
 
-  // This attribute applies to the next sibling function
-  class FunctionAttribute : public Attribute {
-    ATTRIBUTE_TYPE(FunctionAttribute, Function, NEXT)
-  };
-
-  // This attribute applies to the next sibling field
-  class FieldAttribute : public Attribute {
-    ATTRIBUTE_TYPE(FieldAttribute, Field, NEXT)
-  };
-
   // This attribute does not apply to any specific node in the syntax tree but
   // can provide a hint to the generator.
   class HintAttribute : public Attribute {

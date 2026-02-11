@@ -52,7 +52,7 @@ namespace GodotObjectCompiler {
 
     Ref<Writer::IOutputNode> transform(Ref<Node> p_tree) override;
 
-    void replace_non_output_children(Ref<Writer::IOutputNode> p_node);
+    void replace_non_output_children(const Ref<Writer::IOutputNode>& p_node);
   };
 
 }

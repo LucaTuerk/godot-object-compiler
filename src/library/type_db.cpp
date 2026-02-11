@@ -131,7 +131,7 @@ namespace GodotObjectCompiler {
     for (const auto& [uid, node] : local) {
       if (node->get_parent() == nullptr) {
         if (root != nullptr) {
-          print_err("Multiple root nodes found in read config file. Invalid.");
+          ERR("Multiple root nodes found in read config file. Invalid.");
           return nullptr;
         }
         root = node;
