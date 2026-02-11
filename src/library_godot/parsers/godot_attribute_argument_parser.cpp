@@ -36,6 +36,7 @@
 #include "godot_attribute_argument_parser.h"
 
 #include "library/tree/syntax/identifier.h"
+#include "library_godot/attributes/string_literal_parameter_type.h"
 
 namespace GodotObjectCompiler {
 
@@ -97,6 +98,21 @@ namespace GodotObjectCompiler {
     bool no_match = true;
 
     for (const Ref<IAttributeParameterType>& type : types) {
+      if (Ref<StringLiteralParameterType> str_literal = std::dynamic_pointer_cast<StringLiteralParameterType>(type);
+          str_literal) {
+        if (string_enclosed_by(p_content, "\"")) {
+          Ref<Argument> argument = str_literal->create_argument();
+          if (!argument) {
+            return node_new<ParserError>(ERROR, "Failed to create argument node for type " + type->get_return_type());
+          }
+
+          p_target->add_child(argument);
+          argument->build_child<Literal>(p_content);
+          no_match = false;
+          break;
+        }
+      }
+
       String outer, inner;
       split_outer_inner(p_content, outer, inner);
 

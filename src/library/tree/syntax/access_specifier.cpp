@@ -54,7 +54,7 @@ namespace GodotObjectCompiler {
     return "AccessSpecifier: " + value;
   }
 
-  bool AccessSpecifier::copy_to(Ref<Node> p_other) const {
+  bool AccessSpecifier::copy_to(const Ref<Node>& p_other) const {
     COPY_GUARD(AccessSpecifier, Node);
     target->type = type;
     return true;

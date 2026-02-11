@@ -46,35 +46,22 @@ namespace GodotObjectCompiler {
   }
 
   void Include::read_from(IStructuredReader* p_reader) {
-    // intentionally read from Node as we do to want to copy the children
-    Node::read_from(p_reader);  // NOLINT(*-parent-virtual-call)
+    Context::read_from(p_reader);
     include_path = p_reader->read<String, String>("include_path");
     is_system_include = p_reader->read<String, bool>("is_system_include");
   }
 
   void Include::write_to(IStructuredWriter* p_writer) {
-    // intentionally write to Node as we do to want to copy the children
-    Node::write_to(p_writer);  // NOLINT(*-parent-virtual-call)
+    Context::write_to(p_writer);
     p_writer->write("include_path", include_path);
     p_writer->write("is_system_include", is_system_include);
   }
 
-  bool Include::copy_to(Ref<Node> p_other) const {
-    // intentionally copying from node as we do to want to copy the children
-    COPY_GUARD(Include, Node)  // NOLINT(*-parent-virtual-call)
+  bool Include::copy_to(const Ref<Node>& p_other) const {
+    COPY_GUARD(Include, Context)
     target->include_path = include_path;
     target->is_system_include = is_system_include;
     return true;
-  }
-
-  Include::Error Include::_evaluate_lazy_get() {
-    Ref<Node> result = ExecutionContext::instance()->get_include("", include_path);
-    if (result) {
-      add_child(result);
-      return OK;
-    } else {
-      return ALREADY_INCLUDED;
-    }
   }
 
 }

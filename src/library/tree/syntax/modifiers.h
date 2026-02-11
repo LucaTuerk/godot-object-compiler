@@ -58,8 +58,8 @@ namespace GodotObjectCompiler {
     NODE_TYPE(TypeQualifier);
   };
 
-  class SigndedNessModified : public Node {
-    NODE_TYPE(SigndedNessModified)
+  class SigndednessModifier : public Node {
+    NODE_TYPE(SigndednessModifier)
   };
 
   class Const : public TypeQualifier {
@@ -78,19 +78,19 @@ namespace GodotObjectCompiler {
     NODE_TYPE(ConstExpression);
   };
 
-  class Unsigned : public SigndedNessModified {
+  class Unsigned : public SigndednessModifier {
     NODE_TYPE(Unsigned);
   };
 
-  class Signed : public SigndedNessModified {
+  class Signed : public SigndednessModifier {
     NODE_TYPE(Signed);
   };
 
-  class Short : public SigndedNessModified {
+  class Short : public SigndednessModifier {
     NODE_TYPE(Short)
   };
 
-  class Long : public SigndedNessModified {
+  class Long : public SigndednessModifier {
     NODE_TYPE(Long)
   };
 

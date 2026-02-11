@@ -52,7 +52,7 @@ namespace GodotObjectCompiler {
 
     virtual String to_string() const { return get_type(); }
 
-    virtual bool copy_to(Ref<Node> p_other) const { return true; }
+    virtual bool copy_to(const Ref<Node>& p_other) const { return true; }
 
     virtual Ref<Node> create() { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
 
@@ -66,12 +66,12 @@ namespace GodotObjectCompiler {
     virtual void write_to(IStructuredWriter* p_writer);
     virtual void read_from(IStructuredReader* p_reader);
 
-    bool has_parent();
-    bool has_next_sibling();
-    bool has_previous_sibling();
+    bool has_parent() const;
+    bool has_next_sibling() const;
+    bool has_previous_sibling() const;
 
     String pretty_print() const;
-    String print_pretty_and_get_child_line(Ref<Node> p_child, Size& p_line) const;
+    String print_pretty_and_get_child_line(const Ref<Node>& p_child, Size& p_line) const;
 
     UID get_id() const;
     Index get_index() const;
@@ -79,7 +79,7 @@ namespace GodotObjectCompiler {
     Ref<Context> get_parent() const;
     Ref<Node> get_root();
 
-    void reparent(Ref<Context> p_new_parent);
+    void reparent(const Ref<Context>& p_new_parent);
 
     Ref<Node> get_sibling(int p_offset) const;
     Ref<Node> get_next_sibling() const;

@@ -87,6 +87,13 @@ namespace GodotObjectCompiler {
           p_target_class->name(), target_function->name(), parameter_names, default_values));
     }
 
+    Ref<Body> function_names_body =
+        GodotGeneratorUtils::get_or_create_function_names_body(p_target_class, p_generated_body);
+    GEN_ERROR_COND(!function_names_body, p_attribute, "Failed to get function names body.");
+    function_names_body->add_child(
+        Writer::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
+            target_function->name().c_str(), target_function->name().c_str())));
+
     return GeneratorError::OK;
   }
 

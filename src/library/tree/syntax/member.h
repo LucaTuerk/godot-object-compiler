@@ -50,6 +50,10 @@ namespace GodotObjectCompiler {
     LAZY(Member, bool, is_public_member);
     LAZY(Member, bool, is_protected_member);
     LAZY(Member, bool, is_private_member);
+
+   public:
+
+    bool copy_to(const Ref<Node>& p_other) const override;
   };
 
 }

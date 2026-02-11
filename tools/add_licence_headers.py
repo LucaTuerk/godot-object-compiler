@@ -26,3 +26,6 @@ def add_licence_headers(path: pathlib.Path):
 
         with open(file, 'w') as current:
             current.write(write)
+
+add_licence_headers(pathlib.Path('src'))
+add_licence_headers(pathlib.Path('tests'))

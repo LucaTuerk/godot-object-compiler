@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* output_file.h                                                          */
+/* property_access_specifier.h                                            */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,28 +32,53 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
-#include "../syntax/function.h"
-#include "../syntax/node.h"
-#include "library/core/string_writer.h"
+#include "library/generator/attribute_parameter_type.h"
+#include "library/tree/syntax/function.h"
 
 namespace GodotObjectCompiler {
-  namespace Writer {
 
-    class IOutputNode;
+  class PropertyGetAccessSpecifierArgument : public Argument {
+    NODE_TYPE(PropertyGetAccessSpecifierArgument)
 
-  }
+    static inline const char* PublicGet = "PublicGet";
+    static inline const char* ProtectedGet = "ProtectedGet";
+    static inline const char* PrivateGet = "PrivateGet";
 
-  class OutputFile : public Context {
-    NODE_TYPE(OutputFile);
+    bool get_specifier_cpp_name(String& r_specifier_name) const;
+  };
 
-    explicit OutputFile(String path) : path(std::move(path)) {}
+  class PropertySetAccessSpecifierArgument : public Argument {
+    NODE_TYPE(PropertySetAccessSpecifierArgument)
 
-    void print();
-    void write_output(IStringWriter* writer);
+    static inline const char* PublicSet = "PublicSet";
+    static inline const char* ProtectedSet = "ProtectedSet";
+    static inline const char* PrivateSet = "PrivateSet";
 
-    String path;
-    Ref<Writer::IOutputNode> transformed;
+    bool get_specifier_cpp_name(String& r_specifier_name) const;
+  };
+
+  class PropertyGetAccessSpecifierParameterType : public IAttributeParameterType {
+    PARAM_TYPE(PropertyGetAccessSpecifierParameterType)
+
+   public:
+
+    String get_return_type() override;
+    Vector<String> get_value_names() override;
+    Vector<Argument> get_arguments() override;
+    Ref<GodotObjectCompiler::Argument> create_argument() override;
+  };
+
+  class PropertySetAccessSpecifierParameterType : public IAttributeParameterType {
+    PARAM_TYPE(PropertySetAccessSpecifierParameterType)
+
+   public:
+
+    String get_return_type() override;
+    Vector<String> get_value_names() override;
+    Vector<Argument> get_arguments() override;
+    Ref<GodotObjectCompiler::Argument> create_argument() override;
   };
 
 }

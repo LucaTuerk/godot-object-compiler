@@ -44,6 +44,8 @@
 #include "library/tree/syntax/attribute.h"
 #include "library/tree/syntax/attributes.h"
 #include "library/tree/syntax/enum.h"
+#include "property_access_specifier.h"
+#include "string_literal_parameter_type.h"
 
 namespace GodotObjectCompiler {
 
@@ -86,6 +88,8 @@ namespace GodotObjectCompiler {
     ATTRIBUTE_REGISTER_PARAMETERS(GodotVariantType)
     ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyHint)
     ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlags)
+    ATTRIBUTE_REGISTER_PARAMETERS(PropertyGetAccessSpecifier)
+    ATTRIBUTE_REGISTER_PARAMETERS(PropertySetAccessSpecifier)
   };
 
   class GodotFunctionAttribute : public GodotAttributeWithParams {
@@ -96,6 +100,24 @@ namespace GodotObjectCompiler {
   class GodotSignalAttribute : public GodotAttributeWithParams {
     ATTRIBUTE_TYPE(GodotSignalAttribute, Function, NEXT)
     ATTRIBUTE_DEFAULT_MACRO(GODOT_SIGNAL)
+  };
+
+  class GodotPropertyGroupAttribute : public GodotAttributeWithParams {
+    ATTRIBUTE_TYPE(GodotPropertyGroupAttribute, Node, NONE)
+    ATTRIBUTE_DEFAULT_MACRO(GODOT_GROUP)
+
+    ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
+
+    LAZY(GodotPropertyGroupAttribute, String, literal_content);
+  };
+
+  class GodotPropertySubgroupAttribute : public GodotAttributeWithParams {
+    ATTRIBUTE_TYPE(GodotPropertySubgroupAttribute, Node, NONE)
+    ATTRIBUTE_DEFAULT_MACRO(GODOT_SUBGROUP)
+
+    ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
+
+    LAZY(GodotPropertySubgroupAttribute, String, literal_content);
   };
 
 }

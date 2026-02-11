@@ -58,7 +58,8 @@ namespace GodotObjectCompiler {
     GEN_ERROR_COND(
         !target_enum, p_target_class, "Resolved target for enum macro is not an enum, but " + target_node->get_type());
 
-    Ref<Identifier> enum_options_identifier = p_attribute->find_chain<Identifier, Arguments, EnumGeneratorOptionsArgument>();
+    Ref<Identifier> enum_options_identifier =
+        p_attribute->find_chain<Identifier, Arguments, EnumGeneratorOptionsArgument>();
     GEN_ERROR_COND(!enum_options_identifier, p_attribute, "Invalid enum options argument. No identifier found");
 
     String cast_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault

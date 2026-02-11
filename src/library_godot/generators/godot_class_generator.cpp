@@ -143,6 +143,13 @@ namespace GodotObjectCompiler {
     // clang-format on
 
     p_generated_body->add_child(gd_class);
+    p_generated_body->add_child(Writer::Text("public:"));
+    const Ref<Body> _;
+    get_or_create_property_names_body(p_target_class, p_generated_body);
+    get_or_create_function_names_body(p_target_class, p_generated_body);
+    get_or_create_signal_names_body(p_target_class, p_generated_body);
+    p_generated_body->add_child(Writer::Text("private:"));
+
     get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
 
     return GeneratorError::OK;

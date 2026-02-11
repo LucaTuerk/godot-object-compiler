@@ -72,11 +72,7 @@ namespace GodotObjectCompiler {
 
     const Vector<String>& get_include_paths();
 
-    Ref<Node> get_include(const String& p_included_from_path, const String& p_path);
-
     void set_include_paths(const Vector<String>& p_value);
-
-    bool is_file_included(const String& p_include_path);
 
     void set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail);
 
@@ -88,8 +84,6 @@ namespace GodotObjectCompiler {
 
    private:
 
-    void set_file_included(const String& p_include_path);
-
     bool is_cached(const String& p_path);
 
     static Hash get_path_hash(const String& p_absolute_path);
@@ -97,8 +91,6 @@ namespace GodotObjectCompiler {
     String get_cache_file_path(Hash p_hash);
 
     ExecutionContext();
-
-    Dictionary<Hash, Ref<Node>> _included_nodes;
 
     /** NODES **/
     NodeDB _node_db;
@@ -111,7 +103,6 @@ namespace GodotObjectCompiler {
 
     /** INCLUDE **/
     Vector<String> _include_paths;
-    HashSet<String> _included_files;
 
     ErrorLevel _error_level;
     ErrorDetail _error_detail;

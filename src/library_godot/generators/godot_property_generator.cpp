@@ -37,7 +37,6 @@
 
 #include "godot_generator_utils.h"
 #include "library/tree/output/output.h"
-#include "library/tree/output/output_file.h"
 #include "library/tree/syntax/class.h"
 #include "library_godot/attributes/godot_attributes.h"
 #include "library_godot/generated_assumptions/parameter_types.h"
@@ -52,10 +51,10 @@ namespace GodotObjectCompiler {
     Ref<Field> target_field = p_attribute->TargetField();
     GEN_ERROR_COND(!target_field, p_attribute, "Failed to get target field for GodotProperty attribute.");
 
-    Ref<Type> field_type = target_field->type();
+    const Ref<Type> field_type = target_field->type();
     GEN_ERROR_COND(!field_type, target_field, "Target field does not name a type.");
 
-    String field_type_name = field_type->type_name();
+    const String field_type_name = field_type->type_name();
     GEN_ERROR_COND(field_type_name.empty(), target_field, "Invalid type name for target field.");
 
     Ref<GodotVariantTypeArgument> variant_type;
@@ -66,8 +65,22 @@ namespace GodotObjectCompiler {
       GEN_ERROR(target_field, "Unknown type. Failed to determine default property info.");
     }
 
-    p_default_values->add_children({variant_type, property_hint, property_usage_flags});
+    Ref<PropertyGetAccessSpecifierArgument> property_get_access_specifier =
+        node_new<PropertyGetAccessSpecifierArgument>();
+    Ref<PropertySetAccessSpecifierArgument> property_set_access_specifier =
+        node_new<PropertySetAccessSpecifierArgument>();
 
+    property_get_access_specifier->build_child<Identifier>(PropertyGetAccessSpecifierArgument::PublicGet);
+    if (target_field->is_private_member()) {
+      property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::PrivateSet);
+    } else if (target_field->is_protected_member()) {
+      property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::ProtectedSet);
+    } else {
+      property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::PublicSet);
+    }
+
+    p_default_values->add_children({variant_type, property_hint, property_usage_flags, property_get_access_specifier,
+        property_set_access_specifier});
     return GeneratorError::OK;
   }
 
@@ -82,101 +95,135 @@ namespace GodotObjectCompiler {
         get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
     GEN_ERROR_COND(!bind_methods_body, p_target_class, "Failed to find or generate the _bind_methods function body.");
 
-    if (const Ref<Field> target_field = p_attribute->TargetField()) {
-      const String property_name = target_field->name();
-      const Ref<Type> field_type = target_field->type();
+    const Ref<Field> target_field = p_attribute->TargetField();
 
-      GEN_ERROR_COND(target_field->is_const(), target_field, "Property target field is constant.");
-      GEN_ERROR_COND(target_field->is_static(), target_field, "Property target field is static.");
-      GEN_ERROR_COND(!field_type, p_target_class, "Field does not name a type. Abort!");
+    GEN_ERROR_COND(!target_field, p_attribute, "Failed to get target field for property attribute");
+    GEN_ERROR_COND(target_field->is_const(), target_field, "Property target field is constant.");
+    GEN_ERROR_COND(target_field->is_static(), target_field, "Property target field is static.");
 
-      const String type_name = field_type->type_name();
-      const String getter_name = format("get_%s", property_name.c_str());
-      const String setter_name = format("set_%s", property_name.c_str());
+    const Ref<Type> field_type = target_field->type();
+    GEN_ERROR_COND(!field_type, p_target_class, "Field does not name a type. Abort!");
 
-      Ref<Type> ref_inner;
-      Ref<Enum> enum_object;
-      bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner, p_target_class);
-      bool is_obj_type = type_is_object_type(field_type, p_target_class);
-      bool is_enum_type = type_is_enum_type(field_type, enum_object, p_target_class);
-      bool is_collection_type = type_is_godot_collection_type(field_type, p_target_class);
-      bool use_const_ref = !(is_obj_type || is_ref_type || is_collection_type);
+    const String property_name = target_field->name();
+    const String type_name = field_type->type_name();
+    const String getter_name = format("get_%s", property_name.c_str());
+    const String setter_name = format("set_%s", property_name.c_str());
 
-      bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, {}));
-      bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, {property_name}));
+    Ref<Type> ref_inner;
+    Ref<Enum> enum_object;
+    bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner, p_target_class);
+    bool is_obj_type = type_is_object_type(field_type, p_target_class);
+    bool is_enum_type = type_is_enum_type(field_type, enum_object, p_target_class);
+    bool is_collection_type = type_is_godot_collection_type(field_type, p_target_class);
+    bool use_const_ref = !(is_obj_type || is_ref_type || is_collection_type);
 
-      Ref<Node> used_type = use_const_ref ? const_ref(type_name) : field_type->clone();
-      if (is_enum_type) {
-        used_type = build<Type>().with_child<Identifier>("int");
-      }
+    bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, {}));
+    bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, {property_name}));
 
-      // clang-format off
-      Ref<Function> get_def = build<Function>().with_children({
-        used_type->clone(),
-        build<Identifier>(getter_name),
-        build<Parameters>(),
-        build<Const>()
-      }).with_child(Writer::Semicolon());
-
-      Ref<Function> get_impl = build<Function>().with_children({
-        used_type->clone(),
-        build<Identifier>(p_target_class->name()  + "::" + getter_name),
-        build<Parameters>(),
-        build<Const>(),
-        build<Body>().with_child(
-            Writer::Return(property_name)
-          )
-      });
-
-      Ref<Function> set_def = build<Function>().with_children({
-      build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(setter_name),
-        build<Parameters>().with_child(
-          build<Parameter>().with_children({
-            used_type->clone(),
-            build<Identifier>("p_" + property_name),
-        }))
-      }).with_child(Writer::Semicolon());
-
-      Ref<Function> set_impl = build<Function>().with_children({
-        build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(p_target_class->name()  + "::" + setter_name),
-        build<Parameters>()
-            .with_child(
-              build<Parameter>()
-              .with_children({
-                used_type->clone(),
-                build<Identifier>("p_"+property_name)
-              })
-            ),
-        build<Body>().with_child(
-          (is_enum_type ?
-            Writer::Assign(property_name, Writer::Text(format("static_cast<%s>(p_%s)", enum_object->qualified_name().c_str(),property_name.c_str()))):
-            Writer::Assign(property_name, Writer::Text(format("p_%s", property_name.c_str()))))),
-      });
-
-      Ref<GodotVariantTypeArgument> variant_type = p_attribute->arguments()->find_child<GodotVariantTypeArgument>();
-      Ref<GodotPropertyHintArgument> property_hint = p_attribute->arguments()->find_child<GodotPropertyHintArgument>();
-      Vector<Ref<GodotPropertyUsageFlagsArgument>> usage_flags = p_attribute->arguments()->find_children<GodotPropertyUsageFlagsArgument>();
-
-      Ref<Function> add_property = build<Function>().with_children({
-        build<Identifier>("ADD_PROPERTY"),
-        build<Arguments>().with_children({
-          build<Argument>().with_children({
-            build_property_info(variant_type, property_hint, usage_flags, property_name)
-          }),
-          build<Argument>().with_child(Writer::StringLiteral(setter_name)),
-          build<Argument>().with_child(Writer::StringLiteral(getter_name)),
-        })
-      }).with_child(Writer::Semicolon());
-      // clang-format on
-
-      p_generated_body->add_child(get_def);
-      p_generated_body->add_child(set_def);
-      p_generated_sources->add_child(get_impl);
-      p_generated_sources->add_child(set_impl);
-      bind_methods_body->add_child(add_property);
+    Ref<Node> used_type = use_const_ref ? const_ref(type_name) : field_type->clone();
+    if (is_enum_type) {
+      used_type = build<Type>().with_child<Identifier>("int");
     }
+
+    // clang-format off
+    Ref<Function> get_def = build<Function>().with_children({
+      used_type->clone(),
+      build<Identifier>(getter_name),
+      build<Parameters>(),
+      build<Const>()
+    }).with_child(Writer::Semicolon());
+
+    Ref<Function> get_impl = build<Function>().with_children({
+      used_type->clone(),
+      build<Identifier>(p_target_class->name()  + "::" + getter_name),
+      build<Parameters>(),
+      build<Const>(),
+      build<Body>().with_child(
+          Writer::Return(property_name)
+        )
+    });
+
+    Ref<Function> set_def = build<Function>().with_children({
+    build<Type>().with_child<Identifier>("void"),
+      build<Identifier>(setter_name),
+      build<Parameters>().with_child(
+        build<Parameter>().with_children({
+          used_type->clone(),
+          build<Identifier>("p_" + property_name),
+      }))
+    }).with_child(Writer::Semicolon());
+
+    Ref<Function> set_impl = build<Function>().with_children({
+      build<Type>().with_child<Identifier>("void"),
+      build<Identifier>(p_target_class->name()  + "::" + setter_name),
+      build<Parameters>()
+          .with_child(
+            build<Parameter>()
+            .with_children({
+              used_type->clone(),
+              build<Identifier>("p_"+property_name)
+            })
+          ),
+      build<Body>().with_child(
+        (is_enum_type ?
+          Writer::Assign(property_name, Writer::Text(format("static_cast<%s>(p_%s)", enum_object->qualified_name().c_str(),property_name.c_str()))):
+          Writer::Assign(property_name, Writer::Text(format("p_%s", property_name.c_str()))))),
+    });
+
+    Ref<GodotVariantTypeArgument> variant_type = p_attribute->arguments()->find_child<GodotVariantTypeArgument>();
+    GEN_ERROR_COND(!variant_type, p_attribute, "Failed to get variant type argument");
+
+    Ref<GodotPropertyHintArgument> property_hint = p_attribute->arguments()->find_child<GodotPropertyHintArgument>();
+    GEN_ERROR_COND(!property_hint, p_attribute, "Failed to get property hint argument");
+
+    Vector<Ref<GodotPropertyUsageFlagsArgument>> usage_flags = p_attribute->arguments()->find_children<GodotPropertyUsageFlagsArgument>();
+
+    Ref<Function> add_property = build<Function>().with_children({
+      build<Identifier>("ADD_PROPERTY"),
+      build<Arguments>().with_children({
+        build<Argument>().with_children({
+          build_property_info(variant_type, property_hint, usage_flags, property_name)
+        }),
+        build<Argument>().with_child(Writer::StringLiteral(setter_name)),
+        build<Argument>().with_child(Writer::StringLiteral(getter_name)),
+      })
+    }).with_child(Writer::Semicolon());
+    // clang-format on
+
+    Ref<PropertyGetAccessSpecifierArgument> get_access_specifier_argument =
+        p_attribute->arguments()->find_child<PropertyGetAccessSpecifierArgument>();
+    GEN_ERROR_COND(!get_access_specifier_argument, p_attribute, "Failed to get get specifier argument");
+
+    Ref<PropertySetAccessSpecifierArgument> set_access_specifier_argument =
+        p_attribute->arguments()->find_child<PropertySetAccessSpecifierArgument>();
+    GEN_ERROR_COND(!set_access_specifier_argument, p_attribute, "Failed to get set specifier argument");
+
+    String access_specifier_name;
+    if (get_access_specifier_argument->get_specifier_cpp_name(access_specifier_name)) {
+      p_generated_body->add_child(Writer::FmtText("%s:", access_specifier_name.c_str()));
+    }
+
+    p_generated_body->add_child(get_def);
+
+    if (set_access_specifier_argument->get_specifier_cpp_name(access_specifier_name)) {
+      p_generated_body->add_child(Writer::FmtText("%s:", access_specifier_name.c_str()));
+    }
+
+    p_generated_body->add_children({set_def, Writer::Text("private:")});
+
+    p_generated_sources->add_children({
+        get_impl,
+        set_impl,
+    });
+
+    bind_methods_body->add_child(add_property);
+
+    Ref<Body> property_names_body = get_or_create_property_names_body(p_target_class, p_generated_body);
+    GEN_ERROR_COND(!property_names_body, p_attribute, "Failed to get property names body.");
+
+    property_names_body->add_child(
+        Writer::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
+            property_name.c_str(), property_name.c_str())));
 
     return GeneratorError::OK;
   }

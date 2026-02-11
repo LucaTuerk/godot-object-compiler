@@ -256,6 +256,10 @@ namespace GodotObjectCompiler {
 
   bool string_prefix(const String& p_content, const String& p_prefix) { return p_content.find(p_prefix) == 0; }
 
+  bool string_enclosed_by(const String& p_content, const String& p_enclosing) {
+    return string_prefix(p_content, p_enclosing) && string_suffix(p_content, p_enclosing);
+  }
+
   bool string_only_contains(const String& p_content, char p_char) {
     if (p_content.length() == 0) {
       return false;

@@ -101,7 +101,11 @@ namespace GodotObjectCompiler {
               });
 
           for (const Ref<NamedContext>& node : found) {
-            if (Ref<Attribute> attr = node->as<Attribute>(); attr && attr->resolve_target()) {
+            if (Ref<Attribute> attr = node->as<Attribute>(); attr) {
+              if (!attr->resolve_target()) {
+                continue;
+              }
+
               if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
                   type && is_valid_type_target(type)) {
                 TypeDB::instance()->save_type_attribute(type, attr);

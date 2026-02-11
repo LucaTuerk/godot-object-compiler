@@ -63,23 +63,23 @@ namespace GodotObjectCompiler {
 
     enum Target {
       NEXT,        // attribute applies to next sibling in the context
-      CONTAINING,  // attribute applies to the containing context
-      NONE,
+      CONTAINING,  // attribute applies to a containing ancestral context
+      NONE,        // no target
     };
 
     Ref<Node> resolve_target() const;
-    bool verify_target(Ref<Node> p_resolved) const;
+    bool verify_target(const Ref<Node>& p_resolved) const;
     virtual Ref<IAttributeArgumentParser> get_argument_parser();
 
-    Size start;
-    Size end;
-    Size line;
+    Size start{};
+    Size end{};
+    Size line{};
 
    protected:
 
     virtual Target _get_target() const = 0;
     virtual bool _verify_target_class(Ref<Node> p_resolved) const = 0;
-    virtual bool _verify_target(Ref<Node> p_resolved) const;
+    virtual bool _verify_target(const Ref<Node>& p_resolved) const;
   };
 
 }

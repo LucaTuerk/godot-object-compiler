@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* output_file.cpp                                                        */
+/* string_literal_parameter_type.cpp                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,31 +32,28 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-//
-// Created by luca on 19.01.26.
-//
 
-#include "output_file.h"
-
-#include "library/core/string_writer.h"
-#include "output.h"
-#include "output_transformator.h"
+#include "string_literal_parameter_type.h"
 
 namespace GodotObjectCompiler {
 
-  void OutputFile::print() {
-    StreamWriter writer;
-    write_output(&writer);
-  }
+  String StringLiteralParameterType::get_return_type() { return "const char*"; }
 
-  void OutputFile::write_output(IStringWriter* writer) {
-    if (!transformed) {
-      transformed = OutputTransformator().transform(shared_from_this());
-      if (!transformed) {
-        return;
-      }
+  Vector<String> StringLiteralParameterType::get_value_names() { return {}; }
+
+  Vector<IAttributeParameterType::Argument> StringLiteralParameterType::get_arguments() { return {}; }
+
+  Ref<Argument> StringLiteralParameterType::create_argument() { return node_new<StringLiteralArgument>(); }
+
+  bool StringLiteralParameterType::is_builtin() { return true; }
+
+  String StringLiteralArgument::_content_lazy_get() {
+    Ref<Literal> literal = find_child<Literal>();
+    if (!literal) {
+      ERR("Failed to find literal.");
+      return "";
     }
-    transformed->get_output(writer);
+    return literal->content;
   }
 
 }

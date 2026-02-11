@@ -48,4 +48,22 @@ namespace GodotObjectCompiler {
 
   Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() { return find_child<Arguments>(); }
 
+  String GodotPropertyGroupAttribute::_literal_content_lazy_get() {
+    const Ref<Literal> literal = find_chain<Literal, Arguments, StringLiteralArgument>();
+    if (!literal) {
+      ERR("Failed to find literal");
+      return "\"\"";
+    }
+    return literal->content;
+  }
+
+  String GodotPropertySubgroupAttribute::_literal_content_lazy_get() {
+    const Ref<Literal> literal = find_chain<Literal, Arguments, StringLiteralArgument>();
+    if (!literal) {
+      ERR("Failed to find literal");
+      return "\"\"";
+    }
+    return literal->content;
+  }
+
 }

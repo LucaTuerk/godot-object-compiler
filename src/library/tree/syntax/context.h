@@ -89,17 +89,15 @@ namespace GodotObjectCompiler {
   class Context : public Node {
     NODE_TYPE(Context)
 
-    ~Context() override;
-
-    bool copy_to(Ref<Node> p_other) const override;
+    bool copy_to(const Ref<Node>& p_other) const override;
 
     void add_child(Ref<Node> p_child);
 
     void add_children(std::initializer_list<Ref<Node>>&& p_children);
 
-    void remove_child(Ref<Node> p_child);
+    void remove_child(const Ref<Node>& p_child);
 
-    void replace_child(Ref<Node> p_child, Ref<Node> p_new_child, bool take_children = false);
+    void replace_child(const Ref<Node>& p_child, const Ref<Node>& p_new_child, bool take_children = false);
 
     bool empty() const;
 
@@ -125,10 +123,6 @@ namespace GodotObjectCompiler {
 
     ChildIterator begin();
     ChildIterator end();
-
-    void merge_includes(Ref<Namespace> p_target, Size p_depth = Limits<Size>::max());
-
-    ChildIterator merge_includes(Ref<Namespace> p_target, ChildIterator p_this_itr, Size p_depth);
 
     ChildIterator remove_child(ChildIterator p_itr);
 
@@ -174,7 +168,7 @@ namespace GodotObjectCompiler {
   class NamedContext : public Context {
     NODE_TYPE(NamedContext)
 
-    bool copy_to(Ref<Node> p_other) const override;
+    bool copy_to(const Ref<Node>& p_other) const override;
 
     void read_from(IStructuredReader* p_reader) override;
 

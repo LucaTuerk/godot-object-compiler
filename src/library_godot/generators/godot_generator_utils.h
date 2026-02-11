@@ -64,6 +64,10 @@ namespace GodotObjectCompiler {
     Ref<Body> get_or_create_bind_methods_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
         const Ref<Context>& p_generated_sources);
 
+    Ref<Body> get_or_create_function_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
+    Ref<Body> get_or_create_property_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
+    Ref<Body> get_or_create_signal_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
+
     bool check_is_valid_named_argument(const Ref<Node>& p_node, String& p_name);
 
     bool get_name(const Ref<Node>& p_node, String& p_name);

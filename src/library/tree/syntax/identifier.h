@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include <utility>
+
 #include "node.h"
 
 namespace GodotObjectCompiler {
@@ -43,9 +45,9 @@ namespace GodotObjectCompiler {
 
    public:
 
-    explicit Identifier(const String& name) : name(name) {}
+    explicit Identifier(String name) : name(std::move(name)) {}
 
-    bool copy_to(Ref<Node> p_other) const override;
+    bool copy_to(const Ref<Node>& p_other) const override;
     String to_string() const override;
     void write_to(IStructuredWriter* p_writer) override;
     void read_from(IStructuredReader* p_reader) override;

@@ -48,8 +48,8 @@ namespace GodotObjectCompiler {
 
   Ref<Arguments> Function::_arguments_lazy_get() { return find_child<Arguments>(); }
 
-  bool Function::copy_to(Ref<Node> p_other) const {
-    COPY_GUARD(Function, NamedContext);
+  bool Function::copy_to(const Ref<Node>& p_other) const {
+    COPY_GUARD(Function, Member);
     // COPY_LAZY(type);
     // COPY_LAZY(parameters);
     // COPY_LAZY(is_virtual);
