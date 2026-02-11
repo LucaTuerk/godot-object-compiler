@@ -47,7 +47,7 @@ namespace GodotObjectCompiler {
 
   bool StringLiteralParameterType::is_builtin() { return true; }
 
-  String StringLiteralArgument::_content_lazy_get() {
+  String StringLiteralArgument::_content_lazy_get() const {
     Ref<Literal> literal = find_child<Literal>();
     if (!literal) {
       ERR("Failed to find literal.");

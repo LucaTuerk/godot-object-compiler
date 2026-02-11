@@ -48,10 +48,10 @@ namespace GodotObjectCompiler {
     return string_shrink_inner_space(string_trim(writer.get_string()));
   }
 
-  String Type::_type_name_untemplated_lazy_get() {
+  String Type::_type_name_untemplated_lazy_get() const {
     StreamWriter writer;
     Ref<Type> temp = node_new<Type>();
-    for (const Ref<Node>& child : *this) {
+    for (const Ref<Node>& child : _children) {
       if (child->is<TemplateParameters>() || child->is<TemplateArguments>()) {
         continue;
       }
@@ -62,10 +62,10 @@ namespace GodotObjectCompiler {
     return string_shrink_inner_space(string_trim(writer.get_string()));
   }
 
-  String Type::_type_name_unmodified_lazy_get() {
+  String Type::_type_name_unmodified_lazy_get() const {
     StreamWriter writer;
     Ref<Type> temp = node_new<Type>();
-    for (const Ref<Node>& child : *this) {
+    for (const Ref<Node>& child : _children) {
       if (child->is<TypeQualifier>() || child->is<Pointer>() || child->is<Reference>()) {
         continue;
       }
@@ -77,10 +77,10 @@ namespace GodotObjectCompiler {
     return string_shrink_inner_space(string_trim(writer.get_string()));
   }
 
-  String Type::_type_name_unmodified_ptr_lazy_get() {
+  String Type::_type_name_unmodified_ptr_lazy_get() const {
     StreamWriter writer;
     Ref<Type> temp = node_new<Type>();
-    for (const Ref<Node>& child : *this) {
+    for (const Ref<Node>& child : _children) {
       if (child->is<TypeQualifier>() || child->is<Reference>()) {
         continue;
       }
@@ -92,15 +92,15 @@ namespace GodotObjectCompiler {
     return string_shrink_inner_space(string_trim(writer.get_string()));
   }
 
-  Size Type::_template_argument_count_lazy_get() {
+  Size Type::_template_argument_count_lazy_get() const {
     if (!is_template_type()) {
       return 0;
     }
     return template_arguments()->get_child_count();
   }
 
-  bool Type::_is_template_type_lazy_get() { return template_arguments() != nullptr; }
+  bool Type::_is_template_type_lazy_get() const { return template_arguments() != nullptr; }
 
-  Ref<TemplateArguments> Type::_template_arguments_lazy_get() { return find_child<TemplateArguments>(); }
+  Ref<TemplateArguments> Type::_template_arguments_lazy_get() const { return find_child<TemplateArguments>(); }
 
 }

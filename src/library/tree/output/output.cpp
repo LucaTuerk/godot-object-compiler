@@ -73,7 +73,7 @@ namespace GodotObjectCompiler {
       return true;
     }
 
-    Size IndentNode::_total_amount_lazy_get() {
+    Size IndentNode::_total_amount_lazy_get() const {
       Ref<IndentNode> parent = find_ancestor<IndentNode>();
 
       if (parent) {

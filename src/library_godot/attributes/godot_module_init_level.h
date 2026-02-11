@@ -61,7 +61,7 @@ namespace GodotObjectCompiler {
 
    private:
 
-    LAZY(GodotModuleInitializationLevelParameterType, Vector<String>, value_names);
+    LAZY_MUT(GodotModuleInitializationLevelParameterType, Vector<String>, value_names);
     Dictionary<String, String> _godot_init_levels;
   };
 

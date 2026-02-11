@@ -65,7 +65,7 @@ namespace GodotObjectCompiler {
 
    private:
 
-    LAZY(GodotPropertyHintParameterType, Vector<String>, value_names);
+    LAZY_MUT(GodotPropertyHintParameterType, Vector<String>, value_names);
     Dictionary<String, String> _godot_hint_types;
   };
 

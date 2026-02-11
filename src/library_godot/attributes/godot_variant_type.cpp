@@ -82,7 +82,7 @@ namespace GodotObjectCompiler {
     return results;
   }
 
-  String GodotVariantTypeArgument::_godot_variant_type_lazy_get() {
+  String GodotVariantTypeArgument::_godot_variant_type_lazy_get() const {
     auto ptype = GodotVariantTypeParameterType::instance();
 
     Ref<Identifier> identifier = find_child<Identifier>();

@@ -65,7 +65,7 @@ namespace GodotObjectCompiler {
 
    private:
 
-    LAZY(GodotPropertyUsageFlagsParameterType, Vector<String>, value_names);
+    LAZY_MUT(GodotPropertyUsageFlagsParameterType, Vector<String>, value_names);
     Dictionary<String, String> _godot_usage_flags;
   };
 
