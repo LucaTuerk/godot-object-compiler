@@ -53,7 +53,7 @@ namespace GodotObjectCompiler {
 
     /* collections */
     LAZY(Class, Vector<String>, direct_bases_names);
-    LAZY(Class, Vector<Ref<Class>>, base_classes);
+    LAZY_MUT(Class, Vector<Ref<Class>>, base_classes);
     LAZY(Class, bool, has_generated_class_attribute);
     LAZY(Class, Vector<Ref<Attribute>>, attributes);
     // Functions

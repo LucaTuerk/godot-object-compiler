@@ -141,13 +141,14 @@ namespace GodotObjectCompiler {
 
     template <class T>
     Ref<T> find_ancestor(
-        StemExplorationType p_type = DIRECT_PARENTS, Predicate<T> p_predicate = default_node_predicate<T>);
+        StemExplorationType p_type = DIRECT_PARENTS, Predicate<T> p_predicate = default_node_predicate<T>) const;
 
     template <class T>
-    Ref<T> find_descendant(BranchExplorationType p_order = BFS, Predicate<T> p_predicate = default_node_predicate<T>);
+    Ref<T> find_descendant(
+        BranchExplorationType p_order = BFS, Predicate<T> p_predicate = default_node_predicate<T>) const;
 
     template <class T>
-    Ref<T> find_previous_sibling(Predicate<T> p_predicate = default_node_predicate<T>);
+    Ref<T> find_previous_sibling(Predicate<T> p_predicate = default_node_predicate<T>) const;
 
     template <class T, typename... Args>
     Ref<T> create_child(Args&&... args);
@@ -156,7 +157,7 @@ namespace GodotObjectCompiler {
     Builder<T, Args...> build_child(Args&&... args);
 
     template <class T>
-    Vector<Ref<T>> find_children(bool p_recursive = false, Predicate<T> p_predicate = default_node_predicate<T>);
+    Vector<Ref<T>> find_children(bool p_recursive = false, Predicate<T> p_predicate = default_node_predicate<T>) const;
 
     void write_to(IStructuredWriter* p_writer) override;
   };
@@ -213,7 +214,7 @@ namespace GodotObjectCompiler {
   }
 
   template <class T>
-  Ref<T> Context::find_ancestor(StemExplorationType p_type, Predicate<T> p_predicate) {
+  Ref<T> Context::find_ancestor(StemExplorationType p_type, Predicate<T> p_predicate) const {
     Ref<Node> current = get_parent();
 
     while (current) {
@@ -285,7 +286,7 @@ namespace GodotObjectCompiler {
   }
 
   template <class T>
-  Ref<T> Context::find_descendant(BranchExplorationType p_order, Predicate<T> p_predicate) {
+  Ref<T> Context::find_descendant(BranchExplorationType p_order, Predicate<T> p_predicate) const {
     switch (p_order) {
       case DFS:
         for (const Ref<Node>& child : _children) {
@@ -320,7 +321,7 @@ namespace GodotObjectCompiler {
   }
 
   template <class T>
-  Ref<T> Context::find_previous_sibling(Predicate<T> p_predicate) {
+  Ref<T> Context::find_previous_sibling(Predicate<T> p_predicate) const {
     if (get_parent() == nullptr) {
       return nullptr;
     }
@@ -366,9 +367,9 @@ namespace GodotObjectCompiler {
   }
 
   template <class T>
-  Vector<Ref<T>> Context::find_children(bool p_recursive, Predicate<T> p_predicate) {
+  Vector<Ref<T>> Context::find_children(bool p_recursive, Predicate<T> p_predicate) const {
     Vector<Ref<T>> results;
-    for (const Ref<Node>& child : *this) {
+    for (const Ref<Node>& child : _children) {
       find_recursive_helper(child.get(), p_recursive, results, p_predicate);
     }
     return results;

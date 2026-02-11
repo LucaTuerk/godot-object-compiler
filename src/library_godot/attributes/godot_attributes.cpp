@@ -46,9 +46,9 @@ namespace GodotObjectCompiler {
     return make_ref<GodotAttributeArgumentParser>(this->as<Attribute>());
   }
 
-  Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() { return find_child<Arguments>(); }
+  Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() const { return find_child<Arguments>(); }
 
-  String GodotPropertyGroupAttribute::_literal_content_lazy_get() {
+  String GodotPropertyGroupAttribute::_literal_content_lazy_get() const {
     const Ref<Literal> literal = find_chain<Literal, Arguments, StringLiteralArgument>();
     if (!literal) {
       ERR("Failed to find literal");
@@ -57,7 +57,7 @@ namespace GodotObjectCompiler {
     return literal->content;
   }
 
-  String GodotPropertySubgroupAttribute::_literal_content_lazy_get() {
+  String GodotPropertySubgroupAttribute::_literal_content_lazy_get() const {
     const Ref<Literal> literal = find_chain<Literal, Arguments, StringLiteralArgument>();
     if (!literal) {
       ERR("Failed to find literal");

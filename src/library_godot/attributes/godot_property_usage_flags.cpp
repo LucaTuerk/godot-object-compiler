@@ -83,7 +83,7 @@ namespace GodotObjectCompiler {
     return return_value;
   }
 
-  String GodotPropertyUsageFlagsArgument::_godot_property_usage_flag_lazy_get() {
+  String GodotPropertyUsageFlagsArgument::_godot_property_usage_flag_lazy_get() const {
     auto ptype = GodotPropertyUsageFlagsParameterType::instance();
 
     Ref<Identifier> identifier = find_child<Identifier>();

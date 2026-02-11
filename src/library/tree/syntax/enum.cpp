@@ -36,9 +36,9 @@
 
 namespace GodotObjectCompiler {
 
-  Vector<Ref<EnumValue>> Enum::_values_lazy_get() { return find_children<EnumValue>(true); }
+  Vector<Ref<EnumValue>> Enum::_values_lazy_get() const { return find_children<EnumValue>(true); }
 
-  Vector<String> Enum::_value_names_lazy_get() {
+  Vector<String> Enum::_value_names_lazy_get() const {
     Vector<String> result;
 
     for (Ref<Node> child : values()) {
@@ -52,7 +52,7 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  Ref<Literal> EnumValue::_literal_lazy_get() {
+  Ref<Literal> EnumValue::_literal_lazy_get() const {
     Ref<Literal> value = find_child<Literal>();
     PANIC_COND(!value, "No enum value literal found. This is invalid.")
     return value;

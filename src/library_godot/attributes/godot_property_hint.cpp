@@ -80,7 +80,7 @@ namespace GodotObjectCompiler {
     return return_value;
   }
 
-  String GodotPropertyHintArgument::_godot_property_hint_lazy_get() {
+  String GodotPropertyHintArgument::_godot_property_hint_lazy_get() const {
     auto ptype = GodotPropertyHintParameterType::instance();
     String hint;
     if (Ref<Identifier> identifier = find_child<Identifier>();
@@ -90,7 +90,7 @@ namespace GodotObjectCompiler {
     PANIC("Malformed property hint argument");
   }
 
-  String GodotPropertyHintArgument::_hint_string_lazy_get() {
+  String GodotPropertyHintArgument::_hint_string_lazy_get() const {
     Ref<Arguments> arguments = find_child<Arguments>();
     if (!arguments) {
       return "\"\"";
@@ -109,7 +109,7 @@ namespace GodotObjectCompiler {
     return literal->content;
   }
 
-  String GodotPropertyHintArgument::_hint_content_lazy_get() {
+  String GodotPropertyHintArgument::_hint_content_lazy_get() const {
     String hint = hint_string();
     if (hint.size() < 2) {
       return "";

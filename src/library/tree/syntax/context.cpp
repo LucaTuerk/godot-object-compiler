@@ -195,7 +195,7 @@ namespace GodotObjectCompiler {
 
   void Context::write_to(IStructuredWriter* p_writer) { Node::write_to(p_writer); }
 
-  String NamedContext::_name_lazy_get() {
+  String NamedContext::_name_lazy_get() const {
     Ref<Identifier> identifier = find_child<Identifier>();
     if (!identifier) {
       return {};
@@ -203,9 +203,9 @@ namespace GodotObjectCompiler {
     return identifier->name;
   }
 
-  Ref<Body> NamedContext::_body_lazy_get() { return find_child<Body>(); }
+  Ref<Body> NamedContext::_body_lazy_get() const { return find_child<Body>(); }
 
-  String NamedContext::_qualified_name_lazy_get() {
+  String NamedContext::_qualified_name_lazy_get() const {
     StreamWriter writer;
 
     Ref<Namespace> ns = find_ancestor<Namespace>();
@@ -240,9 +240,9 @@ namespace GodotObjectCompiler {
     p_writer->write<String, String>("_name", name());
   }
 
-  Vector<String> NamedContext::_namespaces_names_lazy_get() {
+  Vector<String> NamedContext::_namespaces_names_lazy_get() const {
     Vector<String> names;
-    Ref<NamedContext> current = shared_from_this()->as<NamedContext>();
+    Ref<const NamedContext> current = this->const_as<NamedContext>();
     if (current->is<Namespace>()) {
       names.push_back(current->name());
     }
@@ -260,9 +260,9 @@ namespace GodotObjectCompiler {
     return reversed;
   }
 
-  String NamedContext::_mangled_name_lazy_get() {
+  String NamedContext::_mangled_name_lazy_get() const {
     Size template_parameter_count = 0;
-    for (const Ref<Node>& child : *this) {
+    for (const Ref<Node>& child : _children) {
       if (const Ref<TemplateParameters> parameters = child->as<TemplateParameters>()) {
         template_parameter_count = parameters->get_child_count();
       } else if (const Ref<TemplateArguments> arguments = child->as<TemplateArguments>()) {

@@ -60,7 +60,7 @@ namespace GodotObjectCompiler {
 
    private:
 
-    LAZY(GodotClassTypeParameterType, Vector<String>, value_names);
+    LAZY_MUT(GodotClassTypeParameterType, Vector<String>, value_names);
     Dictionary<String, String> _value_name_to_macro;
   };
 

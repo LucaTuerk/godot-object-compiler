@@ -62,7 +62,7 @@ namespace GodotObjectCompiler {
 
    private:
 
-    LAZY(GodotVariantTypeParameterType, Vector<String>, value_names)
+    LAZY_MUT(GodotVariantTypeParameterType, Vector<String>, value_names)
     Dictionary<String, String> _value_name_to_godot_variant_type;
   };
 
