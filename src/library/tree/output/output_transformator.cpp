@@ -32,9 +32,6 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-//
-// Created by luca on 23.01.26.
-//
 
 #include "output_transformator.h"
 

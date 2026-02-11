@@ -34,16 +34,10 @@
 /**************************************************************************/
 #include "library/parser/parser_context.h"
 
-#include "../tree/syntax/all.h"
 #include "library/core/file_system_utilities.h"
-#include "parser.h"
-#include "tree_sitter_node.h"
-
-#define CREATE_NAMED(type)                                   \
-  type* result = current_node->create_child<type>();         \
-  Ref<Identifier> name = result->create_child<Identifier>(); \
-  name->name = get_child_content(node, "name");              \
-  return result
+#include "library/parser/parser.h"
+#include "library/parser/tree_sitter_node.h"
+#include "library/tree/syntax/all.h"
 
 namespace GodotObjectCompiler {
 
@@ -73,8 +67,6 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-  ParserContext::~ParserContext() {}
-
   Ref<TreeSitterNode> ParserContext::create_tree(TSTree* p_tree) {
     TSNode ts_root = ts_tree_root_node(p_tree);
     if (ts_node_is_null(ts_root)) {
@@ -91,8 +83,7 @@ namespace GodotObjectCompiler {
 
     Ref<TreeSitterNode> node = node_new<TreeSitterNode>(p_ts_node, this);
     for (uint32_t i = 0; i < ts_node_child_count(p_ts_node); ++i) {
-      auto child = create_node(ts_node_child(p_ts_node, i));
-      if (child) {
+      if (auto child = create_node(ts_node_child(p_ts_node, i))) {
         node->add_child(child);
       }
     }

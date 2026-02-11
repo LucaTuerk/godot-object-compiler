@@ -35,11 +35,11 @@
 
 #include "godot_property_usage_flags.h"
 
-#include "../../library/type_db.h"
-#include "../assumptions.h"
 #include "library/core/string_utilities.h"
 #include "library/tree/syntax/enum.h"
 #include "library/tree/syntax/identifier.h"
+#include "library/type_db.h"
+#include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler {
 

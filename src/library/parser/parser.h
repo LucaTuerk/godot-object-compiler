@@ -34,9 +34,9 @@
 /**************************************************************************/
 #pragma once
 
-#include "../tree/syntax/node.h"
 #include "library/core/core.h"
 #include "library/parser/parser_context.h"
+#include "library/tree/syntax/node.h"
 #include "library/tree/syntax/parser_error.h"
 
 namespace GodotObjectCompiler {

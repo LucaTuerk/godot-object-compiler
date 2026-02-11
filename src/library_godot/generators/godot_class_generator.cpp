@@ -35,11 +35,9 @@
 
 #include "godot_class_generator.h"
 
-#include "../assumptions.h"
 #include "godot_generator_utils.h"
-#include "library/core/string_writer.h"
 #include "library/tree/output/output.h"
-#include "library/tree/output/output_transformator.h"
+#include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler {
 

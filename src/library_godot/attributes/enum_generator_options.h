@@ -34,8 +34,8 @@
 /**************************************************************************/
 
 #pragma once
-#include "../../library/generator/attribute_parameter_type.h"
-#include "../../library/tree/syntax/function.h"
+#include "library/generator/attribute_parameter_type.h"
+#include "library/tree/syntax/function.h"
 
 namespace GodotObjectCompiler {
 
