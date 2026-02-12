@@ -64,6 +64,9 @@ namespace GodotObjectCompiler {
     Ref<Body> get_or_create_bind_methods_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
         const Ref<Context>& p_generated_sources);
 
+    Ref<Body> get_or_create_get_property_list_body(const Ref<Class>& p_target_class,
+        const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources);
+
     Ref<Body> get_or_create_function_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
     Ref<Body> get_or_create_property_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
     Ref<Body> get_or_create_signal_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
@@ -161,7 +164,7 @@ namespace GodotObjectCompiler {
 
     Ref<Node> build_property_info(const Ref<GodotVariantTypeArgument>& p_variant_type,
         const Ref<GodotPropertyHintArgument>& p_hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages,
-        const String& p_property_name);
+        const String& p_property_name, bool p_no_editor = false);
 
     Ref<Node> build_property_info(const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name);
 

@@ -69,7 +69,7 @@ namespace GodotObjectCompiler {
     Builder& with_child(BArgs... child_args);
 
     template <typename B, typename... BArgs>
-    Builder& with_child_ref(B** ptr, BArgs... child_args);
+    Builder& with_child_ref(Ref<B>* ptr, BArgs... child_args);
 
     Builder& with_child(Ref<Node> p_child);
 
@@ -413,7 +413,7 @@ namespace GodotObjectCompiler {
 
   template <typename T, typename... Args>
   template <typename B, typename... BArgs>
-  Builder<T, Args...>& Builder<T, Args...>::with_child_ref(B** ptr, BArgs... child_args) {
+  Builder<T, Args...>& Builder<T, Args...>::with_child_ref(Ref<B>* ptr, BArgs... child_args) {
     Ref<B> child = node_new<B>(std::forward<BArgs>(child_args)...);
     _created->add_child(child);
     if (ptr) {

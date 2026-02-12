@@ -102,6 +102,15 @@ namespace GodotObjectCompiler {
     ATTRIBUTE_DEFAULT_MACRO(GODOT_SIGNAL)
   };
 
+  class GodotPropertyCategoryAttribute : public GodotAttributeWithParams {
+    ATTRIBUTE_TYPE(GodotPropertyCategoryAttribute, Node, NONE)
+    ATTRIBUTE_DEFAULT_MACRO(GODOT_CATEGORY)
+
+    ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
+
+    LAZY(GodotPropertyCategoryAttribute, String, literal_content);
+  };
+
   class GodotPropertyGroupAttribute : public GodotAttributeWithParams {
     ATTRIBUTE_TYPE(GodotPropertyGroupAttribute, Node, NONE)
     ATTRIBUTE_DEFAULT_MACRO(GODOT_GROUP)

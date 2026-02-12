@@ -45,22 +45,31 @@ namespace GodotObjectCompiler {
 
   Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() const { return find_child<Arguments>(); }
 
-  String GodotPropertyGroupAttribute::_literal_content_lazy_get() const {
-    const Ref<Literal> literal = find_chain<Literal, Arguments, StringLiteralArgument>();
+  String get_string_literal_content(const Ref<const Attribute>& p_attribute) {
+    const Ref<Literal> literal = p_attribute->find_chain<Literal, Arguments, StringLiteralArgument>();
     if (!literal) {
       ERR("Failed to find literal");
-      return "\"\"";
+      return "";
     }
-    return literal->content;
+
+    if (!string_enclosed_by(literal->content, "\"") || literal->content.size() < 2) {
+      ERR("Expected string literal");
+      return "";
+    }
+
+    return literal->content.substr(1, literal->content.size() - 2);
+  }
+
+  String GodotPropertyCategoryAttribute::_literal_content_lazy_get() const {
+    return get_string_literal_content(const_as<Attribute>());
+  }
+
+  String GodotPropertyGroupAttribute::_literal_content_lazy_get() const {
+    return get_string_literal_content(const_as<Attribute>());
   }
 
   String GodotPropertySubgroupAttribute::_literal_content_lazy_get() const {
-    const Ref<Literal> literal = find_chain<Literal, Arguments, StringLiteralArgument>();
-    if (!literal) {
-      ERR("Failed to find literal");
-      return "\"\"";
-    }
-    return literal->content;
+    return get_string_literal_content(const_as<Attribute>());
   }
 
 }
