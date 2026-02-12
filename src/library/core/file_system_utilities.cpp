@@ -35,9 +35,8 @@
 
 #include "file_system_utilities.h"
 
-#include <filesystem>
-
 #include "core.h"
+#include "library/core/string_utilities.h"
 #include "permissions.h"
 #include "string_writer.h"
 
@@ -101,6 +100,10 @@ namespace GodotObjectCompiler {
   }
 
   Size file_write_time(const String& p_path) {
+    if (!file_exists(p_path)) {
+      return 0;
+    }
+
     auto file_time = std::filesystem::last_write_time(p_path);
     auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
         file_time - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now());
@@ -191,6 +194,12 @@ namespace GodotObjectCompiler {
       }
     }
     return result;
+  }
+
+  bool path_is_descendant(const String& p_possible_ancestor, const String& p_possible_child) {
+    String ancestor_absolute = path_absolute(p_possible_ancestor);
+    String child_absolute = path_absolute(p_possible_child);
+    return string_prefix(child_absolute, ancestor_absolute);
   }
 
 }

@@ -39,6 +39,7 @@
 #include "library/core/config.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
+#include "library/execution_context.h"
 #include "library/parser/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/define.h"
@@ -51,12 +52,6 @@ namespace GodotObjectCompiler {
 
   Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context) {
     TreeSitterParser parser;
-
-    Config times;
-    auto time_path = path_concat(p_context.paths_cache, "last_modified_times.goct");
-    if (file_exists(time_path)) {
-      times.read_from_file(time_path);
-    }
 
     for (const String& include_path : p_context.paths_include) {
       for (const String& file : directory_files_recursive(include_path)) {
@@ -71,17 +66,9 @@ namespace GodotObjectCompiler {
           continue;
         }
 
-        Size current_modified = file_write_time(file);
-        if (times.has_config_value(file)) {
-          Size last_modified = times.read<String, Size>(file);
-
-          if (last_modified == current_modified) {
-            continue;
-          }
+        if (!ExecutionContext::instance()->file_modified(file)) {
+          continue;
         }
-
-        times.write<String, Size>(file, current_modified);
-        times.write_to_file(time_path);
 
         Ref<Namespace> global_namespace = node_new<Namespace>();
         Ref<ParserError> error = parser.parse_file(file, global_namespace);
@@ -108,10 +95,10 @@ namespace GodotObjectCompiler {
 
               if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
                   type && is_valid_type_target(type)) {
-                TypeDB::instance()->save_type_attribute(type, attr);
+                TypeDB::instance()->save_type_attribute(type, attr, file);
               }
             } else {
-              TypeDB::instance()->save_type_data(node);
+              TypeDB::instance()->save_type_data(node, file);
             }
           }
         }

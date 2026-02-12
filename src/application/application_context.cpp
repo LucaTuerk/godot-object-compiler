@@ -74,20 +74,30 @@ namespace GodotObjectCompiler {
 
   bool ApplicationContext::validate() const {
     bool success = true;
+    Permissions::instance()->clear();
+    Permissions::instance()->add_write_path(paths_goc);
+    Permissions::instance()->add_write_path(paths_generated);
+    Permissions::instance()->add_write_path(paths_cache);
 
     if (!directory_exits(paths_root)) {
-      print_err(format("Invalid root path \"%s\". Path is not a directory.", paths_root.c_str()));
-      success = false;
+      if (!create_dir_recursive(paths_root)) {
+        print_err(format("Invalid root path \"%s\". Path is not a directory.", paths_root.c_str()));
+        success = false;
+      }
     }
 
     if (!directory_exits(paths_cache)) {
-      print_err(format("Invalid cache path \"%s\". Path is not a directory.", paths_cache.c_str()));
-      success = false;
+      if (!create_dir_recursive(paths_cache)) {
+        print_err(format("Invalid cache path \"%s\". Path is not a directory.", paths_cache.c_str()));
+        success = false;
+      }
     }
 
     if (!directory_exits(paths_generated)) {
-      print_err(format("Invalid generated path \"%s\". Path is not a directory.", paths_generated.c_str()));
-      success = false;
+      if (!create_dir_recursive(paths_generated)) {
+        print_err(format("Invalid generated path \"%s\". Path is not a directory.", paths_generated.c_str()));
+        success = false;
+      }
     }
 
     for (const String& file : files_input) {
@@ -101,13 +111,6 @@ namespace GodotObjectCompiler {
       if (!directory_exits(include_path)) {
         print_err(format("Invalid include path\"%s\". Path is not a directory.", include_path.c_str()));
       }
-    }
-
-    if (success) {
-      Permissions::instance()->clear();
-      Permissions::instance()->add_write_path(paths_goc);
-      Permissions::instance()->add_write_path(paths_generated);
-      Permissions::instance()->add_write_path(paths_cache);
     }
 
     return success;

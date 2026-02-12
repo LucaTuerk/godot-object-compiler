@@ -194,14 +194,13 @@ namespace GodotObjectCompiler {
 
   Ref<Body> GodotGeneratorUtils::get_or_create_get_property_list_body(
       const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources) {
-
     bool get_property_list_defined = p_target_class->has_function_named("_get_property_list");
     const String property_list_name = get_property_list_defined ? "_generated_get_property_list" : "_get_property_list";
     const String qualified_property_list_name =
         format("%s::%s", p_target_class->name().c_str(), property_list_name.c_str());
 
-    Ref<Function> get_property_list =
-        p_generated_sources->find_child(0, NamedContextPredicates::name<Function>(qualified_property_list_name.c_str()));
+    Ref<Function> get_property_list = p_generated_sources->find_child(
+        0, NamedContextPredicates::name<Function>(qualified_property_list_name.c_str()));
     Ref<Body> get_property_list_body;
 
     if (!get_property_list) {
@@ -712,7 +711,6 @@ namespace GodotObjectCompiler {
         property_usage
       })});
     // clang-format on
-
 
     if (p_usages.size() == 0) {
       arguments->remove_child(flags);

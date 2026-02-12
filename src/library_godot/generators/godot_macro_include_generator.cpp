@@ -269,18 +269,18 @@ namespace GodotObjectCompiler {
 
       for (Size j = 0; j < size; ++j) {
         template_params->add_child(Writer::FmtText("typename T%d", j + 1));
-        params->build_child<Parameter>().with_child(Writer::FmtText("T%d p_arg%d", j + 1, j+1));
+        params->build_child<Parameter>().with_child(Writer::FmtText("T%d p_arg%d", j + 1, j + 1));
       }
 
-      for (int curr = 0; curr < size - 1; ++curr) {
-        for (int cmp = curr + 1; cmp < size; ++cmp) {
+      for (Size curr = 0; curr < size - 1; ++curr) {
+        for (Size cmp = curr + 1; cmp < size; ++cmp) {
           body->add_child(
               Writer::FmtText("static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d and %d\");",
                   curr + 1, cmp + 1, curr + 1, cmp + 1));
         }
       }
 
-      for (int curr = 0; curr < size; ++curr) {
+      for (Size curr = 0; curr < size; ++curr) {
         body->add_child(Writer::FmtText("%s_prototype(p_arg%d);", p_macro.c_str(), curr + 1));
       }
 
@@ -298,6 +298,7 @@ namespace GodotObjectCompiler {
       return nullptr;
     }
     entry->add_child(Writer::PragmaOnce());
+    entry->add_child(Writer::SystemInclude("type_traits"));
 
     generate_macros(entry);
 

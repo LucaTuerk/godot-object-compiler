@@ -33,6 +33,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "library/core/string_utilities.h"
 #include "test_registry.h"
 
 GOC_TEST(StringReplace) {

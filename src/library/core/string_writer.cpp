@@ -35,9 +35,8 @@
 
 #include "string_writer.h"
 
-#include <filesystem>
-
 #include "file_system_utilities.h"
+#include "library/execution_context.h"
 #include "permissions.h"
 #include "resources.h"
 #include "string_utilities.h"
@@ -68,8 +67,11 @@ namespace GodotObjectCompiler {
     }
   }
 
-  FileWriter FileWriter::generated(const String& path) {
+  FileWriter FileWriter::generated(const String& path, const String& p_generated_from) {
     FileWriter writer(path, true);
+    if (!p_generated_from.empty()) {
+      ExecutionContext::instance()->register_generated_file(path, p_generated_from);
+    }
     writer.write(_generated_header(path_file_name(path)));
     return writer;
   }

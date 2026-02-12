@@ -80,7 +80,7 @@ namespace GodotObjectCompiler {
     Ref<Context> macro_include_content = node_new<Context>();
     macro_include_generator.generate(nullptr, macro_include_content);
 
-    FileWriter marco_writer = FileWriter::generated(path_concat(p_context.paths_generated, "macros.h"));
+    FileWriter marco_writer = FileWriter::generated(path_concat(p_context.paths_generated, "macros.h"), "");
     Ref<Writer::IOutputNode> macro_output = transformator.transform(macro_include_content);
     macro_output->get_output(&marco_writer);
 
@@ -193,9 +193,6 @@ namespace GodotObjectCompiler {
         create_dir_recursive(in_generated_base);
       }
 
-      FileWriter source_writer = FileWriter::generated(source_path);
-      FileWriter generated_writer = FileWriter::generated(generated_path);
-
       Ref<GeneratedGlobalAttribute> generated_global_attribute =
           global_namespace->find_descendant<GodotGeneratedGlobalAttribute>();
 
@@ -221,11 +218,6 @@ namespace GodotObjectCompiler {
       Ref<Context> global_generated = node_new<Context>();
 
       Vector<Results> generate_results;
-
-      Writer::PragmaOnce()->get_output(&generated_writer);
-      Writer::Text("#undef GOC_FILE_ID\n")->get_output(&generated_writer);
-      Writer::Define("GOC_FILE_ID", {}, file_id(input_file))->get_output(&generated_writer);
-      Writer::Include(input_file)->get_output(&source_writer);
 
       for (const Ref<Class>& target_class : classes) {
         Results results;
@@ -281,11 +273,17 @@ namespace GodotObjectCompiler {
 
         if (results.initialize->get_child_count() > 0 || results.uninitialize->get_child_count() > 0) {
           register_class_includes->add_child(Writer::Include(input_file));
+          register_body->add_child(results.initialize);
+          unregister_body->add_child(results.uninitialize);
         }
 
         Ref<GeneratorError> start_gen_error =
             class_generator.generate_startup(target_class, class_attribute, results.startup, results.shutdown);
         if (start_gen_error != GeneratorError::OK) {
+          continue;
+        }
+
+        if (!ExecutionContext::instance()->file_modified(input_file)) {
           continue;
         }
 
@@ -312,10 +310,18 @@ namespace GodotObjectCompiler {
         generate_results.push_back(results);
       }
 
-      for (Results& result : generate_results) {
-        register_body->add_child(result.initialize);
-        unregister_body->add_child(result.uninitialize);
+      if (!ExecutionContext::instance()->file_modified(input_file)) {
+        continue;
+      }
 
+      FileWriter source_writer = FileWriter::generated(source_path, input_file);
+      FileWriter generated_writer = FileWriter::generated(generated_path, input_file);
+      Writer::PragmaOnce()->get_output(&generated_writer);
+      Writer::Text("#undef GOC_FILE_ID\n")->get_output(&generated_writer);
+      Writer::Define("GOC_FILE_ID", {}, file_id(input_file))->get_output(&generated_writer);
+      Writer::Include(input_file)->get_output(&source_writer);
+
+      for (Results& result : generate_results) {
         Ref<Writer::IOutputNode> source_output = transformator.transform(result.generated_source);
 
         Ref<Writer::IOutputNode> body_output =
@@ -338,9 +344,9 @@ namespace GodotObjectCompiler {
     Ref<Writer::IOutputNode> register_source_output = transformator.transform(register_types_source);
 
     FileWriter register_header_writer =
-        FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "h"));
+        FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "h"), "");
     FileWriter register_source_writer =
-        FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "cpp"));
+        FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "cpp"), "");
 
     register_header_output->get_output(&register_header_writer);
     register_source_output->get_output(&register_source_writer);

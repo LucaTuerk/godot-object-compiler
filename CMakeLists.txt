@@ -3,13 +3,19 @@ project(goc VERSION 0.0 LANGUAGES CXX)
 include(CTest)
 
 set(CMAKE_CXX_STANDARD 17)
+add_subdirectory(thirdparty)
 
 find_program(MOLD_PROGRAM mold)
 if (MOLD_PROGRAM)
     set(CMAKE_LINKER_TYPE MOLD)
 endif ()
 
-add_subdirectory(thirdparty)
+find_program(CPP_CHECK cppcheck)
+if(CPP_CHECK)
+    set(CMAKE_CXX_CPPCHECK "cppcheck"
+        --suppress=*:*thirdparty/*
+    )
+endif()
 
 set(EXEC_NAME "goc")
 set(EXEC_NAME_TEST "goc_tests")
@@ -39,12 +45,9 @@ target_compile_options(${EXEC_NAME} PRIVATE
         $<$<CONFIG:Release>:-O3>)
 
 target_precompile_headers(${EXEC_NAME} PRIVATE
-        src/library/core/core.h
-        src/library/core/file_system_utilities.h
-        src/library/core/string_utilities.h
-        src/library/core/collection_utilities.h
-        src/library/tree/syntax/context.h
+        src/library/core/system_includes.h
 )
+
 target_precompile_headers(${EXEC_NAME_TEST} REUSE_FROM ${EXEC_NAME})
 
 target_compile_options(${EXEC_NAME_TEST} PRIVATE

@@ -116,10 +116,10 @@ namespace GodotObjectCompiler {
 
     Ref<Type> ref_inner;
     Ref<Enum> enum_object;
-    bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner, p_target_class);
+    // bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner, p_target_class);
     bool is_obj_type = type_is_object_type(field_type, p_target_class);
     bool is_enum_type = type_is_enum_type(field_type, enum_object, p_target_class);
-    bool is_collection_type = type_is_godot_collection_type(field_type, p_target_class);
+    // bool is_collection_type = type_is_godot_collection_type(field_type, p_target_class);
 
     bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, {}));
     bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, {property_name}));

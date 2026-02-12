@@ -76,7 +76,7 @@ namespace GodotObjectCompiler {
     explicit FileWriter(const String& path, bool do_not_write_same_content = true);
     ~FileWriter() override;
 
-    static FileWriter generated(const String& path);
+    static FileWriter generated(const String& path, const String& p_generated_from);
 
     void write(const String& p_value) override;
 

@@ -34,8 +34,6 @@
 /**************************************************************************/
 
 #pragma once
-#include <tree_sitter/api.h>
-#include <tree_sitter/tree-sitter-cpp.h>
 
 #include "library/core/string_utilities.h"
 #include "library/tree/syntax/context.h"

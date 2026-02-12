@@ -40,6 +40,7 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
 #include "library/core/resources.h"
+#include "library/execution_context.h"
 #include "library/parser/parser.h"
 #include "library/type_db.h"
 #include "programs/init.h"
@@ -83,6 +84,11 @@ int main(int argc, char* argv[]) {
     TypeDB::instance()->set_cache_directory(context.paths_cache);
     ExecutionContext::instance()->set_remove_macros(read_lines(path_absolute(".goc/macros/macro_remove.txt")));
     ExecutionContext::instance()->set_include_paths(context.paths_include);
+    ExecutionContext::instance()->load_last_modified_times_file(
+        path_concat_ext(context.paths_goc, "last_modified", "gocdb"));
+    ExecutionContext::instance()->load_generated_from_file(
+        path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
+    ExecutionContext::instance()->clean_orphan_generated_files();
   }
 
 #ifdef DEV_BUILD
@@ -94,5 +100,11 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  if (program->requires_project()) {
+    ExecutionContext::instance()->save_last_modifed_times_file(
+        path_concat_ext(context.paths_goc, "last_modified", "gocdb"));
+    ExecutionContext::instance()->save_generated_from_file(
+        path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
+  }
   return 0;
 };

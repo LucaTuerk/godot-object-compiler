@@ -38,6 +38,7 @@
 #include "core/file_system_utilities.h"
 #include "core/string_utilities.h"
 #include "core/string_writer.h"
+#include "library/execution_context.h"
 #include "tree/syntax/class.h"
 #include "tree/syntax/define.h"
 #include "tree/syntax/enum.h"
@@ -158,28 +159,36 @@ namespace GodotObjectCompiler {
     return path;
   }
 
-  void TypeDB::save_type_data(const Ref<NamedContext>& p_type) {
+  void TypeDB::save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) {
     Writer writer;
     String qualified_name = p_type->mangled_name();
 
     auto path = _get_cache_file_path(qualified_name);
     auto base = path_base(path);
+
     if (!directory_exits(base) && !create_dir_recursive(base)) {
       return;
     }
 
-    writer.write_to_file(p_type, path);
+    if (writer.write_to_file(p_type, path)) {
+      ExecutionContext::instance()->register_generated_file(path, p_generated_from);
+    }
   }
 
-  void TypeDB::save_type_attribute(const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute) {
+  void TypeDB::save_type_attribute(
+      const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute, const String& p_generated_from) {
     Writer writer;
     String qualified_name = p_type->mangled_name();
     String path = _get_attribute_cache_file_path(qualified_name, p_attribute->get_type());
     String base = path_base(path);
+
     if (!directory_exits(base) && !create_dir_recursive(base)) {
       return;
     }
-    writer.write_to_file(p_attribute, path);
+
+    if (writer.write_to_file(p_attribute, path)) {
+      ExecutionContext::instance()->register_generated_file(path, p_generated_from);
+    }
   }
 
   Ref<Node> TypeDB::get_type_data(

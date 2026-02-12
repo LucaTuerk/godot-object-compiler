@@ -34,23 +34,7 @@
 /**************************************************************************/
 #pragma once
 
-#include <algorithm>
-#include <chrono>
-#include <fstream>
-#include <functional>
-#include <iostream>
-#include <iterator>
-#include <limits>
-#include <list>
-#include <map>
-#include <memory>
-#include <set>
-#include <sstream>
-#include <string>
-#include <typeindex>
-#include <typeinfo>
-#include <unordered_map>
-#include <vector>
+#include "library/core/system_includes.h"
 
 namespace GodotObjectCompiler {
 
