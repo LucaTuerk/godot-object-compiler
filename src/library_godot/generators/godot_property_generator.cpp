@@ -95,6 +95,11 @@ namespace GodotObjectCompiler {
         get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
     GEN_ERROR_COND(!bind_methods_body, p_target_class, "Failed to find or generate the _bind_methods function body.");
 
+    Ref<Body> get_property_list_body =
+        get_or_create_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+    GEN_ERROR_COND(
+        !get_property_list_body, p_target_class, "Failed to find or generate the _get_property_list function body.");
+
     const Ref<Field> target_field = p_attribute->TargetField();
 
     GEN_ERROR_COND(!target_field, p_attribute, "Failed to get target field for property attribute");
@@ -115,26 +120,27 @@ namespace GodotObjectCompiler {
     bool is_obj_type = type_is_object_type(field_type, p_target_class);
     bool is_enum_type = type_is_enum_type(field_type, enum_object, p_target_class);
     bool is_collection_type = type_is_godot_collection_type(field_type, p_target_class);
-    bool use_const_ref = !(is_obj_type || is_ref_type || is_collection_type);
 
     bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, {}));
     bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, {property_name}));
 
-    Ref<Node> used_type = use_const_ref ? const_ref(type_name) : field_type->clone();
+    Ref<Node> get_type = field_type->clone();
+    Ref<Node> set_type = !is_obj_type ? const_ref(type_name) : field_type->clone();
     if (is_enum_type) {
-      used_type = build<Type>().with_child<Identifier>("int");
+      get_type = build<Type>().with_child<Identifier>("int");
+      set_type = build<Type>().with_child<Identifier>("int");
     }
 
     // clang-format off
     Ref<Function> get_def = build<Function>().with_children({
-      used_type->clone(),
+      get_type->clone(),
       build<Identifier>(getter_name),
       build<Parameters>(),
       build<Const>()
     }).with_child(Writer::Semicolon());
 
     Ref<Function> get_impl = build<Function>().with_children({
-      used_type->clone(),
+      get_type->clone(),
       build<Identifier>(p_target_class->name()  + "::" + getter_name),
       build<Parameters>(),
       build<Const>(),
@@ -148,7 +154,7 @@ namespace GodotObjectCompiler {
       build<Identifier>(setter_name),
       build<Parameters>().with_child(
         build<Parameter>().with_children({
-          used_type->clone(),
+          set_type->clone(),
           build<Identifier>("p_" + property_name),
       }))
     }).with_child(Writer::Semicolon());
@@ -160,7 +166,7 @@ namespace GodotObjectCompiler {
           .with_child(
             build<Parameter>()
             .with_children({
-              used_type->clone(),
+              set_type->clone(),
               build<Identifier>("p_"+property_name)
             })
           ),
@@ -178,14 +184,24 @@ namespace GodotObjectCompiler {
 
     Vector<Ref<GodotPropertyUsageFlagsArgument>> usage_flags = p_attribute->arguments()->find_children<GodotPropertyUsageFlagsArgument>();
 
+    Ref<Node> property_info = build_property_info(variant_type, property_hint, usage_flags, property_name);
+    Ref<Node> property_info_no_editor = build_property_info(variant_type, property_hint, usage_flags, property_name,true);
+
     Ref<Function> add_property = build<Function>().with_children({
       build<Identifier>("ADD_PROPERTY"),
       build<Arguments>().with_children({
         build<Argument>().with_children({
-          build_property_info(variant_type, property_hint, usage_flags, property_name)
+          property_info_no_editor
         }),
         build<Argument>().with_child(Writer::StringLiteral(setter_name)),
         build<Argument>().with_child(Writer::StringLiteral(getter_name)),
+      })
+    }).with_child(Writer::Semicolon());
+
+    get_property_list_body->build_child<Function>().with_children({
+      build<Identifier>("p_list->push_back"),
+      build<Arguments>().with_children({
+        build<Argument>().with_child(property_info)
       })
     }).with_child(Writer::Semicolon());
     // clang-format on

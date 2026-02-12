@@ -192,6 +192,59 @@ namespace GodotObjectCompiler {
     return bind_methods_body;
   }
 
+  Ref<Body> GodotGeneratorUtils::get_or_create_get_property_list_body(
+      const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources) {
+
+    bool get_property_list_defined = p_target_class->has_function_named("_get_property_list");
+    const String property_list_name = get_property_list_defined ? "_generated_get_property_list" : "_get_property_list";
+    const String qualified_property_list_name =
+        format("%s::%s", p_target_class->name().c_str(), property_list_name.c_str());
+
+    Ref<Function> get_property_list =
+        p_generated_sources->find_child(0, NamedContextPredicates::name<Function>(qualified_property_list_name.c_str()));
+    Ref<Body> get_property_list_body;
+
+    if (!get_property_list) {
+      // clang-format off
+      p_generated_sources->build_child<Function>().with_children({
+      build<Type>().with_child<Identifier>("void"),
+      build<Identifier>(qualified_property_list_name),
+      build<Parameters>().with_children({
+        build<Parameter>().with_children({
+         build<Type>().with_children({
+            build<Identifier>("List<PropertyInfo>"),
+           build<Pointer>()
+            }),
+        build<Identifier>("p_list")
+          })
+        }),
+        build<Const>(),
+        build_ref<Body>(&get_property_list_body)}
+      );
+
+      p_generated_body->build_child<Function>().with_children({
+        build<Type>().with_child<Identifier>("void"),
+        build<Identifier>(property_list_name),
+        build<Parameters>().with_children({
+          build<Parameter>().with_children({
+           build<Type>().with_children({
+              build<Identifier>("List<PropertyInfo>"),
+             build<Pointer>()
+              }),
+          build<Identifier>("p_list")
+            })
+          }),
+        build<Const>(),
+      }).with_child(Writer::Semicolon());
+      // clang-format on
+    } else {
+      get_property_list_body = get_property_list->find_child<Body>();
+      PANIC_COND(!get_property_list_body, "Body not found.");
+    }
+
+    return get_property_list_body;
+  }
+
   Ref<Body> GodotGeneratorUtils::get_or_create_function_names_body(
       const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
     Ref<Struct> function_names = p_generated_body->find_child(0, NamedContextPredicates::name<Struct>("FunctionNames"));
@@ -633,10 +686,22 @@ namespace GodotObjectCompiler {
 
   Ref<Node> GodotGeneratorUtils::build_property_info(const Ref<GodotVariantTypeArgument>& p_variant_type,
       const Ref<GodotPropertyHintArgument>& p_hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages,
-      const String& p_property_name) {
+      const String& p_property_name, bool p_no_editor) {
     Ref<Arguments> arguments;
     Ref<Writer::ListNode> flags;
     // clang-format off
+    Ref<Node> property_usage;
+    if (p_no_editor) {
+      property_usage = build<Writer::ListNode>(" ", false, false).with_children({
+        build<Writer::EnclosingNode>("(",")").with_children({
+          build_ref<Writer::ListNode>(&flags," | ", false, false)
+        }),
+        Writer::Text("& ~PROPERTY_USAGE_EDITOR"),
+      });
+    } else {
+      property_usage = build_ref<Writer::ListNode>(&flags," | ", false, false);
+    }
+
     Ref<Node> result = build<Function>().with_children({
       build<Identifier>("PropertyInfo"),
       build_ref<Arguments>(&arguments).with_children({
@@ -644,9 +709,10 @@ namespace GodotObjectCompiler {
         build<Argument>().with_child(Literal::StringLiteral(p_property_name)),
           build<Argument>().with_child<Literal>(p_hint->godot_property_hint()),
         build<Argument>().with_child<Literal>(p_hint->hint_string()),
-        build_ref<Writer::ListNode>(&flags," | ", false, false)
+        property_usage
       })});
     // clang-format on
+
 
     if (p_usages.size() == 0) {
       arguments->remove_child(flags);

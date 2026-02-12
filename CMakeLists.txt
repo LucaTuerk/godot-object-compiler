@@ -4,6 +4,11 @@ include(CTest)
 
 set(CMAKE_CXX_STANDARD 17)
 
+find_program(MOLD_PROGRAM mold)
+if (MOLD_PROGRAM)
+    set(CMAKE_LINKER_TYPE MOLD)
+endif ()
+
 add_subdirectory(thirdparty)
 
 set(EXEC_NAME "goc")

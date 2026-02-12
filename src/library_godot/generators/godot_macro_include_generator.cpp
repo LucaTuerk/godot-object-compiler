@@ -217,25 +217,76 @@ namespace GodotObjectCompiler {
   bool GodotMacroIncludeGenerator::generate_prototype_methods(
       const Ref<Context>& p_write_to, const String& p_macro, const Vector<Ref<IAttributeParameterType>>& p_params) {
     Vector<Vector<Size>> subsets = find_all_subsets(p_params.size());
-    for (Vector<Size>& subset : subsets) {
-      do {
-        Ref<Parameters> parameters;
-        // clang-format off
-        p_write_to->build_child<Function>().with_children({
-          build<ConstExpression>(),
-          build<Type>().with_child<Identifier>("bool"),
-          build<Identifier>(p_macro+"_prototype"),
-          build_ref<Parameters>(&parameters),
-          build<Body>().with_child(Writer::Return("true"))
-        });
-        p_write_to->add_child(Writer::NewLine());
-        // clang-format on
 
-        for (Size index : subset) {
-          parameters->build_child<Parameter>().with_child(Writer::Text(p_params[index]->get_return_type()));
-        }
-      } while (std::next_permutation(subset.begin(), subset.end()));
+    // clang-format off
+    p_write_to->build_child<Function>().with_children({
+      build<ConstExpression>(),
+      build<Type>().with_child<Identifier>("bool"),
+      build<Identifier>(p_macro+"_prototype"),
+      build<Parameters>().with_child(
+        build<Parameter>()
+      ),
+      build<Body>().with_child(Writer::Return("true"))
+    });
+    p_write_to->add_child(Writer::NewLine());
+    // clang-format on
+
+    for (const Ref<IAttributeParameterType>& param : p_params) {
+      // clang-format off
+      p_write_to->build_child<Function>().with_children({
+        build<ConstExpression>(),
+        build<Type>().with_child<Identifier>("bool"),
+        build<Identifier>(p_macro+"_prototype"),
+        build<Parameters>().with_child(
+          build<Parameter>().with_child(Writer::Text(param->get_return_type()))
+        ),
+        build<Body>().with_child(Writer::Return("true"))
+      });
+      p_write_to->add_child(Writer::NewLine());
+      // clang-format on
     }
+
+    for (Size size = 2; size <= p_params.size(); ++size) {
+      Ref<Writer::ListNode> template_params;
+      Ref<Parameters> params;
+      Ref<Body> body;
+
+      p_write_to->build_child<Writer::ListNode>(" ", false, false)
+          .with_children({Writer::Text("template "),
+              build<Writer::EnclosingNode>("<", ">").with_child_ref<Writer::ListNode>(
+                  &template_params, ", ", false, false)});
+
+      // clang-format off
+      p_write_to->build_child<Function>().with_children({
+        build<ConstExpression>(),
+        build<Type>().with_child<Identifier>("bool"),
+        build<Identifier>(p_macro+"_prototype"),
+        build_ref<Parameters>(&params),
+        build_ref<Body>(&body)
+      });
+      p_write_to->add_child(Writer::NewLine());
+      // clang-format on
+
+      for (Size j = 0; j < size; ++j) {
+        template_params->add_child(Writer::FmtText("typename T%d", j + 1));
+        params->build_child<Parameter>().with_child(Writer::FmtText("T%d p_arg%d", j + 1, j+1));
+      }
+
+      for (int curr = 0; curr < size - 1; ++curr) {
+        for (int cmp = curr + 1; cmp < size; ++cmp) {
+          body->add_child(
+              Writer::FmtText("static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d and %d\");",
+                  curr + 1, cmp + 1, curr + 1, cmp + 1));
+        }
+      }
+
+      for (int curr = 0; curr < size; ++curr) {
+        body->add_child(Writer::FmtText("%s_prototype(p_arg%d);", p_macro.c_str(), curr + 1));
+      }
+
+      body->add_child(Writer::Return("true"));
+    }
+
     return true;
   }
 
