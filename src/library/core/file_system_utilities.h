@@ -84,4 +84,6 @@ namespace GodotObjectCompiler {
 
   String path_stem(const String& p_path);
 
+  bool path_is_descendant(const String& p_possible_ancestor, const String& p_possible_child);
+
 }

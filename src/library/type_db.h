@@ -75,9 +75,13 @@ namespace GodotObjectCompiler {
    public:
 
     static TypeDB* instance();
+
     void set_cache_directory(const String& path);
-    void save_type_data(const Ref<NamedContext>& p_type);
-    void save_type_attribute(const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute);
+
+    void save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from);
+
+    void save_type_attribute(
+        const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute, const String& p_generated_from);
 
     Ref<Node> get_type_data(const String& qualified_name, Size template_parameter_count = 0,
         const Ref<Namespace>& from_namespace = nullptr);

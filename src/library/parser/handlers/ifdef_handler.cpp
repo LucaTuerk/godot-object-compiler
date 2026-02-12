@@ -35,8 +35,6 @@
 
 #include "ifdef_handler.h"
 
-#include <utility>
-
 namespace GodotObjectCompiler {
 
   void IfDefHandler::set_step(ParserStep step) { this->step = std::move(step); }

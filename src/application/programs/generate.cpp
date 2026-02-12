@@ -37,6 +37,7 @@
 
 #include "generate_bindings.h"
 #include "generate_type_db.h"
+#include "library/core/file_system_utilities.h"
 
 namespace GodotObjectCompiler {
 

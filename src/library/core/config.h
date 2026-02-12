@@ -34,9 +34,6 @@
 /**************************************************************************/
 #pragma once
 
-#include <sstream>
-#include <string>
-
 #include "library/core/core.h"
 #include "reader_writer.h"
 

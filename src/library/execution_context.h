@@ -66,6 +66,22 @@ namespace GodotObjectCompiler {
 
     const Vector<String>& get_remove_macros();
 
+    void register_generated_file(const String& p_generated_path, const String& p_generated_from_path);
+
+    bool load_generated_from_file(const String& p_path);
+
+    bool save_generated_from_file(const String& p_path);
+
+    bool load_last_modified_times_file(const String& p_path);
+
+    bool save_last_modifed_times_file(const String& p_path);
+
+    bool file_modified(const String& p_path, bool p_update_time = true);
+
+    void clean_orphan_generated_files();
+
+    bool clear_generated_files(const String& p_path);
+
     void set_remove_macros(const Vector<String>& p_value);
 
     String get_absolute_include_path(const String& p_included_from_path, const String& p_path) const;
@@ -95,14 +111,12 @@ namespace GodotObjectCompiler {
     /** NODES **/
     NodeDB _node_db;
 
-    /** FILES **/
     Vector<String> _input_files;
-
-    /** MACROS **/
     Vector<String> _remove_macros;
-
-    /** INCLUDE **/
     Vector<String> _include_paths;
+    Dictionary<String, Vector<String>> _generated_from;
+    Dictionary<String, Size> _last_modified_times;
+    Dictionary<String, Size> _out_last_modified_times;
 
     ErrorLevel _error_level;
     ErrorDetail _error_detail;

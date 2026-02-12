@@ -34,8 +34,6 @@
 /**************************************************************************/
 #pragma once
 
-#include <utility>
-
 #include "node.h"
 
 namespace GodotObjectCompiler {

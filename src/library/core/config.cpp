@@ -34,8 +34,6 @@
 /**************************************************************************/
 #include "config.h"
 
-#include <fstream>
-
 #include "library/core/config.h"
 
 namespace GodotObjectCompiler {

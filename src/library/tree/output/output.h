@@ -34,10 +34,8 @@
 /**************************************************************************/
 #pragma once
 
-#include <utility>
-
-#include "library/tree/syntax/all.h"
 #include "library/core/core.h"
+#include "library/tree/syntax/all.h"
 
 namespace GodotObjectCompiler {
 

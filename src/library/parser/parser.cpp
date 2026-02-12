@@ -34,8 +34,6 @@
 /**************************************************************************/
 #include "parser.h"
 
-#include <utility>
-
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_writer.h"
