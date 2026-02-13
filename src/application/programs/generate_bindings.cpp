@@ -289,7 +289,8 @@ namespace GodotObjectCompiler {
 
         for (const Ref<Node>& child : *target_class->body()) {
           if (Ref<Attribute> attribute = child->as<Attribute>()) {
-            for (const Ref<ClassGenerator>& generator : AttributeDB::instance()->class_generators()) {
+            for (const Ref<ClassGenerator>& generator :
+                ExecutionContext::instance()->get_attribute_db()->class_generators()) {
               if (generator->handles(target_class, attribute)) {
                 Ref<Context> default_values = node_new<Context>();
                 Ref<GeneratorError> attr_def_error =

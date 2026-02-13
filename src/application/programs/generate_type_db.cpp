@@ -95,10 +95,10 @@ namespace GodotObjectCompiler {
 
               if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
                   type && is_valid_type_target(type)) {
-                TypeDB::instance()->save_type_attribute(type, attr, file);
+                ExecutionContext::instance()->get_type_db()->save_type_attribute(type, attr, file);
               }
             } else {
-              TypeDB::instance()->save_type_data(node, file);
+              ExecutionContext::instance()->get_type_db()->save_type_data(node, file);
             }
           }
         }

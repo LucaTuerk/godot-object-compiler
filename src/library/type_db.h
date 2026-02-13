@@ -42,13 +42,9 @@
 namespace GodotObjectCompiler {
 
   class Attribute;
-
   class Type;
-
   class Define;
-
   class Class;
-
   class Enum;
 
   class ConfigNodeReaderWriter : public INodeReader, public INodeWriter {
@@ -72,9 +68,11 @@ namespace GodotObjectCompiler {
   class TypeDB : public IAssumptionValidator<AssumeType<Enum>>,
                  public IAssumptionValidator<AssumeType<Class>>,
                  public IAssumptionValidator<AssumeType<Define>> {
-   public:
+   private:
 
-    static TypeDB* instance();
+    struct Private {};
+
+   public:
 
     void set_cache_directory(const String& path);
 
@@ -112,6 +110,9 @@ namespace GodotObjectCompiler {
     static Vector<String> resolve_possible_namespaces(
         const String& qualified_name, const Ref<Namespace>& from_namespace);
 
+    TypeDB() = delete;
+    TypeDB(Private) {};
+
    private:
 
     using Reader = ConfigNodeReaderWriter;
@@ -121,6 +122,8 @@ namespace GodotObjectCompiler {
     [[nodiscard]] String _get_attribute_cache_file_path(const String& p_qualified_name, const String& p_attribute_name);
     Dictionary<String, Ref<Node>> _cache;
     String _cache_directory;
+
+    friend ExecutionContext;
   };
 
   template <typename T>

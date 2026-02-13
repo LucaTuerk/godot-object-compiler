@@ -56,11 +56,12 @@ namespace GodotObjectCompiler {
     }
 
     // Generate macro help docs
-    for (const String& macro : AttributeDB::instance()->get_all_macros()) {
+    for (const String& macro : ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
       String doc_file = path_concat_ext("./resources/doc", macro, "txt");
       ensure_file_exists(doc_file, "No documentation available");
 
-      Vector<Ref<IAttributeParameterType>> params = AttributeDB::instance()->get_parameters_for_macro(macro);
+      Vector<Ref<IAttributeParameterType>> params =
+          ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
 
       for (const auto& param : params) {
         auto doc_file = path_concat_ext("resources/doc", param->get_type(), "txt");

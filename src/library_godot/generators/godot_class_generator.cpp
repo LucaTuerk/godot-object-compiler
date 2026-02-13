@@ -54,7 +54,9 @@ namespace GodotObjectCompiler {
 
     const String init_level_name = init_level_identifier->name;
     Ref<GodotModuleInitializationLevelParameterType> init_level_type =
-        AttributeDB::instance()->get_parameter_type<GodotClassAttribute, GodotModuleInitializationLevelParameterType>();
+        ExecutionContext::instance()
+            ->get_attribute_db()
+            ->get_parameter_type<GodotClassAttribute, GodotModuleInitializationLevelParameterType>();
 
     String godot_init_level;
     if (!init_level_type->get_godot_init_level_for_value_name(init_level_name, godot_init_level)) {
@@ -67,7 +69,9 @@ namespace GodotObjectCompiler {
 
     const String class_type_name = class_type_identifier->name;
     const Ref<GodotClassTypeParameterType> class_type_type =
-        AttributeDB::instance()->get_parameter_type<GodotClassAttribute, GodotClassTypeParameterType>();
+        ExecutionContext::instance()
+            ->get_attribute_db()
+            ->get_parameter_type<GodotClassAttribute, GodotClassTypeParameterType>();
 
     if (String godot_registration_macro;
         class_type_type->get_macro_for_value_name(class_type_name, godot_registration_macro)) {

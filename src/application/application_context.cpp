@@ -81,21 +81,22 @@ namespace GodotObjectCompiler {
 
     if (!directory_exits(paths_root)) {
       if (!create_dir_recursive(paths_root)) {
-        print_err(format("Invalid root path \"%s\". Path is not a directory.", paths_root.c_str()));
+        print_err(format("Invalid root path \"%s\". Could not find or create directory.", paths_root.c_str()));
         success = false;
       }
     }
 
     if (!directory_exits(paths_cache)) {
       if (!create_dir_recursive(paths_cache)) {
-        print_err(format("Invalid cache path \"%s\". Path is not a directory.", paths_cache.c_str()));
+        print_err(format("Invalid cache path \"%s\". Could not find or create directory.", paths_cache.c_str()));
         success = false;
       }
     }
 
     if (!directory_exits(paths_generated)) {
       if (!create_dir_recursive(paths_generated)) {
-        print_err(format("Invalid generated path \"%s\". Path is not a directory.", paths_generated.c_str()));
+        print_err(
+            format("Invalid generated path \"%s\". Could not find or create directory.", paths_generated.c_str()));
         success = false;
       }
     }

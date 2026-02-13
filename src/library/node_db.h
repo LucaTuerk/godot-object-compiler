@@ -41,6 +41,10 @@ namespace GodotObjectCompiler {
   class ExecutionContext;
 
   class NodeDB {
+   private:
+
+    struct Private {};
+
    public:
 
     UID request_id_change(UID p_from, UID p_to = INVALID_ID);
@@ -60,10 +64,11 @@ namespace GodotObjectCompiler {
 
     static Ref<Node> create(const String& p_type);
 
-   private:
-
-    NodeDB() = default;
+    NodeDB() = delete;
+    NodeDB(Private) {};
     ~NodeDB();
+
+   private:
 
     static inline HashSet<UID> _uids{};
 

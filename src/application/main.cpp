@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
       return 1;
     }
 
-    TypeDB::instance()->set_cache_directory(context.paths_cache);
+    ExecutionContext::instance()->get_type_db()->set_cache_directory(context.paths_cache);
     ExecutionContext::instance()->set_remove_macros(read_lines(path_absolute(".goc/macros/macro_remove.txt")));
     ExecutionContext::instance()->set_include_paths(context.paths_include);
     ExecutionContext::instance()->load_last_modified_times_file(

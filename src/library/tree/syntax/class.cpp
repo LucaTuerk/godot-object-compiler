@@ -67,7 +67,8 @@ namespace GodotObjectCompiler {
 
     Vector<Ref<Class>> result;
     for (const Ref<Type>& type : bases->find_children<Type>()) {
-      if (Ref<Class> base_class = TypeDB::instance()->get_type_data<Class>(type, this->as<Class>())) {
+      if (Ref<Class> base_class =
+              ExecutionContext::instance()->get_type_db()->get_type_data<Class>(type, this->as<Class>())) {
         result.push_back(base_class);
       }
     }

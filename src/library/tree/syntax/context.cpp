@@ -37,6 +37,7 @@
 #include "function.h"
 #include "identifier.h"
 #include "include.h"
+#include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/type_db.h"
 #include "namespace.h"
@@ -225,19 +226,25 @@ namespace GodotObjectCompiler {
     COPY_GUARD(NamedContext, Context);
     COPY_LAZY(name);
     COPY_LAZY(qualified_name);
+    // TODO: Leads to segfault but needs to be written for correctness
+    // COPY_LAZY(namespaces_names);
     return true;
   }
 
   void NamedContext::read_from(IStructuredReader* p_reader) {
     Context::read_from(p_reader);
-    _qualified_name_lazy = p_reader->read<String, String>("_qualified_name");
     _name_lazy = p_reader->read<String, String>("_name");
+    _qualified_name_lazy = p_reader->read<String, String>("_qualified_name");
+    // TODO: Leads to segfault but needs to be written for correctness
+    // _namespaces_names_lazy = string_split(p_reader->read<String, String>("_namespaces_names"),",");
   }
 
   void NamedContext::write_to(IStructuredWriter* p_writer) {
     Context::write_to(p_writer);
-    p_writer->write<String, String>("_qualified_name", qualified_name());
     p_writer->write<String, String>("_name", name());
+    p_writer->write<String, String>("_qualified_name", qualified_name());
+    // TODO: Leads to segfault but needs to be written for correctness
+    // p_writer->write<String, String>("_namespaces_names", string_vector_combine(namespaces_names(), ","));
   }
 
   Vector<String> NamedContext::_namespaces_names_lazy_get() const {

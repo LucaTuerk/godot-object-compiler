@@ -166,7 +166,7 @@ namespace GodotObjectCompiler {
   // but it works if the parameters are empty, so strip them before processing
   String TreeSitterParser::strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters) {
     String local_input = p_input;
-    Vector<String> macros = AttributeDB::instance()->get_all_macros();
+    Vector<String> macros = ExecutionContext::instance()->get_attribute_db()->get_all_macros();
 
     for (const String& macro : macros) {
       Size index = 0;

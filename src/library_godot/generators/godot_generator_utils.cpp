@@ -252,7 +252,7 @@ namespace GodotObjectCompiler {
     if (!function_names) {
       // clang-format off
       auto base_names = p_target_class->direct_bases_names();
-      if (base_names.size() == 1 && TypeDB::instance()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+      if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
         p_generated_body->build_child<Struct>().with_children({
           build<Identifier>("FunctionNames"),
           build<BaseClasses>().with_child(
@@ -282,7 +282,7 @@ namespace GodotObjectCompiler {
     if (!property_names) {
       // clang-format off
       auto base_names = p_target_class->direct_bases_names();
-      if (base_names.size() == 1 && TypeDB::instance()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+      if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
         p_generated_body->build_child<Struct>().with_children({
           build<Identifier>("PropertyNames"),
           build<BaseClasses>().with_child(
@@ -312,7 +312,7 @@ namespace GodotObjectCompiler {
     if (!signal_names) {
       // clang-format off
       auto base_names = p_target_class->direct_bases_names();
-      if (base_names.size() == 1 && TypeDB::instance()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+      if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
         p_generated_body->build_child<Struct>().with_children({
           build<Identifier>("SignalNames"),
           build<BaseClasses>().with_child(
@@ -395,7 +395,7 @@ namespace GodotObjectCompiler {
 
     // TODO: this will not work if the base class name is not fully qualified
     for (const String& base : p_target_class->direct_bases_names()) {
-      Ref<Class> base_class = TypeDB::instance()->get_type_data<Class>(base);
+      Ref<Class> base_class = ExecutionContext::instance()->get_type_db()->get_type_data<Class>(base);
       if (!base_class) {
         print_err("Base class not found!");
         return false;
@@ -459,7 +459,8 @@ namespace GodotObjectCompiler {
       }
 
       Ref<GodotEnumAttribute> attribute =
-          TypeDB::instance()->get_type_attribute<GodotEnumAttribute>(p_target_type, p_from_namespace);
+          ExecutionContext::instance()->get_type_db()->get_type_attribute<GodotEnumAttribute>(
+              p_target_type, p_from_namespace);
 
       bool is_flags = false;
 
@@ -592,8 +593,8 @@ namespace GodotObjectCompiler {
 
   bool GodotGeneratorUtils::type_is_ref_counted_type(
       const Ref<Type>& p_inner_type, const Ref<Namespace>& p_from_namespace) {
-    const Ref<Class> _class =
-        TypeDB::instance()->get_type_data<Class>(p_inner_type->type_name_unmodified(), 0, p_from_namespace);
+    const Ref<Class> _class = ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
+        p_inner_type->type_name_unmodified(), 0, p_from_namespace);
     if (!_class) {
       return false;
     }
@@ -603,8 +604,8 @@ namespace GodotObjectCompiler {
 
   bool GodotGeneratorUtils::type_is_object_type(
       const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace) {
-    const Ref<Class> _class =
-        TypeDB::instance()->get_type_data<Class>(p_target_type->type_name_unmodified(), 0, p_from_namespace);
+    const Ref<Class> _class = ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
+        p_target_type->type_name_unmodified(), 0, p_from_namespace);
     if (!_class) {
       return false;
     }
@@ -623,8 +624,8 @@ namespace GodotObjectCompiler {
   }
 
   bool GodotGeneratorUtils::type_is_node_type(const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace) {
-    const Ref<Class> _class =
-        TypeDB::instance()->get_type_data<Class>(p_target_type->type_name_unmodified(), 0, p_from_namespace);
+    const Ref<Class> _class = ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
+        p_target_type->type_name_unmodified(), 0, p_from_namespace);
     if (!_class) {
       return false;
     }
@@ -634,8 +635,8 @@ namespace GodotObjectCompiler {
 
   bool GodotGeneratorUtils::type_is_enum_type(
       const Ref<Type>& p_target_type, Ref<Enum>& p_enum_object, const Ref<Namespace>& p_from_namespace) {
-    const Ref<Enum> _enum =
-        TypeDB::instance()->get_type_data<Enum>(p_target_type->type_name_unmodified(), 0, p_from_namespace);
+    const Ref<Enum> _enum = ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(
+        p_target_type->type_name_unmodified(), 0, p_from_namespace);
     if (!_enum) {
       p_enum_object = nullptr;
       return false;
