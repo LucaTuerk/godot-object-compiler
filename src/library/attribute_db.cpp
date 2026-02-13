@@ -36,6 +36,7 @@
 #include "attribute_db.h"
 
 #include "library/generator/generator.h"
+#include "library/tree/syntax/attribute.h"
 
 namespace GodotObjectCompiler {
 

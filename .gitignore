@@ -1,16 +1,31 @@
-goc
-libgoc.a
+compile_commands.json
+
+#clang-d
 .cache
-.idea
+
+# ide files
 .zed
-.sconsign.dblite
+.idea
+
+# linux object files
+*.a
+*.o
+*.os
+
+#goc
+goc
 .goc
 .goc_tests
-compile_commands.json
-*.o
 *.h.generated
 *.cpp.generated
 *.generated.h
 *.generated.cpp
 .generated
+
+#scon
+.sconsign.dblite
+__pycache__
+
+# Build folders
 cmake*
+build

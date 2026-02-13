@@ -35,7 +35,6 @@
 
 #pragma once
 #include "generator/attribute_parameter_type.h"
-#include "library/tree/syntax/attribute.h"
 
 namespace GodotObjectCompiler {
 
@@ -66,12 +65,11 @@ namespace GodotObjectCompiler {
   };
 
   class AttributeDB {
-   public:
+   private:
 
-    static AttributeDB* instance() {
-      static AttributeDB singleton;
-      return &singleton;
-    }
+    struct Private {};
+
+   public:
 
     using CreationFunc = Ref<Attribute> (*)();
 
@@ -96,6 +94,9 @@ namespace GodotObjectCompiler {
 
     [[nodiscard]] const Vector<Ref<ClassGenerator>>& class_generators() const;
 
+    AttributeDB(Private) {};
+    AttributeDB() = delete;
+
    private:
 
     HashSet<String> _registered_generator_names;
@@ -106,6 +107,8 @@ namespace GodotObjectCompiler {
 
     Dictionary<String, CreationFunc> _creation_funcs;
     Dictionary<String, String> _macro_aliases;
+
+    friend ExecutionContext;
   };
 
   template <typename AttributeT, typename ParamT>
@@ -136,11 +139,12 @@ namespace GodotObjectCompiler {
 
 }
 
-#define ATTRIBUTE_DEFAULT_MACRO(macro)                                                         \
-  static Ref<Attribute> attribute_create_static() { return create_static()->as<Attribute>(); } \
-  static inline bool attribute_registered =                                                    \
-      AttributeDB::instance()->register_attribute(get_type_static(), #macro, &attribute_create_static);
+#define ATTRIBUTE_DEFAULT_MACRO(macro)                                                                            \
+  static Ref<Attribute> attribute_create_static() { return create_static()->as<Attribute>(); }                    \
+  static inline bool attribute_registered = ExecutionContext::instance()->get_attribute_db()->register_attribute( \
+      get_type_static(), #macro, &attribute_create_static);
 
-#define ATTRIBUTE_REGISTER_PARAMETERS(type)        \
-  static inline bool type##_parameter_registered = \
-      AttributeDB::instance()->register_attribute_parameter(get_type_static(), type##ParameterType::instance());
+#define ATTRIBUTE_REGISTER_PARAMETERS(type)                                           \
+  static inline bool type##_parameter_registered =                                    \
+      ExecutionContext::instance()->get_attribute_db()->register_attribute_parameter( \
+          get_type_static(), type##ParameterType::instance());

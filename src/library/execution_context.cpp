@@ -35,13 +35,13 @@
 
 #include "execution_context.h"
 
+#include "attribute_db.h"
 #include "core/file_system_utilities.h"
 #include "core/string_utilities.h"
 #include "library/core/config.h"
 #include "library/core/core.h"
-#include "library/tree/syntax/context.h"
-#include "parser/parser.h"
-#include "tree/syntax/namespace.h"
+#include "library/node_db.h"
+#include "node_db.h"
 #include "type_db.h"
 
 namespace GodotObjectCompiler {
@@ -67,13 +67,19 @@ namespace GodotObjectCompiler {
   }
 
   void ExecutionContext::init() {
-    _node_db = {};
+    _node_db = make_ref<NodeDB>(NodeDB::Private());
+    _attribute_db = make_ref<AttributeDB>(AttributeDB::Private());
+    _type_db = make_ref<TypeDB>(TypeDB::Private());
     _include_paths = {};
     _remove_macros = {};
     _generated_from = {};
   }
 
-  NodeDB* ExecutionContext::get_node_db() { return &_node_db; }
+  NodeDB* ExecutionContext::get_node_db() { return _node_db.get(); }
+
+  AttributeDB* ExecutionContext::get_attribute_db() { return _attribute_db.get(); }
+
+  TypeDB* ExecutionContext::get_type_db() { return _type_db.get(); }
 
   const Vector<String>& ExecutionContext::get_remove_macros() { return _remove_macros; }
 

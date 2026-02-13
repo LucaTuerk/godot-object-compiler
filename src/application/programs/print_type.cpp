@@ -46,7 +46,7 @@ namespace GodotObjectCompiler {
     }
 
     for (const String& name : p_context.program_arguments) {
-      Ref<Node> type_data = TypeDB::instance()->get_type_data(name);
+      Ref<Node> type_data = ExecutionContext::instance()->get_type_db()->get_type_data(name);
       if (!type_data) {
         return make_ref<ProgramError>(ERROR, "Unknown type name: " + name);
       }

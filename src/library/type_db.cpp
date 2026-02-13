@@ -142,11 +142,6 @@ namespace GodotObjectCompiler {
     return root;
   }
 
-  TypeDB* TypeDB::instance() {
-    static TypeDB instance;
-    return &instance;
-  }
-
   void TypeDB::set_cache_directory(const String& path) { _cache_directory = path; }
 
   String TypeDB::_get_cache_file_path(const String& qualified_name) const {

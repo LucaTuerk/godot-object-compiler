@@ -34,9 +34,12 @@
 /**************************************************************************/
 #pragma once
 #include "core/core.h"
-#include "node_db.h"
 
 namespace GodotObjectCompiler {
+
+  class NodeDB;
+  class AttributeDB;
+  class TypeDB;
 
   enum ErrorLevel {
     ERROR = 0,
@@ -60,9 +63,11 @@ namespace GodotObjectCompiler {
       return &singleton;
     }
 
-    void init();
-
     NodeDB* get_node_db();
+
+    AttributeDB* get_attribute_db();
+
+    TypeDB* get_type_db();
 
     const Vector<String>& get_remove_macros();
 
@@ -100,6 +105,8 @@ namespace GodotObjectCompiler {
 
    private:
 
+    void init();
+
     bool is_cached(const String& p_path);
 
     static Hash get_path_hash(const String& p_absolute_path);
@@ -108,8 +115,9 @@ namespace GodotObjectCompiler {
 
     ExecutionContext();
 
-    /** NODES **/
-    NodeDB _node_db;
+    Ref<NodeDB> _node_db;
+    Ref<AttributeDB> _attribute_db;
+    Ref<TypeDB> _type_db;
 
     Vector<String> _input_files;
     Vector<String> _remove_macros;

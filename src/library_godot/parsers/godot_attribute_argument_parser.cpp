@@ -54,10 +54,11 @@ namespace GodotObjectCompiler {
       return ParserError::OK;
     }
 
-    const String property_macro = AttributeDB::instance()->get_macro_for_attribute(attribute->get_type());
+    const String property_macro =
+        ExecutionContext::instance()->get_attribute_db()->get_macro_for_attribute(attribute->get_type());
 
     if (const Vector<Ref<IAttributeParameterType>> types =
-            AttributeDB::instance()->get_parameters_for_macro(property_macro);
+            ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(property_macro);
         arguments.size() > types.size()) {
       return node_new<ParserError>(
           ERROR, format("Invalid argument count, expected at most %d but found %d", types.size(), arguments.size()));
@@ -89,8 +90,10 @@ namespace GodotObjectCompiler {
           ERROR, "Invalid attribute parser for " + p_content + ". Associated attribute has exited scope.");
     }
 
-    String property_macro = AttributeDB::instance()->get_macro_for_attribute(attribute->get_type());
-    Vector<Ref<IAttributeParameterType>> types = AttributeDB::instance()->get_parameters_for_macro(property_macro);
+    String property_macro =
+        ExecutionContext::instance()->get_attribute_db()->get_macro_for_attribute(attribute->get_type());
+    Vector<Ref<IAttributeParameterType>> types =
+        ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(property_macro);
     if (types.empty()) {
       return node_new<ParserError>(
           ERROR, format("No valid parameter types found for attribute %s", attribute->get_type().c_str()));

@@ -41,6 +41,8 @@
 
 namespace GodotObjectCompiler {
 
+  class Argument;
+
   class IAttributeParameterType : public IAssumptionValidator<String> {
    public:
 

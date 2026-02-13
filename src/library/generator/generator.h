@@ -173,7 +173,7 @@ namespace GodotObjectCompiler {
 
 #define REGISTER_CLASS_GENERATOR(type)                \
   static inline bool _generator_##type##_registered = \
-      AttributeDB::instance()->register_class_generator(#type, make_ref<type>());
+      ExecutionContext::instance()->get_attribute_db()->register_class_generator(#type, make_ref<type>());
 
 #define ERROR_NODE_LEVEL(error_type, error_level, ...)     \
   if constexpr (error_level == ErrorLevel::ERROR) {        \

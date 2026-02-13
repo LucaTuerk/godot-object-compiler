@@ -136,7 +136,7 @@ namespace GodotObjectCompiler {
 
     Assumption<AssumeType<Define>> GDVIRTUAL = {
         {gdvirtual_macro}, "Assume that a macro with name \"" + gdvirtual_macro + "\" exists in the TypeDB."};
-    GDVIRTUAL.validate(TypeDB::instance());
+    GDVIRTUAL.validate(ExecutionContext::instance()->get_type_db());
     GEN_ERROR_COND(GDVIRTUAL.is_invalid(), p_target_function, "Invalid macro " + gdvirtual_macro + ". Was not found.");
 
     String virtual_name = p_target_function->name();

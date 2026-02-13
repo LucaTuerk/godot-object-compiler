@@ -68,7 +68,7 @@ namespace GodotObjectCompiler {
             "GOC_BODY_COMBINE_INNER(A, B, C, D)"));
     String generated_content = "GOC_BODY_COMBINE(GOC_GENERATED_, __LINE__, _, GOC_FILE_ID())()";
 
-    for (const String& macro : AttributeDB::instance()->get_all_macros()) {
+    for (const String& macro : ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
       String res_file = "res://" + path_concat_ext("doc", macro, "txt");
       if (Resources::instance()->has_resource(res_file)) {
         Ref<Context> params_docu = Writer::Params({});
@@ -82,7 +82,8 @@ namespace GodotObjectCompiler {
         p_write_to->add_child(comment);
 
         Size index = 0;
-        Vector<Ref<IAttributeParameterType>> params = AttributeDB::instance()->get_parameters_for_macro(macro);
+        Vector<Ref<IAttributeParameterType>> params =
+            ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
         for (const Ref<IAttributeParameterType>& param : params) {
           if ((++index % 5) != 0) {
             params_docu->add_child(Writer::Text(param->get_return_type()));
@@ -92,7 +93,7 @@ namespace GodotObjectCompiler {
         }
       }
 
-      Ref<Attribute> attr = AttributeDB::instance()->create_for_macro(macro);
+      Ref<Attribute> attr = ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
       if (attr->is<GeneratedBodyAttribute>() || attr->is<GeneratedGlobalAttribute>()) {
         p_write_to->add_child(Writer::Define(macro, {Writer::Text("...")},
             generated_content + "; static_assert( [](){ using namespace GOC_Macros; return " + macro +
@@ -306,9 +307,10 @@ namespace GodotObjectCompiler {
     entry->build_child<Namespace>().with_children({build<Identifier>("GOC_Macros"), build_ref<Body>(&namespace_body)});
 
     HashSet<String> generated_param_types;
-    for (const String& macro : AttributeDB::instance()->get_all_macros()) {
-      Ref<Attribute> attribute = AttributeDB::instance()->create_for_macro(macro);
-      Vector<Ref<IAttributeParameterType>> params = AttributeDB::instance()->get_parameters_for_macro(macro);
+    for (const String& macro : ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
+      Ref<Attribute> attribute = ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
+      Vector<Ref<IAttributeParameterType>> params =
+          ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
 
       for (const auto& param : params) {
         if (generated_param_types.find(param->get_return_type()) == generated_param_types.end()) {

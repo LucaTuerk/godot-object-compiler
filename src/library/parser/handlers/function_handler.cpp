@@ -56,7 +56,7 @@ namespace GodotObjectCompiler {
       return ParserStep::StepOver();
     } else if (p_current_src->type_in({"expression_statement", "declaration"})) {
       Ref<TreeSitterNode> identifier = p_current_src->find_descendant<TreeSitterNode>(BFS, type_is("identifier"));
-      if (identifier && AttributeDB::instance()->is_known_macro(identifier->content())) {
+      if (identifier && ExecutionContext::instance()->get_attribute_db()->is_known_macro(identifier->content())) {
         return handle_known_attribute(p_current_src, r_current_target, identifier->content());
       }
     } else if (p_current_src->find_descendant(BFS, type_is("function_declarator")) != nullptr) {
@@ -71,7 +71,7 @@ namespace GodotObjectCompiler {
 
   ParserStep FieldHandler::handle_known_attribute(
       const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target, const String& macro) {
-    Ref<Attribute> attribute = AttributeDB::instance()->create_for_macro(macro);
+    Ref<Attribute> attribute = ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
     HANDLER_ERROR_COND(!attribute, "Failed to create attribute for known macro %s", macro.c_str());
 
     current_target->add_child(attribute);
