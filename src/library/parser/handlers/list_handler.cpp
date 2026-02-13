@@ -34,9 +34,11 @@
 /**************************************************************************/
 #include "list_handler.h"
 
+#include "library/parser/node_handler.h"
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/attribute.h"
 #include "library/tree/syntax/function.h"
+#include "library/tree/syntax/literal.h"
 
 namespace GodotObjectCompiler {
 
@@ -59,6 +61,9 @@ namespace GodotObjectCompiler {
       r_current_target = r_current_target->create_child<TemplateArguments>();
     } else if (p_current_src->type == "template_parameter_list") {
       r_current_target = r_current_target->create_child<TemplateParameters>();
+    } else if (p_current_src->type == "initializer_list") {
+      r_current_target->create_child<Literal>(p_current_src->content());
+      return ParserStep::StepOver();
     } else {
       r_current_target = r_current_target->create_child<Context>();
     }

@@ -45,8 +45,7 @@ namespace GodotObjectCompiler {
 
     bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
     ParserStep handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) override;
-    ParserStep handle_known_attribute(
-        const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target, const String& macro);
+
   };
 
 }

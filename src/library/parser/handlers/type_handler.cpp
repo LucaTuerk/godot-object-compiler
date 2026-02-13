@@ -48,8 +48,6 @@ namespace GodotObjectCompiler {
   auto TypeHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) -> bool {
     return p_current_src->type_in(
         {"primitive_type", "qualified_identifier", "type_identifier", "trailing_return_type", "template_type"});
-    // return string_suffix(current_src->type, "type") ||
-    //       ;
   }
 
   ParserStep TypeHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
@@ -60,7 +58,6 @@ namespace GodotObjectCompiler {
     }
 
     if (p_current_src->type == "template_type") {
-      // current_target = current_target->create_child<Type>();
       r_current_target = r_current_target->create_child<Type>();
       return ParserStep::Undecided();
     }
