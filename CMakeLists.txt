@@ -50,6 +50,10 @@ target_precompile_headers(${EXEC_NAME} PRIVATE
 
 target_precompile_headers(${EXEC_NAME_TEST} REUSE_FROM ${EXEC_NAME})
 
+target_compile_definitions(${EXEC_NAME} PRIVATE DEV_BUILD=1)
+
+target_compile_definitions(${EXEC_NAME_TEST} PRIVATE DEV_BUILD=1)
+
 target_compile_options(${EXEC_NAME_TEST} PRIVATE
         $<$<CONFIG:Debug>:-Wall -Wextra -fdiagnostics-color=always -g>
         $<$<CONFIG:Release>:-O3>)

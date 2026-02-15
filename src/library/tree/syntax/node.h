@@ -52,7 +52,10 @@ namespace GodotObjectCompiler {
 
     virtual String to_string() const { return get_type(); }
 
-    virtual bool copy_to(const Ref<Node>& p_other) const { return true; }
+    virtual bool copy_to(const Ref<Node>& p_other) const {
+      UNUSED(p_other);
+      return true;
+    }
 
     virtual Ref<Node> create() { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
 

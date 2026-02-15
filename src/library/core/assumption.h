@@ -119,7 +119,7 @@ namespace GodotObjectCompiler {
 
   template <typename T>
   AssumptionState Assumption<T>::validate(Validator p_validator) {
-    if (!state == STATE_INDETERMINATE) {
+    if (state != STATE_INDETERMINATE) {
       return state;
     }
 
@@ -129,7 +129,7 @@ namespace GodotObjectCompiler {
 
   template <typename T>
   AssumptionState Assumption<T>::validate(IAssumptionValidator<T>* p_validator) {
-    if (!state == STATE_INDETERMINATE) {
+    if (state != STATE_INDETERMINATE) {
       return state;
     }
 

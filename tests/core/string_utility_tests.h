@@ -33,6 +33,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "library/core/core.h"
 #include "library/core/string_utilities.h"
 #include "test_registry.h"
 
@@ -101,6 +102,10 @@ GOC_TEST(StringSplit) {
   GOC_TEST_EQ(split_substr[0], "a", "Invalid split.")
   GOC_TEST_EQ(split_substr[1], "b", "Invalid split.")
   GOC_TEST_EQ(split_substr[2], "c", "Invalid split.")
+
+  Vector<String> split_no_split = string_split("abcdefg", ",");
+  GOC_TEST_EQ(split_no_split.size(), 1, "Invalid split count.");
+  GOC_TEST_EQ(split_no_split[0], "abcdefg", "Invalid split.");
 
   return TEST_RESULT_SUCCESS;
 };

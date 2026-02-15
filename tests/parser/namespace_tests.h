@@ -78,10 +78,7 @@ GOC_TEST(ParserNestedNamespace) {
 GOC_TEST(ParseNestedNamespaces2) {
   using namespace GodotObjectCompiler;
   using namespace NamedContextPredicates;
-  TreeSitterParser parser;
-  Ref<Namespace> global_namespace = node_new<Namespace>();
-  Ref<ParserError> error = parser.parse_file("tests/files/namespace_tests/10_nested_namespaces.h", global_namespace);
-  GOC_TEST_EQ(error, ParserError::OK, "ParserError occurred!");
+  GOC_TEST_PARSE_FILE("tests/files/namespace_tests/10_nested_namespaces.h")
 
   Vector<Ref<Namespace>> namespaces = global_namespace->find_children<Namespace>(true);
   GOC_TEST_EQ(namespaces.size(), 10, "Invalid namespace count.")

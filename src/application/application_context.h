@@ -47,6 +47,7 @@ namespace GodotObjectCompiler {
     String paths_root;
     String paths_goc;
     String paths_cache;
+    String paths_readonly_cache;
     String paths_generated;
     Vector<String> files_input;
     Vector<String> paths_include;

@@ -38,6 +38,7 @@
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
+#include "library/core/string_utilities.h"
 #include "library/tree/output/output.h"
 #include "library/type_db.h"
 

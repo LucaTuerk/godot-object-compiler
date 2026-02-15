@@ -44,7 +44,7 @@
 #include "library/execution_context.h"
 #include "library/parser/parser.h"
 #include "library/type_db.h"
-#include "programs/init.h"
+#include "programs/all.h"
 #include "project.h"
 
 using namespace GodotObjectCompiler;
@@ -52,6 +52,7 @@ using namespace GodotObjectCompiler;
 int main(int argc, char* argv[]) {
   ApplicationContext context;
   Resources::instance()->load_pack(&GOC_Resources::Pack);
+
   ExecutionContext::instance()->set_error_level(ERROR, FULL);
 
   Vector<String> application_arguments;
@@ -90,6 +91,10 @@ int main(int argc, char* argv[]) {
     ExecutionContext::instance()->load_generated_from_file(
         path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
     ExecutionContext::instance()->clean_orphan_generated_files();
+
+    if (project.project_target == GodotObjectCompiler::TARGET_GDEXTENSION) {
+      ExecutionContext::instance()->add_using("godot");
+    }
   }
 
 #ifdef DEV_BUILD

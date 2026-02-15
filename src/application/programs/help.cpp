@@ -35,7 +35,12 @@
 
 #include "help.h"
 
+#include <functional>
+#include <unordered_set>
+
+#include "application/programs/program.h"
 #include "application/version.h"
+#include "library/core/core.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
 #include "library/core/string_utilities.h"
@@ -51,6 +56,11 @@ namespace GodotObjectCompiler {
     auto cmp = [](const Pair<ProgramPath, Ref<IProgram>>& a, const Pair<ProgramPath, Ref<IProgram>>& b) {
       return string_vector_combine(a.first, "") < string_vector_combine(b.first, "");
     };
+
+    struct ProgramPathHash {
+      size_t operator()(const ProgramPath& path) const { return std::hash<String>()(string_vector_combine(path, "")); }
+    };
+
     Vector<Pair<ProgramPath, Ref<IProgram>>> programs_sorted;
     std::copy(programs.begin(), programs.end(), std::back_inserter(programs_sorted));
     std::sort(programs_sorted.begin(), programs_sorted.end(), cmp);
@@ -58,15 +68,32 @@ namespace GodotObjectCompiler {
     print_title(
         format("Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MAJOR_VERSION, GOC_VERSION_NAME), 71);
     print_ln("");
-    // fmt_print_ln("Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MAJOR_VERSION, GOC_VERSION_NAME);
 
     print_ln("Usage: goc [PROGRAM PATH...] [OPTIONS...]");
     print_ln("");
     print_title("PROGRAMS", 71);
 
+    std::unordered_set<ProgramPath, ProgramPathHash> written;
+
     for (const auto& [path, program] : programs_sorted) {
       if (path.empty()) {
         continue;
+      }
+
+      if (path.size() != 1) {
+        for (auto itr = path.begin(); itr != path.end() - 1; ++itr) {
+          if (Vector<String> sub{path.begin(), itr + 1}; written.find(sub) == written.end()) {
+            StreamWriter sub_writer;
+            for (Size i = 0; i < sub.size() - 1; ++i) {
+              sub_writer.write("  ");
+            }
+            sub_writer.write(sub.back());
+            written.insert(sub);
+
+            print_ln("");
+            print_help_columns({20, sub_writer.get_string()}, {50, ""});
+          }
+        }
       }
 
       StreamWriter identifier_writer;
@@ -77,6 +104,8 @@ namespace GodotObjectCompiler {
 
       print_ln("");
       print_help_columns({20, identifier_writer.get_string()}, {50, get_help_text(path)});
+
+      written.insert(path);
     }
 
     return ProgramError::OK;

@@ -43,13 +43,7 @@
 
 GOC_TEST(ClassSimple) {
   using namespace GodotObjectCompiler;
-
-  TreeSitterParser parser;
-  Ref<Namespace> global_namespace = node_new<Namespace>();
-  Ref<ParserError> error = parser.parse_file("tests/files/class_tests/simple_class.h", global_namespace);
-
-  GOC_TEST_EQ(error, ParserError::OK, "Parser error occured.");
-  GOC_TEST_ASSERT(global_namespace, "Global namespace is invalid.");
+  GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_class.h");
 
   Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 
@@ -61,13 +55,7 @@ GOC_TEST(ClassSimple) {
 
 GOC_TEST(ClassSimpleInheritance) {
   using namespace GodotObjectCompiler;
-
-  TreeSitterParser parser;
-  Ref<Namespace> global_namespace = node_new<Namespace>();
-  Ref<ParserError> error = parser.parse_file("tests/files/class_tests/simple_inheritance.h", global_namespace);
-
-  GOC_TEST_EQ(error, ParserError::OK, "Parser error occured.");
-  GOC_TEST_ASSERT(global_namespace, "Global namespace is invalid.");
+  GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_inheritance.h");
 
   Vector<Ref<Class>> classes = global_namespace->classes_recursive();
   GOC_TEST_EQ(classes.size(), 3, "Invalid class count.")
@@ -97,13 +85,7 @@ GOC_TEST(ClassSimpleInheritance) {
 
 GOC_TEST(ClassMemberFunctions) {
   using namespace GodotObjectCompiler;
-
-  TreeSitterParser parser;
-  Ref<Namespace> global_namespace = node_new<Namespace>();
-  Ref<ParserError> error = parser.parse_file("tests/files/class_tests/member_functions.h", global_namespace);
-
-  GOC_TEST_EQ(error, ParserError::OK, "Parser error occured.");
-  GOC_TEST_ASSERT(global_namespace, "Global namespace is invalid.");
+  GOC_TEST_PARSE_FILE("tests/files/class_tests/member_functions.h");
 
   Vector<Ref<Class>> classes = global_namespace->classes_recursive();
   GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
@@ -149,13 +131,7 @@ GOC_TEST(ClassMemberFunctions) {
 
 GOC_TEST(ClassMemberFields) {
   using namespace GodotObjectCompiler;
-
-  TreeSitterParser parser;
-  Ref<Namespace> global_namespace = node_new<Namespace>();
-  Ref<ParserError> error = parser.parse_file("tests/files/class_tests/member_fields.h", global_namespace);
-
-  GOC_TEST_EQ(error, ParserError::OK, "Parser error occured.");
-  GOC_TEST_ASSERT(global_namespace, "Global namespace is invalid.");
+  GOC_TEST_PARSE_FILE("tests/files/class_tests/member_fields.h");
 
   Vector<Ref<Class>> classes = global_namespace->classes_recursive();
   GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")

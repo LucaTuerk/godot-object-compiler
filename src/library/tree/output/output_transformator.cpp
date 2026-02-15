@@ -87,6 +87,14 @@ namespace GodotObjectCompiler {
     }
 
     if (Ref<Namespace> _namespace = p_tree->as<Namespace>()) {
+      if (_namespace->name().empty()) {
+        Ref<Writer::ListNode> into = Writer::Lines({});
+        ERR_COND(_namespace->body() == nullptr, "Failed to get global namespace body.");
+
+        ADD_TRANSFORM_CHILDREN(_namespace->body(), into);
+        return into;
+      }
+
       return Writer::Spaces(
           {Writer::Text("namespace"), Writer::Text(_namespace->name()), transform(_namespace->body())});
     }

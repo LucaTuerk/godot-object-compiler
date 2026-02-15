@@ -45,7 +45,7 @@ namespace GodotObjectCompiler {
 
   ParserStep ParserStep::StepOut() { return {TYPE_STEP_OUT, nullptr}; }
 
-  ParserStep ParserStep::GoTo(const Ref<TreeSitterNode>& target) { return {TYPE_UNDECIDED, target}; }
+  ParserStep ParserStep::GoTo(const Ref<TreeSitterNode>& target) { return {TYPE_GO_TO, target}; }
 
   bool ParserStep::is_undecided() const { return type == TYPE_UNDECIDED; }
 

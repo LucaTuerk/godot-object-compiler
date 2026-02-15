@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* string_writer.cpp                                                      */
+/* export_type_db.cpp                                                     */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,82 +33,71 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "string_writer.h"
+#include "export_type_db.h"
 
-#include "file_system_utilities.h"
+#include "application/programs/clear.h"
+#include "application/programs/generate_type_db.h"
+#include "application/programs/program.h"
+#include "library/core/core.h"
+#include "library/core/file_system_utilities.h"
+#include "library/core/permissions.h"
+#include "library/core/string_utilities.h"
 #include "library/execution_context.h"
-#include "permissions.h"
-#include "resources.h"
-#include "string_utilities.h"
 
 namespace GodotObjectCompiler {
 
-  void StreamWriter::write(const String& p_value) {
-    _stream << p_value;
-    _current_length += p_value.length();
-  }
-
-  String StreamWriter::get_string() { return _stream.str(); }
-
-  Size StreamWriter::current_length() { return _current_length; }
-
-  FileWriter::FileWriter(const String& path, bool do_not_write_same_content) {
-    Permissions::instance()->ensure_is_allowed_write_path(path);
-    this->_path = path;
-    this->_do_not_write_same_content = do_not_write_same_content;
-    if (!do_not_write_same_content) {
-      _file = std::fstream(path, std::ios::out);
-    }
-  }
-
-  FileWriter::~FileWriter() {
-    if (_generated) {
-      _stream.write("\n// clang-format on\n// NOLINTEND\n");
+  Ref<ProgramError> ExportTypeDB::run(ApplicationContext& p_context) {
+    if (p_context.program_arguments.size() != 1) {
+      return make_ref<ProgramError>(ERROR, "Invalid argument count. Expected directory path to export TypeDB to.");
     }
 
-    if (_do_not_write_same_content && (!file_exists(_path) || read_file(_path) != _stream.get_string())) {
-      write_file(_path, _stream.get_string());
-    }
-  }
+    String export_dir = p_context.program_arguments[0];
 
-  FileWriter FileWriter::generated(const String& path, const String& p_generated_from) {
-    FileWriter writer(path, true);
-    writer._generated = true;
-
-    if (!p_generated_from.empty()) {
-      ExecutionContext::instance()->register_generated_file(path, p_generated_from);
+    if (file_exists(export_dir)) {
+      return make_ref<ProgramError>(
+          ERROR, "A file exists at the export path. Path must point to an empty or non existing directory");
     }
 
-    writer.write(_generated_header(path_file_name(path)));
-    writer.write("// NOLINTBEGIN\n// clang-format off\n");
-    return writer;
-  }
-
-  void FileWriter::write(const String& p_value) {
-    if (!_do_not_write_same_content) {
-      _file << p_value;
-    }
-    _stream.write(p_value);
-  }
-
-  String FileWriter::get_string() { return _stream.get_string(); }
-
-  Size FileWriter::current_length() { return _stream.current_length(); }
-
-  String FileWriter::_generated_header(const String& p_file_name) {
-    auto resource_path = "res://generator/generated_header.txt";
-    if (!Resources::instance()->has_resource(resource_path)) {
-      return "";
+    if (directory_exits(export_dir) &&
+        (directory_dirs(export_dir).size() != 0 || directory_files(export_dir).size() != 0)) {
+      return make_ref<ProgramError>(ERROR,
+          "A non empty directory exists at the export path. Path must point to an empty or non existing directory");
     }
 
-    String content = Resources::instance()->load_text_resource(resource_path);
-    Size file_name_max = 70;
-    String file_name_search_string = string_pad_right("FILENAME", ' ', file_name_max);
-    String version_search_string = "GOC_VERSION";
-    content = string_replace(content, file_name_search_string, string_pad_right(p_file_name, ' ', file_name_max));
-    content =
-        string_replace(content, version_search_string, string_pad_right("0.0", ' ', version_search_string.length()));
-    return content;
+    Permissions::instance()->add_write_path(export_dir);
+
+    if (!directory_exits(export_dir) && !create_dir_recursive(export_dir)) {
+      return make_ref<ProgramError>(ERROR, "Failed to create export directory.");
+    }
+
+
+    ClearCache clear_cache;
+    Ref<ProgramError> clear_error = clear_cache.run(p_context);
+    if (clear_error != ProgramError::OK) {
+      return clear_error;
+    }
+
+    GenerateTypeDB generate_type_db;
+    Ref<ProgramError> generate_error = generate_type_db.run(p_context);
+    if (generate_error != ProgramError::OK) {
+      return generate_error;
+    }
+
+    for (const String& file : directory_files_recursive(p_context.paths_cache)) {
+      if (string_contains(file, ".readonly")) {
+        continue;
+      }
+
+      String relative_path = path_relative(file, p_context.paths_cache);
+      String destination_path = path_concat(export_dir, relative_path);
+
+      if (!copy_file(file, destination_path)) {
+        return make_ref<ProgramError>(
+            ERROR, format("Failed to copy file \"%s\" to \"%s\"", file.c_str(), destination_path.c_str()));
+      }
+    }
+
+    return ProgramError::OK;
   }
 
 }

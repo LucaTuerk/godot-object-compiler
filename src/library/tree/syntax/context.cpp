@@ -227,7 +227,7 @@ namespace GodotObjectCompiler {
     COPY_LAZY(name);
     COPY_LAZY(qualified_name);
     // TODO: Leads to segfault but needs to be written for correctness
-    // COPY_LAZY(namespaces_names);
+    COPY_LAZY(namespaces_names);
     return true;
   }
 
@@ -236,7 +236,7 @@ namespace GodotObjectCompiler {
     _name_lazy = p_reader->read<String, String>("_name");
     _qualified_name_lazy = p_reader->read<String, String>("_qualified_name");
     // TODO: Leads to segfault but needs to be written for correctness
-    // _namespaces_names_lazy = string_split(p_reader->read<String, String>("_namespaces_names"),",");
+    _namespaces_names_lazy = string_split(p_reader->read<String, String>("_namespaces_names"),",");
   }
 
   void NamedContext::write_to(IStructuredWriter* p_writer) {
@@ -244,7 +244,7 @@ namespace GodotObjectCompiler {
     p_writer->write<String, String>("_name", name());
     p_writer->write<String, String>("_qualified_name", qualified_name());
     // TODO: Leads to segfault but needs to be written for correctness
-    // p_writer->write<String, String>("_namespaces_names", string_vector_combine(namespaces_names(), ","));
+    p_writer->write<String, String>("_namespaces_names", string_vector_combine(namespaces_names(), ","));
   }
 
   Vector<String> NamedContext::_namespaces_names_lazy_get() const {

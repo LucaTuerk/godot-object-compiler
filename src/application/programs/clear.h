@@ -55,7 +55,15 @@ namespace GodotObjectCompiler {
   };
 
   class ClearCache : public IProgram {
-    PROGRAM(ClearCache, "clear/cache")
+    PROGRAM(ClearCache, "clear/type_db")
+
+   public:
+
+    Ref<ProgramError> run(ApplicationContext& p_context) override;
+  };
+
+  class ClearImportedTypeDB : public IProgram {
+    PROGRAM(ClearImportedTypeDB, "clear/imported_type_db")
 
    public:
 
