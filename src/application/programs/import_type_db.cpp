@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* string_writer.cpp                                                      */
+/* import_type_db.cpp                                                     */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,83 +32,43 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+#include "application/programs/import_type_db.h"
 
-#include "string_writer.h"
-
-#include "file_system_utilities.h"
-#include "library/execution_context.h"
-#include "permissions.h"
-#include "resources.h"
-#include "string_utilities.h"
+#include "application/programs/program.h"
+#include "library/core/core.h"
+#include "library/core/file_system_utilities.h"
 
 namespace GodotObjectCompiler {
 
-  void StreamWriter::write(const String& p_value) {
-    _stream << p_value;
-    _current_length += p_value.length();
-  }
-
-  String StreamWriter::get_string() { return _stream.str(); }
-
-  Size StreamWriter::current_length() { return _current_length; }
-
-  FileWriter::FileWriter(const String& path, bool do_not_write_same_content) {
-    Permissions::instance()->ensure_is_allowed_write_path(path);
-    this->_path = path;
-    this->_do_not_write_same_content = do_not_write_same_content;
-    if (!do_not_write_same_content) {
-      _file = std::fstream(path, std::ios::out);
-    }
-  }
-
-  FileWriter::~FileWriter() {
-    if (_generated) {
-      _stream.write("\n// clang-format on\n// NOLINTEND\n");
+  Ref<ProgramError> ImportTypeDB::run(ApplicationContext& p_context) {
+    if (p_context.program_arguments.size() != 1) {
+      return make_ref<ProgramError>(ERROR, "Invalid argument count. Expected path to the type_db directory to import.");
     }
 
-    if (_do_not_write_same_content && (!file_exists(_path) || read_file(_path) != _stream.get_string())) {
-      write_file(_path, _stream.get_string());
-    }
-  }
+    const String& import_path = p_context.program_arguments[0];
 
-  FileWriter FileWriter::generated(const String& path, const String& p_generated_from) {
-    FileWriter writer(path, true);
-    writer._generated = true;
-
-    if (!p_generated_from.empty()) {
-      ExecutionContext::instance()->register_generated_file(path, p_generated_from);
+    if (!directory_exits(import_path)) {
+      return make_ref<ProgramError>(ERROR,
+          format("Invalid argument. Could not find director at provided path \"%s\".",
+              p_context.program_arguments[0].c_str()));
     }
 
-    writer.write(_generated_header(path_file_name(path)));
-    writer.write("// NOLINTBEGIN\n// clang-format off\n");
-    return writer;
-  }
+    for (const String& file : directory_files_recursive(import_path)) {
+      String relative_path = path_relative(file, import_path);
+      String destination_path = path_concat(p_context.paths_readonly_cache, relative_path);
+      String base = path_base(destination_path);
 
-  void FileWriter::write(const String& p_value) {
-    if (!_do_not_write_same_content) {
-      _file << p_value;
-    }
-    _stream.write(p_value);
-  }
+      if (!directory_exits(base) && !create_dir_recursive(base)) {
+        return make_ref<ProgramError>(
+            ERROR, format("Import failed. Could not create target directory at \"%s\".", base.c_str()));
+      }
 
-  String FileWriter::get_string() { return _stream.get_string(); }
-
-  Size FileWriter::current_length() { return _stream.current_length(); }
-
-  String FileWriter::_generated_header(const String& p_file_name) {
-    auto resource_path = "res://generator/generated_header.txt";
-    if (!Resources::instance()->has_resource(resource_path)) {
-      return "";
+      if (!copy_file(file, destination_path)) {
+          return make_ref<ProgramError>(ERROR, format("Failed to copy file \"%s\" to \"%s\"", file.c_str(), destination_path.c_str()));
+      }
     }
 
-    String content = Resources::instance()->load_text_resource(resource_path);
-    Size file_name_max = 70;
-    String file_name_search_string = string_pad_right("FILENAME", ' ', file_name_max);
-    String version_search_string = "GOC_VERSION";
-    content = string_replace(content, file_name_search_string, string_pad_right(p_file_name, ' ', file_name_max));
-    content =
-        string_replace(content, version_search_string, string_pad_right("0.0", ' ', version_search_string.length()));
-    return content;
+    return ProgramError::OK;
   }
 
 }

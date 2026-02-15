@@ -76,10 +76,10 @@ namespace GodotObjectCompiler {
 
     void set_cache_directory(const String& path);
 
-    void save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from);
+    void save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const;
 
     void save_type_attribute(
-        const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute, const String& p_generated_from);
+        const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute, const String& p_generated_from) const;
 
     Ref<Node> get_type_data(const String& qualified_name, Size template_parameter_count = 0,
         const Ref<Namespace>& from_namespace = nullptr);
@@ -118,10 +118,21 @@ namespace GodotObjectCompiler {
     using Reader = ConfigNodeReaderWriter;
     using Writer = ConfigNodeReaderWriter;
 
-    [[nodiscard]] String _get_cache_file_path(const String& qualified_name) const;
-    [[nodiscard]] String _get_attribute_cache_file_path(const String& p_qualified_name, const String& p_attribute_name);
+    enum class CacheType { READONLY_CACHE, READWRITE_CACHE };
+
+    Ref<Node> _get_type_data(const String& qualified_name, Size template_parameter_count,
+        const Ref<Namespace>& p_from_namespace, CacheType cache_type);
+
+    Ref<Attribute> _get_type_attribute(const String& p_qualified_name, const String& p_attribute_name,
+        Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace, CacheType cache_type);
+
+    [[nodiscard]] String _get_cache_file_path(const String& qualified_name, CacheType cache_type) const;
+    [[nodiscard]] String _get_attribute_cache_file_path(
+        const String& p_qualified_name, const String& p_attribute_name, CacheType cache_type) const;
+
     Dictionary<String, Ref<Node>> _cache;
     String _cache_directory;
+    String _readonly_cache_directory;
 
     friend ExecutionContext;
   };

@@ -90,6 +90,7 @@ namespace GodotObjectCompiler {
 
     String _path;
     bool _do_not_write_same_content = true;
+    bool _generated = false;
     StreamWriter _stream;
     std::fstream _file;
   };

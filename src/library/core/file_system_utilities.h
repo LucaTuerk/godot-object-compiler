@@ -60,6 +60,8 @@ namespace GodotObjectCompiler {
 
   bool remove_file(const String& p_path);
 
+  bool copy_file(const String& p_source, const String& p_destination);
+
   bool remove(const String& p_path);
 
   bool directory_exits(const String& p_path);

@@ -77,9 +77,13 @@ namespace GodotObjectCompiler {
 
     bool save_generated_from_file(const String& p_path);
 
+    void clear_generated_from();
+
     bool load_last_modified_times_file(const String& p_path);
 
     bool save_last_modifed_times_file(const String& p_path);
+
+    void clear_last_modified_times();
 
     bool file_modified(const String& p_path, bool p_update_time = true);
 
@@ -96,6 +100,16 @@ namespace GodotObjectCompiler {
     void set_include_paths(const Vector<String>& p_value);
 
     void set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail);
+
+    void set_usings(const Vector<String>& p_value);
+
+    const Vector<String>& get_usings();
+
+    void add_using(const String& p_value);
+
+    void remove_using(const String& p_value);
+
+    void clear_usings();
 
     ErrorLevel get_error_level() const;
 
@@ -119,6 +133,7 @@ namespace GodotObjectCompiler {
     Ref<AttributeDB> _attribute_db;
     Ref<TypeDB> _type_db;
 
+    Vector<String> _usings;
     Vector<String> _input_files;
     Vector<String> _remove_macros;
     Vector<String> _include_paths;

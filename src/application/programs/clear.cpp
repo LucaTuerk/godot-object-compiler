@@ -36,6 +36,7 @@
 #include "clear.h"
 
 #include "library/core/file_system_utilities.h"
+#include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler {
 
@@ -55,6 +56,9 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ProgramError> ClearGenerated::run(ApplicationContext& p_context) {
+    ExecutionContext::instance()->clear_generated_from();
+    ExecutionContext::instance()->clear_last_modified_times();
+
     for (const String& entry : directory_entries(p_context.paths_generated)) {
       if (!remove(entry)) {
         make_ref<Error>(ERROR, format("Failed to remove \"%s\"", entry.c_str()));
@@ -65,7 +69,24 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ProgramError> ClearCache::run(ApplicationContext& p_context) {
+    ExecutionContext::instance()->clear_generated_from();
+    ExecutionContext::instance()->clear_last_modified_times();
+
     for (const String& entry : directory_entries(p_context.paths_cache)) {
+      if (string_contains(entry, ".readonly")) {
+        continue;
+      }
+
+      if (!remove(entry)) {
+        make_ref<Error>(ERROR, format("Failed to remove \"%s\"", entry.c_str()));
+      }
+    }
+
+    return ProgramError::OK;
+  }
+
+  Ref<ProgramError> ClearImportedTypeDB::run(ApplicationContext& p_context) {
+    for (const String& entry : directory_entries(p_context.paths_readonly_cache)) {
       if (!remove(entry)) {
         make_ref<Error>(ERROR, format("Failed to remove \"%s\"", entry.c_str()));
       }

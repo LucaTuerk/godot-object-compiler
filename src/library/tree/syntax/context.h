@@ -275,11 +275,18 @@ namespace GodotObjectCompiler {
 
   template <typename T>
   Ref<T> Context::find_child(Index p_start_idx, Predicate<T> p_predicate) const {
-    for (const Ref<Node>& child : _children) {
-      Ref<T> tChild = std::dynamic_pointer_cast<T>(child);
+    if (p_start_idx >= _children.size()) {
+      return nullptr;
+    }
+
+    auto itr = std::next(_children.begin(), p_start_idx);
+
+    while (itr != _children.end()) {
+      Ref<T> tChild = std::dynamic_pointer_cast<T>(*itr);
       if (tChild && p_predicate(tChild)) {
         return tChild;
       }
+      ++itr;
     }
 
     return nullptr;

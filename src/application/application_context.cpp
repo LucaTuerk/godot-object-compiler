@@ -48,6 +48,7 @@ namespace GodotObjectCompiler {
     paths_root = path_absolute(p_project.paths_root);
     paths_generated = path_absolute(p_project.paths_generated);
     paths_cache = path_absolute(p_project.paths_cache);
+    paths_readonly_cache = path_concat(paths_cache, ".readonly");
     paths_goc = path_absolute(p_project.paths_goc);
 
     paths_include = p_project.paths_include;

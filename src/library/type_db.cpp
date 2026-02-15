@@ -38,7 +38,9 @@
 #include "core/file_system_utilities.h"
 #include "core/string_utilities.h"
 #include "core/string_writer.h"
+#include "library/core/core.h"
 #include "library/execution_context.h"
+#include "library/tree/syntax/attribute.h"
 #include "tree/syntax/class.h"
 #include "tree/syntax/define.h"
 #include "tree/syntax/enum.h"
@@ -56,8 +58,8 @@ namespace GodotObjectCompiler {
       writer->write<String, UID>("_parent", INVALID_ID);
     }
 
-    if (Ref<Context> context = node->as<Context>(); context && !context->is<Include>()) {
-      for (Ref<Node> child : context->get_children()) {
+    if (const Ref<Context> context = node->as<Context>(); context && !context->is<Include>()) {
+      for (const Ref<Node>& child : context->get_children()) {
         dump_node(writer, child, false);
       }
     }
@@ -120,10 +122,9 @@ namespace GodotObjectCompiler {
         continue;
       }
 
-      Ref<Node> self = self_itr->second;
-      Ref<Context> parent = parent_itr->second->as<Context>();
+      const Ref<Node> self = self_itr->second;
 
-      if (parent && self) {
+      if (Ref<Context> parent = parent_itr->second->as<Context>(); parent && self) {
         parent->add_child(self);
       }
     }
@@ -142,23 +143,42 @@ namespace GodotObjectCompiler {
     return root;
   }
 
-  void TypeDB::set_cache_directory(const String& path) { _cache_directory = path; }
-
-  String TypeDB::_get_cache_file_path(const String& qualified_name) const {
-    return path_concat(_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
+  void TypeDB::set_cache_directory(const String& path) {
+    _cache_directory = path;
+    _readonly_cache_directory = path_concat(path, ".readonly");
   }
 
-  String TypeDB::_get_attribute_cache_file_path(const String& p_qualified_name, const String& p_attribute_name) {
-    String base = path_concat(_cache_directory, string_replace(p_qualified_name, "::", "/"));
-    String path = path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
-    return path;
+  String TypeDB::_get_cache_file_path(const String& qualified_name, CacheType cache_type) const {
+    switch (cache_type) {
+      case CacheType::READONLY_CACHE: {
+        return path_concat(_readonly_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
+      } break;
+      case CacheType::READWRITE_CACHE: {
+        return path_concat(_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
+      } break;
+    }
+    PANIC("Unhandled cache type.");
   }
 
-  void TypeDB::save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) {
+  String TypeDB::_get_attribute_cache_file_path(
+      const String& p_qualified_name, const String& p_attribute_name, CacheType cache_type) const {
+    switch (cache_type) {
+      case CacheType::READONLY_CACHE: {
+        const String base = path_concat(_readonly_cache_directory, string_replace(p_qualified_name, "::", "/"));
+        return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
+      }
+      case CacheType::READWRITE_CACHE: {
+        const String base = path_concat(_cache_directory, string_replace(p_qualified_name, "::", "/"));
+        return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
+      } break;
+    }
+    PANIC("Unhandled cache type.");
+  }
+
+  void TypeDB::save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const {
     Writer writer;
-    String qualified_name = p_type->mangled_name();
 
-    auto path = _get_cache_file_path(qualified_name);
+    auto path = _get_cache_file_path(p_type->mangled_name(), CacheType::READWRITE_CACHE);
     auto base = path_base(path);
 
     if (!directory_exits(base) && !create_dir_recursive(base)) {
@@ -171,80 +191,101 @@ namespace GodotObjectCompiler {
   }
 
   void TypeDB::save_type_attribute(
-      const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute, const String& p_generated_from) {
-    Writer writer;
-    String qualified_name = p_type->mangled_name();
-    String path = _get_attribute_cache_file_path(qualified_name, p_attribute->get_type());
-    String base = path_base(path);
+      const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute, const String& p_generated_from) const {
+    const String qualified_name = p_type->mangled_name();
+    const String path = _get_attribute_cache_file_path(qualified_name, p_attribute->get_type(), CacheType::READWRITE_CACHE);
 
-    if (!directory_exits(base) && !create_dir_recursive(base)) {
+    if (const String base = path_base(path); !directory_exits(base) && !create_dir_recursive(base)) {
       return;
     }
 
-    if (writer.write_to_file(p_attribute, path)) {
+    if (Writer writer; writer.write_to_file(p_attribute, path)) {
       ExecutionContext::instance()->register_generated_file(path, p_generated_from);
     }
   }
 
-  Ref<Node> TypeDB::get_type_data(
-      const String& qualified_name, Size template_argument_count, const Ref<Namespace>& from_namespace) {
+  Ref<Node> TypeDB::_get_type_data(const String& qualified_name, Size template_argument_count,
+      const Ref<Namespace>& p_from_namespace, CacheType cache_type) {
     Reader reader;
 
-    for (const String& name : resolve_possible_namespaces(qualified_name, from_namespace)) {
+    for (const String& name : resolve_possible_namespaces(qualified_name, p_from_namespace)) {
       String mangled_name = mangle_name(name, template_argument_count);
-      const String& cache_file_path = _get_cache_file_path(mangled_name);
+      const String& cache_file_path = _get_cache_file_path(mangled_name, cache_type);
 
       if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
         return itr->second->clone();
       }
 
-      const String& godot_cache_file_path = _get_cache_file_path("godot::" + mangled_name);
-
       if (file_exists(cache_file_path)) {
         Ref<Node> root = reader.read_from_file(cache_file_path);
         _cache[cache_file_path] = root->clone();
         return root;
-      } else if (file_exists(godot_cache_file_path)) {
-        Ref<Node> root = reader.read_from_file(godot_cache_file_path);
-        _cache[cache_file_path] = root->clone();
-        return root;
+      }
+      for (const String& using_ : ExecutionContext::instance()->get_usings()) {
+        if (String using_path = _get_cache_file_path(using_ + "::" + mangled_name, cache_type);
+            file_exists(using_path)) {
+          Ref<Node> root = reader.read_from_file(using_path);
+          _cache[cache_file_path] = root->clone();
+          return root;
+        }
       }
     }
 
     return nullptr;
   }
 
-  Ref<Attribute> TypeDB::get_type_attribute(const String& p_qualified_name, const String& p_attribute_name,
-      Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace) {
+  Ref<Attribute> TypeDB::_get_type_attribute(const String& p_qualified_name, const String& p_attribute_name,
+      Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace, CacheType cache_type) {
     Reader reader;
 
     for (const String& name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
       String mangled_name = mangle_name(name, p_template_parameter_count);
-      const String& cache_file_path = _get_attribute_cache_file_path(mangled_name, p_attribute_name);
+      const String& cache_file_path = _get_attribute_cache_file_path(mangled_name, p_attribute_name, cache_type);
 
       if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
         return itr->second->as<Attribute>();
       }
 
-      const String& godot_cache_file_path = _get_attribute_cache_file_path("godot::" + mangled_name, p_attribute_name);
-
       if (file_exists(cache_file_path)) {
-        Ref<Node> root = reader.read_from_file(cache_file_path);
-        if (!root) {
-          return nullptr;
-        }
-        _cache[cache_file_path] = root->clone();
-        return root->as<Attribute>();
-      } else if (file_exists(godot_cache_file_path)) {
-        Ref<Node> root = reader.read_from_file(godot_cache_file_path);
+        const Ref<Node> root = reader.read_from_file(cache_file_path);
         if (!root) {
           return nullptr;
         }
         _cache[cache_file_path] = root->clone();
         return root->as<Attribute>();
       }
+      for (const String& using_ : ExecutionContext::instance()->get_usings()) {
+        if (String using_path =
+                _get_attribute_cache_file_path(using_ + "::" + mangled_name, p_attribute_name, cache_type);
+            file_exists(using_path)) {
+          const Ref<Node> root = reader.read_from_file(using_path);
+          _cache[cache_file_path] = root->clone();
+          return root->as<Attribute>();
+        }
+      }
     }
     return nullptr;
+  }
+
+  Ref<Node> TypeDB::get_type_data(
+      const String& qualified_name, Size template_argument_count, const Ref<Namespace>& from_namespace) {
+    Ref<Node> found =
+        _get_type_data(qualified_name, template_argument_count, from_namespace, CacheType::READWRITE_CACHE);
+    if (!found) {
+      found = _get_type_data(qualified_name, template_argument_count, from_namespace, CacheType::READONLY_CACHE);
+    }
+    return found;
+  }
+
+  Ref<Attribute> TypeDB::get_type_attribute(const String& p_qualified_name, const String& p_attribute_name,
+      Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace) {
+    Ref<Attribute> found = _get_type_attribute(
+        p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace, CacheType::READWRITE_CACHE);
+    if (!found) {
+      found = _get_type_attribute(
+          p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace, CacheType::READONLY_CACHE);
+    }
+    return found;
   }
 
   Ref<Node> TypeDB::get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace) {
@@ -279,6 +320,7 @@ namespace GodotObjectCompiler {
     }
 
     const Vector<String> namespaces_names = from_namespace->namespaces_names();
+
     for (Size current_size = 0; current_size <= namespaces_names.size(); current_size++) {
       StreamWriter writer;
       for (Size i = 0; i < current_size; ++i) {
@@ -288,6 +330,7 @@ namespace GodotObjectCompiler {
       writer.write(qualified_name);
       result.push_back(writer.get_string());
     }
+
     return result;
   }
 

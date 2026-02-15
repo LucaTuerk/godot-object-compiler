@@ -3,6 +3,7 @@
 #include "godot_enum_generator.h"
 #include "godot_function_generator.h"
 #include "godot_generator_utils.h"
+#include "godot_hint_generators.h"
 #include "godot_initialization_generator.h"
 #include "godot_macro_include_generator.h"
 #include "godot_property_generator.h"

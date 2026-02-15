@@ -35,6 +35,8 @@
 
 #include "file_system_utilities.h"
 
+#include <filesystem>
+
 #include "core.h"
 #include "library/core/string_utilities.h"
 #include "permissions.h"
@@ -113,10 +115,18 @@ namespace GodotObjectCompiler {
   String path_base(const String& p_path) { return std::filesystem::path(p_path).parent_path().generic_string(); }
 
   String path_concat(const String& p_left, const String& p_right) {
+    if (string_prefix(p_left, "res://")) {
+      return "res://" + path_concat(p_left.substr(6), p_right);
+    }
+
     return (std::filesystem::path(p_left) / std::filesystem::path(p_right)).generic_string();
   }
 
   String path_concat_ext(const String& p_dir, const String& p_filename, const String& p_extension) {
+    if (string_prefix(p_dir, "res://")) {
+      return "res://" + path_concat_ext(p_dir.substr(6), p_filename, p_extension);
+    }
+
     return (
         std::filesystem::path(p_dir) / std::filesystem::path(format("%s.%s", p_filename.c_str(), p_extension.c_str())))
         .generic_string();
@@ -200,6 +210,23 @@ namespace GodotObjectCompiler {
     String ancestor_absolute = path_absolute(p_possible_ancestor);
     String child_absolute = path_absolute(p_possible_child);
     return string_prefix(child_absolute, ancestor_absolute);
+  }
+
+  bool copy_file(const String& p_source, const String& p_destination) {
+    auto source = path_absolute(p_source);
+    auto destination = path_absolute(p_destination);
+
+    String destination_base = path_base(destination);
+    if (!directory_exits(destination_base) && !create_dir_recursive(destination_base)) {
+      return false;
+    }
+
+    if (source.empty() || destination.empty()) {
+      return false;
+    }
+
+    Permissions::instance()->ensure_is_allowed_write_path(destination);
+    return std::filesystem::copy_file(source, destination, std::filesystem::copy_options::update_existing);
   }
 
 }
