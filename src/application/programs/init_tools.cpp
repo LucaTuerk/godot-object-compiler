@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_type.cpp                                                         */
+/* init_tools.cpp                                                         */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,20 +33,30 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "print_type.h"
+#include "init_tools.h"
 
-#include "library/type_db.h"
+#include "library/core/file_system_utilities.h"
+#include "library/core/permissions.h"
+#include "library/core/resources.h"
+#include "library/core/string_writer.h"
 
 namespace GodotObjectCompiler {
 
-  Ref<ProgramError> PrintType::run(ApplicationContext& p_context) {
-    PROG_ERR_COND(p_context.program_arguments.empty(),
-        "No type name provided. Please specify one or more types by their fully qualified name.")
+  Ref<ProgramError> InitTools::run(ApplicationContext& p_context) {
+    PROG_ERR_COND(p_context.program_arguments.size() != 1,
+        "Invalid argument count for init tools program. Expected single path argument specifying target directory.");
 
-    for (const String& name : p_context.program_arguments) {
-      Ref<Node> type_data = ExecutionContext::instance()->get_type_db()->get_type_data(name);
-      PROG_ERR_COND(!type_data, "Unknown type name: %s", name.c_str());
-      print_ln(type_data->pretty_print());
+    const String path = p_context.program_arguments[0];
+    Permissions::instance()->add_write_path(path);
+
+    PROG_ERR_COND(!directory_exits(path) && !create_dir_recursive(path),
+        "Target directory does not exists and could not be created.");
+
+    for (const String& res_file : Resources::instance()->resources_recursive("res://tools")) {
+      const String content = Resources::instance()->load_text_resource(res_file);
+      const String relative = path_relative(res_file, "res://tools");
+      FileWriter writer(path_concat(path, relative));
+      writer.write(content);
     }
 
     return ProgramError::OK;

@@ -55,6 +55,10 @@ namespace GodotObjectCompiler {
     Dictionary<UID, UID> before_node;
     HashSet<UID> handled;
 
+    if (input_is_path && !file_exists(p_input)) {
+      return node_new<ParserError>(ERROR, format("Input file \"%s\" not found.", p_input.c_str()));
+    }
+
     String original_input =
         input_is_path ? Parser::Helpers::remove_macros(read_file(p_input)) : Parser::Helpers::remove_macros(p_input);
     String local_input = strip_known_macro_contents(original_input, stripped_parameters);

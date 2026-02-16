@@ -60,9 +60,7 @@ namespace GodotObjectCompiler {
     ExecutionContext::instance()->clear_last_modified_times();
 
     for (const String& entry : directory_entries(p_context.paths_generated)) {
-      if (!remove(entry)) {
-        make_ref<Error>(ERROR, format("Failed to remove \"%s\"", entry.c_str()));
-      }
+      PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
     }
 
     return ProgramError::OK;
@@ -77,9 +75,7 @@ namespace GodotObjectCompiler {
         continue;
       }
 
-      if (!remove(entry)) {
-        make_ref<Error>(ERROR, format("Failed to remove \"%s\"", entry.c_str()));
-      }
+      PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
     }
 
     return ProgramError::OK;
@@ -87,9 +83,7 @@ namespace GodotObjectCompiler {
 
   Ref<ProgramError> ClearImportedTypeDB::run(ApplicationContext& p_context) {
     for (const String& entry : directory_entries(p_context.paths_readonly_cache)) {
-      if (!remove(entry)) {
-        make_ref<Error>(ERROR, format("Failed to remove \"%s\"", entry.c_str()));
-      }
+      PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
     }
 
     return ProgramError::OK;

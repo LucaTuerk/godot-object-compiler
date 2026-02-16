@@ -81,7 +81,7 @@ namespace GodotObjectCompiler {
 
     bool load_last_modified_times_file(const String& p_path);
 
-    bool save_last_modifed_times_file(const String& p_path);
+    bool save_last_modified_times_file(const String& p_path);
 
     void clear_last_modified_times();
 
@@ -92,8 +92,6 @@ namespace GodotObjectCompiler {
     bool clear_generated_files(const String& p_path);
 
     void set_remove_macros(const Vector<String>& p_value);
-
-    String get_absolute_include_path(const String& p_included_from_path, const String& p_path) const;
 
     const Vector<String>& get_include_paths();
 
@@ -121,11 +119,7 @@ namespace GodotObjectCompiler {
 
     void init();
 
-    bool is_cached(const String& p_path);
-
     static Hash get_path_hash(const String& p_absolute_path);
-
-    String get_cache_file_path(Hash p_hash);
 
     ExecutionContext();
 
@@ -133,6 +127,7 @@ namespace GodotObjectCompiler {
     Ref<AttributeDB> _attribute_db;
     Ref<TypeDB> _type_db;
 
+    String cache_path;
     Vector<String> _usings;
     Vector<String> _input_files;
     Vector<String> _remove_macros;

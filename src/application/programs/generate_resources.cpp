@@ -127,13 +127,13 @@ namespace GodotObjectCompiler {
 
       Size i = 0;
       for (char c : content) {
-        if ((++i % 10) == 0) {
+        if ((++i % 15) == 0) {
           values->add_child(Writer::FmtText("\n0x%x", c));
         } else {
           values->add_child(Writer::FmtText("0x%x", c));
         }
       }
-      values->add_child(Writer::Text("'\\0'"));
+      values->add_child(Writer::FmtText("0x%x", '\0'));
     }
     {
       Ref<Writer::ListNode> values;

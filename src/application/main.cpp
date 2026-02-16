@@ -41,6 +41,7 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
 #include "library/core/resources.h"
+#include "library/core/string_utilities.h"
 #include "library/execution_context.h"
 #include "library/parser/parser.h"
 #include "library/type_db.h"
@@ -54,8 +55,6 @@ int main(int argc, char* argv[]) {
   Resources::instance()->load_pack(&GOC_Resources::Pack);
 
   ExecutionContext::instance()->set_error_level(ERROR, FULL);
-
-  Vector<String> application_arguments;
 
   for (int i = 1; i < argc; i++) {
     context.application_arguments.emplace_back(argv[i]);
@@ -73,26 +72,31 @@ int main(int argc, char* argv[]) {
   }
 
   if (program->requires_project()) {
-    Project project;
-    if (!project.read_from_file("goc_project.conf")) {
-      print_err("Could not find project file.");
+    if (!context.set_from_application_arguments(context.application_arguments)) {
       return 1;
     }
 
-    if (!context.set_from_project(project)) {
-      return 1;
-    }
+    APP_ERR_COND(
+        !context.paths_root.has_value(), "No project root path specified, but is needed for selected program.");
+    APP_ERR_COND(
+        !context.paths_include.has_value(), "No include paths were specified, but are needed for selected program.");
+
+    context.paths_include->push_back(*context.paths_root);
 
     ExecutionContext::instance()->get_type_db()->set_cache_directory(context.paths_cache);
+    ExecutionContext::instance()->set_include_paths(*context.paths_include);
+
+    InitLocalResources init_local_resources;
+    init_local_resources.run(context);
+
     ExecutionContext::instance()->set_remove_macros(read_lines(path_absolute(".goc/macros/macro_remove.txt")));
-    ExecutionContext::instance()->set_include_paths(context.paths_include);
     ExecutionContext::instance()->load_last_modified_times_file(
         path_concat_ext(context.paths_goc, "last_modified", "gocdb"));
     ExecutionContext::instance()->load_generated_from_file(
         path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
     ExecutionContext::instance()->clean_orphan_generated_files();
 
-    if (project.project_target == GodotObjectCompiler::TARGET_GDEXTENSION) {
+    if (context.project_target == TARGET_GDEXTENSION) {
       ExecutionContext::instance()->add_using("godot");
     }
   }
@@ -107,7 +111,7 @@ int main(int argc, char* argv[]) {
   }
 
   if (program->requires_project()) {
-    ExecutionContext::instance()->save_last_modifed_times_file(
+    ExecutionContext::instance()->save_last_modified_times_file(
         path_concat_ext(context.paths_goc, "last_modified", "gocdb"));
     ExecutionContext::instance()->save_generated_from_file(
         path_concat_ext(context.paths_goc, "generated_from", "gocdb"));

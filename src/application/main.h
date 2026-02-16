@@ -36,3 +36,11 @@
 #include "library_godot/generators/all.h"
 
 int main(int argc, char* argv[]);
+
+#define APP_ERR(...)              \
+  print_err(format(__VA_ARGS__)); \
+  return 1;
+#define APP_ERR_COND(condition, ...) \
+  if ((condition)) {                 \
+    APP_ERR(__VA_ARGS__)             \
+  }

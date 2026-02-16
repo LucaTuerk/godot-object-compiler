@@ -53,18 +53,22 @@ namespace GodotObjectCompiler {
   Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context) {
     TreeSitterParser parser;
 
-    for (const String& include_path : p_context.paths_include) {
-      for (const String& file : directory_files_recursive(include_path)) {
+    PROG_ERR_COND(!p_context.paths_include.has_value(), "No include path specified. Cannot generate the TypeDB.");
+
+    for (const String& include_path : *p_context.paths_include) {
+      for (String file : directory_files_recursive(include_path)) {
+        file = path_absolute(file);
+
         if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") && !string_suffix(file, ".gen.inc")) {
           continue;
         }
 
-        if (string_contains(file, "thirdparty") || string_contains(file, ".gen.h") ||
-            string_contains(file, ".generated.h") || string_contains(file, "godot/platform") ||
-            string_contains(file, "godot/drivers") || string_contains(file, "godot/tests")) {
-          // make this configurable
-          continue;
-        }
+        // if (string_contains(file, "thirdparty") || string_contains(file, ".gen.h") ||
+        //     string_contains(file, ".generated.h") || string_contains(file, "godot/platform") ||
+        //     string_contains(file, "godot/drivers") || string_contains(file, "godot/tests")) {
+        //   // make this configurable
+        //   continue;
+        // }
 
         if (!ExecutionContext::instance()->file_modified(file)) {
           continue;

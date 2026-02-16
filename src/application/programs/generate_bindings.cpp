@@ -74,6 +74,10 @@ namespace GodotObjectCompiler {
           "For modules please add the godot source to the GOC projects godot include paths.\n"
           "For gdextensions please add the godot-cpp generated includes to the GOC projects godot include paths.\n");
     }
+
+    PROG_ERR_COND(!p_context.paths_root.has_value(), "No project root path specified. Cannot generate bindings.");
+    PROG_ERR_COND(!p_context.files_input.has_value(), "No input files specified. Cannot generate bindings.");
+
     OutputTransformator transformator;
 
     GodotMacroIncludeGenerator macro_include_generator;
@@ -168,7 +172,14 @@ namespace GodotObjectCompiler {
     });
     // clang-format on
 
-    for (const String& input_file : p_context.files_input) {
+    for (String input_file : *p_context.files_input) {
+      if (string_suffix(input_file, ".cpp")) {
+        input_file = input_file.substr(0, input_file.length() - 3) + "h";
+        if (!file_exists(input_file)) {
+          continue;
+        }
+      }
+
       if (!string_suffix(input_file, ".h") && !string_suffix(input_file, ".hpp")) {
         continue;
       }
@@ -181,7 +192,7 @@ namespace GodotObjectCompiler {
         continue;
       }
 
-      String relative_path = path_relative(input_file, p_context.paths_root);
+      String relative_path = path_relative(input_file, *p_context.paths_root);
 
       String in_generated_path = path_concat(p_context.paths_generated, relative_path);
       String in_generated_base = path_base(in_generated_path);

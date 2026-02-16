@@ -47,29 +47,24 @@
 namespace GodotObjectCompiler {
 
   Ref<ProgramError> ExportTypeDB::run(ApplicationContext& p_context) {
-    if (p_context.program_arguments.size() != 1) {
-      return make_ref<ProgramError>(ERROR, "Invalid argument count. Expected directory path to export TypeDB to.");
-    }
+    PROG_ERR_COND(p_context.program_arguments.size() != 1,
+        "Invalid argument count. Expected directory path to export TypeDB to.");
 
     String export_dir = p_context.program_arguments[0];
 
-    if (file_exists(export_dir)) {
-      return make_ref<ProgramError>(
-          ERROR, "A file exists at the export path. Path must point to an empty or non existing directory");
-    }
+    PROG_ERR_COND(file_exists(export_dir),
+        "A file exists at the export path. Path must point to an empty or non existing directory");
 
     if (directory_exits(export_dir) &&
-        (directory_dirs(export_dir).size() != 0 || directory_files(export_dir).size() != 0)) {
-      return make_ref<ProgramError>(ERROR,
+        (!directory_dirs(export_dir).empty() || !directory_files(export_dir).empty())) {
+      PROG_ERR(
           "A non empty directory exists at the export path. Path must point to an empty or non existing directory");
     }
 
     Permissions::instance()->add_write_path(export_dir);
 
-    if (!directory_exits(export_dir) && !create_dir_recursive(export_dir)) {
-      return make_ref<ProgramError>(ERROR, "Failed to create export directory.");
-    }
-
+    PROG_ERR_COND(
+        !directory_exits(export_dir) && !create_dir_recursive(export_dir), "Failed to create export directory.");
 
     ClearCache clear_cache;
     Ref<ProgramError> clear_error = clear_cache.run(p_context);
@@ -91,10 +86,8 @@ namespace GodotObjectCompiler {
       String relative_path = path_relative(file, p_context.paths_cache);
       String destination_path = path_concat(export_dir, relative_path);
 
-      if (!copy_file(file, destination_path)) {
-        return make_ref<ProgramError>(
-            ERROR, format("Failed to copy file \"%s\" to \"%s\"", file.c_str(), destination_path.c_str()));
-      }
+      PROG_ERR_COND(!copy_file(file, destination_path), "Failed to copy file \"%s\" to \"%s\"", file.c_str(),
+          destination_path.c_str());
     }
 
     return ProgramError::OK;

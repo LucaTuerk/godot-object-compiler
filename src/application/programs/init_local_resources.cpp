@@ -46,7 +46,7 @@ namespace GodotObjectCompiler {
                 "res://macros",
             },
             p_context.paths_goc)) {
-      return make_ref<ProgramError>(ERROR, "Failed to copy some local resources.");
+      PROG_ERR("Failed to copy some local resources.");
     }
     return ProgramError::OK;
   }
