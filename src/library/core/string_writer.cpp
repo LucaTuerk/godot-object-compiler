@@ -67,6 +67,7 @@ namespace GodotObjectCompiler {
     }
 
     if (_do_not_write_same_content && (!file_exists(_path) || read_file(_path) != _stream.get_string())) {
+      PRINT_VERBOSE("Writing file \"%s\"", _path.c_str());
       write_file(_path, _stream.get_string());
     }
   }

@@ -44,6 +44,7 @@ namespace GodotObjectCompiler {
   bool ParserContext::is_valid() const { return current_src && !current_src->empty(); }
 
   ParserContext::ParserContext(const String& input) {
+    original_buffer = input;
     buffer = input;
     current_target = ExecutionContext::instance()->get_node_db()->create<Namespace>();
 

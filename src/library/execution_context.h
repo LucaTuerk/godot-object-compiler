@@ -141,3 +141,16 @@ namespace GodotObjectCompiler {
   };
 
 }
+
+#define PRINT_LEVEL(level, ...) \
+  if (ExecutionContext::instance()->get_error_level() >= (level)) fmt_print_ln(__VA_ARGS__)
+
+#define PRINT_ERROR(...) \
+  if (ExecutionContext::instance()->get_error_level() >= (level)) print_err(format(__VA_ARGS__))
+
+#define PRINT_WARNING(...) PRINT_LEVEL(WARNING, __VA_ARGS__)
+
+#define PRINT_INFO(...) PRINT_LEVEL(INFO, __VA_ARGS__)
+
+#define PRINT_VERBOSE(...) PRINT_LEVEL(VERBOSE, __VA_ARGS__)
+

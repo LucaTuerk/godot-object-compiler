@@ -123,6 +123,7 @@ namespace GodotObjectCompiler {
     _generated_from.clear();
 
     for (const String& key : config.get_sections()) {
+      config.read_from_section(key);
       if (config.has_config_value("generated_files")) {
         Vector<String> generated = string_split(config.read<String, String>("generated_files"), ";");
         _generated_from.emplace(key, generated);
