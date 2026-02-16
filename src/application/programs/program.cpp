@@ -61,7 +61,11 @@ namespace GodotObjectCompiler {
         r_program_arguments = {};
 
         for (Size i = matching; i < p_application_arguments.size(); i++) {
-          r_program_arguments.push_back(p_application_arguments[i]);
+          if (!string_prefix(p_application_arguments[i], "-")) {
+            r_program_arguments.push_back(p_application_arguments[i]);
+          } else {
+            print_ln(p_application_arguments[i]);
+          }
         }
       }
     }

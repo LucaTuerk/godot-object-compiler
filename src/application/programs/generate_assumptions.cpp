@@ -69,7 +69,9 @@ namespace GodotObjectCompiler {
     return Writer::Text(format);
   }
 
-  Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& context) {
+  Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
+    UNUSED(p_context);
+
     String header_path = "./library_godot/generated_assumptions/parameter_types.h";
     String source_path = "./library_godot/generated_assumptions/parameter_types.cpp";
 

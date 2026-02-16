@@ -41,31 +41,23 @@
 namespace GodotObjectCompiler {
 
   Ref<ProgramError> ImportTypeDB::run(ApplicationContext& p_context) {
-    if (p_context.program_arguments.size() != 1) {
-      return make_ref<ProgramError>(ERROR, "Invalid argument count. Expected path to the type_db directory to import.");
-    }
+    PROG_ERR_COND(p_context.program_arguments.size() != 1,
+        "Invalid argument count. Expected path to the type_db directory to import.");
 
     const String& import_path = p_context.program_arguments[0];
 
-    if (!directory_exits(import_path)) {
-      return make_ref<ProgramError>(ERROR,
-          format("Invalid argument. Could not find director at provided path \"%s\".",
-              p_context.program_arguments[0].c_str()));
-    }
+    PROG_ERR_COND(!directory_exits(import_path), "Invalid argument. Could not find director at provided path \"%s\".",
+        p_context.program_arguments[0].c_str());
 
     for (const String& file : directory_files_recursive(import_path)) {
       String relative_path = path_relative(file, import_path);
       String destination_path = path_concat(p_context.paths_readonly_cache, relative_path);
       String base = path_base(destination_path);
 
-      if (!directory_exits(base) && !create_dir_recursive(base)) {
-        return make_ref<ProgramError>(
-            ERROR, format("Import failed. Could not create target directory at \"%s\".", base.c_str()));
-      }
-
-      if (!copy_file(file, destination_path)) {
-          return make_ref<ProgramError>(ERROR, format("Failed to copy file \"%s\" to \"%s\"", file.c_str(), destination_path.c_str()));
-      }
+      PROG_ERR_COND(!directory_exits(base) && !create_dir_recursive(base),
+          "Import failed. Could not create target directory at \"%s\".", base.c_str());
+      PROG_ERR_COND(!copy_file(file, destination_path), "Failed to copy file \"%s\" to \"%s\"", file.c_str(),
+          destination_path.c_str());
     }
 
     return ProgramError::OK;

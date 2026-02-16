@@ -133,6 +133,19 @@ namespace GodotObjectCompiler {
   }
 
   String path_relative(const String& p_path, const String& p_base) {
+    const bool path_is_res = string_prefix(p_path, "res://");
+    const bool base_is_res = string_prefix(p_base, "res://");
+    if (path_is_res != base_is_res) {
+      PANIC(
+          "Invalid argument. Trying to get relative path but one path is a resource path while the other is a regular "
+          "path. (\"%s\", \"%s\")",
+          p_path.c_str(), p_base.c_str());
+    }
+
+    if (path_is_res && base_is_res) {
+      return path_relative(p_path.substr(6), p_base.substr(6));
+    }
+
     return std::filesystem::relative(p_path, p_base).generic_string();
   }
 

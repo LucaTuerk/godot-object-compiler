@@ -105,19 +105,9 @@ namespace GodotObjectCompiler {
     }
   }
 
-  bool ExecutionContext::is_cached(const String& p_path) {
-    // TODO: generalize
-    return file_exists(p_path);
-  }
-
   Hash ExecutionContext::get_path_hash(const String& p_absolute_path) {
     Hasher<String> hasher;
     return hasher(p_absolute_path);
-  }
-
-  String ExecutionContext::get_cache_file_path(Hash p_hash) {
-    // TODO: generalize
-    return path_concat(".goc/cache", hash_string(p_hash) + ".gocdb");
   }
 
   void ExecutionContext::register_generated_file(const String& p_generated_path, const String& p_generated_from_path) {
@@ -134,7 +124,8 @@ namespace GodotObjectCompiler {
 
     for (const String& key : config.get_sections()) {
       if (config.has_config_value("generated_files")) {
-        Vector<String> generated = string_split(config.read<String, String>("generated_files"), ",");
+        Vector<String> generated = string_split(config.read<String, String>("generated_files"), ";");
+        _generated_from.emplace(key, generated);
       }
     }
 
@@ -146,7 +137,7 @@ namespace GodotObjectCompiler {
 
     for (const auto& [path, generated] : _generated_from) {
       config.write_to_section(path);
-      config.write("generated_files", string_vector_combine(generated, ","));
+      config.write("generated_files", string_vector_combine(generated, ";"));
     }
 
     return config.write_to_file(p_path);
@@ -214,7 +205,7 @@ namespace GodotObjectCompiler {
     return true;
   }
 
-  bool ExecutionContext::save_last_modifed_times_file(const String& p_path) {
+  bool ExecutionContext::save_last_modified_times_file(const String& p_path) {
     Config config;
 
     for (const auto& [path, last_modified] : _out_last_modified_times) {
@@ -226,7 +217,9 @@ namespace GodotObjectCompiler {
   }
 
   bool ExecutionContext::file_modified(const String& p_path, bool p_update_time) {
-    Size last_modified = file_write_time(p_path);
+    String absolute = path_absolute(p_path);
+
+    Size last_modified = file_write_time(absolute);
 
     if (last_modified == 0) {
       return false;
@@ -234,7 +227,7 @@ namespace GodotObjectCompiler {
 
     bool modified = false;
 
-    auto itr = _last_modified_times.find(p_path);
+    auto itr = _last_modified_times.find(absolute);
     if (itr == _last_modified_times.end()) {
       modified = true;
     } else {
@@ -242,7 +235,7 @@ namespace GodotObjectCompiler {
     }
 
     if (p_update_time) {
-      _out_last_modified_times[p_path] = last_modified;
+      _out_last_modified_times[absolute] = last_modified;
     }
     return modified;
   }

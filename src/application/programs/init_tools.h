@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_type.cpp                                                         */
+/* init_tools.h                                                           */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,23 +33,15 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "print_type.h"
-
-#include "library/type_db.h"
+#pragma once
+#include "program.h"
 
 namespace GodotObjectCompiler {
+  class InitTools : public IProgram {
+    PROJECTLESS_PROGRAM(InitTools, "init/tools")
 
-  Ref<ProgramError> PrintType::run(ApplicationContext& p_context) {
-    PROG_ERR_COND(p_context.program_arguments.empty(),
-        "No type name provided. Please specify one or more types by their fully qualified name.")
+   public:
 
-    for (const String& name : p_context.program_arguments) {
-      Ref<Node> type_data = ExecutionContext::instance()->get_type_db()->get_type_data(name);
-      PROG_ERR_COND(!type_data, "Unknown type name: %s", name.c_str());
-      print_ln(type_data->pretty_print());
-    }
-
-    return ProgramError::OK;
-  }
-
+    Ref<ProgramError> run(ApplicationContext& p_context) override;
+  };
 }

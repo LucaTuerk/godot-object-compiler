@@ -10,6 +10,7 @@
 #include "import_type_db.h"
 #include "init.h"
 #include "init_local_resources.h"
+#include "init_tools.h"
 #include "print_parsed.h"
 #include "print_tranformed.h"
 #include "print_type.h"
