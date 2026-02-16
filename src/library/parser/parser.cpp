@@ -63,6 +63,7 @@ namespace GodotObjectCompiler {
         input_is_path ? Parser::Helpers::remove_macros(read_file(p_input)) : Parser::Helpers::remove_macros(p_input);
     String local_input = strip_known_macro_contents(original_input, stripped_parameters);
     ParserContext context = ParserContext(local_input);
+    context.original_buffer = original_input;
     context.stripped_parameters = stripped_parameters;
     if (input_is_path) {
       context.file_path = p_input;

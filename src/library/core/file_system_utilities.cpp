@@ -39,6 +39,7 @@
 
 #include "core.h"
 #include "library/core/string_utilities.h"
+#include "library/execution_context.h"
 #include "permissions.h"
 #include "string_writer.h"
 
@@ -98,6 +99,7 @@ namespace GodotObjectCompiler {
 
   bool create_dir_recursive(const String& p_path) {
     Permissions::instance()->ensure_is_allowed_write_path(p_path);
+    PRINT_VERBOSE("Creating directories \"%s\"", p_path.c_str());
     return std::filesystem::create_directories(p_path);
   }
 

@@ -18,7 +18,7 @@ function(AUTOGOC TARGET ROOT_DIR)
         message(STATUS "AUTOGOC: Using goc target executable ${GOC_BINARY_DIR}/goc")
 
         add_custom_command(
-                OUTPUT ${BINARY_DIR}/.goc/generated/macros.h
+                OUTPUT bindings
                 COMMAND ${GOC_BINARY_DIR}/goc generate -R=${ROOT_DIR} -P=.goc -C=.goc/cache -G=.goc/generated -I=${INCLUDE_JOINED} -S=${SOURCES_JOINED}
                 WORKING_DIRECTORY ${BINARY_DIR}
                 DEPENDS goc godot-cpp generate_bindings
@@ -26,7 +26,7 @@ function(AUTOGOC TARGET ROOT_DIR)
     elseif (DEFINED ENV{GOC_EXECUTABLE})
         message(STATUS "AUTOGOC: Using goc executable ${GOC_EXECUTABLE}")
         add_custom_command(
-                OUTPUT ${BINARY_DIR}/.goc/generated/macros.h
+                OUTPUT bindings
                 COMMAND $ENV{GOC_EXECUTABLE} generate -R=${ROOT_DIR} -P=.goc -C=.goc/cache -G=.goc/generated -I=${INCLUDE_JOINED} -S=${SOURCES_JOINED}
                 WORKING_DIRECTORY ${BINARY_DIR}
                 DEPENDS godot-cpp generate_bindings
@@ -38,7 +38,7 @@ function(AUTOGOC TARGET ROOT_DIR)
         )
     endif ()
 
-    add_custom_target(goc_generated_files DEPENDS ${BINARY_DIR}/.goc/generated/macros.h)
+    add_custom_target(goc_generated_files DEPENDS bindings)
     add_dependencies(${TARGET} goc_generated_files)
 
     target_include_directories(${TARGET} PRIVATE

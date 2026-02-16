@@ -174,9 +174,18 @@ namespace GodotObjectCompiler {
 
     for (String input_file : *p_context.files_input) {
       if (string_suffix(input_file, ".cpp")) {
-        input_file = input_file.substr(0, input_file.length() - 3) + "h";
-        if (!file_exists(input_file)) {
+        String h_file = input_file.substr(0, input_file.length() - 3) + "h";
+        String hpp_file = input_file.substr(0, input_file.length() - 3) + "hpp";
+        bool h_exists = file_exists(h_file);
+        bool hpp_exists = file_exists(hpp_file);
+        if (!h_exists && !hpp_exists) {
+          PRINT_VERBOSE("No header found for input file \"%s\". Skipping", input_file.c_str());
           continue;
+        }
+        if (h_exists) {
+          input_file = h_file;
+        } else {
+          input_file = hpp_file;
         }
       }
 
@@ -184,16 +193,14 @@ namespace GodotObjectCompiler {
         continue;
       }
 
+      PRINT_VERBOSE("Generating bindings for \"%s\"", input_file.c_str());
+
       TreeSitterParser parser;
       Ref<Namespace> global_namespace = node_new<Namespace>();
       Ref<ParserError> error = parser.parse_file(input_file, global_namespace);
-
-      if (error != ParserError::OK) {
-        continue;
-      }
+      PROG_ERR_COND(error != ParserError::OK, "Failed to parse input file \"%s\"", input_file.c_str());
 
       String relative_path = path_relative(input_file, *p_context.paths_root);
-
       String in_generated_path = path_concat(p_context.paths_generated, relative_path);
       String in_generated_base = path_base(in_generated_path);
       String in_generated_stem = path_stem(in_generated_path);
@@ -231,6 +238,7 @@ namespace GodotObjectCompiler {
       Vector<Results> generate_results;
 
       for (const Ref<Class>& target_class : classes) {
+        PRINT_VERBOSE("Processing class \"%s\"", target_class->qualified_name().c_str());
         Results results;
         results.file_path = input_file;
         results.target_class = target_class;
@@ -245,6 +253,7 @@ namespace GodotObjectCompiler {
 
         auto generated_body_attribute = target_class->body()->find_child<GeneratedBodyAttribute>();
         if (!generated_body_attribute) {
+          PRINT_VERBOSE("No GeneratedBodyAttribute found. Skipping class.");
           continue;
         }
 
@@ -253,11 +262,13 @@ namespace GodotObjectCompiler {
 
         Ref<Node> previous = target_class->get_previous_sibling();
         if (!previous) {
+          PRINT_VERBOSE("No previous sibling found, class cannot have a GodotClassAttribute applied. Skipping class.");
           continue;
         }
 
         Ref<GodotClassAttribute> class_attribute = previous->as<GodotClassAttribute>();
         if (!class_attribute) {
+          PRINT_VERBOSE("Class does not have a GodotClassAttribute applied. Skipping class.");
           continue;
         }
 
@@ -265,22 +276,19 @@ namespace GodotObjectCompiler {
         Ref<Context> class_default_values = node_new<Context>();
         Ref<GeneratorError> class_def_gen_error =
             class_generator.generate_default_attribute_arguments(target_class, class_attribute, class_default_values);
-        if (class_def_gen_error != GeneratorError::OK) {
-          continue;
-        }
+        PROG_ERR_COND(class_def_gen_error != GeneratorError::OK, "Failed to generate default attribute arguments.");
+
         ClassGenerator::merge_default_attribute_arguments(class_attribute, class_default_values);
 
         Ref<GeneratorError> class_gen_error = class_generator.generate(
             target_class, class_attribute, results.generated_body, results.generated_source, results.generated_global);
-        if (class_gen_error != GeneratorError::OK) {
-          continue;
-        }
+
+        PROG_ERR_COND(class_gen_error != GeneratorError::OK, "Failed to generate class.");
 
         Ref<GeneratorError> init_gen_error = class_generator.generate_initialization(
             target_class, class_attribute, results.initialize, results.uninitialize);
-        if (init_gen_error != GeneratorError::OK) {
-          continue;
-        }
+
+        PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class initialization code.")
 
         if (results.initialize->get_child_count() > 0 || results.uninitialize->get_child_count() > 0) {
           register_class_includes->add_child(Writer::Include(input_file));
@@ -290,11 +298,11 @@ namespace GodotObjectCompiler {
 
         Ref<GeneratorError> start_gen_error =
             class_generator.generate_startup(target_class, class_attribute, results.startup, results.shutdown);
-        if (start_gen_error != GeneratorError::OK) {
-          continue;
-        }
+
+        PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class startup code.")
 
         if (!ExecutionContext::instance()->file_modified(input_file)) {
+          PRINT_VERBOSE("Input file \"%s\" was not modified since last read. Skipping.", input_file.c_str());
           continue;
         }
 
@@ -307,14 +315,14 @@ namespace GodotObjectCompiler {
                 Ref<GeneratorError> attr_def_error =
                     generator->generate_default_attribute_arguments(target_class, attribute, default_values);
 
-                if (attr_def_error) {
-                  continue;
-                }
+                PROG_ERR_COND(attr_def_error != GeneratorError::OK, "Failed to generate default attribute arguments.");
 
                 ClassGenerator::merge_default_attribute_arguments(attribute, default_values);
 
                 Ref<GeneratorError> attr_error = generator->generate(target_class, attribute, results.generated_body,
                     results.generated_source, results.generated_global);
+
+                PROG_ERR_COND(attr_error, "Failed to generate attribute code.");
               }
             }
           }
@@ -323,6 +331,7 @@ namespace GodotObjectCompiler {
       }
 
       if (!ExecutionContext::instance()->file_modified(input_file)) {
+        PRINT_VERBOSE("Input file \"%s\" was not modified since last read. Skipping.", input_file.c_str());
         continue;
       }
 

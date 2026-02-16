@@ -62,7 +62,7 @@ namespace GodotObjectCompiler {
         if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") && !string_suffix(file, ".gen.inc")) {
           continue;
         }
-
+        PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
         // if (string_contains(file, "thirdparty") || string_contains(file, ".gen.h") ||
         //     string_contains(file, ".generated.h") || string_contains(file, "godot/platform") ||
         //     string_contains(file, "godot/drivers") || string_contains(file, "godot/tests")) {
@@ -99,9 +99,11 @@ namespace GodotObjectCompiler {
 
               if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
                   type && is_valid_type_target(type)) {
+                PRINT_VERBOSE("TypeDB:\tSaving attribute \"%s\"", node->qualified_name().c_str());
                 ExecutionContext::instance()->get_type_db()->save_type_attribute(type, attr, file);
               }
             } else {
+              PRINT_VERBOSE("TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
               ExecutionContext::instance()->get_type_db()->save_type_data(node, file);
             }
           }

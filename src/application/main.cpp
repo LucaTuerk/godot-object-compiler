@@ -36,12 +36,14 @@
 #include "main.h"
 
 #include "application_context.h"
+#include "build_number.h"
 #include "compiled_resources/res.gen.h"
 #include "library/core/core.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
 #include "library/core/resources.h"
 #include "library/core/string_utilities.h"
+#include "library/core/string_writer.h"
 #include "library/execution_context.h"
 #include "library/parser/parser.h"
 #include "library/type_db.h"
@@ -51,10 +53,9 @@
 using namespace GodotObjectCompiler;
 
 int main(int argc, char* argv[]) {
+  ExecutionContext::instance()->set_error_level(ERROR, FULL);
   ApplicationContext context;
   Resources::instance()->load_pack(&GOC_Resources::Pack);
-
-  ExecutionContext::instance()->set_error_level(ERROR, FULL);
 
   for (int i = 1; i < argc; i++) {
     context.application_arguments.emplace_back(argv[i]);
@@ -99,6 +100,20 @@ int main(int argc, char* argv[]) {
     if (context.project_target == TARGET_GDEXTENSION) {
       ExecutionContext::instance()->add_using("godot");
     }
+
+    auto build_num_file = path_concat(context.paths_goc, "last_goc_build_number.txt");
+    String build_num = format("%d", GOC_BUILD_NUMBER);
+    if (file_exists(build_num_file)) {
+      String last_build_num = read_file(build_num_file);
+      if (last_build_num != build_num) {
+        Clear clear;
+        Ref<ProgramError> error = clear.run(context);
+        APP_ERR_COND(error != ProgramError::OK, "goc file clear due to changed build number failed.")
+      }
+    }
+
+    FileWriter writer(build_num_file);
+    writer.write(build_num);
   }
 
 #ifdef DEV_BUILD
