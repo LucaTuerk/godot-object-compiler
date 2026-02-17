@@ -55,8 +55,7 @@ namespace GodotObjectCompiler {
     PROG_ERR_COND(file_exists(export_dir),
         "A file exists at the export path. Path must point to an empty or non existing directory");
 
-    if (directory_exits(export_dir) &&
-        (!directory_dirs(export_dir).empty() || !directory_files(export_dir).empty())) {
+    if (directory_exits(export_dir) && (!directory_dirs(export_dir).empty() || !directory_files(export_dir).empty())) {
       PROG_ERR(
           "A non empty directory exists at the export path. Path must point to an empty or non existing directory");
     }

@@ -3,7 +3,7 @@ import pathlib
 
 def add_licence_headers(path: pathlib.Path):
     header_template = ''
-    with open('licence_header.txt', 'r') as header:
+    with open('tools/licence_header.txt', 'r') as header:
         header_template = str(header.read())
 
     if len(header_template) == 0:

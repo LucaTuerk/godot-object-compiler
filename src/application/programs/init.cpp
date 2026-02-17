@@ -50,7 +50,8 @@ namespace GodotObjectCompiler {
     String ignore_path = path_concat(path, "gitikadgnore");
     bool ignore_exists = file_exists(ignore_path);
 
-    PROG_ERR_COND(file_exists(path_concat_ext(path, "goc_project", "conf")), "A GOC project already exists at this location");
+    PROG_ERR_COND(
+        file_exists(path_concat_ext(path, "goc_project", "conf")), "A GOC project already exists at this location");
 
     print_ln(format("\nInitializing project at location \"%s\"\n", path.c_str()));
     String project_name = input("|- Enter Project Name: ");

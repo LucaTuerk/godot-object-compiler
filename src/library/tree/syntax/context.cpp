@@ -236,7 +236,7 @@ namespace GodotObjectCompiler {
     _name_lazy = p_reader->read<String, String>("_name");
     _qualified_name_lazy = p_reader->read<String, String>("_qualified_name");
     // TODO: Leads to segfault but needs to be written for correctness
-    _namespaces_names_lazy = string_split(p_reader->read<String, String>("_namespaces_names"),",");
+    _namespaces_names_lazy = string_split(p_reader->read<String, String>("_namespaces_names"), ",");
   }
 
   void NamedContext::write_to(IStructuredWriter* p_writer) {

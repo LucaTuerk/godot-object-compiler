@@ -34,6 +34,7 @@
 /**************************************************************************/
 
 #include "execution_context.h"
+
 #include <algorithm>
 
 #include "attribute_db.h"
@@ -144,13 +145,9 @@ namespace GodotObjectCompiler {
     return config.write_to_file(p_path);
   }
 
-  void ExecutionContext::clear_generated_from() {
-    _generated_from.clear();
-  }
+  void ExecutionContext::clear_generated_from() { _generated_from.clear(); }
 
-  void ExecutionContext::clear_last_modified_times() {
-    _last_modified_times.clear();
-  }
+  void ExecutionContext::clear_last_modified_times() { _last_modified_times.clear(); }
 
   void ExecutionContext::clean_orphan_generated_files() {
     auto itr = _generated_from.begin();
@@ -241,28 +238,19 @@ namespace GodotObjectCompiler {
     return modified;
   }
 
+  void ExecutionContext::set_usings(const Vector<String>& p_value) { _usings = p_value; }
 
-  void ExecutionContext::set_usings(const Vector<String>& p_value) {
-    _usings = p_value;
-  }
+  const Vector<String>& ExecutionContext::get_usings() { return _usings; }
 
-  const Vector<String>& ExecutionContext::get_usings() {
-    return _usings;
-  }
-
-  void ExecutionContext::add_using(const String& p_value) {
-    _usings.push_back(p_value);
-  }
+  void ExecutionContext::add_using(const String& p_value) { _usings.push_back(p_value); }
 
   void ExecutionContext::remove_using(const String& p_value) {
-      auto itr = std::find(_usings.begin(), _usings.end(), p_value);
-      if (itr != _usings.end()) {
-          _usings.erase(itr);
-      }
+    auto itr = std::find(_usings.begin(), _usings.end(), p_value);
+    if (itr != _usings.end()) {
+      _usings.erase(itr);
+    }
   }
 
-  void ExecutionContext::clear_usings() {
-    _usings.clear();
-  }
+  void ExecutionContext::clear_usings() { _usings.clear(); }
 
 }

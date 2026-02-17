@@ -34,9 +34,6 @@
 /**************************************************************************/
 #pragma once
 
-#include "tree_sitter/api.h"
-#include "tree-sitter-cpp.h"
-
 #include <algorithm>
 #include <chrono>
 #include <filesystem>
@@ -58,3 +55,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+#include "tree-sitter-cpp.h"
+#include "tree_sitter/api.h"

@@ -37,6 +37,7 @@
 #include "program.h"
 
 namespace GodotObjectCompiler {
+
   class InitTools : public IProgram {
     PROJECTLESS_PROGRAM(InitTools, "init/tools")
 
@@ -44,4 +45,5 @@ namespace GodotObjectCompiler {
 
     Ref<ProgramError> run(ApplicationContext& p_context) override;
   };
+
 }
