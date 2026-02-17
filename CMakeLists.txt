@@ -34,8 +34,18 @@ add_custom_command(TARGET ${EXEC_NAME}
         COMMAND ${CMAKE_COMMAND} -DFILE=${BUILD_NUM_FILE} -P ${CMAKE_CURRENT_LIST_DIR}/tools/automatic_build_number.cmake
 )
 
-target_include_directories(${EXEC_NAME} PRIVATE src/)
-target_include_directories(${EXEC_NAME_TEST} PRIVATE src/ tests/)
+target_include_directories(${EXEC_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/thirdparty/tree-sitter/lib/include
+        ${CMAKE_SOURCE_DIR}/thirdparty/tree-sitter-cpp/bindings/c
+)
+
+target_include_directories(${EXEC_NAME_TEST} PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/tests
+        ${CMAKE_SOURCE_DIR}/thirdparty/tree-sitter/lib/include
+        ${CMAKE_SOURCE_DIR}/thirdparty/tree-sitter-cpp/bindings/c
+)
 
 target_link_libraries(${EXEC_NAME} PRIVATE
         tree-sitter
