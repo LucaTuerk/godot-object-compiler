@@ -44,7 +44,7 @@ namespace GodotObjectCompiler {
       return false;
     }
 
-    ProgramPath path = string_split(p_program->program_name(), "/");
+    const ProgramPath path = string_split(p_program->program_name(), "/");
     _programs[path] = p_program;
     return true;
   }
@@ -53,10 +53,9 @@ namespace GodotObjectCompiler {
       const Vector<String>& p_application_arguments, Vector<String>& r_program_arguments) {
     Ref<IProgram> found_program;
 
-    Size current_overlap = 0;
     for (const auto& [path, program] : _programs) {
       Size matching = overlap(path, p_application_arguments);
-      if (matching == path.size() && matching > current_overlap) {
+      if (Size current_overlap = 0; matching == path.size() && matching > current_overlap) {
         found_program = program;
         r_program_arguments = {};
 

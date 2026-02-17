@@ -37,6 +37,7 @@
 
 #include "application/application_context.h"
 #include "library/core/core.h"
+#include "library/core/permissions.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/generator/attribute_parameter_type.h"
@@ -71,9 +72,10 @@ namespace GodotObjectCompiler {
 
   Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
     UNUSED(p_context);
+    Permissions::instance()->add_write_path("resources");
 
-    String header_path = "./library_godot/generated_assumptions/parameter_types.h";
-    String source_path = "./library_godot/generated_assumptions/parameter_types.cpp";
+    String header_path = "src/library_godot/generated_assumptions/parameter_types.h";
+    String source_path = "src/library_godot/generated_assumptions/parameter_types.cpp";
 
     Vector<Ref<IAttributeParameterType>> parameter_types = {
         make_ref<GodotClassTypeParameterType>(),

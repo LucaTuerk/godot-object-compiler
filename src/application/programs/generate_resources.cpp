@@ -74,7 +74,7 @@ namespace GodotObjectCompiler {
     // Generate macro help docs
     for (const String& macro : ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
       String doc_file = path_concat_ext("resources/doc", macro, "txt");
-      ensure_file_exists(doc_file, "No documentation available");
+      write_initial_file_content(doc_file, "No documentation available");
 
       Vector<Ref<IAttributeParameterType>> params =
           ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
@@ -88,11 +88,11 @@ namespace GodotObjectCompiler {
         auto param_doc_dir = path_concat("resources/doc", param->get_return_type());
 
         create_dir_recursive(param_doc_dir);
-        ensure_file_exists(param_doc_file, "No documentation available");
+        write_initial_file_content(param_doc_file, "No documentation available");
 
         for (const auto& value_name : param->get_value_names()) {
           auto value_doc_path = path_concat_ext(param_doc_dir, value_name, "txt");
-          ensure_file_exists(value_doc_path, "No documentation available");
+          write_initial_file_content(value_doc_path, "No documentation available");
         }
       }
     }

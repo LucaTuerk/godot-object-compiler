@@ -102,10 +102,9 @@ int main(int argc, char* argv[]) {
     }
 
     auto build_num_file = path_concat(context.paths_goc, "last_goc_build_number.txt");
-    String build_num = format("%d", GOC_BUILD_NUMBER);
+    String build_num = GOC_BUILD_NUMBER;
     if (file_exists(build_num_file)) {
-      String last_build_num = read_file(build_num_file);
-      if (last_build_num != build_num) {
+      if (String last_build_num = read_file(build_num_file); last_build_num != build_num) {
         Clear clear;
         Ref<ProgramError> error = clear.run(context);
         APP_ERR_COND(error != ProgramError::OK, "goc file clear due to changed build number failed.")
@@ -116,12 +115,7 @@ int main(int argc, char* argv[]) {
     writer.write(build_num);
   }
 
-#ifdef DEV_BUILD
-  Permissions::instance()->add_write_path("resources");
-#endif
-
-  Ref<ProgramError> error = program->run(context);
-  if (error != ProgramError::OK) {
+  if (Ref<ProgramError> error = program->run(context); error != ProgramError::OK) {
     return 1;
   }
 

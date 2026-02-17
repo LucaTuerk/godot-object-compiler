@@ -45,6 +45,7 @@
 namespace GodotObjectCompiler {
 
   bool ApplicationContext::set_from_project(const Project& p_project) {
+    UNUSED(p_project);
     return true;
     // project_name = p_project.project_name;
     // project_target = p_project.project_target;

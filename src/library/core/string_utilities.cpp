@@ -36,6 +36,7 @@
 #include "string_utilities.h"
 
 #include "core.h"
+#include "file_system_utilities.h"
 #include "string_writer.h"
 
 namespace GodotObjectCompiler {
@@ -43,7 +44,7 @@ namespace GodotObjectCompiler {
   String string_replace(const String& p_target, const String& p_search_str, const String& p_replace_with) {
     std::stringstream strstr;
 
-    Size length = p_search_str.length();
+    const Size length = p_search_str.length();
     Size start = 0;
     Size end = p_target.find(p_search_str);
 
@@ -59,15 +60,15 @@ namespace GodotObjectCompiler {
   }
 
   String extract_lines(const String& p_content, Size p_start_line, Size p_end_line, Size p_highlight_line) {
-    std::stringstream cntstr(p_content);
-    std::stringstream trgstr;
+    std::stringstream content_stream(p_content);
+    std::stringstream target_stream;
 
     String line;
     Size current = 0;
-    while (std::getline(cntstr, line)) {
+    while (std::getline(content_stream, line)) {
       current++;
       if (current >= p_start_line && current <= p_end_line) {
-        trgstr << current << (current == p_highlight_line ? "\t|>\t" : "\t|\t") << line << '\n';
+        target_stream << current << (current == p_highlight_line ? "\t|>\t" : "\t|\t") << line << '\n';
       }
 
       if (current >= p_end_line) {
@@ -75,7 +76,7 @@ namespace GodotObjectCompiler {
       }
     }
 
-    return trgstr.str();
+    return target_stream.str();
   }
 
   String string_trim(const String& p_content) { return string_trim_left(string_trim_right(p_content)); }
@@ -259,17 +260,12 @@ namespace GodotObjectCompiler {
   }
 
   bool string_only_contains(const String& p_content, char p_char) {
-    if (p_content.length() == 0) {
+    if (p_content.empty()) {
       return false;
     }
 
-    for (char c : p_content) {
-      if (c != p_char) {
-        return false;
-      }
-    }
-
-    return true;
+    return std::all_of(p_content.begin(), p_content.end(), [p_char](char c) { return c == p_char; });
+    ;
   }
 
   String string_vector_combine(const Vector<String>& p_vector, String p_delimiter) {
@@ -301,6 +297,9 @@ namespace GodotObjectCompiler {
   }
 
   Vector<String> read_lines(const String& p_path) {
+    String absolute = path_absolute(p_path);
+    PANIC_COND(!file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
+
     Vector<String> result;
     std::ifstream ifs{p_path};
 

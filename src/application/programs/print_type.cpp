@@ -44,7 +44,7 @@ namespace GodotObjectCompiler {
         "No type name provided. Please specify one or more types by their fully qualified name.")
 
     for (const String& name : p_context.program_arguments) {
-      Ref<Node> type_data = ExecutionContext::instance()->get_type_db()->get_type_data(name);
+      const Ref<Node> type_data = ExecutionContext::instance()->get_type_db()->get_type_data(name);
       PROG_ERR_COND(!type_data, "Unknown type name: %s", name.c_str());
       print_ln(type_data->pretty_print());
     }

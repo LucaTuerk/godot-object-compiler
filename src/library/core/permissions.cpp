@@ -49,6 +49,10 @@ namespace GodotObjectCompiler {
 
   bool Permissions::is_allowed_write_path(const String& p_path) {
     String absolute = path_absolute(p_path);
+    if (!path_is_descendant(path_cwd(), absolute)) {
+      return false;
+    }
+
     return std::find_if(allowed_write_paths.begin(), allowed_write_paths.end(), [absolute](const String& allowed) {
       return string_prefix(absolute, allowed);
     }) != allowed_write_paths.end();

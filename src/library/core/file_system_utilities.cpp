@@ -46,69 +46,72 @@
 namespace GodotObjectCompiler {
 
   String read_file(const String& p_path) {
+    const String absolute = path_absolute(p_path);
+    PRINT_VERBOSE("Reading file \"%s\"", absolute.c_str());
+    PANIC_COND(!file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
     std::ifstream ifs;
-    // prepare f to throw if failbit gets set
-    std::ios_base::iostate exceptionMask = ifs.exceptions() | std::ios::failbit;
-    ifs.exceptions(exceptionMask);
-
-    try {
-      ifs.open(p_path);
-    } catch (std::ios_base::failure& e) {
-      std::cerr << p_path << ": " << e.what() << '\n';
-      return "";
-    }
-
-    std::string str(std::istreambuf_iterator<char>{ifs}, {});
+    ifs.open(absolute);
+    PANIC_COND(!ifs.is_open() || ifs.bad() || ifs.fail(), "Failed to open file \"%s\"", absolute.c_str());
+    std::string str(std::istreambuf_iterator{ifs}, {});
     return str;
   }
 
   void write_file(const String& p_path, const String& p_content) {
-    Permissions::instance()->ensure_is_allowed_write_path(p_path);
-    std::ofstream ofs(p_path.c_str(), std::ios::out | std::ios::binary);
-    ofs.write(p_content.c_str(), p_content.size());
+    const String absolute = path_absolute(p_path);
+    PRINT_VERBOSE("Writing file \"%s\"", absolute.c_str());
+    Permissions::instance()->ensure_is_allowed_write_path(absolute);
+
+    std::ofstream ofs(absolute.c_str(), std::ios::out | std::ios::binary);
+    ofs.write(p_content.c_str(), static_cast<long>(p_content.size()));
   }
 
-  bool file_exists(const String& p_path) { return std::filesystem::exists(p_path); }
+  bool file_exists(const String& p_path) {
+    const String absolute = path_absolute(p_path);
+    return std::filesystem::exists(absolute);
+  }
 
   bool remove_file(const String& p_path) {
-    Permissions::instance()->ensure_is_allowed_write_path(p_path);
-    return std::filesystem::remove(p_path.c_str()) == 0;
+    const String absolute = path_absolute(p_path);
+    PRINT_VERBOSE("Deleting file \"%s\"", absolute.c_str());
+    Permissions::instance()->ensure_is_allowed_write_path(absolute);
+    return std::filesystem::remove(absolute.c_str()) == 0;
   }
 
   bool remove(const String& p_path) {
-    Permissions::instance()->ensure_is_allowed_write_path(p_path);
-    return std::filesystem::remove_all(p_path.c_str()) > 0;
+    const String absolute = path_absolute(p_path);
+    PRINT_VERBOSE("Deleting \"%s\"", absolute.c_str());
+    Permissions::instance()->ensure_is_allowed_write_path(absolute);
+    return std::filesystem::remove_all(absolute.c_str()) > 0;
   }
 
-  void ensure_file_exists(const String& p_path, const String& p_initial_content) {
-    if (file_exists(p_path)) {
+  void write_initial_file_content(const String& p_path, const String& p_initial_content) {
+    const String absolute = path_absolute(p_path);
+    if (file_exists(absolute)) {
       return;
     }
-
-    try {
-      FileWriter writer(p_path);
-      writer.write(p_initial_content);
-    } catch (std::exception& e) {
-      PANIC("Failed to write file: %s", e.what());
-    }
+    FileWriter writer(absolute);
+    writer.write(p_initial_content);
   }
 
   bool directory_exits(const String& p_path) {
-    return std::filesystem::exists(p_path) && std::filesystem::is_directory(p_path);
+    const String absolute = path_absolute(p_path);
+    return std::filesystem::exists(absolute) && std::filesystem::is_directory(absolute);
   }
 
   bool create_dir_recursive(const String& p_path) {
-    Permissions::instance()->ensure_is_allowed_write_path(p_path);
-    PRINT_VERBOSE("Creating directories \"%s\"", p_path.c_str());
-    return std::filesystem::create_directories(p_path);
+    const String absolute = path_absolute(p_path);
+    PRINT_VERBOSE("Creating directories \"%s\"", absolute.c_str());
+    Permissions::instance()->ensure_is_allowed_write_path(absolute);
+    return std::filesystem::create_directories(absolute);
   }
 
   Size file_write_time(const String& p_path) {
-    if (!file_exists(p_path)) {
+    const String absolute = path_absolute(p_path);
+    if (!file_exists(absolute)) {
       return 0;
     }
 
-    auto file_time = std::filesystem::last_write_time(p_path);
+    auto file_time = std::filesystem::last_write_time(absolute);
     auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
         file_time - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now());
     return std::chrono::system_clock::to_time_t(sctp);
@@ -172,24 +175,26 @@ namespace GodotObjectCompiler {
   String path_stem(const String& p_path) { return std::filesystem::path(p_path).stem().generic_string(); }
 
   Vector<String> directory_files(const String& p_path) {
+    const String absolute = path_absolute(p_path);
+    PANIC_COND(!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"", absolute.c_str());
+
     Vector<String> result;
-    std::filesystem::directory_iterator iter(p_path);
+    std::filesystem::directory_iterator iter(absolute);
     for (const auto& entry : iter) {
       if (entry.is_regular_file()) {
         result.push_back(entry.path().string());
       }
     }
+
     return result;
   }
 
   Vector<String> directory_files_recursive(const String& p_path) {
-    if (!std::filesystem::is_directory(p_path)) {
-      fmt_print_err(p_path + " is not a directory!");
-      return {};
-    }
+    const String absolute = path_absolute(p_path);
+    PANIC_COND(!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"", absolute.c_str());
 
     Vector<String> result;
-    std::filesystem::recursive_directory_iterator iter(p_path);
+    std::filesystem::recursive_directory_iterator iter(absolute);
     for (const auto& entry : iter) {
       if (entry.is_regular_file()) {
         result.push_back(entry.path().string());
@@ -200,8 +205,11 @@ namespace GodotObjectCompiler {
   }
 
   Vector<String> directory_dirs(const String& p_path) {
+    const String absolute = path_absolute(p_path);
+    PANIC_COND(!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"", absolute.c_str());
+
     Vector<String> result;
-    std::filesystem::directory_iterator iter(p_path);
+    std::filesystem::directory_iterator iter(absolute);
     for (const auto& entry : iter) {
       if (entry.is_directory()) {
         result.push_back(entry.path().string());
@@ -211,8 +219,11 @@ namespace GodotObjectCompiler {
   }
 
   Vector<String> directory_entries(const String& p_path) {
+    const String absolute = path_absolute(p_path);
+    PANIC_COND(!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"", absolute.c_str());
+
     Vector<String> result;
-    std::filesystem::directory_iterator iter(p_path);
+    std::filesystem::directory_iterator iter(absolute);
     for (const auto& entry : iter) {
       if (entry.is_regular_file() || entry.is_directory()) {
         result.push_back(entry.path().string());
@@ -230,15 +241,13 @@ namespace GodotObjectCompiler {
   bool copy_file(const String& p_source, const String& p_destination) {
     auto source = path_absolute(p_source);
     auto destination = path_absolute(p_destination);
-
+    PRINT_VERBOSE("Copying file \"%s\" to \"%s\"", source.c_str(), destination.c_str());
+    PANIC_COND(source.empty(), "Empty source file path on file copy.");
+    PANIC_COND(!file_exists(source), "Trying to copy non-existing file \"%s\"", source.c_str());
+    PANIC_COND(destination.empty(), "Empty destination file path on file copy.");
     String destination_base = path_base(destination);
-    if (!directory_exits(destination_base) && !create_dir_recursive(destination_base)) {
-      return false;
-    }
-
-    if (source.empty() || destination.empty()) {
-      return false;
-    }
+    PANIC_COND(!directory_exits(destination_base) && !create_dir_recursive(destination_base),
+        "Target directory \"%s\" does not exist and could not be created on file copy", destination_base.c_str());
 
     Permissions::instance()->ensure_is_allowed_write_path(destination);
     return std::filesystem::copy_file(source, destination, std::filesystem::copy_options::update_existing);

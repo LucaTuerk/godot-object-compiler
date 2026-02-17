@@ -46,4 +46,11 @@ namespace GodotObjectCompiler {
     Ref<ProgramError> run(ApplicationContext& p_context) override;
   };
 
+  class BuildNum : public IProgram {
+    PROJECTLESS_PROGRAM(BuildNum, "build_num")
+
+    public:
+    Ref<ProgramError> run(ApplicationContext& p_context) override;
+  };
+
 }  // GodotObjectCompiler
