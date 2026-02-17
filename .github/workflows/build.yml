@@ -24,3 +24,7 @@ jobs:
           cmake ..
           make
           cd ..
+
+      - name: Run Tests
+        run: |
+          ./build/goc_tests

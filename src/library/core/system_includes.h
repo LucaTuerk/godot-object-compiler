@@ -35,7 +35,7 @@
 #pragma once
 
 #include "tree_sitter/api.h"
-#include "tree_sitter/tree-sitter-cpp.h"
+#include "tree-sitter-cpp.h"
 
 #include <algorithm>
 #include <chrono>
