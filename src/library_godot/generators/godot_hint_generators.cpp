@@ -36,6 +36,7 @@
 #include "godot_hint_generators.h"
 
 #include "godot_generator_utils.h"
+#include "library_godot/generated_assumptions/parameter_types.h"
 
 namespace GodotObjectCompiler {
 

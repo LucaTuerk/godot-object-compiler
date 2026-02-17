@@ -63,12 +63,6 @@ namespace GodotObjectCompiler {
           continue;
         }
         PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
-        // if (string_contains(file, "thirdparty") || string_contains(file, ".gen.h") ||
-        //     string_contains(file, ".generated.h") || string_contains(file, "godot/platform") ||
-        //     string_contains(file, "godot/drivers") || string_contains(file, "godot/tests")) {
-        //   // make this configurable
-        //   continue;
-        // }
 
         if (!ExecutionContext::instance()->file_modified(file)) {
           continue;

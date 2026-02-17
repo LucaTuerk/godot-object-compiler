@@ -47,7 +47,7 @@ namespace GodotObjectCompiler {
     PROG_ERR_COND(p_context.program_arguments.size() != 1,
         "Invalid argument count for program %s. Expected 1 path argument.", get_type_static().c_str());
 
-    auto path = path_absolute(p_context.program_arguments[0]);
+    const auto path = path_absolute(p_context.program_arguments[0]);
 
     PROG_ERR_COND(
         !file_exists(path), "Invalid path argument for program %s. File does not exist.", get_type_static().c_str());

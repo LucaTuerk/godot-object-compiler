@@ -37,6 +37,7 @@
 
 #include "godot_generator_utils.h"
 #include "library/tree/predicates.h"
+#include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler {
 

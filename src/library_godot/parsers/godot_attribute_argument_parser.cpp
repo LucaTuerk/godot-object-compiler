@@ -36,6 +36,7 @@
 #include "godot_attribute_argument_parser.h"
 
 #include "library/core/string_utilities.h"
+#include "library/tree/syntax/attribute.h"
 #include "library/tree/syntax/identifier.h"
 #include "library_godot/attributes/string_literal_parameter_type.h"
 

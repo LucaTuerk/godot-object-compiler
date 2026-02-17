@@ -35,8 +35,6 @@
 
 #pragma once
 #include "core.h"
-#include "library/tree/syntax/node.h"
-#include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler {
 

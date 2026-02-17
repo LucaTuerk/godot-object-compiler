@@ -1,0 +1,26 @@
+name: Build
+on:
+  push:
+jobs:
+  build-project:
+    name: Build Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Install Packages
+        run: |
+          sudo apt update
+          sudo apt install cmake -y
+          sudo apt install mold -y
+
+      - name: Build Project
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+          cd ..

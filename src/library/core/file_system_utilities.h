@@ -52,7 +52,7 @@ namespace GodotObjectCompiler {
 
   void write_file(const String& p_path, const String& p_content);
 
-  void ensure_file_exists(const String& p_path, const String& p_initial_content);
+  void write_initial_file_content(const String& p_path, const String& p_initial_content);
 
   bool create_dir_recursive(const String& p_path);
 

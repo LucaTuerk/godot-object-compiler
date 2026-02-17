@@ -67,14 +67,11 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context) {
-    if (!AssumedGodotTypes::validate_assumptions() || !AssumedParameterValues::validate_assumptions()) {
-      return node_new<ProgramError>(ERROR,
-          "Failed to validate some assumptions on available Godot types and macros, probably because the TypeDB "
-          "generator has not found the relevant files.\n\n"
-          "For modules please add the godot source to the GOC projects godot include paths.\n"
-          "For gdextensions please add the godot-cpp generated includes to the GOC projects godot include paths.\n");
-    }
-
+    PROG_ERR_COND(!AssumedGodotTypes::validate_assumptions() || !AssumedParameterValues::validate_assumptions(),
+        "Failed to validate some assumptions on available Godot types and macros, probably because the TypeDB "
+        "generator has not found the relevant files.\n\n"
+        "For modules please add the godot source to the GOC projects godot include paths.\n"
+        "For gdextensions please add the godot-cpp generated includes to the GOC projects godot include paths.\n");
     PROG_ERR_COND(!p_context.paths_root.has_value(), "No project root path specified. Cannot generate bindings.");
     PROG_ERR_COND(!p_context.files_input.has_value(), "No input files specified. Cannot generate bindings.");
 
@@ -100,9 +97,6 @@ namespace GodotObjectCompiler {
     register_types_header->add_child(Writer::PragmaOnce());
 
     switch (p_context.project_target) {
-      case TARGET_MODULE:
-        return node_new<ProgramError>(ERROR, "Unimplemented");
-        break;
       case TARGET_GDEXTENSION:
         register_types_header->add_children({
             Writer::SystemInclude("godot_cpp/godot.hpp"),
@@ -110,6 +104,12 @@ namespace GodotObjectCompiler {
         });
         register_types_source->add_children({Writer::SystemInclude("gdextension_interface.h"),
             Writer::SystemInclude("godot_cpp/core/class_db.hpp"), Writer::SystemInclude("godot_cpp/core/defs.hpp")});
+        break;
+      case TARGET_MODULE:
+        // This should not be reachable as project target can currently not be changed.
+        // If implemented the above godot-cpp includes need to be changed to godot internal
+        // includes for this case
+        PANIC("UNIMPLEMENTED");
         break;
     }
 

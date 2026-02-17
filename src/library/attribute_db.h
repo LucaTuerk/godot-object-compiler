@@ -38,6 +38,7 @@
 
 namespace GodotObjectCompiler {
 
+  class Attribute;
   class ClassGenerator;
 
   enum AttributeParameterType {
