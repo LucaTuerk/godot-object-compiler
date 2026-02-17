@@ -1,5 +1,5 @@
 
-function(AUTOGOC TARGET ROOT_DIR)
+function(target_autogoc TARGET ROOT_DIR)
     get_target_property(SOURCE_DIR ${TARGET} SOURCE_DIR)
     get_target_property(BINARY_DIR ${TARGET} BINARY_DIR)
     get_target_property(SOURCES ${TARGET} SOURCES)

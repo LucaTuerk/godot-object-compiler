@@ -142,7 +142,7 @@ namespace GodotObjectCompiler {
     String virtual_name = p_target_function->name();
     String virtual_caller_name = string_prefix(p_target_function->name(), "_")
         ? p_target_function->name().substr(1)
-        : format("%_virtual", p_target_function->name().c_str());
+        : format("%s_virtual", p_target_function->name().c_str());
 
     // clang-format off
       Ref<Arguments> arguments;
