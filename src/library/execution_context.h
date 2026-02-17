@@ -153,4 +153,3 @@ namespace GodotObjectCompiler {
 #define PRINT_INFO(...) PRINT_LEVEL(INFO, __VA_ARGS__)
 
 #define PRINT_VERBOSE(...) PRINT_LEVEL(VERBOSE, __VA_ARGS__)
-

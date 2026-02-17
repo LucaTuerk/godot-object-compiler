@@ -2076,5 +2076,6 @@ namespace GOC_Resources
   }
   ;
 }
+
 // clang-format on
 // NOLINTEND

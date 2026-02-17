@@ -84,11 +84,12 @@ namespace GodotObjectCompiler {
 
 }
 
-#define PROG_ERR(...) \
-  return make_ref<ProgramError>(ERROR, format(__VA_ARGS__));
+#define PROG_ERR(...) return make_ref<ProgramError>(ERROR, format(__VA_ARGS__));
 
 #define PROG_ERR_COND(condition, ...) \
-  if((condition)) {PROG_ERR(__VA_ARGS__)}
+  if ((condition)) {                  \
+    PROG_ERR(__VA_ARGS__)             \
+  }
 
 #define PROGRAM(type, name)                                       \
  public:                                                          \

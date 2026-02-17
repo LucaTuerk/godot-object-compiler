@@ -193,7 +193,8 @@ namespace GodotObjectCompiler {
   void TypeDB::save_type_attribute(
       const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute, const String& p_generated_from) const {
     const String qualified_name = p_type->mangled_name();
-    const String path = _get_attribute_cache_file_path(qualified_name, p_attribute->get_type(), CacheType::READWRITE_CACHE);
+    const String path =
+        _get_attribute_cache_file_path(qualified_name, p_attribute->get_type(), CacheType::READWRITE_CACHE);
 
     if (const String base = path_base(path); !directory_exits(base) && !create_dir_recursive(base)) {
       return;
