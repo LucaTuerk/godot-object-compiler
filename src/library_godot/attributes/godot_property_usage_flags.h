@@ -47,7 +47,7 @@ namespace GodotObjectCompiler {
   };
 
   class GodotPropertyUsageFlagsParameterType : public IAttributeParameterType {
-    PARAM_TYPE(GodotPropertyUsageFlagsParameterType);
+    PARAM_TYPE(GodotPropertyUsageFlagsParameterType, GodotPropertyUsageFlagsArgument);
 
    public:
 
@@ -58,8 +58,6 @@ namespace GodotObjectCompiler {
     Vector<String> get_value_names() override;
 
     Vector<Argument> get_arguments() override;
-
-    Ref<GodotObjectCompiler::Argument> create_argument() override;
 
     bool get_godot_usage_flag_for_value_name(const String& p_name, String& r_usage_flag);
 

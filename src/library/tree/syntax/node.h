@@ -57,14 +57,17 @@ namespace GodotObjectCompiler {
       return true;
     }
 
-    virtual Ref<Node> create() { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
+    virtual Ref<Node> create() const { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
 
     static String get_type_static() { return "Node"; }
 
     Node() = default;
     virtual ~Node() = default;
 
-    Ref<Node> clone();
+    Ref<Node> clone() const;
+
+    template <typename T>
+    Ref<T> clone() const;
 
     virtual void write_to(IStructuredWriter* p_writer);
     virtual void read_from(IStructuredReader* p_reader);
@@ -73,6 +76,8 @@ namespace GodotObjectCompiler {
     bool has_next_sibling() const;
     bool has_previous_sibling() const;
 
+    void set_tag(const String& p_tag);
+    String get_tag() const;
     String pretty_print() const;
     String print_pretty_and_get_child_line(const Ref<Node>& p_child, Size& p_line) const;
 
@@ -114,6 +119,7 @@ namespace GodotObjectCompiler {
     WeakRef<Context> _parent;
     UID _id = INVALID_ID;
     Index _index = INVALID_INDEX;
+    String _tag;
 
     friend class NodeDB;
     friend class Context;
@@ -166,7 +172,7 @@ GodotObjectCompiler::Ref<T> GodotObjectCompiler::INodeReader::read_from_file(con
   virtual String get_type() const override { return #type; }                                               \
   static String get_type_static() { return #type; }                                                        \
   static Ref<Node> create_static() { return ExecutionContext::instance()->get_node_db()->create<type>(); } \
-  virtual Ref<Node> create() override { return type::create_static(); }                                    \
+  virtual Ref<Node> create() const override { return type::create_static(); }                                    \
   static inline bool __registered__##type##__ =                                                            \
       ExecutionContext::instance()->get_node_db()->register_node_constructor(                              \
           #type, &GodotObjectCompiler::default_construct<type>);

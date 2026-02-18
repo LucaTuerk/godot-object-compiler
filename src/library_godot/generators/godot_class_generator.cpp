@@ -53,10 +53,8 @@ namespace GodotObjectCompiler {
         "Could not determine GodotModuleInitializationLevelArgument identifier.");
 
     const String init_level_name = init_level_identifier->name;
-    Ref<GodotModuleInitializationLevelParameterType> init_level_type =
-        ExecutionContext::instance()
-            ->get_attribute_db()
-            ->get_parameter_type<GodotClassAttribute, GodotModuleInitializationLevelParameterType>();
+    const Ref<GodotModuleInitializationLevelParameterType> init_level_type =
+        GodotModuleInitializationLevelParameterType::instance();
 
     String godot_init_level;
     if (!init_level_type->get_godot_init_level_for_value_name(init_level_name, godot_init_level)) {
@@ -68,22 +66,20 @@ namespace GodotObjectCompiler {
     GEN_ERROR_COND(!class_type_identifier, p_target_class, "Could not determine GodotClassTypeArgument identifier.");
 
     const String class_type_name = class_type_identifier->name;
-    const Ref<GodotClassTypeParameterType> class_type_type =
-        ExecutionContext::instance()
-            ->get_attribute_db()
-            ->get_parameter_type<GodotClassAttribute, GodotClassTypeParameterType>();
+    const Ref<GodotClassTypeParameterType> class_type_type = GodotClassTypeParameterType::instance();
 
     if (String godot_registration_macro;
         class_type_type->get_macro_for_value_name(class_type_name, godot_registration_macro)) {
       const Ref<Context> if_clause =
-          Writer::Spaces({Writer::Text(format("if (p_level == %s) ", godot_init_level.c_str()))});
-      const Ref<Body> body = if_clause->build_child<Body>();
-      p_initialize_content->add_child(if_clause);
+          Output::Spaces({Output::Text(format("if (p_level == %s) ", godot_init_level.c_str()))});
+
+      const Ref<Body> condition_body =
+          get_if_body(p_initialize_content, format("p_level == %s", godot_init_level.c_str()));
       // clang-format off
-      body->add_child(build<Function>().with_children({
+      condition_body->add_child(build<Function>().with_children({
         build<Identifier>(godot_registration_macro),
-        build<Arguments>().with_child(build<Argument>().with_child(Writer::Text(p_target_class->qualified_name()))),
-      }).with_child(Writer::Semicolon()));
+        build<Arguments>().with_child(build<Argument>().with_child(Output::Text(p_target_class->qualified_name()))),
+      }).with_child(Output::Semicolon()));
       // clang-format on
     }
     return GeneratorError::OK;
@@ -138,21 +134,28 @@ namespace GodotObjectCompiler {
     Ref<Function> gd_class = build<Function>().with_children({
       build<Identifier>(AssumedGodotTypes::GDCLASS().qualified_name),
       build<Arguments>().with_children({
-        build<Argument>().with_child(Writer::Text(p_target_class->name())),
-        build<Argument>().with_child(Writer::Text(bases[0])),
+        build<Argument>().with_child(Output::Text(p_target_class->name())),
+        build<Argument>().with_child(Output::Text(bases[0])),
       })
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
     // clang-format on
 
-    p_generated_body->add_child(gd_class);
-    p_generated_body->add_child(Writer::Text("public:"));
-    const Ref<Body> _;
-    get_or_create_property_names_body(p_target_class, p_generated_body);
-    get_or_create_function_names_body(p_target_class, p_generated_body);
-    get_or_create_signal_names_body(p_target_class, p_generated_body);
-    p_generated_body->add_child(Writer::Text("private:"));
+    p_generated_body->add_children({
+        gd_class,
+        build<AccessSpecifier>(AccessSpecifier::PUBLIC),
+        build<Context>().with_tag("public_members"),
+        build<AccessSpecifier>(AccessSpecifier::PROTECTED),
+        build<Context>().with_tag("protected_members"),
+        build<AccessSpecifier>(AccessSpecifier::PRIVATE),
+        build<Context>().with_tag("private_members"),
+    });
 
-    get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+    get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+    get_notification_body(p_target_class, p_generated_body, p_generated_sources);
+    get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+    get_property_names_body(p_target_class, p_generated_body);
+    get_function_names_body(p_target_class, p_generated_body);
+    get_signal_names_body(p_target_class, p_generated_body);
 
     return GeneratorError::OK;
   }

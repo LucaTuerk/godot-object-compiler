@@ -45,7 +45,7 @@ namespace GodotObjectCompiler {
   };
 
   class GodotModuleInitializationLevelParameterType : public IAttributeParameterType {
-    PARAM_TYPE(GodotModuleInitializationLevelParameterType)
+    PARAM_TYPE(GodotModuleInitializationLevelParameterType, GodotModuleInitializationLevelArgument)
 
    public:
 
@@ -54,8 +54,6 @@ namespace GodotObjectCompiler {
     Vector<String> get_value_names() override;
 
     Vector<Argument> get_arguments() override;
-
-    Ref<GodotObjectCompiler::Argument> create_argument() override;
 
     bool get_godot_init_level_for_value_name(const String& p_value_name, String& r_godot_init_level);
 

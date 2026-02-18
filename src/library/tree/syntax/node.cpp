@@ -43,8 +43,9 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<Node> Node::clone() {
+  Ref<Node> Node::clone() const {
     if (Ref<Node> new_node = create(); copy_to(new_node)) {
+      new_node->_tag = _tag;
       return new_node;
     } else {
       return nullptr;
@@ -71,6 +72,14 @@ namespace GodotObjectCompiler {
   bool Node::has_next_sibling() const { return has_parent() && _index != get_parent()->get_child_count() - 1; }
 
   bool Node::has_previous_sibling() const { return has_parent() && _index > 0; }
+
+  void Node::set_tag(const String& p_tag) {
+    _tag = p_tag;
+  }
+
+  String Node::get_tag() const {
+    return _tag;
+  }
 
   String Node::pretty_print() const {
     Size dummy;

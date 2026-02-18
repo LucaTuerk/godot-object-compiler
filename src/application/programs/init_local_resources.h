@@ -39,6 +39,7 @@ namespace GodotObjectCompiler {
 
   class InitLocalResources : public IProgram {
     PROGRAM(InitLocalResources, "init/local_resources");
+    PROG_NO_ARGS
 
    public:
 

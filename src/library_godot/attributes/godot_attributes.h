@@ -38,7 +38,9 @@
 #include "godot_module_init_level.h"
 #include "godot_property_hint.h"
 #include "godot_property_usage_flags.h"
+#include "godot_rpc.h"
 #include "godot_variant_type.h"
+#include "godot_virtual.h"
 #include "library/attribute_db.h"
 #include "library/tree/output/output.h"
 #include "library/tree/syntax/attribute.h"
@@ -95,6 +97,12 @@ namespace GodotObjectCompiler {
   class GodotFunctionAttribute : public GodotAttributeWithParams {
     ATTRIBUTE_TYPE(GodotFunctionAttribute, Function, NEXT)
     ATTRIBUTE_DEFAULT_MACRO(GODOT_FUNCTION)
+
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotVirtual);
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcMode);
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcSync);
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcTransferMode);
+    ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcChannel);
   };
 
   class GodotSignalAttribute : public GodotAttributeWithParams {

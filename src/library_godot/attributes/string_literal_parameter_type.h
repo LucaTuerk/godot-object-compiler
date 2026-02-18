@@ -45,13 +45,12 @@ namespace GodotObjectCompiler {
   };
 
   class StringLiteralParameterType : public IAttributeParameterType {
-    PARAM_TYPE(StringLiteralParameterType)
+    PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
    public:
 
     String get_return_type() override;
     Vector<String> get_value_names() override;
     Vector<Argument> get_arguments() override;
-    Ref<GodotObjectCompiler::Argument> create_argument() override;
     bool is_builtin() override;
   };
 

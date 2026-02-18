@@ -1,37 +1,3 @@
-/**************************************************************************/
-/* parameter_types.cpp                                                    */
-/*                        ___  ___  ___   ___ _____                       */
-/*                       / __|/ _ \|   \ / _ \_   _|                      */
-/*                      | (_ | (_) | |) | (_) || |                        */
-/*                       \___|\___/|___/ \___/ |_|                        */
-/*   ___  ___    _ ___ ___ _____    ___ ___  __  __ ___ ___ _    ___ ___  */
-/*  / _ \| _ )_ | | __/ __|_   _|  / __/ _ \|  \/  | _ \_ _| |  | __| _ \ */
-/* | (_) | _ \ || | _| (__  | |   | (_| (_) | |\/| |  _/| || |__| _||   / */
-/*  \___/|___/\__/|___\___| |_|    \___\___/|_|  |_|_| |___|____|___|_|_\ */
-/*                                                                        */
-/*              This file is part of Godot Object Compiler                */
-/*                  Copyright (c) 2026 Luca Ian Tuerk                     */
-/**************************************************************************/
-/*                            MIT LICENCE                                 */
-/* Permission is hereby granted, free of charge, to any person obtaining  */
-/* a copy of this software and associated documentation files (the        */
-/* "Software"), to deal in the Software without restriction, including    */
-/* without limitation the rights to use, copy, modify, merge, publish,    */
-/* distribute, sublicense, and/or sell copies of the Software, and to     */
-/* permit persons to whom the Software is furnished to do so, subject to  */
-/* the following conditions:                                              */
-/*                                                                        */
-/* The above copyright notice and this permission notice shall be         */
-/* included in all copies or substantial portions of the Software.        */
-/*                                                                        */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
-/**************************************************************************/
 // clang-format off
 #include "parameter_types.h"
 #include "library_godot/attributes/godot_class_type.h"
@@ -39,9 +5,11 @@
 #include "library_godot/attributes/godot_variant_type.h"
 #include "library_godot/attributes/godot_property_hint.h"
 #include "library_godot/attributes/godot_property_usage_flags.h"
-namespace GodotObjectCompiler 
+#include "library_godot/attributes/godot_rpc.h"
+#include "library_godot/attributes/godot_virtual.h"
+namespace GodotObjectCompiler
 {
-  namespace AssumedParameterValues
+  namespace AssumedParameterValues 
   {
       bool validate_assumptions () 
       {
@@ -63,6 +31,7 @@ namespace GodotObjectCompiler
                     success &= LevelServers.validate(validator.get()) == STATE_VALID;
                     success &= LevelScene.validate(validator.get()) == STATE_VALID;
                     success &= LevelEditor.validate(validator.get()) == STATE_VALID;
+                    success &= LevelMax.validate(validator.get()) == STATE_VALID;
             }
             
             {
@@ -124,6 +93,7 @@ namespace GodotObjectCompiler
                     success &= HintLayers3dRender.validate(validator.get()) == STATE_VALID;
                     success &= HintLayers3dPhysics.validate(validator.get()) == STATE_VALID;
                     success &= HintLayers3dNavigation.validate(validator.get()) == STATE_VALID;
+                    success &= HintLayersAvoidance.validate(validator.get()) == STATE_VALID;
                     success &= HintFile.validate(validator.get()) == STATE_VALID;
                     success &= HintDir.validate(validator.get()) == STATE_VALID;
                     success &= HintGlobalFile.validate(validator.get()) == STATE_VALID;
@@ -143,13 +113,12 @@ namespace GodotObjectCompiler
                     success &= HintIntIsObjectid.validate(validator.get()) == STATE_VALID;
                     success &= HintIntIsPointer.validate(validator.get()) == STATE_VALID;
                     success &= HintArrayType.validate(validator.get()) == STATE_VALID;
+                    success &= HintDictionaryType.validate(validator.get()) == STATE_VALID;
                     success &= HintLocaleId.validate(validator.get()) == STATE_VALID;
                     success &= HintLocalizableString.validate(validator.get()) == STATE_VALID;
                     success &= HintNodeType.validate(validator.get()) == STATE_VALID;
                     success &= HintHideQuaternionEdit.validate(validator.get()) == STATE_VALID;
                     success &= HintPassword.validate(validator.get()) == STATE_VALID;
-                    success &= HintLayersAvoidance.validate(validator.get()) == STATE_VALID;
-                    success &= HintDictionaryType.validate(validator.get()) == STATE_VALID;
                     success &= HintToolButton.validate(validator.get()) == STATE_VALID;
                     success &= HintOneshot.validate(validator.get()) == STATE_VALID;
                     success &= HintMax.validate(validator.get()) == STATE_VALID;
@@ -189,6 +158,38 @@ namespace GodotObjectCompiler
                     success &= UsageSecret.validate(validator.get()) == STATE_VALID;
                     success &= UsageDefault.validate(validator.get()) == STATE_VALID;
                     success &= UsageNoEditor.validate(validator.get()) == STATE_VALID;
+            }
+            
+            {
+                    Ref<GodotVirtualParameterType> validator = make_ref<GodotVirtualParameterType>();
+                    success &= NoVirtual.validate(validator.get()) == STATE_VALID;
+                    success &= ScriptVirtual.validate(validator.get()) == STATE_VALID;
+                    success &= ScriptVirtualRequired.validate(validator.get()) == STATE_VALID;
+            }
+            
+            {
+                    Ref<GodotRpcModeParameterType> validator = make_ref<GodotRpcModeParameterType>();
+                    success &= Disabled.validate(validator.get()) == STATE_VALID;
+                    success &= AnyPeer.validate(validator.get()) == STATE_VALID;
+                    success &= Authority.validate(validator.get()) == STATE_VALID;
+            }
+            
+            {
+                    Ref<GodotRpcSyncParameterType> validator = make_ref<GodotRpcSyncParameterType>();
+                    success &= CallRemote.validate(validator.get()) == STATE_VALID;
+                    success &= CallLocal.validate(validator.get()) == STATE_VALID;
+            }
+            
+            {
+                    Ref<GodotRpcTransferModeParameterType> validator = make_ref<GodotRpcTransferModeParameterType>();
+                    success &= Unreliable.validate(validator.get()) == STATE_VALID;
+                    success &= UnreliableOrdered.validate(validator.get()) == STATE_VALID;
+                    success &= Reliable.validate(validator.get()) == STATE_VALID;
+            }
+            
+            {
+                    Ref<GodotRpcChannelParameterType> validator = make_ref<GodotRpcChannelParameterType>();
+                    success &= Channel.validate(validator.get()) == STATE_VALID;
             }
             return success;
       }

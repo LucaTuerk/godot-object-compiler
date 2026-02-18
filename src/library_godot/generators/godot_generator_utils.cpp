@@ -37,6 +37,7 @@
 
 #include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
+#include "library/generator/generator.h"
 #include "library/tree/output/output.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax/class.h"
@@ -81,12 +82,19 @@ namespace GodotObjectCompiler {
     }
   }
 
+  String GodotGeneratorUtils::get_type_static() { return "GodotGeneratorUtils"; }
+
   Ref<Type> GodotGeneratorUtils::const_ref(const String& p_type_name) {
     return build<Type>().with_children({build<Const>(), build<Identifier>(p_type_name), build<Reference>()});
   }
 
   Ref<Function> GodotGeneratorUtils::bind_method(const String& p_class_name, const String& p_method_name,
       const Vector<String>& p_parameter_names, const Vector<String>& p_default_values) {
+   return bind_method_as(p_class_name, p_method_name, p_method_name, p_parameter_names, p_default_values);
+  }
+
+  Ref<Function> GodotGeneratorUtils::bind_method_as(const String& p_class_name, const String& p_bind_name,
+      const String& p_method_name, const Vector<String>& p_parameter_names, const Vector<String>& p_default_values) {
     // clang-format off
     Ref<Arguments> bind_args;
     Ref<Arguments> d_method_args;
@@ -97,23 +105,23 @@ namespace GodotObjectCompiler {
       build<Function>().with_children({
         build<Identifier>("D_METHOD"),
         build_ref<Arguments>(&d_method_args).with_children({
-            build<Argument>().with_child(Writer::StringLiteral(p_method_name))
+            build<Argument>().with_child(Output::StringLiteral(p_bind_name))
           })
         }),
     build<Argument>().with_children({
         build<Reference>(),
         build<Identifier>(p_class_name),
-        Writer::Text("::"),
-        Writer::Text(p_method_name),
-    })})}).with_child(Writer::Semicolon());
+        Output::Text("::"),
+        Output::Text(p_method_name),
+    })})}).with_child(Output::Semicolon());
 
     for ( const String& parameter_name : p_parameter_names) {
-      d_method_args->build_child<Argument>().with_child(Writer::StringLiteral(parameter_name));
+      d_method_args->build_child<Argument>().with_child(Output::StringLiteral(parameter_name));
     }
 
     for (const String& def_val : p_default_values) {
       bind_args->build_child<Argument>().with_child(
-        Writer::Text(format("DEFVAL(%s)", def_val.c_str())
+        Output::Text(format("DEFVAL(%s)", def_val.c_str())
       ));
     }
 
@@ -130,27 +138,27 @@ namespace GodotObjectCompiler {
     Ref<Function> result =  build<Function>().with_children({
     build<Identifier>("ClassDB::bind_static_method"),
     build_ref<Arguments>(&bind_args).with_children({
-      build<Argument>().with_child(Writer::StringLiteral(p_class_name)),
+      build<Argument>().with_child(Output::StringLiteral(p_class_name)),
       build<Function>().with_children({
         build<Identifier>("D_METHOD"),
         build_ref<Arguments>(&d_method_args).with_children({
-            build<Argument>().with_child(Writer::StringLiteral(p_method_name))
+            build<Argument>().with_child(Output::StringLiteral(p_method_name))
           })
         }),
     build<Argument>().with_children({
         build<Reference>(),
         build<Identifier>(p_class_name),
-        Writer::Text("::"),
-        Writer::Text(p_method_name),
-    })})}).with_child(Writer::Semicolon());
+        Output::Text("::"),
+        Output::Text(p_method_name),
+    })})}).with_child(Output::Semicolon());
 
     for ( const String& parameter_name : p_parameter_names) {
-      d_method_args->build_child<Argument>().with_child(Writer::StringLiteral(parameter_name));
+      d_method_args->build_child<Argument>().with_child(Output::StringLiteral(parameter_name));
     }
 
     for (const String& def_val : p_default_values) {
       bind_args->build_child<Argument>().with_child(
-        Writer::Text(format("DEFVAL(%s)", def_val.c_str())
+        Output::Text(format("DEFVAL(%s)", def_val.c_str())
       ));
     }
 
@@ -158,8 +166,12 @@ namespace GodotObjectCompiler {
     // clang-format on
   }
 
-  Ref<Body> GodotGeneratorUtils::get_or_create_bind_methods_body(
+  Ref<Body> GodotGeneratorUtils::get_bind_methods_body(
       const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources) {
+    Ref<Context> public_members;
+    unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+    PANIC_COND(!public_members, "Failed to get public members group.");
+
     bool bind_methods_defined = p_target_class->has_function_named("_bind_methods");
     const String bind_methods_name = bind_methods_defined ? "_generated_bind_methods" : "_bind_methods";
     const String qualified_bind_methods_name =
@@ -178,12 +190,12 @@ namespace GodotObjectCompiler {
       build_ref<Body>(&bind_methods_body)}
       );
 
-      p_generated_body->build_child<Function>().with_children({
+      public_members->build_child<Function>().with_children({
         build<Static>(),
         build<Type>().with_child<Identifier>("void"),
         build<Identifier>(bind_methods_name),
         build<Parameters>()
-      }).with_child(Writer::Semicolon());
+      }).with_child(Output::Semicolon());
       // clang-format on
     } else {
       bind_methods_body = bind_methods->find_child<Body>();
@@ -192,8 +204,59 @@ namespace GodotObjectCompiler {
     return bind_methods_body;
   }
 
-  Ref<Body> GodotGeneratorUtils::get_or_create_get_property_list_body(
+  Ref<Body> GodotGeneratorUtils::get_notification_body(
       const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources) {
+    Ref<Context> public_members;
+    unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+    PANIC_COND(!public_members, "Failed to get public members group.");
+
+    bool notification_defined = p_target_class->has_function_named("_notification");
+    String notification_name = notification_defined ? "_generated_notification" : "_notification";
+    String qualified_notification_name = format("%s::%s", p_target_class->name().c_str(), notification_name.c_str());
+
+    Ref<Function> notification =
+        p_generated_sources->find_child(0, NamedContextPredicates::name<Function>(qualified_notification_name.c_str()));
+    Ref<Body> notification_body;
+
+    if (!notification) {
+      // clang-format off
+      p_generated_sources->build_child<Function>().with_children({
+      build<Type>().with_child<Identifier>("void"),
+      build<Identifier>(qualified_notification_name),
+      build<Parameters>().with_child(
+        build<Parameter>().with_children({
+            build<Type>().with_child<Identifier>("int"),
+          build<Identifier>("p_notification"),
+        })
+      ),
+      build_ref<Body>(&notification_body)}
+      );
+
+      public_members->build_child<Function>().with_children({
+        build<Type>().with_child<Identifier>("void"),
+        build<Identifier>(notification_name),
+        build<Parameters>().with_child(
+          build<Parameter>().with_children({
+              build<Type>().with_child<Identifier>("int"),
+            build<Identifier>("p_notification"),
+          })
+        ),
+      }).with_child(Output::Semicolon());
+      // clang-format on
+    } else {
+      notification_body = notification->find_child<Body>();
+      PANIC_COND(!notification_body, "Body not found.");
+    }
+
+    return notification_body;
+  }
+
+  Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
+      const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources) {
+    Ref<Context> public_members;
+    unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+    PANIC_COND(!public_members, "Failed to get public members group.");
+
     bool get_property_list_defined = p_target_class->has_function_named("_get_property_list");
     const String property_list_name = get_property_list_defined ? "_generated_get_property_list" : "_get_property_list";
     const String qualified_property_list_name =
@@ -221,7 +284,7 @@ namespace GodotObjectCompiler {
         build_ref<Body>(&get_property_list_body)}
       );
 
-      p_generated_body->build_child<Function>().with_children({
+      public_members->build_child<Function>().with_children({
         build<Type>().with_child<Identifier>("void"),
         build<Identifier>(property_list_name),
         build<Parameters>().with_children({
@@ -234,7 +297,7 @@ namespace GodotObjectCompiler {
             })
           }),
         build<Const>(),
-      }).with_child(Writer::Semicolon());
+      }).with_child(Output::Semicolon());
       // clang-format on
     } else {
       get_property_list_body = get_property_list->find_child<Body>();
@@ -244,16 +307,20 @@ namespace GodotObjectCompiler {
     return get_property_list_body;
   }
 
-  Ref<Body> GodotGeneratorUtils::get_or_create_function_names_body(
+  Ref<Body> GodotGeneratorUtils::get_function_names_body(
       const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
-    Ref<Struct> function_names = p_generated_body->find_child(0, NamedContextPredicates::name<Struct>("FunctionNames"));
+    Ref<Context> public_members;
+    unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+    PANIC_COND(!public_members, "Failed to get public members group.");
+
+    Ref<Struct> function_names = public_members->find_child(0, NamedContextPredicates::name<Struct>("FunctionNames"));
     Ref<Body> function_names_body;
 
     if (!function_names) {
       // clang-format off
       auto base_names = p_target_class->direct_bases_names();
       if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
-        p_generated_body->build_child<Struct>().with_children({
+        public_members->build_child<Struct>().with_children({
           build<Identifier>("FunctionNames"),
           build<BaseClasses>().with_child(
             build<Type>().with_child<Identifier>(base_names[0] + "::FunctionNames")
@@ -261,7 +328,7 @@ namespace GodotObjectCompiler {
           build_ref<Body>(&function_names_body)
         });
       } else {
-        p_generated_body->build_child<Struct>().with_children({
+        public_members->build_child<Struct>().with_children({
           build<Identifier>("FunctionNames"),
           build_ref<Body>(&function_names_body)
         });
@@ -275,15 +342,19 @@ namespace GodotObjectCompiler {
     return function_names_body;
   }
 
-  Ref<Body> GodotGeneratorUtils::get_or_create_property_names_body(
+  Ref<Body> GodotGeneratorUtils::get_property_names_body(
       const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
-    Ref<Struct> property_names = p_generated_body->find_child(0, NamedContextPredicates::name<Struct>("PropertyNames"));
+    Ref<Context> public_members;
+    unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+    PANIC_COND(!public_members, "Failed to get public members group.");
+
+    Ref<Struct> property_names = public_members->find_child(0, NamedContextPredicates::name<Struct>("PropertyNames"));
     Ref<Body> property_names_body;
     if (!property_names) {
       // clang-format off
       auto base_names = p_target_class->direct_bases_names();
       if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
-        p_generated_body->build_child<Struct>().with_children({
+        public_members->build_child<Struct>().with_children({
           build<Identifier>("PropertyNames"),
           build<BaseClasses>().with_child(
             build<Type>().with_child<Identifier>(base_names[0] + "::PropertyNames")
@@ -291,7 +362,7 @@ namespace GodotObjectCompiler {
           build_ref<Body>(&property_names_body)
         });
       } else {
-        p_generated_body->build_child<Struct>().with_children({
+        public_members->build_child<Struct>().with_children({
           build<Identifier>("PropertyNames"),
           build_ref<Body>(&property_names_body)
         });
@@ -305,15 +376,19 @@ namespace GodotObjectCompiler {
     return property_names_body;
   }
 
-  Ref<Body> GodotGeneratorUtils::get_or_create_signal_names_body(
+  Ref<Body> GodotGeneratorUtils::get_signal_names_body(
       const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
-    Ref<Struct> signal_names = p_generated_body->find_child(0, NamedContextPredicates::name<Struct>("SignalNames"));
+    Ref<Context> public_members;
+    unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+    PANIC_COND(!public_members, "Failed to get public members group.");
+
+    Ref<Struct> signal_names = public_members->find_child(0, NamedContextPredicates::name<Struct>("SignalNames"));
     Ref<Body> signal_names_body;
     if (!signal_names) {
       // clang-format off
       auto base_names = p_target_class->direct_bases_names();
       if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
-        p_generated_body->build_child<Struct>().with_children({
+        public_members->build_child<Struct>().with_children({
           build<Identifier>("SignalNames"),
           build<BaseClasses>().with_child(
             build<Type>().with_child<Identifier>(base_names[0] + "::SignalNames")
@@ -321,7 +396,7 @@ namespace GodotObjectCompiler {
           build_ref<Body>(&signal_names_body)
         });
       } else {
-        p_generated_body->build_child<Struct>().with_children({
+        public_members->build_child<Struct>().with_children({
           build<Identifier>("SignalNames"),
           build_ref<Body>(&signal_names_body)
         });
@@ -333,6 +408,33 @@ namespace GodotObjectCompiler {
     }
 
     return signal_names_body;
+  }
+
+  Ref<Body> GodotGeneratorUtils::get_if_body(const Ref<Context>& p_target, const String& condition) {
+    Ref<Body> if_body = p_target->find_descendant(BFS, NodePredicates::tag<Body>(condition.c_str()));
+    if (!if_body) {
+      p_target->add_child(Output::Spaces(
+          {Output::FmtText("if (%s)", condition.c_str()), build_ref<Body>(&if_body).with_tag(condition.c_str())}));
+    }
+    return if_body;
+  }
+
+  Ref<GeneratorError> GodotGeneratorUtils::unzip_generated_body(const Ref<Context>& p_generated_body,
+      Ref<Context>* r_public_members, Ref<Context>* r_protected_members, Ref<Context>* r_private_members) {
+    if (r_public_members != nullptr) {
+      *r_public_members = p_generated_body->find_child(0, NodePredicates::tag<Context>("public_members"));
+      GEN_ERROR_COND(!r_public_members, p_generated_body, "Failed to get public members group");
+    }
+    if (r_protected_members != nullptr) {
+      *r_protected_members = p_generated_body->find_child(0, NodePredicates::tag<Context>("protected_members"));
+      GEN_ERROR_COND(!r_protected_members, p_generated_body, "Failed to get protected members group");
+    }
+    if (r_private_members != nullptr) {
+      *r_private_members = p_generated_body->find_child(0, NodePredicates::tag<Context>("private_members"));
+      GEN_ERROR_COND(!r_private_members, p_generated_body, "Failed to get private members group");
+    }
+
+    return GeneratorError::OK;
   }
 
   bool GodotGeneratorUtils::check_is_valid_named_argument(const Ref<Node>& p_node, String& p_name) {
@@ -688,18 +790,18 @@ namespace GodotObjectCompiler {
       const Ref<GodotPropertyHintArgument>& p_hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages,
       const String& p_property_name, bool p_no_editor) {
     Ref<Arguments> arguments;
-    Ref<Writer::ListNode> flags;
+    Ref<Output::ListNode> flags;
     // clang-format off
     Ref<Node> property_usage;
     if (p_no_editor) {
-      property_usage = build<Writer::ListNode>(" ", false, false).with_children({
-        build<Writer::EnclosingNode>("(",")").with_children({
-          build_ref<Writer::ListNode>(&flags," | ", false, false)
+      property_usage = build<Output::ListNode>(" ", false, false).with_children({
+        build<Output::EnclosingNode>("(",")").with_children({
+          build_ref<Output::ListNode>(&flags," | ", false, false)
         }),
-        Writer::Text("& ~PROPERTY_USAGE_EDITOR"),
+        Output::Text("& ~PROPERTY_USAGE_EDITOR"),
       });
     } else {
-      property_usage = build_ref<Writer::ListNode>(&flags," | ", false, false);
+      property_usage = build_ref<Output::ListNode>(&flags," | ", false, false);
     }
 
     Ref<Node> result = build<Function>().with_children({

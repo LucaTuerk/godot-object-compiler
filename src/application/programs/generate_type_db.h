@@ -43,6 +43,7 @@ namespace GodotObjectCompiler {
 
   class GenerateTypeDB : public IProgram {
     PROGRAM(GenerateTypeDB, "generate/type_db");
+    PROG_NO_ARGS
 
    public:
 

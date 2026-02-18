@@ -45,8 +45,4 @@ namespace GodotObjectCompiler {
 
   Vector<IAttributeParameterType::Argument> EnumGeneratorOptionsParameterType::get_arguments() { return {}; }
 
-  Ref<Argument> EnumGeneratorOptionsParameterType::create_argument() {
-    return node_new<EnumGeneratorOptionsArgument>();
-  }
-
 }

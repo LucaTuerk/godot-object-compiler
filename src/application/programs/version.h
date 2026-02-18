@@ -40,6 +40,7 @@ namespace GodotObjectCompiler {
 
   class Version : public IProgram {
     PROJECTLESS_PROGRAM(Version, "version")
+    PROG_NO_ARGS
 
    public:
 
@@ -48,6 +49,7 @@ namespace GodotObjectCompiler {
 
   class BuildNum : public IProgram {
     PROJECTLESS_PROGRAM(BuildNum, "build_num")
+    PROG_NO_ARGS
 
    public:
 

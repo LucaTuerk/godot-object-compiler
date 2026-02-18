@@ -68,16 +68,18 @@ namespace GodotObjectCompiler {
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
         ? AssumedGodotTypes::VARIANT_BITFIELD_CAST().qualified_name
         : "";
+
     String bind_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
         ? AssumedGodotTypes::BIND_ENUM_CONSTANT().qualified_name
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
         ? AssumedGodotTypes::BIND_BITFIELD_FLAG().qualified_name
         : "";
+
     GEN_ERROR_COND(cast_macro.empty() || bind_macro.empty(), p_attribute, "Unknown enum options name");
 
     if (p_target_class) {
-      Ref<Body> bind_methods_body =
-          GodotGeneratorUtils::get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+      const Ref<Body> bind_methods_body =
+          GodotGeneratorUtils::get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
 
       for (const String& name : target_enum->value_names()) {
         // clang-format off
@@ -85,10 +87,10 @@ namespace GodotObjectCompiler {
           build<Identifier>(bind_macro),
           build<Arguments>().with_child(
             build<Argument>().with_child(
-              Writer::Text(name)
+              Output::Text(name)
             )
           )
-        }).with_child(Writer::Semicolon());
+        }).with_child(Output::Semicolon());
         // clang-format on
       }
     }
@@ -98,10 +100,10 @@ namespace GodotObjectCompiler {
       build<Identifier>(cast_macro),
       build<Arguments>().with_child(
         build<Argument>().with_child(
-          Writer::Text(target_enum->qualified_name())
+          Output::Text(target_enum->qualified_name())
           )
         )
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
     // clang-format on
 
     return GeneratorError::OK;

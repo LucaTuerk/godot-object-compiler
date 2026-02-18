@@ -37,7 +37,7 @@
 namespace GodotObjectCompiler {
 
   String AccessSpecifier::to_string() const {
-    String value = "";
+    String value;
 
     switch (type) {
       case PUBLIC:

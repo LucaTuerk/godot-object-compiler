@@ -40,6 +40,7 @@ namespace GodotObjectCompiler {
 
   class GenerateBindings : public IProgram {
     PROGRAM(GenerateBindings, "generate/bindings")
+    PROG_NO_ARGS
 
    public:
 

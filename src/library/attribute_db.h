@@ -114,9 +114,9 @@ namespace GodotObjectCompiler {
 
   template <typename AttributeT, typename ParamT>
   Ref<ParamT> AttributeDB::get_parameter_type() {
-    String attribute_type_name = AttributeT::get_type_static();
+    const String attribute_type_name = AttributeT::get_type_static();
 
-    auto itr = _parameters.find(attribute_type_name);
+    const auto itr = _parameters.find(attribute_type_name);
     if (itr == _parameters.end()) {
       PANIC("Unknown attribute type %s", attribute_type_name.c_str());
     }

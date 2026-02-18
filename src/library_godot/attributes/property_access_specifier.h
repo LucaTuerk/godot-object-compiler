@@ -46,6 +46,7 @@ namespace GodotObjectCompiler {
     static inline const char* ProtectedGet = "ProtectedGet";
     static inline const char* PrivateGet = "PrivateGet";
 
+    bool get_specifier(AccessSpecifier::Type& r_specifier) const;
     bool get_specifier_cpp_name(String& r_specifier_name) const;
   };
 
@@ -56,29 +57,28 @@ namespace GodotObjectCompiler {
     static inline const char* ProtectedSet = "ProtectedSet";
     static inline const char* PrivateSet = "PrivateSet";
 
+    bool get_specifier(AccessSpecifier::Type& r_specifier) const;
     bool get_specifier_cpp_name(String& r_specifier_name) const;
   };
 
   class PropertyGetAccessSpecifierParameterType : public IAttributeParameterType {
-    PARAM_TYPE(PropertyGetAccessSpecifierParameterType)
+    PARAM_TYPE(PropertyGetAccessSpecifierParameterType, PropertyGetAccessSpecifierArgument)
 
    public:
 
     String get_return_type() override;
     Vector<String> get_value_names() override;
     Vector<Argument> get_arguments() override;
-    Ref<GodotObjectCompiler::Argument> create_argument() override;
   };
 
   class PropertySetAccessSpecifierParameterType : public IAttributeParameterType {
-    PARAM_TYPE(PropertySetAccessSpecifierParameterType)
+    PARAM_TYPE(PropertySetAccessSpecifierParameterType, PropertySetAccessSpecifierArgument)
 
    public:
 
     String get_return_type() override;
     Vector<String> get_value_names() override;
     Vector<Argument> get_arguments() override;
-    Ref<GodotObjectCompiler::Argument> create_argument() override;
   };
 
 }

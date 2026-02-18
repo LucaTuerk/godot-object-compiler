@@ -44,7 +44,7 @@ namespace GodotObjectCompiler {
   };
 
   class GodotClassTypeParameterType : public IAttributeParameterType {
-    PARAM_TYPE(GodotClassTypeParameterType);
+    PARAM_TYPE(GodotClassTypeParameterType, GodotClassTypeArgument);
 
    public:
 
@@ -53,8 +53,6 @@ namespace GodotObjectCompiler {
     Vector<String> get_value_names() override;
 
     Vector<Argument> get_arguments() override;
-
-    Ref<GodotObjectCompiler::Argument> create_argument() override;
 
     bool get_macro_for_value_name(const String& p_value_name, String& r_macro);
 

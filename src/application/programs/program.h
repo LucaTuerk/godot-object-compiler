@@ -55,6 +55,7 @@ namespace GodotObjectCompiler {
     [[nodiscard]] virtual String get_type() const = 0;
     [[nodiscard]] virtual String program_name() const = 0;
     [[nodiscard]] virtual bool requires_project() const = 0;
+    virtual bool validate_arguments(ApplicationContext& p_context) = 0;
     virtual Ref<ProgramError> run(ApplicationContext& p_context) = 0;
   };
 
@@ -85,6 +86,9 @@ namespace GodotObjectCompiler {
 }
 
 #define PROG_ERR(...) return make_ref<ProgramError>(ERROR, format(__VA_ARGS__));
+
+#define PROG_NO_ARGS \
+  bool validate_arguments(ApplicationContext& p_context) override { return p_context.program_arguments.empty(); }
 
 #define PROG_ERR_COND(condition, ...) \
   if ((condition)) {                  \

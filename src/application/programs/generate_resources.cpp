@@ -60,6 +60,9 @@ namespace GodotObjectCompiler {
   Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
     UNUSED(p_context);
 
+    Permissions::instance()->add_write_path("resources");
+    Permissions::instance()->add_write_path("docs");
+
     // Generate Program help resources
     Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
     for (const auto& [path, program] : programs) {
@@ -69,12 +72,18 @@ namespace GodotObjectCompiler {
         FileWriter writer(file_path);
         writer.write("No help available");
       }
+
+      String doc_path = path_concat_ext("docs/cli/", string_replace(program->program_name(), "/", "_"), "md");
+      write_initial_file_content(doc_path, "No documentation available");
     }
 
     // Generate macro help docs
     for (const String& macro : ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
-      String doc_file = path_concat_ext("resources/doc", macro, "txt");
-      write_initial_file_content(doc_file, "No documentation available");
+      String internal_doc_path = path_concat_ext("resources/doc", macro, "txt");
+      write_initial_file_content(internal_doc_path, "No documentation available");
+
+      String doc_path = path_concat_ext("docs/macros/", macro, "md");
+      write_initial_file_content(doc_path, "No documentation available");
 
       Vector<Ref<IAttributeParameterType>> params =
           ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
@@ -102,8 +111,8 @@ namespace GodotObjectCompiler {
     // clang-format off
     global_namespace->add_children({
       build<Body>().with_children({
-        Writer::PragmaOnce(),
-        Writer::Include("library/core/resources.h"),
+        Output::PragmaOnce(),
+        Output::Include("library/core/resources.h"),
       build<Namespace>().with_children({
         build<Identifier>("GOC_Resources"),
         build_ref<Body>(&body)
@@ -116,38 +125,41 @@ namespace GodotObjectCompiler {
     // Compile Resources
     for (const String& file : files) {
       String content = read_file(file);
+      String relative = path_relative(file, path_cwd());
 
-      Ref<Writer::ListNode> values;
+      Ref<Output::ListNode> values;
       // clang-format off
       body->add_children({
-        Writer::FmtText("constexpr char %s[] = ", resource_variable_name(file).c_str() ),
-        build<Body>().with_child(build_ref<Writer::ListNode>(&values, ", ", false, false)),
-        Writer::Semicolon()
+        Output::FmtText("constexpr char %s[] = ", resource_variable_name(relative).c_str() ),
+        build<Body>().with_child(build_ref<Output::ListNode>(&values, ", ", false, false)),
+        Output::Semicolon()
       });
 
       Size i = 0;
       for (char c : content) {
         if ((++i % 15) == 0) {
-          values->add_child(Writer::FmtText("\n0x%x", c));
+          values->add_child(Output::FmtText("\n0x%x", c));
         } else {
-          values->add_child(Writer::FmtText("0x%x", c));
+          values->add_child(Output::FmtText("0x%x", c));
         }
       }
-      values->add_child(Writer::FmtText("0x%x", '\0'));
+      values->add_child(Output::FmtText("0x%x", '\0'));
     }
     {
-      Ref<Writer::ListNode> values;
+      Ref<Output::ListNode> values;
       // clang-format off
       body->add_children({
-        Writer::FmtText("static inline GodotObjectCompiler::Resources::ResourcePack Pack = "),
-        build<Body>().with_child(build_ref<Writer::ListNode>(&values, ",\n", false, false)),
-        Writer::Semicolon()
+        Output::FmtText("static inline GodotObjectCompiler::Resources::ResourcePack Pack = "),
+        build<Body>().with_child(build_ref<Output::ListNode>(&values, ",\n", false, false)),
+        Output::Semicolon()
       });
       // clang-format on
 
       for (const String& file : files) {
-        String res_path = "res://" + path_relative(file, "resources");
-        values->add_child(Writer::FmtText("{\"%s\", &%s[0]}", res_path.c_str(), resource_variable_name(file).c_str()));
+        String relative = path_relative(file, path_cwd());
+        String res_path = "res://" + path_relative(relative, "resources");
+        values->add_child(
+            Output::FmtText("{\"%s\", &%s[0]}", res_path.c_str(), resource_variable_name(relative).c_str()));
       }
     }
 

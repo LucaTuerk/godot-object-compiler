@@ -51,12 +51,14 @@ namespace GodotObjectCompiler {
    public:
 
     bool write_to_file(Ref<Node> node, const String& path) override;
+
     Ref<Node> read_from_file(const String& path) override;
   };
 
   template <typename T>
   struct AssumeType {
     String qualified_name;
+
     Size template_parameter_count;
 
     AssumeType() = default;
@@ -103,14 +105,18 @@ namespace GodotObjectCompiler {
     AssumptionState validate_t(Assumption<AssumeType<T>>& type_assumption);
 
     AssumptionState validate_assumption(Assumption<AssumeType<Enum>>& p_assumption) override;
+
     AssumptionState validate_assumption(Assumption<AssumeType<Class>>& p_assumption) override;
+
     AssumptionState validate_assumption(Assumption<AssumeType<Define>>& p_assumption) override;
 
     static String mangle_name(const String& qualified_name, Size template_parameter_count);
+
     static Vector<String> resolve_possible_namespaces(
         const String& qualified_name, const Ref<Namespace>& from_namespace);
 
     TypeDB() = delete;
+
     TypeDB(Private) {};
 
    private:

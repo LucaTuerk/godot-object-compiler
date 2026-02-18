@@ -39,6 +39,10 @@
 
 namespace GodotObjectCompiler {
 
+  bool PrintType::validate_arguments(ApplicationContext& p_context) {
+    return !p_context.program_arguments.empty();
+  }
+
   Ref<ProgramError> PrintType::run(ApplicationContext& p_context) {
     PROG_ERR_COND(p_context.program_arguments.empty(),
         "No type name provided. Please specify one or more types by their fully qualified name.")

@@ -37,6 +37,7 @@
 
 #include "godot_generator_utils.h"
 #include "library/tree/output/output.h"
+#include "library/tree/predicates.h"
 #include "library/tree/syntax/class.h"
 #include "library_godot/attributes/godot_attributes.h"
 #include "library_godot/generated_assumptions/parameter_types.h"
@@ -92,13 +93,18 @@ namespace GodotObjectCompiler {
     using namespace GodotGeneratorUtils;
 
     Ref<Body> bind_methods_body =
-        get_or_create_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+        get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
     GEN_ERROR_COND(!bind_methods_body, p_target_class, "Failed to find or generate the _bind_methods function body.");
 
     Ref<Body> get_property_list_body =
-        get_or_create_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+        get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
     GEN_ERROR_COND(
         !get_property_list_body, p_target_class, "Failed to find or generate the _get_property_list function body.");
+
+    Ref<Context> generated_public_members, generated_protected_members, generated_private_members;
+    GEN_ERROR_COND(unzip_generated_body(p_generated_body, &generated_public_members, &generated_protected_members,
+                       &generated_private_members) != GeneratorError::OK,
+        p_target_class, "Failed to find generated body groups");
 
     const Ref<Field> target_field = p_attribute->TargetField();
 
@@ -116,10 +122,8 @@ namespace GodotObjectCompiler {
 
     Ref<Type> ref_inner;
     Ref<Enum> enum_object;
-    // bool is_ref_type = type_is_godot_ref_type(field_type, ref_inner, p_target_class);
     bool is_obj_type = type_is_object_type(field_type, p_target_class);
     bool is_enum_type = type_is_enum_type(field_type, enum_object, p_target_class);
-    // bool is_collection_type = type_is_godot_collection_type(field_type, p_target_class);
 
     bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, {}));
     bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, {property_name}));
@@ -137,7 +141,7 @@ namespace GodotObjectCompiler {
       build<Identifier>(getter_name),
       build<Parameters>(),
       build<Const>()
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
 
     Ref<Function> get_impl = build<Function>().with_children({
       get_type->clone(),
@@ -145,7 +149,7 @@ namespace GodotObjectCompiler {
       build<Parameters>(),
       build<Const>(),
       build<Body>().with_child(
-          Writer::Return(property_name)
+          Output::Return(property_name)
         )
     });
 
@@ -157,7 +161,7 @@ namespace GodotObjectCompiler {
           set_type->clone(),
           build<Identifier>("p_" + property_name),
       }))
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
 
     Ref<Function> set_impl = build<Function>().with_children({
       build<Type>().with_child<Identifier>("void"),
@@ -172,8 +176,8 @@ namespace GodotObjectCompiler {
           ),
       build<Body>().with_child(
         (is_enum_type ?
-          Writer::Assign(property_name, Writer::Text(format("static_cast<%s>(p_%s)", enum_object->qualified_name().c_str(),property_name.c_str()))):
-          Writer::Assign(property_name, Writer::Text(format("p_%s", property_name.c_str()))))),
+          Output::Assign(property_name, Output::Text(format("static_cast<%s>(p_%s)", enum_object->qualified_name().c_str(),property_name.c_str()))):
+          Output::Assign(property_name, Output::Text(format("p_%s", property_name.c_str()))))),
     });
 
     Ref<GodotVariantTypeArgument> variant_type = p_attribute->arguments()->find_child<GodotVariantTypeArgument>();
@@ -193,17 +197,17 @@ namespace GodotObjectCompiler {
         build<Argument>().with_children({
           property_info_no_editor
         }),
-        build<Argument>().with_child(Writer::StringLiteral(setter_name)),
-        build<Argument>().with_child(Writer::StringLiteral(getter_name)),
+        build<Argument>().with_child(Output::StringLiteral(setter_name)),
+        build<Argument>().with_child(Output::StringLiteral(getter_name)),
       })
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
 
     get_property_list_body->build_child<Function>().with_children({
       build<Identifier>("p_list->push_back"),
       build<Arguments>().with_children({
         build<Argument>().with_child(property_info)
       })
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
     // clang-format on
 
     Ref<PropertyGetAccessSpecifierArgument> get_access_specifier_argument =
@@ -214,18 +218,33 @@ namespace GodotObjectCompiler {
         p_attribute->arguments()->find_child<PropertySetAccessSpecifierArgument>();
     GEN_ERROR_COND(!set_access_specifier_argument, p_attribute, "Failed to get set specifier argument");
 
-    String access_specifier_name;
-    if (get_access_specifier_argument->get_specifier_cpp_name(access_specifier_name)) {
-      p_generated_body->add_child(Writer::FmtText("%s:", access_specifier_name.c_str()));
+    AccessSpecifier::Type get_specifier, set_specifier;
+    GEN_ERROR_COND(!get_access_specifier_argument->get_specifier(get_specifier), p_attribute, "Failed to get property getter access specifier.");
+    GEN_ERROR_COND(!set_access_specifier_argument->get_specifier(set_specifier), p_attribute, "Failed to get property setter access specifier.");
+
+    switch (get_specifier) {
+      case AccessSpecifier::PUBLIC: {
+        generated_public_members->add_child(get_def);
+      }break;
+      case AccessSpecifier::PRIVATE:
+        generated_private_members->add_child(get_def);
+        break;
+      case AccessSpecifier::PROTECTED:
+        generated_protected_members->add_child(get_def);
+        break;
     }
 
-    p_generated_body->add_child(get_def);
-
-    if (set_access_specifier_argument->get_specifier_cpp_name(access_specifier_name)) {
-      p_generated_body->add_child(Writer::FmtText("%s:", access_specifier_name.c_str()));
+    switch (set_specifier) {
+      case AccessSpecifier::PUBLIC: {
+        generated_public_members->add_child(set_def);
+      }break;
+      case AccessSpecifier::PRIVATE:
+        generated_private_members->add_child(set_def);
+        break;
+      case AccessSpecifier::PROTECTED:
+        generated_protected_members->add_child(set_def);
+        break;
     }
-
-    p_generated_body->add_children({set_def, Writer::Text("private:")});
 
     p_generated_sources->add_children({
         get_impl,
@@ -234,11 +253,11 @@ namespace GodotObjectCompiler {
 
     bind_methods_body->add_child(add_property);
 
-    Ref<Body> property_names_body = get_or_create_property_names_body(p_target_class, p_generated_body);
+    Ref<Body> property_names_body = get_property_names_body(p_target_class, p_generated_body);
     GEN_ERROR_COND(!property_names_body, p_attribute, "Failed to get property names body.");
 
     property_names_body->add_child(
-        Writer::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
+        Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
             property_name.c_str(), property_name.c_str())));
 
     return GeneratorError::OK;

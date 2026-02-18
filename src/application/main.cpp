@@ -54,8 +54,9 @@ using namespace GodotObjectCompiler;
 
 int main(int argc, char* argv[]) {
   ExecutionContext::instance()->set_error_level(ERROR, FULL);
-  ApplicationContext context;
   Resources::instance()->load_pack(&GOC_Resources::Pack);
+
+  ApplicationContext context;
 
   for (int i = 1; i < argc; i++) {
     context.application_arguments.emplace_back(argv[i]);
@@ -64,16 +65,27 @@ int main(int argc, char* argv[]) {
   Ref<IProgram> program = Programs::instance()->find_program(context.application_arguments, context.program_arguments);
 
   if (!program) {
+    Help help;
+    ApplicationContext help_context = context;
     if (context.application_arguments.empty()) {
       print_err("Please specify a program to run.");
+      APP_ERR_COND(help.run(help_context) != ProgramError::OK, "Failed to run help");
     } else {
       print_err(format("Could not find program \"%s\".", context.application_arguments[0].c_str()));
+      help_context.program_arguments = string_split(context.application_arguments[0], "/");
+      APP_ERR_COND(help.run(help_context) != ProgramError::OK, "Failed to get help info for program %s",
+          context.application_arguments[0].c_str());
+      return 1;
     }
     return 1;
   }
 
   if (program->requires_project()) {
-    if (!context.set_from_application_arguments(context.application_arguments)) {
+    if (Project project; file_exists(".goc_project") && project.read_from_file(".goc_project")) {
+      if (!context.set_from_project(project)) {
+        return 1;
+      }
+    } else if (!context.set_from_application_arguments(context.application_arguments)) {
       return 1;
     }
 
@@ -115,9 +127,16 @@ int main(int argc, char* argv[]) {
     writer.write(build_num);
   }
 
-  if (Ref<ProgramError> error = program->run(context); error != ProgramError::OK) {
+  if (!program->validate_arguments(context)) {
+    fmt_print_err("Invalid argument(s) for program %s", program->program_name().c_str());
+    ApplicationContext help_context = context;
+    help_context.program_arguments = string_split(program->program_name(), "/");
+    Help help;
+    APP_ERR_COND(help.run(help_context), "Failed to get help info for program %s", program->program_name().c_str());
     return 1;
   }
+
+  APP_ERR_COND(program->run(context) != ProgramError::OK, "Error occurred while executing program.");
 
   if (program->requires_project()) {
     ExecutionContext::instance()->save_last_modified_times_file(

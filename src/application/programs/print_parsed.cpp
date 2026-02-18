@@ -43,6 +43,10 @@
 
 namespace GodotObjectCompiler {
 
+  bool PrintParsed::validate_arguments(ApplicationContext& p_context) {
+    return p_context.program_arguments.size() == 1 && could_be_file_path(p_context.program_arguments[0]);
+  }
+
   Ref<ProgramError> PrintParsed::run(ApplicationContext& p_context) {
     PROG_ERR_COND(p_context.program_arguments.size() != 1,
         "Invalid argument count for program %s. Expected 1 path argument.", get_type_static().c_str());

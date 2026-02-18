@@ -56,7 +56,7 @@ namespace GodotObjectCompiler {
     UNUSED(p_generated_global);
 
     Ref<Body> get_property_list_body =
-        get_or_create_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+        get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
     GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
 
     // clang-format off
@@ -70,7 +70,7 @@ namespace GodotObjectCompiler {
             p_attribute->literal_content()
         ))
       })
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
     // clang-format on
     return GeneratorError::OK;
   }
@@ -91,7 +91,7 @@ namespace GodotObjectCompiler {
     UNUSED(p_generated_global);
 
     Ref<Body> get_property_list_body =
-        get_or_create_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+        get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
     GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
 
     // clang-format off
@@ -105,7 +105,7 @@ namespace GodotObjectCompiler {
             p_attribute->literal_content()
         ))
       })
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
     // clang-format on
     return GeneratorError::OK;
   }
@@ -124,8 +124,10 @@ namespace GodotObjectCompiler {
     using namespace GodotGeneratorUtils;
     using namespace AssumedParameterValues;
     UNUSED(p_generated_global);
-    Ref<Body> get_property_list_body =
-        get_or_create_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+
+    const Ref<Body> get_property_list_body =
+      get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+
     GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
 
     // clang-format off
@@ -139,7 +141,7 @@ namespace GodotObjectCompiler {
             p_attribute->literal_content()
         ))
       })
-    }).with_child(Writer::Semicolon());
+    }).with_child(Output::Semicolon());
     // clang-format on
     return GeneratorError::OK;
   }

@@ -55,7 +55,7 @@ namespace GodotObjectCompiler {
       const String& p_name, String& r_usage_flag) {
     _value_names_lazy.poke();
 
-    if (auto itr = _godot_usage_flags.find(p_name); itr != _godot_usage_flags.end()) {
+    if (const auto itr = _godot_usage_flags.find(p_name); itr != _godot_usage_flags.end()) {
       r_usage_flag = itr->second;
       return true;
     }
@@ -63,12 +63,8 @@ namespace GodotObjectCompiler {
     return false;
   }
 
-  Ref<Argument> GodotPropertyUsageFlagsParameterType::create_argument() {
-    return node_new<GodotPropertyUsageFlagsArgument>();
-  }
-
   Vector<String> GodotPropertyUsageFlagsParameterType::_value_names_lazy_get() {
-    Ref<Enum> prop_use_enum = ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(
+    const Ref<Enum> prop_use_enum = ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(
         AssumedGodotTypes::PropertyUsageFlagsEnum().qualified_name);
     if (!prop_use_enum) {
       return {};
@@ -84,7 +80,7 @@ namespace GodotObjectCompiler {
   }
 
   String GodotPropertyUsageFlagsArgument::_godot_property_usage_flag_lazy_get() const {
-    auto ptype = GodotPropertyUsageFlagsParameterType::instance();
+    const auto ptype = GodotPropertyUsageFlagsParameterType::instance();
 
     Ref<Identifier> identifier = find_child<Identifier>();
     if (!identifier) {

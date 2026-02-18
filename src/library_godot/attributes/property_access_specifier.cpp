@@ -48,10 +48,6 @@ namespace GodotObjectCompiler {
 
   Vector<IAttributeParameterType::Argument> PropertyGetAccessSpecifierParameterType::get_arguments() { return {}; }
 
-  Ref<Argument> PropertyGetAccessSpecifierParameterType::create_argument() {
-    return node_new<PropertyGetAccessSpecifierArgument>();
-  }
-
   String PropertySetAccessSpecifierParameterType::get_return_type() { return "GOC_PropertySetAccessSpecifier"; }
 
   Vector<String> PropertySetAccessSpecifierParameterType::get_value_names() {
@@ -61,8 +57,25 @@ namespace GodotObjectCompiler {
 
   Vector<IAttributeParameterType::Argument> PropertySetAccessSpecifierParameterType::get_arguments() { return {}; }
 
-  Ref<Argument> PropertySetAccessSpecifierParameterType::create_argument() {
-    return node_new<PropertySetAccessSpecifierArgument>();
+  bool PropertyGetAccessSpecifierArgument::get_specifier(AccessSpecifier::Type& r_specifier) const {
+    const Ref<Identifier> identifier = find_child<Identifier>();
+    if (!identifier) {
+      ERR("Failed to find identifier.");
+      return false;
+    }
+
+    if (identifier->name == PrivateGet) {
+      r_specifier = AccessSpecifier::PRIVATE;
+      return true;
+    } else if (identifier->name == ProtectedGet) {
+      r_specifier = AccessSpecifier::PROTECTED;
+      return true;
+    } else if (identifier->name == PublicGet) {
+      r_specifier = AccessSpecifier::PUBLIC;
+      return true;
+    }
+
+    return false;
   }
 
   bool PropertyGetAccessSpecifierArgument::get_specifier_cpp_name(String& r_specifier_name) const {
@@ -85,6 +98,27 @@ namespace GodotObjectCompiler {
     }
 
     ERR("Invalid identifier name %s.", identifier->name.c_str());
+    return false;
+  }
+
+  bool PropertySetAccessSpecifierArgument::get_specifier(AccessSpecifier::Type& r_specifier) const {
+    const Ref<Identifier> identifier = find_child<Identifier>();
+    if (!identifier) {
+      ERR("Failed to find identifier.");
+      return false;
+    }
+
+    if (identifier->name == PrivateSet) {
+      r_specifier = AccessSpecifier::PRIVATE;
+      return true;
+    } else if (identifier->name == ProtectedSet) {
+      r_specifier = AccessSpecifier::PROTECTED;
+      return true;
+    } else if (identifier->name == PublicSet) {
+      r_specifier = AccessSpecifier::PUBLIC;
+      return true;
+    }
+
     return false;
   }
 

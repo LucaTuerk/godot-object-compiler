@@ -48,6 +48,11 @@
 
 namespace GodotObjectCompiler {
 
+  bool Help::validate_arguments(ApplicationContext& p_context) {
+    UNUSED(p_context);
+    return true;
+  }
+
   Ref<ProgramError> Help::run(ApplicationContext& p_context) {
     UNUSED(p_context);
 
@@ -65,18 +70,31 @@ namespace GodotObjectCompiler {
     std::copy(programs.begin(), programs.end(), std::back_inserter(programs_sorted));
     std::sort(programs_sorted.begin(), programs_sorted.end(), cmp);
 
-    print_title(
-        format("Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MAJOR_VERSION, GOC_VERSION_NAME), 71);
-    print_ln("");
+    if (p_context.program_arguments.empty()) {
+      print_title(
+          format("Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MAJOR_VERSION, GOC_VERSION_NAME), 71);
+      print_ln("");
 
-    print_ln("Usage: goc [PROGRAM PATH...] [OPTIONS...]");
-    print_ln("");
-    print_title("PROGRAMS", 71);
+      print_ln("Usage: goc [PROGRAM PATH...] [OPTIONS...]");
+      print_ln("");
+      print_title("PROGRAMS", 71);
+    }
 
     std::unordered_set<ProgramPath, ProgramPathHash> written;
 
     for (const auto& [path, program] : programs_sorted) {
       if (path.empty()) {
+        continue;
+      }
+
+      bool skip = false;
+      for (Size i = 0; i < path.size() && i < p_context.program_arguments.size(); i++) {
+        if (path[i] != p_context.program_arguments[i]) {
+          skip = true;
+        }
+      }
+
+      if (skip) {
         continue;
       }
 

@@ -1,37 +1,3 @@
-/**************************************************************************/
-/* parameter_types.h                                                      */
-/*                        ___  ___  ___   ___ _____                       */
-/*                       / __|/ _ \|   \ / _ \_   _|                      */
-/*                      | (_ | (_) | |) | (_) || |                        */
-/*                       \___|\___/|___/ \___/ |_|                        */
-/*   ___  ___    _ ___ ___ _____    ___ ___  __  __ ___ ___ _    ___ ___  */
-/*  / _ \| _ )_ | | __/ __|_   _|  / __/ _ \|  \/  | _ \_ _| |  | __| _ \ */
-/* | (_) | _ \ || | _| (__  | |   | (_| (_) | |\/| |  _/| || |__| _||   / */
-/*  \___/|___/\__/|___\___| |_|    \___\___/|_|  |_|_| |___|____|___|_|_\ */
-/*                                                                        */
-/*              This file is part of Godot Object Compiler                */
-/*                  Copyright (c) 2026 Luca Ian Tuerk                     */
-/**************************************************************************/
-/*                            MIT LICENCE                                 */
-/* Permission is hereby granted, free of charge, to any person obtaining  */
-/* a copy of this software and associated documentation files (the        */
-/* "Software"), to deal in the Software without restriction, including    */
-/* without limitation the rights to use, copy, modify, merge, publish,    */
-/* distribute, sublicense, and/or sell copies of the Software, and to     */
-/* permit persons to whom the Software is furnished to do so, subject to  */
-/* the following conditions:                                              */
-/*                                                                        */
-/* The above copyright notice and this permission notice shall be         */
-/* included in all copies or substantial portions of the Software.        */
-/*                                                                        */
-/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
-/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
-/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
-/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
-/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
-/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
-/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
-/**************************************************************************/
 // clang-format off
 #pragma once
 
@@ -39,7 +5,7 @@
 #include "library/core/assumption.h"
 namespace GodotObjectCompiler 
 {
-  namespace AssumedParameterValues
+  namespace AssumedParameterValues 
   {
       inline Assumption<String> RegisterCustom {
       "RegisterCustom",
@@ -65,10 +31,6 @@ namespace GodotObjectCompiler
       "RuntimeClass",
       "Assume that the value \"RuntimeClass\" exists in the GOC_GodotClassType generated type."
       };
-      inline Assumption<String> NativeStruct {
-      "NativeStruct",
-      "Assume that the value \"NativeStruct\" exists in the GOC_GodotClassType generated type."
-      };
       inline Assumption<String> LevelCore {
       "LevelCore",
       "Assume that the value \"LevelCore\" exists in the GOC_ModuleInitializationLevel generated type."
@@ -84,6 +46,10 @@ namespace GodotObjectCompiler
       inline Assumption<String> LevelEditor {
       "LevelEditor",
       "Assume that the value \"LevelEditor\" exists in the GOC_ModuleInitializationLevel generated type."
+      };
+      inline Assumption<String> LevelMax {
+      "LevelMax",
+      "Assume that the value \"LevelMax\" exists in the GOC_ModuleInitializationLevel generated type."
       };
       inline Assumption<String> VariantTypeNil {
       "VariantTypeNil",
@@ -297,6 +263,10 @@ namespace GodotObjectCompiler
       "HintLayers3dNavigation",
       "Assume that the value \"HintLayers3dNavigation\" exists in the GOC_PropertyHint generated type."
       };
+      inline Assumption<String> HintLayersAvoidance {
+      "HintLayersAvoidance",
+      "Assume that the value \"HintLayersAvoidance\" exists in the GOC_PropertyHint generated type."
+      };
       inline Assumption<String> HintFile {
       "HintFile",
       "Assume that the value \"HintFile\" exists in the GOC_PropertyHint generated type."
@@ -373,6 +343,10 @@ namespace GodotObjectCompiler
       "HintArrayType",
       "Assume that the value \"HintArrayType\" exists in the GOC_PropertyHint generated type."
       };
+      inline Assumption<String> HintDictionaryType {
+      "HintDictionaryType",
+      "Assume that the value \"HintDictionaryType\" exists in the GOC_PropertyHint generated type."
+      };
       inline Assumption<String> HintLocaleId {
       "HintLocaleId",
       "Assume that the value \"HintLocaleId\" exists in the GOC_PropertyHint generated type."
@@ -393,14 +367,6 @@ namespace GodotObjectCompiler
       "HintPassword",
       "Assume that the value \"HintPassword\" exists in the GOC_PropertyHint generated type."
       };
-      inline Assumption<String> HintLayersAvoidance {
-      "HintLayersAvoidance",
-      "Assume that the value \"HintLayersAvoidance\" exists in the GOC_PropertyHint generated type."
-      };
-      inline Assumption<String> HintDictionaryType {
-      "HintDictionaryType",
-      "Assume that the value \"HintDictionaryType\" exists in the GOC_PropertyHint generated type."
-      };
       inline Assumption<String> HintToolButton {
       "HintToolButton",
       "Assume that the value \"HintToolButton\" exists in the GOC_PropertyHint generated type."
@@ -408,22 +374,6 @@ namespace GodotObjectCompiler
       inline Assumption<String> HintOneshot {
       "HintOneshot",
       "Assume that the value \"HintOneshot\" exists in the GOC_PropertyHint generated type."
-      };
-      inline Assumption<String> HintNoNodepath {
-      "HintNoNodepath",
-      "Assume that the value \"HintNoNodepath\" exists in the GOC_PropertyHint generated type."
-      };
-      inline Assumption<String> HintGroupEnable {
-      "HintGroupEnable",
-      "Assume that the value \"HintGroupEnable\" exists in the GOC_PropertyHint generated type."
-      };
-      inline Assumption<String> HintInputName {
-      "HintInputName",
-      "Assume that the value \"HintInputName\" exists in the GOC_PropertyHint generated type."
-      };
-      inline Assumption<String> HintFilePath {
-      "HintFilePath",
-      "Assume that the value \"HintFilePath\" exists in the GOC_PropertyHint generated type."
       };
       inline Assumption<String> HintMax {
       "HintMax",
@@ -556,6 +506,54 @@ namespace GodotObjectCompiler
       inline Assumption<String> UsageNoEditor {
       "UsageNoEditor",
       "Assume that the value \"UsageNoEditor\" exists in the GOC_PropertyUsageFlags generated type."
+      };
+      inline Assumption<String> NoVirtual {
+      "NoVirtual",
+      "Assume that the value \"NoVirtual\" exists in the GOC_Virtual generated type."
+      };
+      inline Assumption<String> ScriptVirtual {
+      "ScriptVirtual",
+      "Assume that the value \"ScriptVirtual\" exists in the GOC_Virtual generated type."
+      };
+      inline Assumption<String> ScriptVirtualRequired {
+      "ScriptVirtualRequired",
+      "Assume that the value \"ScriptVirtualRequired\" exists in the GOC_Virtual generated type."
+      };
+      inline Assumption<String> Disabled {
+      "Disabled",
+      "Assume that the value \"Disabled\" exists in the GOC_RpcMode generated type."
+      };
+      inline Assumption<String> AnyPeer {
+      "AnyPeer",
+      "Assume that the value \"AnyPeer\" exists in the GOC_RpcMode generated type."
+      };
+      inline Assumption<String> Authority {
+      "Authority",
+      "Assume that the value \"Authority\" exists in the GOC_RpcMode generated type."
+      };
+      inline Assumption<String> CallRemote {
+      "CallRemote",
+      "Assume that the value \"CallRemote\" exists in the GOC_RpcSync generated type."
+      };
+      inline Assumption<String> CallLocal {
+      "CallLocal",
+      "Assume that the value \"CallLocal\" exists in the GOC_RpcSync generated type."
+      };
+      inline Assumption<String> Unreliable {
+      "Unreliable",
+      "Assume that the value \"Unreliable\" exists in the GOC_TransferMode generated type."
+      };
+      inline Assumption<String> UnreliableOrdered {
+      "UnreliableOrdered",
+      "Assume that the value \"UnreliableOrdered\" exists in the GOC_TransferMode generated type."
+      };
+      inline Assumption<String> Reliable {
+      "Reliable",
+      "Assume that the value \"Reliable\" exists in the GOC_TransferMode generated type."
+      };
+      inline Assumption<String> Channel {
+      "Channel",
+      "Assume that the value \"Channel\" exists in the GOC_RpcChannel generated type."
       };
       bool validate_assumptions () ;
   }

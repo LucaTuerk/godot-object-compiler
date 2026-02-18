@@ -82,7 +82,7 @@ namespace GodotObjectCompiler {
     macro_include_generator.generate(nullptr, macro_include_content);
 
     FileWriter marco_writer = FileWriter::generated(path_concat(p_context.paths_generated, "macros.h"), "");
-    Ref<Writer::IOutputNode> macro_output = transformator.transform(macro_include_content);
+    Ref<Output::OutputNode> macro_output = transformator.transform(macro_include_content);
     macro_output->get_output(&marco_writer);
 
     Ref<Context> register_types_header = node_new<Context>();
@@ -94,16 +94,16 @@ namespace GodotObjectCompiler {
     String register_file_name = "generated_register_types";
     Vector<String> registered_classes_headers;
 
-    register_types_header->add_child(Writer::PragmaOnce());
+    register_types_header->add_child(Output::PragmaOnce());
 
     switch (p_context.project_target) {
       case TARGET_GDEXTENSION:
         register_types_header->add_children({
-            Writer::SystemInclude("godot_cpp/godot.hpp"),
-            Writer::Text("using namespace godot;"),
+            Output::SystemInclude("godot_cpp/godot.hpp"),
+            Output::Text("using namespace godot;"),
         });
-        register_types_source->add_children({Writer::SystemInclude("gdextension_interface.h"),
-            Writer::SystemInclude("godot_cpp/core/class_db.hpp"), Writer::SystemInclude("godot_cpp/core/defs.hpp")});
+        register_types_source->add_children({Output::SystemInclude("gdextension_interface.h"),
+            Output::SystemInclude("godot_cpp/core/class_db.hpp"), Output::SystemInclude("godot_cpp/core/defs.hpp")});
         break;
       case TARGET_MODULE:
         // This should not be reachable as project target can currently not be changed.
@@ -115,7 +115,7 @@ namespace GodotObjectCompiler {
 
     // clang-format off
     register_types_header->add_children({
-      Writer::NewLine(),
+      Output::NewLine(),
       build<Function>().with_children({
         build<Type>().with_child<Identifier>("void"),
         build<Identifier>(register_method_name),
@@ -126,7 +126,7 @@ namespace GodotObjectCompiler {
               build<Identifier>("p_level")
             })
           )
-      }).with_child(Writer::Semicolon()),
+      }).with_child(Output::Semicolon()),
       build<Function>().with_children({
         build<Type>().with_child<Identifier>("void"),
         build<Identifier>(unregister_method_name),
@@ -137,16 +137,16 @@ namespace GodotObjectCompiler {
               build<Identifier>("p_level")
             })
           )
-      }).with_child(Writer::Semicolon())
+      }).with_child(Output::Semicolon())
     });
 
     Ref<Body> register_body;
     Ref<Body> unregister_body;
 
     register_types_source->add_children({
-      Writer::Include(path_concat_ext(p_context.paths_generated, register_file_name, "h")),
+      Output::Include(path_concat_ext(p_context.paths_generated, register_file_name, "h")),
       register_class_includes,
-      Writer::NewLine(),
+      Output::NewLine(),
       build<Function>().with_children({
         build<Type>().with_child<Identifier>("void"),
         build<Identifier>(register_method_name),
@@ -233,6 +233,10 @@ namespace GodotObjectCompiler {
         Ref<Context> shutdown;
       };
 
+      Ref<Context> initialize = node_new<Context>();
+      Ref<Context> uninitialize = node_new<Context>();
+      Ref<Context> startup = node_new<Context>();
+      Ref<Context> shutdown = node_new<Context>();
       Ref<Context> global_generated = node_new<Context>();
 
       Vector<Results> generate_results;
@@ -246,10 +250,10 @@ namespace GodotObjectCompiler {
         results.generated_global = global_generated;
         results.generated_body = node_new<Context>();
         results.generated_source = node_new<Context>();
-        results.initialize = node_new<Context>();
-        results.uninitialize = node_new<Context>();
-        results.startup = node_new<Context>();
-        results.shutdown = node_new<Context>();
+        results.initialize = register_body;
+        results.uninitialize = unregister_body;
+        results.startup = startup;
+        results.shutdown = shutdown;
 
         auto generated_body_attribute = target_class->body()->find_child<GeneratedBodyAttribute>();
         if (!generated_body_attribute) {
@@ -258,7 +262,7 @@ namespace GodotObjectCompiler {
         }
 
         results.generated_body_line = generated_body_attribute->line;
-        results.generated_source->add_child(Writer::NewLine());
+        results.generated_source->add_child(Output::NewLine());
 
         Ref<Node> previous = target_class->get_previous_sibling();
         if (!previous) {
@@ -291,9 +295,9 @@ namespace GodotObjectCompiler {
         PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class initialization code.")
 
         if (results.initialize->get_child_count() > 0 || results.uninitialize->get_child_count() > 0) {
-          register_class_includes->add_child(Writer::Include(input_file));
-          register_body->add_child(results.initialize);
-          unregister_body->add_child(results.uninitialize);
+          register_class_includes->add_child(Output::Include(input_file));
+          // register_body->add_child(results.initialize);
+          // unregister_body->add_child(results.uninitialize);
         }
 
         Ref<GeneratorError> start_gen_error =
@@ -318,6 +322,7 @@ namespace GodotObjectCompiler {
                 PROG_ERR_COND(attr_def_error != GeneratorError::OK, "Failed to generate default attribute arguments.");
 
                 ClassGenerator::merge_default_attribute_arguments(attribute, default_values);
+                print_ln(attribute->pretty_print());
 
                 Ref<GeneratorError> attr_error = generator->generate(target_class, attribute, results.generated_body,
                     results.generated_source, results.generated_global);
@@ -337,32 +342,41 @@ namespace GodotObjectCompiler {
 
       FileWriter source_writer = FileWriter::generated(source_path, input_file);
       FileWriter generated_writer = FileWriter::generated(generated_path, input_file);
-      Writer::PragmaOnce()->get_output(&generated_writer);
-      Writer::Text("#undef GOC_FILE_ID\n")->get_output(&generated_writer);
-      Writer::Define("GOC_FILE_ID", {}, file_id(input_file))->get_output(&generated_writer);
-      Writer::Include(input_file)->get_output(&source_writer);
+
+      // clang-format off
+      Output::Lines({
+        Output::PragmaOnce(),
+        Output::Text("#undef GOC_FILE_ID"),
+        Output::Define("GOC_FILE_ID", {}, file_id(input_file))
+      })->get_output(&generated_writer);
+
+      Output::Lines({
+        Output::Include(input_file),
+        Output::SystemInclude("godot_cpp/classes/multiplayer_api.hpp"),
+        Output::SystemInclude("godot_cpp/classes/multiplayer_peer.hpp")
+      })->get_output(&source_writer);
+      // clang-format on
 
       for (Results& result : generate_results) {
-        Ref<Writer::IOutputNode> source_output = transformator.transform(result.generated_source);
+        Ref<Output::OutputNode> source_output = transformator.transform(result.generated_source);
 
-        Ref<Writer::IOutputNode> body_output =
-            Writer::Define(generated_macro_name(result.file_path, result.generated_body_line), {},
-                {transformator.transform(result.generated_body)});
+        Ref<Output::OutputNode> body_output = Output::Define(
+            generated_macro_name(result.file_path, result.generated_body_line), {}, {result.generated_body});
 
         source_output->get_output(&source_writer);
         body_output->get_output(&generated_writer);
       }
 
-      Ref<Writer::IOutputNode> global_output = Writer::Define(
+      Ref<Output::OutputNode> global_output = Output::Define(
           generated_macro_name(input_file, generated_global_attribute ? generated_global_attribute->line : 0), {},
-          {transformator.transform(global_generated)});
+          {global_generated});
 
       generated_writer.write("\n");
       global_output->get_output(&generated_writer);
     }
 
-    Ref<Writer::IOutputNode> register_header_output = transformator.transform(register_types_header);
-    Ref<Writer::IOutputNode> register_source_output = transformator.transform(register_types_source);
+    Ref<Output::OutputNode> register_header_output = transformator.transform(register_types_header);
+    Ref<Output::OutputNode> register_source_output = transformator.transform(register_types_source);
 
     FileWriter register_header_writer =
         FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "h"), "");

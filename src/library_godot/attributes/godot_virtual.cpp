@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* godot_property_hint.h                                                  */
+/* godot_virtual.cpp                                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,38 +33,31 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
-#include "library/core/lazy.h"
-#include "library/generator/attribute_parameter_type.h"
-#include "library/tree/syntax/node.h"
+#include "godot_virtual.h"
+
+#include "library/tree/syntax/identifier.h"
+#include "library_godot/generated_assumptions/parameter_types.h"
 
 namespace GodotObjectCompiler {
 
-  class GodotPropertyHintArgument : public Argument {
-    NODE_TYPE(GodotPropertyHintArgument);
+  String GodotVirtualParameterType::get_return_type() { return "GOC_Virtual"; }
 
-    LAZY(GodotPropertyHintArgument, String, godot_property_hint)
-    LAZY(GodotPropertyHintArgument, String, hint_string)
-    LAZY(GodotPropertyHintArgument, String, hint_content)
-  };
+  Vector<String> GodotVirtualParameterType::get_value_names() { return {"NoVirtual","ScriptVirtual", "ScriptVirtualRequired"}; }
 
-  class GodotPropertyHintParameterType : public IAttributeParameterType {
-    PARAM_TYPE(GodotPropertyHintParameterType, GodotPropertyHintArgument);
+  Vector<IAttributeParameterType::Argument> GodotVirtualParameterType::get_arguments() { return {}; }
 
-   public:
+  bool GodotVirtualArgument::is_script_virtual() const {
+    const Ref<Identifier> identifier = find_child<Identifier>();
+    PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
 
-    String get_return_type() override;
+    return identifier->name != AssumedParameterValues::NoVirtual();
+  }
 
-    Vector<String> get_value_names() override;
+  bool GodotVirtualArgument::is_required() const {
+    const Ref<Identifier> identifier = find_child<Identifier>();
+    PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
 
-    Vector<Argument> get_arguments() override;
-
-    bool get_godot_hint_for_value_name(const String& p_name, String& r_macro);
-
-   private:
-
-    LAZY_MUT(GodotPropertyHintParameterType, Vector<String>, value_names);
-    Dictionary<String, String> _godot_hint_types;
-  };
+    return identifier->name == AssumedParameterValues::ScriptVirtualRequired();
+  }
 
 }

@@ -40,6 +40,7 @@ namespace GodotObjectCompiler {
 
   class GenerateResources : public IProgram {
     PROJECTLESS_PROGRAM(GenerateResources, "generate/resources");
+    PROG_NO_ARGS
 
    public:
 

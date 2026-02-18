@@ -77,6 +77,8 @@ namespace GodotObjectCompiler {
 
     Builder& with_children(std::initializer_list<Ref<Node>>&& p_children);
 
+    Builder& with_tag(const String& p_tag);
+
    private:
 
     Builder(Ref<Context> parent, Args... args);
@@ -183,6 +185,14 @@ namespace GodotObjectCompiler {
     LAZY(NamedContext, String, mangled_name);
     LAZY(NamedContext, Vector<String>, namespaces_names)
   };
+
+  template <typename T>
+  Ref<T> Node::clone() const {
+    Ref<Node> cloned = clone();
+    Ref<T> cloned_t = cloned->as<T>();
+    PANIC_COND(!cloned_t, "Failed to clone.");
+    return cloned_t;
+  }
 
   template <class T>
   Ref<T> Node::find_parent(Predicate<T> p_predicate) const {
@@ -449,6 +459,12 @@ namespace GodotObjectCompiler {
     for (Ref<Node> child : p_children) {
       _created->add_child(child);
     }
+    return *this;
+  }
+
+  template <typename T, typename... Args>
+  Builder<T, Args...>& Builder<T, Args...>::with_tag(const String& p_tag) {
+    _created->set_tag(p_tag);
     return *this;
   }
 
