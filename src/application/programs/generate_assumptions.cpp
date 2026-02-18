@@ -36,6 +36,7 @@
 #include "generate_assumptions.h"
 
 #include "application/application_context.h"
+#include "generate_type_db.h"
 #include "library/core/core.h"
 #include "library/core/permissions.h"
 #include "library/core/string_utilities.h"
@@ -53,7 +54,9 @@
 #include "library_godot/attributes/godot_module_init_level.h"
 #include "library_godot/attributes/godot_property_hint.h"
 #include "library_godot/attributes/godot_property_usage_flags.h"
+#include "library_godot/attributes/godot_rpc.h"
 #include "library_godot/attributes/godot_variant_type.h"
+#include "library_godot/attributes/godot_virtual.h"
 #include "program.h"
 
 namespace GodotObjectCompiler {
@@ -67,13 +70,16 @@ namespace GodotObjectCompiler {
 
     format = string_replace(format, "VALUE_NAME", value_name);
     format = string_replace(format, "RETURN_TYPE", return_type);
-    return Writer::Text(format);
+    return Output::Text(format);
   }
 
   Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
     UNUSED(p_context);
-    Permissions::instance()->add_write_path("resources");
 
+    GenerateTypeDB generate_type_db;
+    PROG_ERR_COND(generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the type db.");
+
+    Permissions::instance()->add_write_path("src/library_godot/generated_assumptions");
     String header_path = "src/library_godot/generated_assumptions/parameter_types.h";
     String source_path = "src/library_godot/generated_assumptions/parameter_types.cpp";
 
@@ -83,14 +89,19 @@ namespace GodotObjectCompiler {
         make_ref<GodotVariantTypeParameterType>(),
         make_ref<GodotPropertyHintParameterType>(),
         make_ref<GodotPropertyUsageFlagsParameterType>(),
+        make_ref<GodotVirtualParameterType>(),
+        make_ref<GodotRpcModeParameterType>(),
+        make_ref<GodotRpcSyncParameterType>(),
+        make_ref<GodotRpcTransferModeParameterType>(),
+        make_ref<GodotRpcChannelParameterType>(),
     };
 
     Ref<Body> header_body;
     Ref<Body> source_body;
     // clang-format off
     Ref<Context> header_content = build<Context>().with_children({
-      Writer::PragmaOnce(),
-      Writer::Include("library/core/assumption.h"),
+      Output::PragmaOnce(),
+      Output::Include("library/core/assumption.h"),
       build<Namespace>().with_children({
           build<Identifier>("GodotObjectCompiler"),
         build<Body>().with_child(
@@ -100,12 +111,13 @@ namespace GodotObjectCompiler {
     });
 
     Ref<Context> source_content = build<Context>().with_children({
-      Writer::Include("parameter_types.h"),
-      Writer::Include("library_godot/attributes/godot_class_type.h"),
-      Writer::Include("library_godot/attributes/godot_module_init_level.h"),
-      Writer::Include("library_godot/attributes/godot_variant_type.h"),
-      Writer::Include("library_godot/attributes/godot_property_hint.h"),
-      Writer::Include("library_godot/attributes/godot_property_usage_flags.h"),
+      Output::Include("parameter_types.h"),
+      Output::Include("library_godot/attributes/godot_class_type.h"),
+      Output::Include("library_godot/attributes/godot_module_init_level.h"),
+      Output::Include("library_godot/attributes/godot_variant_type.h"),
+      Output::Include("library_godot/attributes/godot_property_hint.h"),
+      Output::Include("library_godot/attributes/godot_property_usage_flags.h"),
+      Output::Include("library_godot/attributes/godot_rpc.h"),
       build<Namespace>().with_children({
           build<Identifier>("GodotObjectCompiler"),
         build<Body>().with_child(
@@ -127,7 +139,7 @@ namespace GodotObjectCompiler {
         build<Type>().with_child<Identifier>("bool"),
       build<Identifier>("validate_assumptions"),
         build<Parameters>(),
-      Writer::Semicolon()
+      Output::Semicolon()
     });
 
     source_body->build_child<Function>().with_children({
@@ -138,19 +150,19 @@ namespace GodotObjectCompiler {
     });
     // clang-format on
 
-    validate_body->add_child(Writer::Text("bool success = true;"));
+    validate_body->add_child(Output::Text("bool success = true;"));
 
     for (const Ref<IAttributeParameterType>& parameter_type : parameter_types) {
       Ref<Body> inner_body = validate_body->build_child<Body>();
       String format = "Ref<PARAM_TYPE> validator = make_ref<PARAM_TYPE>();";
-      inner_body->add_child(Writer::Text(string_replace(format, "PARAM_TYPE", parameter_type->get_type())));
+      inner_body->add_child(Output::Text(string_replace(format, "PARAM_TYPE", parameter_type->get_type())));
 
       for (const String& value_name : parameter_type->get_value_names()) {
         String validate_format = "success &= VALUE_NAME.validate(validator.get()) == STATE_VALID;";
-        inner_body->add_child(Writer::Text(string_replace(validate_format, "VALUE_NAME", value_name)));
+        inner_body->add_child(Output::Text(string_replace(validate_format, "VALUE_NAME", value_name)));
       }
     }
-    validate_body->add_child(Writer::Text("return success;"));
+    validate_body->add_child(Output::Text("return success;"));
 
     OutputTransformator transformator;
     FileWriter header_writer(header_path, true);
@@ -158,12 +170,12 @@ namespace GodotObjectCompiler {
 
     transformator
         .transform(
-            build<Writer::EnclosingNode>("// clang-format off\n", "\n//clang-format on").with_child(header_content))
+            build<Output::EnclosingNode>("// clang-format off\n", "\n//clang-format on").with_child(header_content))
         ->get_output(&header_writer);
 
     transformator
         .transform(
-            build<Writer::EnclosingNode>("// clang-format off\n", "\n//clang-format on").with_child(source_content))
+            build<Output::EnclosingNode>("// clang-format off\n", "\n//clang-format on").with_child(source_content))
         ->get_output(&source_writer);
 
     return ProgramError::OK;

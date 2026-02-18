@@ -41,8 +41,6 @@ namespace GodotObjectCompiler {
   class Identifier : public Node {
     NODE_TYPE(Identifier);
 
-   public:
-
     explicit Identifier(String name) : name(std::move(name)) {}
 
     bool copy_to(const Ref<Node>& p_other) const override;

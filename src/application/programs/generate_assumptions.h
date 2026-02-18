@@ -41,6 +41,7 @@ namespace GodotObjectCompiler {
 
   class GenerateAssumptions : public IProgram {
     PROGRAM(GenerateAssumptions, "generate/assumptions");
+    PROG_NO_ARGS
 
    public:
 

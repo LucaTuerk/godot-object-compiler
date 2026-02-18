@@ -55,16 +55,15 @@ namespace GodotObjectCompiler {
       return nullptr;
     }
 
-    const bool is_in_class = get_parent()->is<Class>();
-    const bool is_in_struct = get_parent()->is<Struct>();
-
-    if (!is_in_class && !is_in_struct) {
+    Ref<Class> _class = find_ancestor<Class>();
+    if (!_class) {
       return nullptr;
     }
+    const bool is_in_struct = _class->is<Struct>();
 
     const Ref<AccessSpecifier> specifier = find_previous_sibling<AccessSpecifier>();
     if (!specifier) {
-      if (is_in_class) {
+      if (is_in_struct) {
         return make_ref<AccessSpecifier::Type>(AccessSpecifier::PUBLIC);
       } else {
         return make_ref<AccessSpecifier::Type>(AccessSpecifier::PRIVATE);

@@ -44,7 +44,9 @@ namespace GodotObjectCompiler {
 
   Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_arguments(
       const String& p_content, Ref<Context> p_target) {
-    Ref<Attribute> attribute = weak_attribute.lock();
+
+    const Ref<Attribute> attribute = weak_attribute.lock();
+
     if (!attribute) {
       return node_new<ParserError>(ERROR, "Invalid attribute parser for . Associated attribute has exited scope.");
     }
@@ -91,7 +93,7 @@ namespace GodotObjectCompiler {
           ERROR, "Invalid attribute parser for " + p_content + ". Associated attribute has exited scope.");
     }
 
-    String property_macro =
+    const String property_macro =
         ExecutionContext::instance()->get_attribute_db()->get_macro_for_attribute(attribute->get_type());
     Vector<Ref<IAttributeParameterType>> types =
         ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(property_macro);
@@ -106,7 +108,7 @@ namespace GodotObjectCompiler {
       if (Ref<StringLiteralParameterType> str_literal = std::dynamic_pointer_cast<StringLiteralParameterType>(type);
           str_literal) {
         if (string_enclosed_by(p_content, "\"")) {
-          Ref<Argument> argument = str_literal->create_argument();
+          const Ref<Argument> argument = str_literal->create_argument();
           if (!argument) {
             return node_new<ParserError>(ERROR, "Failed to create argument node for type " + type->get_return_type());
           }
@@ -121,8 +123,7 @@ namespace GodotObjectCompiler {
       String outer, inner;
       split_outer_inner(p_content, outer, inner);
 
-      Vector<String> value_names = type->get_value_names();
-      if (!vector_contains(value_names, outer)) {
+      if (Vector<String> value_names = type->get_value_names(); !vector_contains(value_names, outer)) {
         continue;
       }
       no_match = false;
@@ -166,9 +167,8 @@ namespace GodotObjectCompiler {
       }
 
       for (Size i = 0; i < arguments.size() && i < parameters.size(); i++) {
-        Ref<ParserError> error = parse_inner_arguments(arguments[i], inner_arguments, parameters[i]);
-
-        if (error != ParserError::OK) {
+        if (Ref<ParserError> error = parse_inner_arguments(arguments[i], inner_arguments, parameters[i]);
+            error != ParserError::OK) {
           error->set_handled();
           return node_new<ParserError>(ERROR,
               format("Failed to parse argument \"%s\". %s", p_content.c_str(), attribute->get_type().c_str(),
@@ -186,9 +186,12 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ParserError> GodotAttributeArgumentParser::parse_inner_arguments(
-      const String& p_content, Ref<Context> p_target, const IAttributeParameterType::Argument& p_parameter) {
+      const String& p_content, const Ref<Context>& p_target, const IAttributeParameterType::Argument& p_parameter) {
     switch (p_parameter.type) {
       case IAttributeParameterType::ARG_STRING:
+        p_target->build_child<Argument>().with_child<Literal>(p_content);
+        break;
+      case IAttributeParameterType::ARG_INTEGER:
         p_target->build_child<Argument>().with_child<Literal>(p_content);
         break;
       default:

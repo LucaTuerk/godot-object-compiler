@@ -29,6 +29,7 @@ class ExampleNode : public Node3D {
     ...
 };
 ```
+
 A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated body macro. This hook is used by the GOC to inject definitions into the class, such as getters and setters and other additional methods.
 
 ### Properties
@@ -46,8 +47,8 @@ Next we might want to expose a bunch of properties. If needed we can always prov
 > GOC provides convenience functions for all possible hint and usage values parsed directly from the godot-cpp library your linking to.
 
 While properties are always public within the engine, we can modify the access specifier of the generated getters and setters for access within our extension.
-```cpp
 
+```cpp
     GODOT_PROPERTY(PublicGet, PrivateSet);
     int cpp_private_property;
 
@@ -122,54 +123,31 @@ GODOT_GENERATED_GLOBAL();
 ```
 
 # Usage
-## CMake Integration
 
-GOC currently ships with **CMake** integration. The tools can be dumped into a local folder by calling the GOC executables init_tools program with a local path argument.
+GOC currently ships with integrations for CMake and SConstruct. The tools can be dumped into a local folder by calling the GOC executables init_tools program with a local path argument.
+
 ```cmd
-
-<goc_executable> init_tools <path_to_tool_dir>
-
+goc.exe init_tools tools
 ```
 
-You can then include the tools file in your CMakeLists.txt and activate the GOC generator for your **GDExtension** target by specifying the target name the and sources root directory. GOC will then scan the sources folder on each build and generate the bindings code.
+## CMake Integration
+
+Include the tools file in your CMakeLists.txt and activate the GOC generator for your GDExtension target by specifying the target name the and sources root directory. GOC will then scan the sources folder on each build and generate the bindings code.
+
 ```cmake
-
-include(<path_to_tool_dir>/autogoc.cmake)
-...
-target_autogoc(<TARGET_NAME> <SRC_ROOT_DIR>)
-
+#using example paths
+include(tools/autogoc.cmake)
+target_autogoc(${TARGET} src) 
 ```
 
 ## SConstruct Integration
 tbd
 
 ## Command Line Usage
-tbd
+You can also use the GOC as a CLI tool to manually generate the sources or build your own integrations. Execute
 
-# Mission Statement
-Godot is the most popular free and open source game engine to date, democratizing game development and ensuring developers independence from corporate engine offerings.
-Commerical game engines aim to bind users into their ecosystem and the company may at any point decide to create exploitative pricing schemes. The conclusion is clear:
+```cmd
+goc.exe help
+```
 
----
-
-<p align="center">
-    <b>There is no alternative to free and open source software in the games industry.</b>
-</p>
-
----
-
-But there is a reason commercial offerings are preferred by many developers. Commercial game engines offer more features, better graphics, a stable experience, more convenience and asset stores filled to the brim with professional grade assets and plugins ready for use.
-
-While Godot has a healthy plugin ecosystem, there are issues.
-
-1. Godot supports both gdscript and C#, and many plugins are only available in one or the other. The ecosystem is divided.
-
-Native GDExtensions offer better performance. Bindings can be generated for both scripting Languages, but:
-
-2. Developing **C++** extensions can be intimidating and more work intensive. Manual binding of data exposed to the engine stands out as being particualary cumbersome and error prone for developers.
-
-By making native extension development as easy and convenient as possible, aiming for parity in features and ease of usage to the official scripting languages, the **Godot Object Compiler** project facilitates a unified ecosystem of professional grade performant native extensions developed for the Godot game engine, that can be used by game developers regardless of technology choice.
-
-___
-
-<p align="center"><b>Game Devs of the World, Unite!</b></p>
+To show usage info or consult the documentation.

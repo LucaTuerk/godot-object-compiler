@@ -46,6 +46,20 @@
                                                                                       \
  private:
 
+#define STATIC_LAZY(classname, type, name)      \
+ private:                                       \
+                                                \
+  type _##name##_lazy_get() const;              \
+                                                \
+ public:                                        \
+                                                \
+  type const& name() const {                    \
+    static type __value = _##name##_lazy_get(); \
+    return __value;                             \
+  }                                             \
+                                                \
+ private:
+
 #define LAZY_MUT(classname, type, name)                                               \
  private:                                                                             \
                                                                                       \

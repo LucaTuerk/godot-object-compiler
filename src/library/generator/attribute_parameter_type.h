@@ -48,7 +48,10 @@ namespace GodotObjectCompiler {
 
     virtual ~IAttributeParameterType() = default;
 
-    enum ArgumentType { ARG_STRING };
+    enum ArgumentType {
+      ARG_STRING,
+      ARG_INTEGER,
+    };
 
     enum FeatureFlags {
       FEATURE_NONE = 0,
@@ -57,6 +60,7 @@ namespace GodotObjectCompiler {
 
     struct Argument {
       ArgumentType type;
+      String type_name;
       String name;
       bool optional;
     };
@@ -82,16 +86,17 @@ namespace GodotObjectCompiler {
     return STATE_VALID;
   }
 
-#define PARAM_TYPE(type)                            \
- public:                                            \
-                                                    \
-  static Ref<type> instance() {                     \
-    static Ref<type> _instance = make_ref<type>();  \
-    return _instance;                               \
-  }                                                 \
-  String get_type() override { return #type; }      \
-  static String get_type_static() { return #type; } \
-                                                    \
+#define PARAM_TYPE(param_type, argument_type)                                    \
+ public:                                                                         \
+                                                                                 \
+  static Ref<param_type> instance() {                                            \
+    static Ref<param_type> _instance = make_ref<param_type>();                   \
+    return _instance;                                                            \
+  }                                                                              \
+  String get_type() override { return #param_type; }                             \
+  static String get_type_static() { return #param_type; }                        \
+  Ref<GodotObjectCompiler::Argument> create_argument() override { return node_new<argument_type>(); } \
+                                                                                 \
  private:
 
 }

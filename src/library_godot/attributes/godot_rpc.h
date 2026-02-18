@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* preprocessor_define.cpp                                                */
+/* godot_rpc.h                                                            */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,26 +33,84 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "preprocessor_define.h"
+#pragma once
+#include "library/generator/attribute_parameter_type.h"
+#include "library/tree/syntax/function.h"
 
 namespace GodotObjectCompiler {
 
-  String PreprocessorDefine::to_string() const { return "PreprocessorDefine: " + name; }
+  class GodotRpcModeArgument : public Argument {
+    NODE_TYPE(GodotRpcModeArgument);
 
-  bool PreprocessorDefine::copy_to(const Ref<Node>& p_other) const {
-    COPY_GUARD(PreprocessorDefine, Node);
-    target->name = name;
-    return true;
-  }
+    LAZY(GodotRpcModeArgument, String, rpc_mode);
+    LAZY(GodotRpcModeArgument, String, godot_rpc_mode);
+  };
 
-  void PreprocessorDefine::write_to(IStructuredWriter* p_writer) {
-    Node::write_to(p_writer);
-    p_writer->write("preprocessor_name", name);
-  }
+  class GodotRpcModeParameterType : public IAttributeParameterType {
+    PARAM_TYPE(GodotRpcModeParameterType, GodotRpcModeArgument);
 
-  void PreprocessorDefine::read_from(IStructuredReader* p_reader) {
-    Node::read_from(p_reader);
-    p_reader->read<String, String>("preprocessor_name");
-  }
+   public:
+
+    String get_return_type() override;
+    Vector<String> get_value_names() override;
+    Vector<Argument> get_arguments() override;
+    bool get_godot_value_name(const String& p_value_name, String& r_godot_value_name);
+
+    LAZY_MUT(GodotRpcModeParameterType, Vector<String>, value_names);
+    Dictionary<String, String> exposed_name_to_godot_value_name;
+  };
+
+  class GodotRpcSyncArgument : public Argument {
+    NODE_TYPE(GodotRpcSyncArgument);
+
+    LAZY(GodotRpcSyncArgument, String, rpc_sync);
+  };
+
+  class GodotRpcSyncParameterType : public IAttributeParameterType {
+    PARAM_TYPE(GodotRpcSyncParameterType, GodotRpcSyncArgument);
+
+   public:
+
+    String get_return_type() override;
+    Vector<String> get_value_names() override;
+    Vector<Argument> get_arguments() override;
+  };
+
+  class GodotRpcTransferModeArgument : public Argument {
+    NODE_TYPE(GodotRpcTransferModeArgument);
+
+    LAZY(GodotRpcTransferModeArgument, String, transfer_mode);
+  };
+
+  class GodotRpcTransferModeParameterType : public IAttributeParameterType {
+    PARAM_TYPE(GodotRpcTransferModeParameterType, GodotRpcTransferModeArgument);
+
+   public:
+
+    String get_return_type() override;
+    Vector<String> get_value_names() override;
+    Vector<Argument> get_arguments() override;
+
+    bool get_godot_value_name(const String& p_value_name, String& r_godot_value_name);
+
+    LAZY_MUT(GodotRpcTransferModeParameterType, Vector<String>, value_names);
+    Dictionary<String, String> exposed_name_to_godot_value_name;
+  };
+
+  class GodotRpcChannelArgument : public Argument {
+    NODE_TYPE(GodotRpcChannelArgument);
+
+    LAZY(GodotRpcChannelArgument, int, channel);
+  };
+
+  class GodotRpcChannelParameterType : public IAttributeParameterType {
+    PARAM_TYPE(GodotRpcChannelParameterType, GodotRpcChannelArgument);
+
+   public:
+
+    String get_return_type() override;
+    Vector<String> get_value_names() override;
+    Vector<Argument> get_arguments() override;
+  };
 
 }

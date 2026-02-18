@@ -53,23 +53,38 @@ namespace GodotObjectCompiler {
 
   namespace GodotGeneratorUtils {
 
+    String get_type_static();
+
     Ref<Type> const_ref(const String& p_type_name);
 
     Ref<Function> bind_method(const String& p_class_name, const String& p_method_name,
         const Vector<String>& p_parameter_names, const Vector<String>& p_default_values = {});
 
+    Ref<Function> bind_method_as(const String& p_class_name, const String& p_bind_name, const String& p_method_name,
+        const Vector<String>& p_parameter_names, const Vector<String>& p_default_values = {});
+
     Ref<Function> bind_static_method(const String& p_class_name, const String& p_method_name,
         const Vector<String>& p_parameter_names, const Vector<String>& p_default_values = {});
 
-    Ref<Body> get_or_create_bind_methods_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
+    Ref<Body> get_bind_methods_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
         const Ref<Context>& p_generated_sources);
 
-    Ref<Body> get_or_create_get_property_list_body(const Ref<Class>& p_target_class,
+    Ref<Body> get_notification_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
+        const Ref<Context>& p_generated_sources);
+
+    Ref<Body> get_get_property_list_body(const Ref<Class>& p_target_class,
         const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources);
 
-    Ref<Body> get_or_create_function_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
-    Ref<Body> get_or_create_property_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
-    Ref<Body> get_or_create_signal_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
+    Ref<Body> get_function_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
+
+    Ref<Body> get_property_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
+
+    Ref<Body> get_signal_names_body(const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
+
+    Ref<Body> get_if_body(const Ref<Context>& p_target, const String& condition);
+
+    Ref<GeneratorError> unzip_generated_body(const Ref<Context>& p_generated_body, Ref<Context>* r_public_members,
+        Ref<Context>* r_protected_members, Ref<Context>* r_private_members);
 
     bool check_is_valid_named_argument(const Ref<Node>& p_node, String& p_name);
 

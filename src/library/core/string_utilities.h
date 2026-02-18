@@ -74,6 +74,8 @@ namespace GodotObjectCompiler {
 
   int string_to_int(const String& p_content);
 
+  bool string_to_int(const String& p_content, int& r_result);
+
   String macro_case_to_pascal_case(const String& p_content);
 
   String cpp_enum_case_to_exposed_enum_case(const String& p_content);

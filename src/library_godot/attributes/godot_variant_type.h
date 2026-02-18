@@ -46,7 +46,7 @@ namespace GodotObjectCompiler {
   };
 
   class GodotVariantTypeParameterType : public IAttributeParameterType {
-    PARAM_TYPE(GodotVariantTypeParameterType)
+    PARAM_TYPE(GodotVariantTypeParameterType, GodotVariantTypeArgument)
 
    public:
 
@@ -55,8 +55,6 @@ namespace GodotObjectCompiler {
     Vector<String> get_value_names() override;
 
     Vector<Argument> get_arguments() override;
-
-    Ref<GodotObjectCompiler::Argument> create_argument() override;
 
     bool get_variant_type_for_value_name(const String& p_value_name, String& r_variant_type);
 

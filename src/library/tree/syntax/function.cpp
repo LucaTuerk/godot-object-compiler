@@ -50,12 +50,6 @@ namespace GodotObjectCompiler {
 
   bool Function::copy_to(const Ref<Node>& p_other) const {
     COPY_GUARD(Function, Member);
-    // COPY_LAZY(type);
-    // COPY_LAZY(parameters);
-    // COPY_LAZY(is_virtual);
-    // COPY_LAZY(is_override);
-    // COPY_LAZY(is_static);
-    // COPY_LAZY(is_const);
     return true;
   }
 

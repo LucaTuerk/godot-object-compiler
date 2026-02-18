@@ -43,12 +43,10 @@ namespace GodotObjectCompiler {
 
   Vector<IAttributeParameterType::Argument> StringLiteralParameterType::get_arguments() { return {}; }
 
-  Ref<Argument> StringLiteralParameterType::create_argument() { return node_new<StringLiteralArgument>(); }
-
   bool StringLiteralParameterType::is_builtin() { return true; }
 
   String StringLiteralArgument::_content_lazy_get() const {
-    Ref<Literal> literal = find_child<Literal>();
+    const Ref<Literal> literal = find_child<Literal>();
     if (!literal) {
       ERR("Failed to find literal.");
       return "";

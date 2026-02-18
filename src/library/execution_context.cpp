@@ -75,13 +75,15 @@ namespace GodotObjectCompiler {
     _include_paths = {};
     _remove_macros = {};
     _generated_from = {};
+    _last_modified_times = {};
+    _out_last_modified_times = {};
   }
 
-  NodeDB* ExecutionContext::get_node_db() { return _node_db.get(); }
+  NodeDB* ExecutionContext::get_node_db() const { return _node_db.get(); }
 
-  AttributeDB* ExecutionContext::get_attribute_db() { return _attribute_db.get(); }
+  AttributeDB* ExecutionContext::get_attribute_db() const { return _attribute_db.get(); }
 
-  TypeDB* ExecutionContext::get_type_db() { return _type_db.get(); }
+  TypeDB* ExecutionContext::get_type_db() const { return _type_db.get(); }
 
   const Vector<String>& ExecutionContext::get_remove_macros() { return _remove_macros; }
 
@@ -145,9 +147,14 @@ namespace GodotObjectCompiler {
     return config.write_to_file(p_path);
   }
 
-  void ExecutionContext::clear_generated_from() { _generated_from.clear(); }
+  void ExecutionContext::clear_generated_from() {
+    _generated_from.clear();
+  }
 
-  void ExecutionContext::clear_last_modified_times() { _last_modified_times.clear(); }
+  void ExecutionContext::clear_last_modified_times() {
+    _last_modified_times.clear();
+    _out_last_modified_times.clear();
+  }
 
   void ExecutionContext::clean_orphan_generated_files() {
     auto itr = _generated_from.begin();
@@ -245,8 +252,7 @@ namespace GodotObjectCompiler {
   void ExecutionContext::add_using(const String& p_value) { _usings.push_back(p_value); }
 
   void ExecutionContext::remove_using(const String& p_value) {
-    auto itr = std::find(_usings.begin(), _usings.end(), p_value);
-    if (itr != _usings.end()) {
+    if (auto itr = std::find(_usings.begin(), _usings.end(), p_value); itr != _usings.end()) {
       _usings.erase(itr);
     }
   }

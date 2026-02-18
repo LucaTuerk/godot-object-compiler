@@ -35,12 +35,17 @@
 
 #include "print_tranformed.h"
 
+#include "generate_type_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 #include "library/parser/parser.h"
 #include "library/tree/syntax/namespace.h"
 
 namespace GodotObjectCompiler {
+
+  bool PrintTransformed::validate_arguments(ApplicationContext& p_context) {
+    return p_context.program_arguments.size() == 1 && could_be_file_path(p_context.program_arguments[0]);
+  }
 
   Ref<ProgramError> PrintTransformed::run(ApplicationContext& p_context) {
     PROG_ERR_COND(p_context.program_arguments.size() != 1,
@@ -50,6 +55,9 @@ namespace GodotObjectCompiler {
 
     PROG_ERR_COND(
         !file_exists(path), "Invalid path argument for program %s. File does not exist.", get_type_static().c_str());
+
+    GenerateTypeDB generate_type_db;
+    PROG_ERR_COND(generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the type db.");
 
     TreeSitterParser parser;
     const Ref<Namespace> ns = node_new<Namespace>();

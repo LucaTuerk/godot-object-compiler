@@ -65,6 +65,8 @@ namespace GodotObjectCompiler {
       success &= BIND_ENUM_CONSTANT.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
       success &= VARIANT_ENUM_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
       success &= VARIANT_BITFIELD_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+      success &= MultiplayerAPIRPCMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+      success &= MultiplayerPeerTransferMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 
       return success;
     }

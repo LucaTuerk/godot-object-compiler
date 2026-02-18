@@ -40,6 +40,7 @@ namespace GodotObjectCompiler {
 
   class Init : public IProgram {
     PROJECTLESS_PROGRAM(Init, "init");
+    PROG_NO_ARGS
 
    public:
 

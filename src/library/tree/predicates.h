@@ -40,6 +40,13 @@
 
 namespace GodotObjectCompiler {
 
+  namespace NodePredicates {
+    template <typename T>
+    Predicate<T> tag(const char* p_tag) {
+      return [p_tag](Ref<T> node) { return node->get_tag() == p_tag; };
+    }
+  }
+
   namespace NamedContextPredicates {
 
     template <typename T>
@@ -51,7 +58,6 @@ namespace GodotObjectCompiler {
     Predicate<T> qualified_name(const char* p_qualified_name) {
       return [p_qualified_name](Ref<T> node) { return node->qualified_name() == p_qualified_name; };
     }
-
   }
 
   namespace ClassPredicates {

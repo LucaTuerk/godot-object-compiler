@@ -39,6 +39,7 @@ namespace GodotObjectCompiler {
 
   class ExportTypeDB : public IProgram {
     PROGRAM(ExportTypeDB, "export/type_db");
+    PROG_NO_ARGS
 
    public:
 

@@ -49,7 +49,7 @@ namespace GodotObjectCompiler {
   bool GodotClassTypeParameterType::get_macro_for_value_name(const String& p_value_name, String& r_macro) {
     _value_names_lazy.poke();
 
-    auto itr = _value_name_to_macro.find(p_value_name);
+    const auto itr = _value_name_to_macro.find(p_value_name);
     if (itr == _value_name_to_macro.end()) {
       r_macro = "";
       return false;
@@ -58,8 +58,6 @@ namespace GodotObjectCompiler {
     r_macro = itr->second;
     return true;
   }
-
-  Ref<Argument> GodotClassTypeParameterType::create_argument() { return node_new<GodotClassTypeArgument>(); }
 
   Vector<String> GodotClassTypeParameterType::_value_names_lazy_get() {
     Vector<String> godot_macros = {

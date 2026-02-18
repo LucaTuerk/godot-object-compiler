@@ -40,6 +40,10 @@
 
 namespace GodotObjectCompiler {
 
+  bool ImportTypeDB::validate_arguments(ApplicationContext& p_context) {
+    return p_context.program_arguments.size() == 1 && could_be_dir_path(p_context.program_arguments[0]);
+  }
+
   Ref<ProgramError> ImportTypeDB::run(ApplicationContext& p_context) {
     PROG_ERR_COND(p_context.program_arguments.size() != 1,
         "Invalid argument count. Expected path to the type_db directory to import.");

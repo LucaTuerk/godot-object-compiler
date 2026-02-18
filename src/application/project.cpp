@@ -42,17 +42,8 @@
 namespace GodotObjectCompiler {
 
   void Project::read_from(IStructuredReader* p_reader) {
-    p_reader->read_from_section("Project");
-    project_name = p_reader->read<String, String>("Name");
-    String project_target_str = string_trim(p_reader->read<String, String>("Target"));
-    project_target = project_target_str == "Module" ? TARGET_MODULE
-        : project_target_str == "GDExtension"       ? TARGET_GDEXTENSION
-                                                    : TARGET_UNDEFINED;
-
     p_reader->read_from_section("Godot");
     godot_include_paths = from_comma_separated_string(p_reader->read<String, String>("IncludePaths"));
-    godot_target_major_version = p_reader->read<String, Size>("TargetMajorVersion");
-    godot_target_minor_version = p_reader->read<String, Size>("TargetMinorVersion");
 
     p_reader->read_from_section("Paths");
     paths_root = p_reader->read<String, String>("RootPath");
@@ -60,21 +51,11 @@ namespace GodotObjectCompiler {
     paths_generated = p_reader->read<String, String>("GeneratedPath");
     paths_cache = p_reader->read<String, String>("CachePath");
     paths_include = from_comma_separated_string(p_reader->read<String, String>("IncludePaths"));
-    paths_ignore = from_comma_separated_string(p_reader->read<String, String>("IgnorePaths"));
   }
 
   void Project::write_to(IStructuredWriter* p_writer) {
-    p_writer->write_to_section("Project");
-    p_writer->write<String, String>("Name", project_name);
-    p_writer->write<String, String>("Target",
-        project_target == TARGET_MODULE            ? "Module"
-            : project_target == TARGET_GDEXTENSION ? "GDExtension"
-                                                   : "");
-
     p_writer->write_to_section("Godot");
     p_writer->write<String, String>("IncludePaths", to_comma_separated_string(godot_include_paths));
-    p_writer->write<String, Size>("TargetMajorVersion", godot_target_major_version);
-    p_writer->write<String, Size>("TargetMinorVersion", godot_target_minor_version);
 
     p_writer->write_to_section("Paths");
     p_writer->write<String, String>("RootPath", paths_root);
@@ -82,7 +63,6 @@ namespace GodotObjectCompiler {
     p_writer->write<String, String>("CachePath", paths_cache);
     p_writer->write<String, String>("GOCPath", paths_goc);
     p_writer->write<String, String>("IncludePaths", to_comma_separated_string(paths_include));
-    p_writer->write<String, String>("IgnorePaths", to_comma_separated_string(paths_ignore));
   }
 
   bool Project::read_from_file(const String& p_path) {

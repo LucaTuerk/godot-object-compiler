@@ -49,14 +49,13 @@ namespace GodotObjectCompiler {
   };
 
   class EnumGeneratorOptionsParameterType : public IAttributeParameterType {
-    PARAM_TYPE(EnumGeneratorOptionsParameterType)
+    PARAM_TYPE(EnumGeneratorOptionsParameterType, EnumGeneratorOptionsArgument)
 
    public:
 
     String get_return_type() override;
     Vector<String> get_value_names() override;
     Vector<Argument> get_arguments() override;
-    Ref<GodotObjectCompiler::Argument> create_argument() override;
   };
 
 }

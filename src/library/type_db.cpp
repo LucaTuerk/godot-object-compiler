@@ -176,16 +176,12 @@ namespace GodotObjectCompiler {
   }
 
   void TypeDB::save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const {
-    Writer writer;
-
-    auto path = _get_cache_file_path(p_type->mangled_name(), CacheType::READWRITE_CACHE);
-    auto base = path_base(path);
-
-    if (!directory_exits(base) && !create_dir_recursive(base)) {
+    const auto path = _get_cache_file_path(p_type->mangled_name(), CacheType::READWRITE_CACHE);
+    if (const auto base = path_base(path); !directory_exits(base) && !create_dir_recursive(base)) {
       return;
     }
 
-    if (writer.write_to_file(p_type, path)) {
+    if (Writer writer; writer.write_to_file(p_type, path)) {
       ExecutionContext::instance()->register_generated_file(path, p_generated_from);
     }
   }

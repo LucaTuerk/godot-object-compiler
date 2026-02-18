@@ -63,11 +63,11 @@ namespace GodotObjectCompiler {
       return &singleton;
     }
 
-    NodeDB* get_node_db();
+    NodeDB* get_node_db() const;
 
-    AttributeDB* get_attribute_db();
+    AttributeDB* get_attribute_db() const;
 
-    TypeDB* get_type_db();
+    TypeDB* get_type_db() const;
 
     const Vector<String>& get_remove_macros();
 

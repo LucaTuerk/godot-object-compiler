@@ -47,10 +47,6 @@ namespace GodotObjectCompiler {
 
   Vector<IAttributeParameterType::Argument> GodotModuleInitializationLevelParameterType::get_arguments() { return {}; }
 
-  Ref<Argument> GodotModuleInitializationLevelParameterType::create_argument() {
-    return node_new<GodotModuleInitializationLevelArgument>();
-  }
-
   bool GodotModuleInitializationLevelParameterType::get_godot_init_level_for_value_name(
       const String& p_value_name, String& r_godot_init_level) {
     _value_names_lazy.poke();

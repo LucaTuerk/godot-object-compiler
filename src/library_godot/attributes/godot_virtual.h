@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* preprocessor_define.h                                                  */
+/* godot_virtual.h                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,22 +32,27 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
-#include "node.h"
+#include "library/generator/attribute_parameter_type.h"
 
 namespace GodotObjectCompiler {
 
-  class PreprocessorDefine : public Node {
-    NODE_TYPE(PreprocessorDefine);
+  class GodotVirtualArgument : public Argument {
+    NODE_TYPE(GodotVirtualArgument);
 
-    explicit PreprocessorDefine(const String& name) : name(name) {}
+    bool is_script_virtual() const;
+    bool is_required() const;
+  };
 
-    String to_string() const override;
-    bool copy_to(const Ref<Node>& p_other) const override;
-    void write_to(IStructuredWriter* p_writer) override;
-    void read_from(IStructuredReader* p_reader) override;
+  class GodotVirtualParameterType : public IAttributeParameterType {
+    PARAM_TYPE(GodotVirtualParameterType, GodotVirtualArgument);
 
-    String name;
+   public:
+
+    String get_return_type() override;
+    Vector<String> get_value_names() override;
+    Vector<Argument> get_arguments() override;
   };
 
 }

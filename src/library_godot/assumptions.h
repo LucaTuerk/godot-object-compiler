@@ -117,6 +117,12 @@ namespace GodotObjectCompiler {
     inline Assumption<AssumeType<Define>> VARIANT_BITFIELD_CAST{
         {"VARIANT_BITFIELD_CAST"}, "Assume that a macro of name \"VARIANT_BITFIELD_CAST\" exisits in the TypeDB."};
 
+    inline Assumption<AssumeType<Enum>> MultiplayerPeerTransferMode{{"MultiplayerPeer::TransferMode"},
+        "Assume that an enum of name \"MultiplayerPeer::TransferMode\" exists in the TypeDB"};
+
+    inline Assumption<AssumeType<Enum>> MultiplayerAPIRPCMode{{"MultiplayerAPI::RPCMode"},
+        "Assume that an enum of name \"MultiplayerAPI::RPCMode\" exists in the TypeDB"};
+
     bool validate_assumptions();
 
   }

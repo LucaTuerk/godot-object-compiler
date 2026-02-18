@@ -48,7 +48,7 @@ namespace GodotObjectCompiler {
     COPY_GUARD(Context, Node);
 
     for (const Ref<Node>& child : _children) {
-      Ref<Node> cloned = child->clone();
+      const Ref<Node> cloned = child->clone();
       if (!cloned) {
         return false;
       }
@@ -130,7 +130,7 @@ namespace GodotObjectCompiler {
   Context::ChildIterator Context::end() { return _children.end(); }
 
   Context::ChildIterator Context::remove_child(decltype(_children)::iterator p_itr) {
-    Ref<Node> child = *p_itr;
+    const Ref<Node> child = *p_itr;
     p_itr = _children.erase(p_itr);
     child->_index = 0;
     child->_parent = {};
@@ -164,7 +164,7 @@ namespace GodotObjectCompiler {
   }
 
   void Context::remove_child(const Ref<Node>& p_child) {
-    auto itr = std::find(_children.begin(), _children.end(), p_child);
+    const auto itr = std::find(_children.begin(), _children.end(), p_child);
     remove_child(itr);
   }
 
@@ -199,7 +199,7 @@ namespace GodotObjectCompiler {
   String NamedContext::_name_lazy_get() const {
     Ref<Identifier> identifier = find_child<Identifier>();
     if (!identifier) {
-      return {};
+      return "";
     }
     return identifier->name;
   }
@@ -209,8 +209,7 @@ namespace GodotObjectCompiler {
   String NamedContext::_qualified_name_lazy_get() const {
     StreamWriter writer;
 
-    Ref<Namespace> ns = find_ancestor<Namespace>();
-    if (ns) {
+    if (Ref<Namespace> ns = find_ancestor<Namespace>()) {
       auto parent_qualified_name = ns->qualified_name();
       if (!parent_qualified_name.empty()) {
         writer.write(parent_qualified_name);
@@ -226,7 +225,6 @@ namespace GodotObjectCompiler {
     COPY_GUARD(NamedContext, Context);
     COPY_LAZY(name);
     COPY_LAZY(qualified_name);
-    // TODO: Leads to segfault but needs to be written for correctness
     COPY_LAZY(namespaces_names);
     return true;
   }
@@ -235,7 +233,6 @@ namespace GodotObjectCompiler {
     Context::read_from(p_reader);
     _name_lazy = p_reader->read<String, String>("_name");
     _qualified_name_lazy = p_reader->read<String, String>("_qualified_name");
-    // TODO: Leads to segfault but needs to be written for correctness
     _namespaces_names_lazy = string_split(p_reader->read<String, String>("_namespaces_names"), ",");
   }
 
@@ -243,7 +240,6 @@ namespace GodotObjectCompiler {
     Context::write_to(p_writer);
     p_writer->write<String, String>("_name", name());
     p_writer->write<String, String>("_qualified_name", qualified_name());
-    // TODO: Leads to segfault but needs to be written for correctness
     p_writer->write<String, String>("_namespaces_names", string_vector_combine(namespaces_names(), ","));
   }
 

@@ -35,7 +35,8 @@
 #include "preprocessor_handler.h"
 
 #include "library/parser/tree_sitter_node.h"
-#include "library/tree/syntax/preprocessor_define.h"
+#include "library/tree/syntax/define.h"
+#include "library/tree/syntax/identifier.h"
 
 namespace GodotObjectCompiler {
 
@@ -44,8 +45,8 @@ namespace GodotObjectCompiler {
   }
 
   ParserStep PreprocessorHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
-    if (Ref<TreeSitterNode> identifier = p_current_src->find_child(0, type_is("identifier"))) {
-      r_current_target->create_child<PreprocessorDefine>(identifier->content());
+    if (const Ref<TreeSitterNode> identifier = p_current_src->find_child(0, type_is("identifier"))) {
+      r_current_target->build_child<Define>().with_child<Identifier>(identifier->content());
     }
     return ParserStep::StepOver();
   }

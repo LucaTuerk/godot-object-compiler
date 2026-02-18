@@ -17,6 +17,5 @@
 #include "namespace.h"
 #include "node.h"
 #include "parser_error.h"
-#include "preprocessor_define.h"
 #include "struct.h"
 #include "type.h"

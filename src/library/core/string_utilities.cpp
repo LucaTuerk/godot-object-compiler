@@ -140,7 +140,17 @@ namespace GodotObjectCompiler {
     return writer.get_string();
   }
 
-  int string_to_int(const String& p_content) { return stoi(p_content, nullptr, 0); }
+  int string_to_int(const String& p_content) {
+    int result;
+    PANIC_COND(!string_to_int(p_content, result), "Failed to convert \"%s\" to int.", p_content.c_str());
+    return result;
+  }
+
+  bool string_to_int(const String& p_content, int& r_result) {
+    char* ptr;
+    r_result = std::strtol(p_content.c_str(), &ptr, 0);
+    return *ptr == 0;
+  }
 
   String macro_case_to_pascal_case(const String& p_content) {
     std::stringstream strstr;

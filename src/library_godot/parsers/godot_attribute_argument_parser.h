@@ -49,8 +49,8 @@ namespace GodotObjectCompiler {
 
     Ref<ParserError> parse_attribute_argument(const String& p_content, Ref<Context> p_target);
 
-    Ref<ParserError> parse_inner_arguments(
-        const String& p_content, Ref<Context> p_target, const IAttributeParameterType::Argument& p_parameter);
+    static Ref<ParserError> parse_inner_arguments(
+        const String& p_content, const Ref<Context>& p_target, const IAttributeParameterType::Argument& p_parameter);
 
    private:
 

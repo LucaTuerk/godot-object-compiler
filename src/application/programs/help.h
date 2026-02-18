@@ -43,6 +43,7 @@ namespace GodotObjectCompiler {
 
    public:
 
+    bool validate_arguments(ApplicationContext& p_context) override;
     Ref<ProgramError> run(ApplicationContext& p_context) override;
 
    private:

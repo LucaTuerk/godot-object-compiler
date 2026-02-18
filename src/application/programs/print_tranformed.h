@@ -39,10 +39,11 @@
 namespace GodotObjectCompiler {
 
   class PrintTransformed : public IProgram {
-    PROJECTLESS_PROGRAM(PrintTransformed, "print/transformed")
+    PROGRAM(PrintTransformed, "print/transformed")
 
    public:
 
+    bool validate_arguments(ApplicationContext& p_context) override;
     Ref<ProgramError> run(ApplicationContext& p_context) override;
   };
 

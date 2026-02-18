@@ -39,22 +39,20 @@
 
 namespace GodotObjectCompiler {
 
-#define ADD_TRANSFORM_CHILDREN(from, into)                               \
-  for (Ref<Node> child : *from) {                                        \
-    Ref<Writer::IOutputNode> transformed = transform(child);             \
-    if (Ref<Node> node = std::dynamic_pointer_cast<Node>(transformed)) { \
-      into->add_child(node);                                             \
-    }                                                                    \
+#define ADD_TRANSFORM_CHILDREN(from, into)                  \
+  for (Ref<Node> child : *from) {                           \
+    Ref<Output::OutputNode> transformed = transform(child); \
+    into->add_child(transformed);                           \
   }
 
 #define ADD_TEXT_IF_TYPE(type, text) \
   if (p_tree->is<type>()) {          \
-    return Writer::Text(text);       \
+    return Output::Text(text);       \
   }
 
-  Ref<Writer::IOutputNode> OutputTransformator::transform(Ref<Node> p_tree) {
+  Ref<Output::OutputNode> OutputTransformator::transform(Ref<Node> p_tree) {
     if (p_tree == nullptr) {
-      return Writer::Text("");
+      return Output::Text("");
     }
 
     ADD_TEXT_IF_TYPE(Virtual, "virtual")
@@ -77,89 +75,101 @@ namespace GodotObjectCompiler {
 
       auto base_names = _class->direct_bases_names();
       if (base_names.size() == 1) {
-        return Writer::Spaces({Writer::Text(specifier), Writer::Text(_class->name()),
-            Writer::Text(format(" : public %s", base_names[0].c_str())), transform(_class->body()),
-            Writer::Semicolon()});
+        return Output::Spaces({Output::Text(specifier), Output::Text(_class->name()),
+            Output::Text(format(" : public %s", base_names[0].c_str())), transform(_class->body()),
+            Output::Semicolon()});
       }
       ERR_COND(!base_names.empty(), "Classes with multiple inheritance are not supported by the OutputTransformator");
-      return Writer::Spaces(
-          {Writer::Text(specifier), Writer::Text(_class->name()), transform(_class->body()), Writer::Semicolon()});
+      return Output::Spaces(
+          {Output::Text(specifier), Output::Text(_class->name()), transform(_class->body()), Output::Semicolon()});
     }
 
     if (Ref<Namespace> _namespace = p_tree->as<Namespace>()) {
       if (_namespace->name().empty()) {
-        Ref<Writer::ListNode> into = Writer::Lines({});
+        Ref<Output::ListNode> into = Output::Lines({});
         ERR_COND(_namespace->body() == nullptr, "Failed to get global namespace body.");
 
         ADD_TRANSFORM_CHILDREN(_namespace->body(), into);
         return into;
       }
 
-      return Writer::Spaces(
-          {Writer::Text("namespace"), Writer::Text(_namespace->name()), transform(_namespace->body())});
+      return Output::Spaces(
+          {Output::Text("namespace"), Output::Text(_namespace->name()), transform(_namespace->body())});
+    }
+
+    if (Ref<AccessSpecifier> access_specifier = p_tree->as<AccessSpecifier>()) {
+      switch (access_specifier->type) {
+        case AccessSpecifier::PUBLIC:
+          return Output::Text("public:");
+          break;
+        case AccessSpecifier::PRIVATE:
+          return Output::Text("private:");
+          break;
+        case AccessSpecifier::PROTECTED:
+          return Output::Text("protected:");
+          break;
+      }
     }
 
     if (Ref<Body> body = p_tree->as<Body>()) {
-      Ref<Writer::ListNode> into = Writer::Lines({});
+      Ref<Output::ListNode> into = Output::Lines({});
       ADD_TRANSFORM_CHILDREN(body, into)
-      return Writer::NoSep({Writer::NewLine(), Writer::Braces({Writer::NewLine(), Writer::Indent(2, {into})})});
+      return Output::NoSep({Output::NewLine(), Output::Braces({Output::NewLine(), Output::Indent(2, {into})})});
     }
 
     if (Ref<Parameters> parameters = p_tree->as<Parameters>()) {
-      Ref<Writer::ListNode> into = Writer::Params({});
+      Ref<Output::ListNode> into = Output::Params({});
 
       for (const Ref<Node>& child : *parameters) {
         if (Ref<Parameter> parameter = child->as<Parameter>()) {
-          Ref<Writer::IOutputNode> transformed = transform(parameter);
+          Ref<Output::OutputNode> transformed = transform(parameter);
           if (Ref<Node> node = std::dynamic_pointer_cast<Node>(transformed)) {
             into->add_child(node);
           }
         }
       }
 
-      return Writer::Brackets({into});
+      return Output::Brackets({into});
     }
 
     if (Ref<Arguments> arguments = p_tree->as<Arguments>()) {
-      Ref<Writer::ListNode> into = Writer::Params({});
+      Ref<Output::ListNode> into = Output::Params({});
       ADD_TRANSFORM_CHILDREN(arguments, into)
-      return Writer::Brackets({into});
+      return Output::Brackets({into});
     }
 
     if (Ref<Argument> argument = p_tree->as<Argument>()) {
-      Ref<Writer::ListNode> into = Writer::NoSep({});
+      Ref<Output::ListNode> into = Output::NoSep({});
       ADD_TRANSFORM_CHILDREN(argument, into)
       return into;
     }
 
     if (Ref<TemplateParameters> arguments = p_tree->as<TemplateParameters>()) {
-      Ref<Writer::ListNode> into = Writer::Params({});
+      Ref<Output::ListNode> into = Output::Params({});
       ADD_TRANSFORM_CHILDREN(arguments, into)
-      return Writer::Chevrons({into});
+      return Output::Chevrons({into});
     }
 
     if (Ref<TemplateArguments> arguments = p_tree->as<TemplateArguments>()) {
-      Ref<Writer::ListNode> into = Writer::Params({});
+      Ref<Output::ListNode> into = Output::Params({});
       ADD_TRANSFORM_CHILDREN(arguments, into)
-      return Writer::Chevrons({into});
+      return Output::Chevrons({into});
     }
 
     if (Ref<Parameter> parameter = p_tree->as<Parameter>()) {
-      Ref<Writer::ListNode> into = Writer::Spaces({});
+      Ref<Output::ListNode> into = Output::Spaces({});
       for (const Ref<Node>& child : *parameter) {
         if (Ref<Literal> literal = child->as<Literal>()) {
-          into->add_child(Writer::Text(" = "));
+          into->add_child(Output::Text(" = "));
         }
-        Ref<Writer::IOutputNode> transformed = transform(child);
-        if (Ref<Node> node = std::dynamic_pointer_cast<Node>(transformed)) {
-          into->add_child(node);
-        }
+        Ref<Output::OutputNode> transformed = transform(child);
+        into->add_child(transformed);
       }
       return into;
     }
 
     if (Ref<Type> type = p_tree->as<Type>()) {
-      Ref<Writer::ListNode> into = Writer::Spaces({});
+      Ref<Output::ListNode> into = Output::Spaces({});
       ADD_TRANSFORM_CHILDREN(type, into)
       return into;
     }
@@ -167,59 +177,54 @@ namespace GodotObjectCompiler {
     if (Ref<Identifier> identifier = p_tree->as<Identifier>()) {
       Ref<Node> next = identifier->get_next_sibling();
       if (next && (next->is<Parameter>() || next->is<Argument>())) {
-        return Writer::NoSep({Writer::Text(identifier->name), transform(next)});
+        return Output::NoSep({Output::Text(identifier->name), transform(next)});
       } else {
-        return Writer::Text(identifier->name);
+        return Output::Text(identifier->name);
       }
     }
 
-    if (Ref<Writer::IOutputNode> existing = p_tree->as<Writer::IOutputNode>()) {
-      Ref<Node> node = std::dynamic_pointer_cast<Node>(existing);
-      if (!node) {
-        return Writer::Text("");
-      }
-
-      Ref<Writer::IOutputNode> output_node = std::dynamic_pointer_cast<Writer::IOutputNode>(node->clone());
+    if (Ref<Output::OutputNode> existing = p_tree->as<Output::OutputNode>()) {
+      Ref<Output::OutputNode> output_node = existing->clone<Output::OutputNode>();
       if (!output_node) {
-        return Writer::Text("");
+        return Output::Text("");
       }
 
-      replace_non_output_children(output_node);
+      replace_non_output_children(existing);
       return output_node;
     }
 
     if (Ref<Literal> literal = p_tree->as<Literal>()) {
-      return Writer::Text(literal->content);
+      return Output::Text(literal->content);
     }
 
     if (Ref<Field> arguments = p_tree->as<Field>()) {
-      Ref<Writer::ListNode> into = Writer::Spaces({});
+      Ref<Output::ListNode> into = Output::Spaces({});
       ADD_TRANSFORM_CHILDREN(arguments, into)
       return into;
     }
 
     if (Ref<Function> function = p_tree->as<Function>()) {
-      Ref<Writer::ListNode> into = Writer::Spaces({});
+      Ref<Output::ListNode> into = Output::Spaces({});
       ADD_TRANSFORM_CHILDREN(function, into);
       return into;
     }
 
     if (Ref<Context> context = p_tree->as<Context>()) {
-      Ref<Writer::ListNode> into = Writer::Lines({});
+      Ref<Output::ListNode> into = Output::Lines({});
       ADD_TRANSFORM_CHILDREN(context, into)
       return into;
     }
 
-    return Writer::Text("");
+    return Output::Text("");
   }
 
-  void OutputTransformator::replace_non_output_children(const Ref<Writer::IOutputNode>& p_node) {
+  void OutputTransformator::replace_non_output_children(const Ref<Output::OutputNode>& p_node) {
     if (const Ref<Context> context = std::dynamic_pointer_cast<Context>(p_node)) {
       for (const Ref<Node>& child : *context) {
-        if (Ref<Writer::IOutputNode> output_child = child->as<Writer::IOutputNode>()) {
+        if (Ref<Output::OutputNode> output_child = child->as<Output::OutputNode>()) {
           replace_non_output_children(output_child);
         } else {
-          Ref<Writer::IOutputNode> transformed = transform(child);
+          Ref<Output::OutputNode> transformed = transform(child);
           if (Ref<Node> casted = std::dynamic_pointer_cast<Node>(transformed)) {
             context->replace_child(child, casted);
           }

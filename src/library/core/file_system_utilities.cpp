@@ -238,6 +238,18 @@ namespace GodotObjectCompiler {
     return string_prefix(child_absolute, ancestor_absolute);
   }
 
+  bool could_be_path(const String& p_path) { return could_be_dir_path(p_path) || could_be_file_path(p_path); }
+
+  bool could_be_dir_path(const String& p_path) {
+    // TODO
+    return !p_path.empty();
+  }
+
+  bool could_be_file_path(const String& p_path) {
+    // TODO
+    return !p_path.empty();
+  }
+
   bool copy_file(const String& p_source, const String& p_destination) {
     auto source = path_absolute(p_source);
     auto destination = path_absolute(p_destination);
