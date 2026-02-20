@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* functions.h                                                            */
+/* rpc.h                                                                  */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,60 +33,35 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "common.h"
-#include "library/parser/parser.h"
-#include "library/tree/syntax/namespace.h"
-#include "test_registry.h"
 
-using namespace GodotObjectCompiler;
+GODOT_CLASS();
 
-GOC_INTEGRATION_TEST(GenerateFunctionBinds) {
-  GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/functions.h");
+class Rpc : public Node {
+  GODOT_GENERATED_BODY();
 
-  GOC_ASSERT_FUNC_BOUND("aabb_function");
-  GOC_ASSERT_FUNC_BOUND("array_function");
-  GOC_ASSERT_FUNC_BOUND("typed_array_function");
-  GOC_ASSERT_FUNC_BOUND("basis_function");
-  GOC_ASSERT_FUNC_BOUND("bool_function");
-  GOC_ASSERT_FUNC_BOUND("callable_function");
-  GOC_ASSERT_FUNC_BOUND("color_function");
-  GOC_ASSERT_FUNC_BOUND("dictionary_function");
-  GOC_ASSERT_FUNC_BOUND("typed_dictionary_function");
-  GOC_ASSERT_FUNC_BOUND("float_function");
-  GOC_ASSERT_FUNC_BOUND("real_t_function");
-  GOC_ASSERT_FUNC_BOUND("double_function");
-  GOC_ASSERT_FUNC_BOUND("int_function");
-  GOC_ASSERT_FUNC_BOUND("long_function");
-  GOC_ASSERT_FUNC_BOUND("node_path_function");
-  GOC_ASSERT_FUNC_BOUND("object_function");
-  GOC_ASSERT_FUNC_BOUND("packed_byte_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_color_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_float32_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_float64_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_int32_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_int64_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_string_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_vector2_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_vector3_array_function");
-  GOC_ASSERT_FUNC_BOUND("packed_vector4_array_function");
-  GOC_ASSERT_FUNC_BOUND("plane_function");
-  GOC_ASSERT_FUNC_BOUND("projection_function");
-  GOC_ASSERT_FUNC_BOUND("quaternion_function");
-  GOC_ASSERT_FUNC_BOUND("rect2_function");
-  GOC_ASSERT_FUNC_BOUND("rect2i_function");
-  GOC_ASSERT_FUNC_BOUND("signal_function");
-  GOC_ASSERT_FUNC_BOUND("string_function");
-  GOC_ASSERT_FUNC_BOUND("string_name_function");
-  GOC_ASSERT_FUNC_BOUND("transform2D_function");
-  GOC_ASSERT_FUNC_BOUND("transform3D_function");
-  GOC_ASSERT_FUNC_BOUND("vector2_function");
-  GOC_ASSERT_FUNC_BOUND("vector2i_function");
-  GOC_ASSERT_FUNC_BOUND("vector3_function");
-  GOC_ASSERT_FUNC_BOUND("vector3i_function");
-  GOC_ASSERT_FUNC_BOUND("vector4_function");
-  GOC_ASSERT_FUNC_BOUND("vector4i_function");
-  GOC_ASSERT_FUNC_BOUND("node_function");
-  GOC_ASSERT_FUNC_BOUND("resource_function");
+  GODOT_FUNCTION(Authority);
+  void rpc_function_authority();
 
-  return TEST_RESULT_SUCCESS;
+  GODOT_FUNCTION(AnyPeer);
+  void rpc_function_anypeer();
+
+  GODOT_FUNCTION(Authority, Reliable);
+  void rpc_function_reliable();
+
+  GODOT_FUNCTION(Authority, Unreliable);
+  void rpc_function_unreliable();
+
+  GODOT_FUNCTION(Authority, UnreliableOrdered);
+  void rpc_function_unreliable_ordered();
+
+  GODOT_FUNCTION(Authority, CallRemote);
+  void rpc_function_call_remote();
+
+  GODOT_FUNCTION(Authority, CallLocal);
+  void rpc_function_call_local();
+
+  GODOT_FUNCTION(Authority, Channel(1));
+  void rpc_function_channel_one();
 };
+
+GODOT_GENERATED_GLOBAL();

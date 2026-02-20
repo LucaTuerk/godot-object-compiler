@@ -42,6 +42,8 @@ bool generate_files(const GodotObjectCompiler::String& p_path, GodotObjectCompil
 GodotObjectCompiler::String get_line_that_contains(const GodotObjectCompiler::String& p_content,
     const GodotObjectCompiler::Vector<GodotObjectCompiler::String>& p_search);
 
+GodotObjectCompiler::Size find_line_that_contains(const GodotObjectCompiler::String& p_content, const GodotObjectCompiler::Vector<GodotObjectCompiler::String>& p_search, GodotObjectCompiler::Size p_start_line = 0);
+
 bool property_bound(const char* p_property_name, const char* p_variant_type,
     const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source);
 

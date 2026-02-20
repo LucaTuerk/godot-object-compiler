@@ -35,6 +35,8 @@
 
 #include "common.h"
 
+#include <strstream>
+
 #include "application/application.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
@@ -68,12 +70,12 @@ bool generate_files(const String& p_path, String& r_generated_header, String& r_
   }
 
   const String base = path_base(p_path);
-  const String file_name = path_relative(p_path, base);
+  const String relative = path_relative(p_path, TestRegistry::instance()->test_root_folder());
 
   const String generated_header_path =
-      path_concat(TestRegistry::instance()->test_generated_folder(), string_replace(file_name, ".h", ".generated.h"));
+      path_concat(TestRegistry::instance()->test_generated_folder(), string_replace(relative, ".h", ".generated.h"));
   const String generated_source_path =
-      path_concat(TestRegistry::instance()->test_generated_folder(), string_replace(file_name, ".h", ".generated.cpp"));
+      path_concat(TestRegistry::instance()->test_generated_folder(), string_replace(relative, ".h", ".generated.cpp"));
   const String register_header_path =
       path_concat(TestRegistry::instance()->test_generated_folder(), "generated_register_types.h");
   const String register_source_path =
@@ -158,8 +160,8 @@ bool function_bound(const char* p_function_name, const GodotObjectCompiler::Stri
 
 bool virtual_function_bound(const char* p_function_name, const char* p_type,
     const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source) {
-  String virtual_name =format("_%s", p_function_name);
-  if (get_line_that_contains(p_generated_source, {"GDVIRTUAL_BIND", virtual_name }).empty()) {
+  String virtual_name = format("_%s", p_function_name);
+  if (get_line_that_contains(p_generated_source, {"GDVIRTUAL_BIND", virtual_name}).empty()) {
     fmt_print_err("Virtual bind for \"%s\" not found in source", p_function_name);
     return false;
   }
@@ -190,4 +192,21 @@ String get_line_that_contains(const String& p_content, const Vector<String>& p_s
     }
   }
   return "";
+}
+
+Size find_line_that_contains(const String& p_content, const Vector<String>& p_search, Size p_start_line) {
+  std::stringstream strstsr(p_content);
+  Size i = 0;
+  for (String line; std::getline(strstsr, line);) {
+    if (p_start_line < i) {
+      const bool all_contained = std::all_of(
+          p_search.begin(), p_search.end(), [line](const String& search) { return string_contains(line, search); });
+      if (all_contained) {
+        return i;
+      }
+    }
+    ++i;
+  }
+
+  return INVALID_SIZE;
 }

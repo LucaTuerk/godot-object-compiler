@@ -33,9 +33,6 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "../../../../godot-object-compiler-sample/cmake-build-debug/.goc/generated/macros.h"
-#include "library/core/core.h"
-#include "library_godot/assumptions.h"
 
 GODOT_CLASS();
 class A : public Node {

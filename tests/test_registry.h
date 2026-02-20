@@ -59,6 +59,8 @@ namespace GodotObjectCompiler {
     bool register_integration_test(const String& name, TestFunctor functor);
 
     String test_generated_folder();
+    String test_root_folder();
+
     Vector<String> get_test_application_arguments(const ProgramPath& p_program_path);
     Vector<String> get_integration_tests_include_paths();
     void set_integration_tests_include_paths(const Vector<String>& p_paths);
@@ -105,9 +107,9 @@ namespace GodotObjectCompiler {
 
 #define GOC_TEST_IGNORE() return GodotObjectCompiler::TEST_RESULT_IGNORED;
 
-#define GOC_TEST_ASSERT(condition, message)          \
+#define GOC_TEST_ASSERT(condition, ...)          \
   if (!(condition)) {                                \
-    print_err(message);                              \
+    fmt_print_err(__VA_ARGS__);                              \
     return GodotObjectCompiler::TEST_RESULT_FAILURE; \
   }
 

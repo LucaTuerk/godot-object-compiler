@@ -53,9 +53,13 @@ namespace GodotObjectCompiler {
     return ".goc_tests/.goc/generated";
   }
 
+  String TestRegistry::test_root_folder() {
+    return "tests/files/integration_tests";
+  }
+
   Vector<String> TestRegistry::get_test_application_arguments(const ProgramPath& p_program_path) {
     Vector<String> result = p_program_path;
-    result.emplace_back("-R=tests/files/integration_tests");
+    result.emplace_back(format("-R=%s", test_root_folder().c_str()));
     result.emplace_back("-P=.goc_tests/.goc");
     result.emplace_back("-G=.goc_tests/.goc/generated");
     result.emplace_back("-C=.goc_tests/.goc/cache");

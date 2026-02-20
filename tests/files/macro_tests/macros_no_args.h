@@ -34,8 +34,6 @@
 /**************************************************************************/
 #pragma once
 
-#include "/home/luca/Repositories/godot-object-compiler-sample/cmake-build-debug/.goc/generated/macros.h"
-
 GODOT_CLASS();
 class A {
   GODOT_GENERATED_BODY();

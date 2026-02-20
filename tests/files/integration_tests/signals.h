@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* functions.h                                                            */
+/* signals.h                                                              */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,7 +33,6 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "library/core/core.h"
 
 GODOT_CLASS();
 class Functions : Node {

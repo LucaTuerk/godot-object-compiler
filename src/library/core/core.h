@@ -85,6 +85,7 @@ namespace GodotObjectCompiler {
 
   static const UID INVALID_ID = 0;
   static const Index INVALID_INDEX = -1;
+  static const Size INVALID_SIZE = -1;
 
   template <typename K, typename V>
   using Dictionary = std::map<K, V>;
