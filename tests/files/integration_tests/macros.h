@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* build_number.h                                                         */
+/* macros.h                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,5 +34,29 @@
 /**************************************************************************/
 #pragma once
 
-#define GOC_BUILD_NUMBER "ydPq74zpFhstCpNMqlK5"
+#include "/home/luca/Repositories/godot-object-compiler-sample/cmake-build-debug/.goc/generated/macros.h"
 
+GODOT_CLASS(GodotClass, LevelScene);
+class A {
+  GODOT_GENERATED_BODY();
+
+  GODOT_CATEGORY("A");
+  GODOT_GROUP("B");
+  GODOT_SUBGROUP("C");
+
+  GODOT_PROPERTY(VariantTypeInt, HintNone(), UsageDefault, PublicGet, PrivateSet);
+  int property;
+
+  GODOT_FUNCTION(NoVirtual, Disabled, Reliable, CallRemote, Channel(0));
+  int function();
+
+  GODOT_SIGNAL();
+  void signal();
+
+  GODOT_ENUM(EnumDefault);
+  enum Enum {
+    ENUM_VALUE
+  };
+};
+
+GODOT_GENERATED_GLOBAL();

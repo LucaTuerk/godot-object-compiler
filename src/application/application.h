@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* build_number.h                                                         */
+/* application.h                                                          */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,7 +32,47 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
+#include "application_context.h"
+#include "library/core/core.h"
+#include "programs/program.h"
 
-#define GOC_BUILD_NUMBER "ydPq74zpFhstCpNMqlK5"
+namespace GodotObjectCompiler {
 
+  struct RunConfig {
+    ApplicationContext context;
+    Ref<IProgram> program;
+  };
+
+  class Application {
+   public:
+
+    static bool was_last_exit_graceful(const ApplicationContext& context);
+    static int exit_gracefully(const ApplicationContext& context, int p_return_code);
+
+    static int run(Vector<String> p_arguments);
+    static int setup_context(Vector<String> p_arguments, ApplicationContext& r_context);
+    static int run_program(ApplicationContext& p_context);
+    static int cleanup_context(const ApplicationContext& p_context);
+  };
+
+}
+
+#define APP_ERR(...)              \
+  print_err(format(__VA_ARGS__)); \
+  return 1;
+
+#define APP_TOP_LEVEL_ERR(...)    \
+  print_err(format(__VA_ARGS__)); \
+  return exit_gracefully(application_context, 1);
+
+#define APP_ERR_COND(condition, ...) \
+  if ((condition)) {                 \
+    APP_ERR(__VA_ARGS__)             \
+  }
+
+#define APP_TOP_LEVEL_ERR_COND(condition, ...) \
+  if ((condition)) {                           \
+    APP_TOP_LEVEL_ERR(__VA_ARGS__)             \
+  }

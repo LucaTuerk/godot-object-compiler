@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* build_number.h                                                         */
+/* invalid_properties.h                                                   */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,7 +32,17 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
+#include "common.h"
+#include "library/core/file_system_utilities.h"
+#include "test_registry.h"
 
-#define GOC_BUILD_NUMBER "ydPq74zpFhstCpNMqlK5"
+using namespace GodotObjectCompiler;
 
+GOC_INTEGRATION_TEST(InvalidPropertiesGracefulExit) {
+  for (const String& file : directory_files("tests/files/integration_tests/invalid_properties")) {
+    GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file);
+  }
+  return TEST_RESULT_SUCCESS;
+};

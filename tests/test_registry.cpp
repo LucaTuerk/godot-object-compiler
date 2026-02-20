@@ -35,6 +35,8 @@
 
 #include "test_registry.h"
 
+#include "library/core/string_utilities.h"
+
 namespace GodotObjectCompiler {
 
   bool TestRegistry::register_test(const String& name, TestFunctor functor) {
@@ -42,10 +44,45 @@ namespace GodotObjectCompiler {
     return success;
   }
 
+  bool TestRegistry::register_integration_test(const String& name, TestFunctor functor) {
+    auto [_, success] = integration_tests.emplace(name, functor);
+    return success;
+  }
+
+  String TestRegistry::test_generated_folder() {
+    return ".goc_tests/.goc/generated";
+  }
+
+  Vector<String> TestRegistry::get_test_application_arguments(const ProgramPath& p_program_path) {
+    Vector<String> result = p_program_path;
+    result.emplace_back("-R=tests/files/integration_tests");
+    result.emplace_back("-P=.goc_tests/.goc");
+    result.emplace_back("-G=.goc_tests/.goc/generated");
+    result.emplace_back("-C=.goc_tests/.goc/cache");
+    result.emplace_back(format("-I=%s", string_vector_combine(TestRegistry::instance()->get_integration_tests_include_paths(), ",").c_str()));
+    return result;
+  }
+
+  Vector<String> TestRegistry::get_integration_tests_include_paths() {
+    return include_paths;
+  }
+
+  void TestRegistry::set_integration_tests_include_paths(const Vector<String>& p_paths) {
+    include_paths = p_paths;
+  }
+
+  const Dictionary<String, TestFunctor>& TestRegistry::get_integration_tests() {
+    return integration_tests;
+  }
+
   const Dictionary<String, TestFunctor>& TestRegistry::get_tests() { return tests; }
 
   bool TestRegister::operator<<(TestFunctor functor) const {
     return TestRegistry::instance()->register_test(name, std::move(functor));
+  }
+
+  bool IntegrationTestRegister::operator<<(TestFunctor functor) const {
+    return TestRegistry::instance()->register_integration_test(name, std::move(functor));
   }
 
 }

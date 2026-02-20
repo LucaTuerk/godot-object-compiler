@@ -16,7 +16,7 @@ compile_commands.json
 goc
 .goc
 .goc_tests
-.goc_project
+-.goc_project
 *.h.generated
 *.cpp.generated
 *.generated.h

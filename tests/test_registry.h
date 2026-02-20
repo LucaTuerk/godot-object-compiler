@@ -34,6 +34,9 @@
 /**************************************************************************/
 
 #pragma once
+#include <utility>
+
+#include "application/programs/program.h"
 #include "library/core/core.h"
 #include "library/core/string_writer.h"
 #include "library/tree/syntax/function.h"
@@ -53,11 +56,21 @@ namespace GodotObjectCompiler {
     }
 
     bool register_test(const String& name, TestFunctor functor);
+    bool register_integration_test(const String& name, TestFunctor functor);
+
+    String test_generated_folder();
+    Vector<String> get_test_application_arguments(const ProgramPath& p_program_path);
+    Vector<String> get_integration_tests_include_paths();
+    void set_integration_tests_include_paths(const Vector<String>& p_paths);
+
     const Dictionary<String, TestFunctor>& get_tests();
+    const Dictionary<String, TestFunctor>& get_integration_tests();
 
    private:
 
+    Vector<String> include_paths;
     Dictionary<String, TestFunctor> tests;
+    Dictionary<String, TestFunctor> integration_tests;
   };
 
   class TestRegister {
@@ -65,7 +78,17 @@ namespace GodotObjectCompiler {
 
    public:
 
-    explicit TestRegister(const String& name) : name(name) {}
+    explicit TestRegister(String  name) : name(std::move(name)) {}
+
+    bool operator<<(TestFunctor functor) const;
+  };
+
+  class IntegrationTestRegister {
+    String name;
+
+  public:
+
+    explicit IntegrationTestRegister(String  name) : name(std::move(name)) {}
 
     bool operator<<(TestFunctor functor) const;
   };
@@ -74,6 +97,10 @@ namespace GodotObjectCompiler {
 
 #define GOC_TEST(name)                                                                        \
   static inline bool __##name##__test_registered__ = GodotObjectCompiler::TestRegister(#name) \
+      << []()->GodotObjectCompiler::TestResult
+
+#define GOC_INTEGRATION_TEST(name)                                                                        \
+  static inline bool __##name##__test_registered__ = GodotObjectCompiler::IntegrationTestRegister(#name) \
       << []()->GodotObjectCompiler::TestResult
 
 #define GOC_TEST_IGNORE() return GodotObjectCompiler::TEST_RESULT_IGNORED;

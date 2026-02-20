@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* build_number.h                                                         */
+/* common.h                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,6 +33,28 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "library/core/core.h"
 
-#define GOC_BUILD_NUMBER "ydPq74zpFhstCpNMqlK5"
+bool generate_files(const GodotObjectCompiler::String& p_path, GodotObjectCompiler::String& r_generated_header,
+    GodotObjectCompiler::String& r_generated_source, GodotObjectCompiler::String& r_register_header,
+    GodotObjectCompiler::String& r_register_source);
 
+GodotObjectCompiler::String get_line_that_contains(const GodotObjectCompiler::String& p_content,
+    const GodotObjectCompiler::Vector<GodotObjectCompiler::String>& p_search);
+
+bool property_bound(const char* p_property_name, const char* p_variant_type,
+    const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source);
+
+#define GOC_INTEGRATION_TEST_GEN_FILE(file)                                                                  \
+  String generated_header, generated_source, register_header, register_source;                               \
+  bool success = generate_files(file, generated_header, generated_source, register_header, register_source); \
+  GOC_TEST_ASSERT(success, "Failed to generate files.")
+
+#define GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file)                                                                  \
+  String generated_header, generated_source, register_header, register_source;                               \
+  bool success = generate_files(file, generated_header, generated_source, register_header, register_source); \
+  GOC_TEST_ASSERT(!success, "Invalid file was succesfully generated.")
+
+#define GOC_ASSERT_PROP_BOUND(prop, variant_type)                                         \
+  GOC_TEST_ASSERT(property_bound(prop, variant_type, generated_header, generated_source), \
+      format("Property \"%s\" not bound.", prop));

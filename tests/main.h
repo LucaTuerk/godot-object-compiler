@@ -33,5 +33,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#define GOC_TEST_CONTEXT
+#include "library/execution_context.h"
 
 int main(int argc, char* argv[]);

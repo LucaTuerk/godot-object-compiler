@@ -35,22 +35,31 @@
 
 #include "main.h"
 
+#include "application/application.h"
 #include "core/all.h"
+#include "integration/all.h"
+#include "library/type_db.h"
 #include "parser/all.h"
 #include "test_registry.h"
 
 int main(int argc, char* argv[]) {
-  UNUSED(argc);
-  UNUSED(argv);
+  bool run_integration_tests = false;
+  for (int i = 1; i < argc; i++) {
+    print_ln(argv[i]);
+    if (String(argv[i]) == "run_integration_tests") {
+      run_integration_tests = true;
+    }
+  }
+
   using namespace GodotObjectCompiler;
+  ExecutionContext::instance()->set_error_level(ERROR, FULL);
+
   Size failed_count = 0;
   Size success_count = 0, ignore_count = 0, all_count = 0;
   for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
     all_count++;
 
-    TestResult result = test_functor();
-
-    switch (result) {
+    switch (TestResult result = test_functor()) {
       case TEST_RESULT_SUCCESS:
         print_ln(format("%s\tSuccess!", test_name.c_str()));
         success_count++;
@@ -63,6 +72,36 @@ int main(int argc, char* argv[]) {
         print_ln(format("%s\tIgnored!", test_name.c_str()));
         ignore_count++;
         break;
+    }
+  }
+
+  if (run_integration_tests) {
+    Vector<String> include_paths;
+    for (int i = 2; i < argc; i++) {
+      include_paths.emplace_back(argv[i]);
+    }
+    TestRegistry::instance()->set_integration_tests_include_paths(include_paths);
+
+    for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_integration_tests()) {
+      const Vector<String> args = TestRegistry::instance()->get_test_application_arguments({"generate", "type_db"});
+      Application::run(args);  // we need the type db to run integration tests;
+
+      all_count++;
+
+      switch (TestResult result = test_functor()) {
+        case TEST_RESULT_SUCCESS:
+          print_ln(format("%s\tSuccess!", test_name.c_str()));
+          success_count++;
+          break;
+        case TEST_RESULT_FAILURE:
+          print_err(format("%s\tFailed!", test_name.c_str()));
+          failed_count++;
+          break;
+        case TEST_RESULT_IGNORED:
+          print_ln(format("%s\tIgnored!", test_name.c_str()));
+          ignore_count++;
+          break;
+      }
     }
   }
 
