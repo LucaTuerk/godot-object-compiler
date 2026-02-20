@@ -52,6 +52,7 @@ namespace GodotObjectCompiler {
 
   void ExecutionContext::test_force_clear_modified_time(const String& p_path) {
     String absolute = path_absolute(p_path);
+    clear_generated_files(p_path);
     _last_modified_times.erase(absolute);
     _out_last_modified_times.erase(absolute);
   }
@@ -168,6 +169,7 @@ namespace GodotObjectCompiler {
 
       if (!file_exists(path)) {
         for (const String& generated_file : generated_files) {
+          PRINT_VERBOSE("Removing orphan \"%s\", generated from \"%s\"", generated_file.c_str(), path.c_str());
           if (file_exists(generated_file)) {
             remove_file(generated_file);
           }
@@ -188,6 +190,7 @@ namespace GodotObjectCompiler {
 
     for (const String& generated : itr->second) {
       if (file_exists(generated)) {
+        PRINT_VERBOSE("Removing orphan \"%s\", generated from \"%s\"", generated.c_str(), p_path.c_str());
         remove_file(generated);
       }
     }

@@ -50,6 +50,7 @@ bool generate_files(const String& p_path, String& r_generated_header, String& r_
 
   if (Application::setup_context(args, context) != 0) {
     print_err("Failed to setup context.");
+    Application::exit_gracefully(context, 1);
     return false;
   }
 
@@ -57,6 +58,7 @@ bool generate_files(const String& p_path, String& r_generated_header, String& r_
 
   if (Application::run_program(context) != 0) {
     print_err("Failed to run program.");
+    Application::exit_gracefully(context, 1);
     return false;
   }
 
@@ -68,13 +70,13 @@ bool generate_files(const String& p_path, String& r_generated_header, String& r_
   const String base = path_base(p_path);
   const String file_name = path_relative(p_path, base);
 
-  String generated_header_path =
+  const String generated_header_path =
       path_concat(TestRegistry::instance()->test_generated_folder(), string_replace(file_name, ".h", ".generated.h"));
-  String generated_source_path =
+  const String generated_source_path =
       path_concat(TestRegistry::instance()->test_generated_folder(), string_replace(file_name, ".h", ".generated.cpp"));
-  String register_header_path =
+  const String register_header_path =
       path_concat(TestRegistry::instance()->test_generated_folder(), "generated_register_types.h");
-  String register_source_path =
+  const String register_source_path =
       path_concat(TestRegistry::instance()->test_generated_folder(), "generated_register_types.cpp");
 
   if (!file_exists(generated_header_path)) {
@@ -131,7 +133,47 @@ bool property_bound(const char* p_property_name, const char* p_variant_type, con
 
   if (get_line_that_contains(p_generated_source, {"ADD_PROPERTY", p_variant_type, p_property_name}).empty()) {
     fmt_print_err("Property binding not found for %s with variant type %s", p_property_name, p_variant_type);
+    return false;
   }
+  return true;
+}
+
+bool signal_bound(const char* p_signal_name, const char* p_variant_type,
+    const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source) {
+  if (get_line_that_contains(p_generated_source, {"ADD_SIGNAL", p_signal_name, p_variant_type}).empty()) {
+    fmt_print_err("Function bind for \"%s\" not found in source", p_signal_name);
+    return false;
+  }
+  return true;
+}
+
+bool function_bound(const char* p_function_name, const GodotObjectCompiler::String& p_generated_header,
+    const GodotObjectCompiler::String& p_generated_source) {
+  if (get_line_that_contains(p_generated_source, {"bind_method", p_function_name}).empty()) {
+    fmt_print_err("Function bind for \"%s\" not found in source", p_function_name);
+    return false;
+  }
+  return true;
+}
+
+bool virtual_function_bound(const char* p_function_name, const char* p_type,
+    const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source) {
+  String virtual_name =format("_%s", p_function_name);
+  if (get_line_that_contains(p_generated_source, {"GDVIRTUAL_BIND", virtual_name }).empty()) {
+    fmt_print_err("Virtual bind for \"%s\" not found in source", p_function_name);
+    return false;
+  }
+
+  if (get_line_that_contains(p_generated_source, {virtual_name, "GDVIRTUAL_CALL"}).empty()) {
+    fmt_print_err("Virtual call definition for \"%s\" not found in source", p_function_name);
+    return false;
+  }
+
+  if (get_line_that_contains(p_generated_header, {"GDVIRTUAL", virtual_name, p_type}).empty()) {
+    fmt_print_err("Virtual definition for \"%s\" not found in header", p_function_name);
+    return false;
+  }
+
   return true;
 }
 

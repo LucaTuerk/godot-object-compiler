@@ -1,5 +1,8 @@
 #pragma once
 #include "common.h"
+#include "functions.h"
 #include "invalid_properties.h"
 #include "macros.h"
 #include "properties.h"
+#include "signals.h"
+#include "virtual_functions.h"

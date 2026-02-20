@@ -62,11 +62,12 @@ namespace GodotObjectCompiler {
         if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") && !string_suffix(file, ".gen.inc")) {
           continue;
         }
-        PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
 
         if (!ExecutionContext::instance()->file_modified(file)) {
+          PRINT_VERBOSE("TypeDB:\tSkipping \"%s\". Not modified.", file.c_str());
           continue;
         }
+        PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
 
         Ref<Namespace> global_namespace = node_new<Namespace>();
         Ref<ParserError> error = parser.parse_file(file, global_namespace);
