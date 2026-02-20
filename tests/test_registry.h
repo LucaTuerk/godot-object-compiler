@@ -80,7 +80,7 @@ namespace GodotObjectCompiler {
 
    public:
 
-    explicit TestRegister(String  name) : name(std::move(name)) {}
+    explicit TestRegister(String name) : name(std::move(name)) {}
 
     bool operator<<(TestFunctor functor) const;
   };
@@ -88,9 +88,9 @@ namespace GodotObjectCompiler {
   class IntegrationTestRegister {
     String name;
 
-  public:
+   public:
 
-    explicit IntegrationTestRegister(String  name) : name(std::move(name)) {}
+    explicit IntegrationTestRegister(String name) : name(std::move(name)) {}
 
     bool operator<<(TestFunctor functor) const;
   };
@@ -101,15 +101,15 @@ namespace GodotObjectCompiler {
   static inline bool __##name##__test_registered__ = GodotObjectCompiler::TestRegister(#name) \
       << []()->GodotObjectCompiler::TestResult
 
-#define GOC_INTEGRATION_TEST(name)                                                                        \
+#define GOC_INTEGRATION_TEST(name)                                                                       \
   static inline bool __##name##__test_registered__ = GodotObjectCompiler::IntegrationTestRegister(#name) \
       << []()->GodotObjectCompiler::TestResult
 
 #define GOC_TEST_IGNORE() return GodotObjectCompiler::TEST_RESULT_IGNORED;
 
-#define GOC_TEST_ASSERT(condition, ...)          \
+#define GOC_TEST_ASSERT(condition, ...)              \
   if (!(condition)) {                                \
-    fmt_print_err(__VA_ARGS__);                              \
+    fmt_print_err(__VA_ARGS__);                      \
     return GodotObjectCompiler::TEST_RESULT_FAILURE; \
   }
 

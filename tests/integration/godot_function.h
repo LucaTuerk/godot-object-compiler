@@ -39,14 +39,16 @@
 
 using namespace GodotObjectCompiler;
 
-inline bool rpc_config_bound(const String& p_function_name, const Vector<String>& p_comp, const String& p_generated_source) {
+inline bool rpc_config_bound(
+    const String& p_function_name, const Vector<String>& p_comp, const String& p_generated_source) {
   const Size config_line = find_line_that_contains(p_generated_source, {"rpc_config", p_function_name});
   const Size search_line = find_line_that_contains(p_generated_source, p_comp, config_line - 6);
   return config_line > search_line;
 }
 
 #define GOC_ASSERT_RPC_CONFIG(rpc_name, ...) \
-  GOC_TEST_ASSERT(rpc_config_bound(rpc_name, {__VA_ARGS__}, generated_source), "Invalid rpc config for method \"%s\"", rpc_name)
+  GOC_TEST_ASSERT(                           \
+      rpc_config_bound(rpc_name, {__VA_ARGS__}, generated_source), "Invalid rpc config for method \"%s\"", rpc_name)
 
 GOC_INTEGRATION_TEST(RpcConfig) {
   GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/godot_function/rpc.h");

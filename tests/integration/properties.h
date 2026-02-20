@@ -46,7 +46,7 @@ GOC_INTEGRATION_TEST(GeneratePropertyBinds) {
   GOC_ASSERT_PROP_BOUND("aabb_property", "AABB");
   GOC_ASSERT_PROP_BOUND("array_property", "ARRAY");
   GOC_ASSERT_PROP_BOUND("typed_array_property", "ARRAY");
-  GOC_ASSERT_PROP_BOUND("basis_property","BASIS");
+  GOC_ASSERT_PROP_BOUND("basis_property", "BASIS");
   GOC_ASSERT_PROP_BOUND("bool_property", "BOOL");
   GOC_ASSERT_PROP_BOUND("callable_property", "CALLABLE");
   GOC_ASSERT_PROP_BOUND("color_property", "COLOR");

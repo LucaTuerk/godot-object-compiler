@@ -172,7 +172,7 @@ GodotObjectCompiler::Ref<T> GodotObjectCompiler::INodeReader::read_from_file(con
   virtual String get_type() const override { return #type; }                                               \
   static String get_type_static() { return #type; }                                                        \
   static Ref<Node> create_static() { return ExecutionContext::instance()->get_node_db()->create<type>(); } \
-  virtual Ref<Node> create() const override { return type::create_static(); }                                    \
+  virtual Ref<Node> create() const override { return type::create_static(); }                              \
   static inline bool __registered__##type##__ =                                                            \
       ExecutionContext::instance()->get_node_db()->register_node_constructor(                              \
           #type, &GodotObjectCompiler::default_construct<type>);

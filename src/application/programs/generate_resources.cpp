@@ -36,6 +36,7 @@
 #ifdef DEV_BUILD
 #include "generate_resources.h"
 
+#include "generate_type_db.h"
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
@@ -59,6 +60,9 @@ namespace GodotObjectCompiler {
 
   Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
     UNUSED(p_context);
+
+    GenerateTypeDB generate_type_db;
+    PROG_ERR_COND(generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the TypeDB");
 
     Permissions::instance()->add_write_path("resources");
     Permissions::instance()->add_write_path("docs");

@@ -90,7 +90,7 @@ namespace GodotObjectCompiler {
 
   Ref<Function> GodotGeneratorUtils::bind_method(const String& p_class_name, const String& p_method_name,
       const Vector<String>& p_parameter_names, const Vector<String>& p_default_values) {
-   return bind_method_as(p_class_name, p_method_name, p_method_name, p_parameter_names, p_default_values);
+    return bind_method_as(p_class_name, p_method_name, p_method_name, p_parameter_names, p_default_values);
   }
 
   Ref<Function> GodotGeneratorUtils::bind_method_as(const String& p_class_name, const String& p_bind_name,

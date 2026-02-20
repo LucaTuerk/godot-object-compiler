@@ -35,10 +35,12 @@
 #pragma once
 
 GODOT_CLASS();
+
 class Invalid : Node {
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY();
   Resource no_ptr_resource;
 };
+
 GODOT_GENERATED_GLOBAL();

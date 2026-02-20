@@ -41,7 +41,7 @@
 #include "library_godot/attributes/godot_property_usage_flags.h"
 #include "library_godot/attributes/godot_rpc.h"
 #include "library_godot/attributes/godot_virtual.h"
-namespace GodotObjectCompiler
+namespace GodotObjectCompiler 
 {
   namespace AssumedParameterValues 
   {

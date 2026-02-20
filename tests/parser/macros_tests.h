@@ -47,22 +47,28 @@ GOC_TEST(ParseMacros) {
   const Ref<GodotClassAttribute> class_attribute = global_namespace->find_descendant<GodotClassAttribute>();
   GOC_TEST_ASSERT(class_attribute, "Failed to find class attribute");
 
-  const Ref<GodotGeneratedBodyAttribute> generate_body_attribute = global_namespace->find_descendant<GodotGeneratedBodyAttribute>();
+  const Ref<GodotGeneratedBodyAttribute> generate_body_attribute =
+      global_namespace->find_descendant<GodotGeneratedBodyAttribute>();
   GOC_TEST_ASSERT(generate_body_attribute, "Failed to find generated body attribute");
 
-  const Ref<GodotPropertyCategoryAttribute> godot_property_category_attribute = global_namespace->find_descendant<GodotPropertyCategoryAttribute>();
+  const Ref<GodotPropertyCategoryAttribute> godot_property_category_attribute =
+      global_namespace->find_descendant<GodotPropertyCategoryAttribute>();
   GOC_TEST_ASSERT(godot_property_category_attribute, "Failed to find category attribute");
 
-  const Ref<GodotPropertyGroupAttribute> godot_property_group_attribute = global_namespace->find_descendant<GodotPropertyGroupAttribute>();
+  const Ref<GodotPropertyGroupAttribute> godot_property_group_attribute =
+      global_namespace->find_descendant<GodotPropertyGroupAttribute>();
   GOC_TEST_ASSERT(godot_property_group_attribute, "Failed to find group attribute");
 
-  const Ref<GodotPropertySubgroupAttribute> godot_property_subgroup_attribute = global_namespace->find_descendant<GodotPropertySubgroupAttribute>();
+  const Ref<GodotPropertySubgroupAttribute> godot_property_subgroup_attribute =
+      global_namespace->find_descendant<GodotPropertySubgroupAttribute>();
   GOC_TEST_ASSERT(godot_property_subgroup_attribute, "Failed to find subgroup attribute");
 
-  const Ref<GodotPropertyAttribute> godot_property_attribute = global_namespace->find_descendant<GodotPropertyAttribute>();
+  const Ref<GodotPropertyAttribute> godot_property_attribute =
+      global_namespace->find_descendant<GodotPropertyAttribute>();
   GOC_TEST_ASSERT(godot_property_attribute, "Failed to find property attribute");
 
-  const Ref<GodotFunctionAttribute> godot_function_attribute = global_namespace->find_descendant<GodotFunctionAttribute>();
+  const Ref<GodotFunctionAttribute> godot_function_attribute =
+      global_namespace->find_descendant<GodotFunctionAttribute>();
   GOC_TEST_ASSERT(godot_function_attribute, "Failed to find function attribute");
 
   const Ref<GodotSignalAttribute> godot_signal_attribute = global_namespace->find_descendant<GodotSignalAttribute>();
@@ -71,7 +77,8 @@ GOC_TEST(ParseMacros) {
   const Ref<GodotEnumAttribute> godot_enum_attribute = global_namespace->find_descendant<GodotEnumAttribute>();
   GOC_TEST_ASSERT(godot_enum_attribute, "Failed to find enum attribute");
 
-  const Ref<GodotGeneratedGlobalAttribute> godot_generated_global_attribute = global_namespace->find_descendant<GodotGeneratedGlobalAttribute>();
+  const Ref<GodotGeneratedGlobalAttribute> godot_generated_global_attribute =
+      global_namespace->find_descendant<GodotGeneratedGlobalAttribute>();
   GOC_TEST_ASSERT(godot_generated_global_attribute, "Failed to find generated global attribute");
 
   return TEST_RESULT_SUCCESS;

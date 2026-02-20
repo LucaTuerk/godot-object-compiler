@@ -59,7 +59,8 @@ int main(int argc, char* argv[]) {
   for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
     all_count++;
 
-    switch (TestResult result = test_functor()) {
+    const TestResult result = test_functor();
+    switch (result) {
       case TEST_RESULT_SUCCESS:
         print_ln(format("%s\tSuccess!", test_name.c_str()));
         success_count++;
@@ -87,8 +88,8 @@ int main(int argc, char* argv[]) {
       Application::run(args);  // we need the type db to run integration tests;
 
       all_count++;
-
-      switch (TestResult result = test_functor()) {
+      const TestResult result = test_functor();
+      switch (result) {
         case TEST_RESULT_SUCCESS:
           print_ln(format("%s\tSuccess!", test_name.c_str()));
           success_count++;

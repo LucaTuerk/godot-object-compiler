@@ -120,8 +120,8 @@ namespace GodotObjectCompiler {
     inline Assumption<AssumeType<Enum>> MultiplayerPeerTransferMode{{"MultiplayerPeer::TransferMode"},
         "Assume that an enum of name \"MultiplayerPeer::TransferMode\" exists in the TypeDB"};
 
-    inline Assumption<AssumeType<Enum>> MultiplayerAPIRPCMode{{"MultiplayerAPI::RPCMode"},
-        "Assume that an enum of name \"MultiplayerAPI::RPCMode\" exists in the TypeDB"};
+    inline Assumption<AssumeType<Enum>> MultiplayerAPIRPCMode{
+        {"MultiplayerAPI::RPCMode"}, "Assume that an enum of name \"MultiplayerAPI::RPCMode\" exists in the TypeDB"};
 
     bool validate_assumptions();
 

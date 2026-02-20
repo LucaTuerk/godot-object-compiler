@@ -35,6 +35,7 @@
 #pragma once
 
 GODOT_CLASS();
+
 class A {
   GODOT_GENERATED_BODY();
 
@@ -52,9 +53,8 @@ class A {
   void signal();
 
   GODOT_ENUM();
-  enum Enum {
-    ENUM_VALUE
-  };
+
+  enum Enum { ENUM_VALUE };
 };
 
 GODOT_GENERATED_GLOBAL();

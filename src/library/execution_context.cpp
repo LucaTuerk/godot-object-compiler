@@ -57,7 +57,6 @@ namespace GodotObjectCompiler {
     _out_last_modified_times.erase(absolute);
   }
 
-
   String error_level_to_string(ErrorLevel level) {
     switch (level) {
       case ERROR:

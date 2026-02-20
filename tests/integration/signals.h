@@ -46,7 +46,7 @@ GOC_INTEGRATION_TEST(GenerateSignalBinds) {
   GOC_ASSERT_SIGNAL_BOUND("aabb_signal", "AABB");
   GOC_ASSERT_SIGNAL_BOUND("array_signal", "ARRAY");
   GOC_ASSERT_SIGNAL_BOUND("typed_array_signal", "ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("basis_signal","BASIS");
+  GOC_ASSERT_SIGNAL_BOUND("basis_signal", "BASIS");
   GOC_ASSERT_SIGNAL_BOUND("bool_signal", "BOOL");
   GOC_ASSERT_SIGNAL_BOUND("callable_signal", "CALLABLE");
   GOC_ASSERT_SIGNAL_BOUND("color_signal", "COLOR");

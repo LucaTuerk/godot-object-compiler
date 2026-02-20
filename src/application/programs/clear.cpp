@@ -65,7 +65,6 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ProgramError> ClearCache::run(ApplicationContext& p_context) {
-
     for (const String& entry : directory_entries(p_context.paths_cache)) {
       if (string_contains(entry, ".readonly")) {
         continue;

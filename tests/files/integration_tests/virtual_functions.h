@@ -35,6 +35,7 @@
 #pragma once
 
 GODOT_CLASS();
+
 class VirtualFunctions : Node {
   GODOT_GENERATED_BODY();
 

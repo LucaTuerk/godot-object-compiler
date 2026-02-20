@@ -35,6 +35,7 @@
 #pragma once
 
 GODOT_CLASS();
+
 class A : public Node {
   GODOT_GENERATED_BODY();
 
@@ -171,13 +172,11 @@ class A : public Node {
   Ref<Resource> resource_property;
 
   GODOT_ENUM();
-  enum Enum {
-    ENUM_VALUE
-  };
+
+  enum Enum { ENUM_VALUE };
 
   GODOT_PROPERTY();
   Enum enum_property;
-
 };
 
 GODOT_GENERATED_GLOBAL();

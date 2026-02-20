@@ -93,4 +93,5 @@ namespace GodotObjectCompiler {
   bool could_be_dir_path(const String& p_path);
 
   bool could_be_file_path(const String& p_path);
+
 }

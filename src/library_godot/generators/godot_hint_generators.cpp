@@ -126,7 +126,7 @@ namespace GodotObjectCompiler {
     UNUSED(p_generated_global);
 
     const Ref<Body> get_property_list_body =
-      get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+        get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
 
     GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
 

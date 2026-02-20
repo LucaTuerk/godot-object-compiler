@@ -1,5 +1,6 @@
 > [!WARNING]
 > This is experimental software, please do not use this application in a production environment.
+> This project is currently only tested on Linux. Everything is still subject to change.
 
 ![Header Image](./assets/header.png)
 
@@ -76,22 +77,20 @@ If we want to add a signal we add a void method definition and mark it as a sign
 ```
 
 ### Functions
-GOC can also expose regular functions to the engine. Virtual and static specifiers are taken into account when generating the bindings. 
+GOC can also expose regular functions to the engine, and script virtual functions can be bound with a simple tag.
 
 ```cpp
 
     GODOT_FUNCTION();
 	Node *exposed_function();
 
-	GODOT_FUNCTION();
-	virtual int virtual_function(Node *p_param);
+	GODOT_FUNCTION(ScriptVirtual);
+	int virtual_function(Node *p_param);
 
 	GODOT_FUNCTION();
 	static int static_function();
 
 ```
-> [!NOTE]
-> Virtual functions are registered as a script virtual functions, so they can be overwritten in scripts. 
 
 ### Enums
 Lets say we want to add a flags property to our node. We can add a marked enum to the class body, and specify that we would like this enum to be treated as flags in the macro parameters.
@@ -124,15 +123,15 @@ GODOT_GENERATED_GLOBAL();
 
 # Usage
 
-GOC currently ships with integrations for CMake and SConstruct. The tools can be dumped into a local folder by calling the GOC executables init_tools program with a local path argument.
+GOC currently ships with integrations for CMake. The tools can be dumped into a local folder by calling the GOC executables init_tools program with a local path argument.
 
 ```cmd
-goc.exe init_tools tools
+goc init_tools tools
 ```
 
 ## CMake Integration
 
-Include the tools file in your CMakeLists.txt and activate the GOC generator for your GDExtension target by specifying the target name the and sources root directory. GOC will then scan the sources folder on each build and generate the bindings code.
+Include the tools file in your CMakeLists.txt and activate the GOC generator for your GDExtension target by specifying the target name the and sources root directory. GOC will then generate the bindings code for your targets source files.
 
 ```cmake
 #using example paths
@@ -147,7 +146,7 @@ tbd
 You can also use the GOC as a CLI tool to manually generate the sources or build your own integrations. Execute
 
 ```cmd
-goc.exe help
+goc help
 ```
 
 To show usage info or consult the documentation.

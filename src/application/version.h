@@ -35,5 +35,5 @@
 #pragma once
 
 #define GOC_MAJOR_VERSION 0
-#define GOC_MINOR_VERSION 0
-#define GOC_VERSION_NAME "experimental"
+#define GOC_MINOR_VERSION 1
+#define GOC_VERSION_NAME "public experimental"

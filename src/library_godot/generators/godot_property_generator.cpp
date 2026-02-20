@@ -92,8 +92,7 @@ namespace GodotObjectCompiler {
 
     using namespace GodotGeneratorUtils;
 
-    Ref<Body> bind_methods_body =
-        get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+    Ref<Body> bind_methods_body = get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
     GEN_ERROR_COND(!bind_methods_body, p_target_class, "Failed to find or generate the _bind_methods function body.");
 
     Ref<Body> get_property_list_body =
@@ -219,13 +218,15 @@ namespace GodotObjectCompiler {
     GEN_ERROR_COND(!set_access_specifier_argument, p_attribute, "Failed to get set specifier argument");
 
     AccessSpecifier::Type get_specifier, set_specifier;
-    GEN_ERROR_COND(!get_access_specifier_argument->get_specifier(get_specifier), p_attribute, "Failed to get property getter access specifier.");
-    GEN_ERROR_COND(!set_access_specifier_argument->get_specifier(set_specifier), p_attribute, "Failed to get property setter access specifier.");
+    GEN_ERROR_COND(!get_access_specifier_argument->get_specifier(get_specifier), p_attribute,
+        "Failed to get property getter access specifier.");
+    GEN_ERROR_COND(!set_access_specifier_argument->get_specifier(set_specifier), p_attribute,
+        "Failed to get property setter access specifier.");
 
     switch (get_specifier) {
       case AccessSpecifier::PUBLIC: {
         generated_public_members->add_child(get_def);
-      }break;
+      } break;
       case AccessSpecifier::PRIVATE:
         generated_private_members->add_child(get_def);
         break;
@@ -237,7 +238,7 @@ namespace GodotObjectCompiler {
     switch (set_specifier) {
       case AccessSpecifier::PUBLIC: {
         generated_public_members->add_child(set_def);
-      }break;
+      } break;
       case AccessSpecifier::PRIVATE:
         generated_private_members->add_child(set_def);
         break;

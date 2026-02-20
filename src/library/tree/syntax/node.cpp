@@ -73,13 +73,9 @@ namespace GodotObjectCompiler {
 
   bool Node::has_previous_sibling() const { return has_parent() && _index > 0; }
 
-  void Node::set_tag(const String& p_tag) {
-    _tag = p_tag;
-  }
+  void Node::set_tag(const String& p_tag) { _tag = p_tag; }
 
-  String Node::get_tag() const {
-    return _tag;
-  }
+  String Node::get_tag() const { return _tag; }
 
   String Node::pretty_print() const {
     Size dummy;
