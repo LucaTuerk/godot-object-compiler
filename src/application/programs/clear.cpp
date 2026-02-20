@@ -52,23 +52,19 @@ namespace GodotObjectCompiler {
       return clear_generated_error;
     }
 
+    ExecutionContext::instance()->clear_generated_from();
+    ExecutionContext::instance()->clear_last_modified_times();
     return ProgramError::OK;
   }
 
   Ref<ProgramError> ClearGenerated::run(ApplicationContext& p_context) {
-    ExecutionContext::instance()->clear_generated_from();
-    ExecutionContext::instance()->clear_last_modified_times();
-
     for (const String& entry : directory_entries(p_context.paths_generated)) {
       PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
     }
-
     return ProgramError::OK;
   }
 
   Ref<ProgramError> ClearCache::run(ApplicationContext& p_context) {
-    ExecutionContext::instance()->clear_generated_from();
-    ExecutionContext::instance()->clear_last_modified_times();
 
     for (const String& entry : directory_entries(p_context.paths_cache)) {
       if (string_contains(entry, ".readonly")) {

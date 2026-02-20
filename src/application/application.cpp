@@ -63,8 +63,13 @@ namespace GodotObjectCompiler {
   }
 
   int Application::exit_gracefully(const ApplicationContext& context, int p_return_code) {
+    if (!context.program->requires_project()) {
+      return p_return_code;
+    }
+
     String lock_path = path_concat(context.paths_goc, ".goc_graceful_lock");
-    if (file_exists(lock_path) && remove(lock_path)) {
+
+    if (file_exists(lock_path) && remove_file(lock_path)) {
       PRINT_INFO("GOC: Graceful exit.");
       return p_return_code;
     }
@@ -79,15 +84,10 @@ namespace GodotObjectCompiler {
     APP_TOP_LEVEL_ERR_COND(
         setup_context(p_arguments, application_context) != 0, "Failed to setup application context.");
     APP_TOP_LEVEL_ERR_COND(run_program(application_context) != 0, "Failed to run the provided program.");
-    APP_TOP_LEVEL_ERR_COND(cleanup_context(application_context) != 0, "Failed to cleanup the application context.");
-    return exit_gracefully(application_context, 0);
+    return cleanup_context(application_context);
   }
 
   int Application::setup_context(Vector<String> p_arguments, ApplicationContext& r_context) {
-    Clear clear;
-    Help help;
-    InitLocalResources init_local_resources;
-
     Resources::instance()->load_pack(&GOC_Resources::Pack);
 
     r_context.application_arguments = p_arguments;
@@ -95,6 +95,7 @@ namespace GodotObjectCompiler {
         Programs::instance()->find_program(r_context.application_arguments, r_context.program_arguments);
 
     if (!r_context.program) {
+      Help help;
       ApplicationContext help_context = r_context;
       if (r_context.application_arguments.empty()) {
         print_err("Please specify a program to run.");
@@ -110,6 +111,8 @@ namespace GodotObjectCompiler {
     }
 
     if (r_context.program->requires_project()) {
+      Clear clear;
+      InitLocalResources init_local_resources;
       if (Project project; file_exists(".goc_project") && project.read_from_file(".goc_project")) {
         if (!r_context.set_from_project(project)) {
           return 1;
@@ -119,6 +122,7 @@ namespace GodotObjectCompiler {
       }
 
       if (!was_last_exit_graceful(r_context)) {
+        PRINT_INFO("GOC: Last exit was ungraceful. Clearing context and files.");
         APP_ERR_COND(clear.run(r_context) != ProgramError::OK,
             "Failed to clear the goc directories after an ungraceful exit was detected.\n"
             "Please delete your goc folders manually to ensure smooth operations.")

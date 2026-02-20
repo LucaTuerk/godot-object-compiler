@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* application.h                                                          */
+/* properties.h                                                           */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,46 +32,61 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "application_context.h"
-#include "library/core/core.h"
-#include "programs/program.h"
+#include "common.h"
+#include "library/parser/parser.h"
+#include "library/tree/syntax/namespace.h"
+#include "test_registry.h"
 
-namespace GodotObjectCompiler {
+using namespace GodotObjectCompiler;
 
-  struct RunConfig {
-    ApplicationContext context;
-    Ref<IProgram> program;
-  };
+GOC_INTEGRATION_TEST(GenerateFunctionBinds) {
+  GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/functions.h");
 
-  class Application {
-   public:
+  GOC_ASSERT_FUNC_BOUND("aabb_function");
+  GOC_ASSERT_FUNC_BOUND("array_function");
+  GOC_ASSERT_FUNC_BOUND("typed_array_function");
+  GOC_ASSERT_FUNC_BOUND("basis_function");
+  GOC_ASSERT_FUNC_BOUND("bool_function");
+  GOC_ASSERT_FUNC_BOUND("callable_function");
+  GOC_ASSERT_FUNC_BOUND("color_function");
+  GOC_ASSERT_FUNC_BOUND("dictionary_function");
+  GOC_ASSERT_FUNC_BOUND("typed_dictionary_function");
+  GOC_ASSERT_FUNC_BOUND("float_function");
+  GOC_ASSERT_FUNC_BOUND("real_t_function");
+  GOC_ASSERT_FUNC_BOUND("double_function");
+  GOC_ASSERT_FUNC_BOUND("int_function");
+  GOC_ASSERT_FUNC_BOUND("long_function");
+  GOC_ASSERT_FUNC_BOUND("node_path_function");
+  GOC_ASSERT_FUNC_BOUND("object_function");
+  GOC_ASSERT_FUNC_BOUND("packed_byte_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_color_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_float32_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_float64_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_int32_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_int64_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_string_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_vector2_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_vector3_array_function");
+  GOC_ASSERT_FUNC_BOUND("packed_vector4_array_function");
+  GOC_ASSERT_FUNC_BOUND("plane_function");
+  GOC_ASSERT_FUNC_BOUND("projection_function");
+  GOC_ASSERT_FUNC_BOUND("quaternion_function");
+  GOC_ASSERT_FUNC_BOUND("rect2_function");
+  GOC_ASSERT_FUNC_BOUND("rect2i_function");
+  GOC_ASSERT_FUNC_BOUND("signal_function");
+  GOC_ASSERT_FUNC_BOUND("string_function");
+  GOC_ASSERT_FUNC_BOUND("string_name_function");
+  GOC_ASSERT_FUNC_BOUND("transform2D_function");
+  GOC_ASSERT_FUNC_BOUND("transform3D_function");
+  GOC_ASSERT_FUNC_BOUND("vector2_function");
+  GOC_ASSERT_FUNC_BOUND("vector2i_function");
+  GOC_ASSERT_FUNC_BOUND("vector3_function");
+  GOC_ASSERT_FUNC_BOUND("vector3i_function");
+  GOC_ASSERT_FUNC_BOUND("vector4_function");
+  GOC_ASSERT_FUNC_BOUND("vector4i_function");
+  GOC_ASSERT_FUNC_BOUND("node_function");
+  GOC_ASSERT_FUNC_BOUND("resource_function");
 
-    static bool was_last_exit_graceful(const ApplicationContext& context);
-    static int exit_gracefully(const ApplicationContext& context, int p_return_code);
-    static int run(Vector<String> p_arguments);
-    static int setup_context(Vector<String> p_arguments, ApplicationContext& r_context);
-    static int run_program(ApplicationContext& p_context);
-    static int cleanup_context(const ApplicationContext& p_context);
-  };
-
-}
-
-#define APP_ERR(...)              \
-  print_err(format(__VA_ARGS__)); \
-  return 1;
-
-#define APP_TOP_LEVEL_ERR(...)    \
-  print_err(format(__VA_ARGS__)); \
-  return exit_gracefully(application_context, 1);
-
-#define APP_ERR_COND(condition, ...) \
-  if ((condition)) {                 \
-    APP_ERR(__VA_ARGS__)             \
-  }
-
-#define APP_TOP_LEVEL_ERR_COND(condition, ...) \
-  if ((condition)) {                           \
-    APP_TOP_LEVEL_ERR(__VA_ARGS__)             \
-  }
+  return TEST_RESULT_SUCCESS;
+};

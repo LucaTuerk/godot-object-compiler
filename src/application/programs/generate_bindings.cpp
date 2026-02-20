@@ -67,11 +67,10 @@ namespace GodotObjectCompiler {
   }
 
   Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context) {
-    PROG_ERR_COND(!AssumedGodotTypes::validate_assumptions() || !AssumedParameterValues::validate_assumptions(),
+    PROG_ERR_COND(!(AssumedGodotTypes::validate_assumptions() && AssumedParameterValues::validate_assumptions()),
         "Failed to validate some assumptions on available Godot types and macros, probably because the TypeDB "
-        "generator has not found the relevant files.\n\n"
-        "For modules please add the godot source to the GOC projects godot include paths.\n"
-        "For gdextensions please add the godot-cpp generated includes to the GOC projects godot include paths.\n");
+        "generator has not found the relevant files.\n"
+        "Ensure godot-cpp include path are known to goc via the -I= flag or in the .goc_project file.");
     PROG_ERR_COND(!p_context.paths_root.has_value(), "No project root path specified. Cannot generate bindings.");
     PROG_ERR_COND(!p_context.files_input.has_value(), "No input files specified. Cannot generate bindings.");
 

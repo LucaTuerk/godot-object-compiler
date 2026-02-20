@@ -98,8 +98,8 @@ GOC_TEST(ClassMemberFunctions) {
   Vector<String> public_members = {"a", "b", "c", "d", "e", "f"};
   Vector<String> protected_members = {"g", "h", "i", "j", "k", "l"};
   Vector<String> private_members = {"m", "n", "o", "p", "q", "r"};
-  Vector<String> parameters = {"", "", "", "int", "bool", "A*"};
-  Vector<String> return_types = {"int", "bool", "A*", "int", "bool", "A*"};
+  Vector<String> parameters = {"", "", "", "int", "bool", "A *"};
+  Vector<String> return_types = {"int", "bool", "A *", "int", "bool", "A *"};
 
   Vector<Pair<Vector<Ref<Function>>, Vector<String>>> functions_names_pairs = {
       {A->public_member_functions(), public_members}, {A->protected_member_functions(), protected_members},
@@ -111,7 +111,7 @@ GOC_TEST(ClassMemberFunctions) {
       GOC_TEST_ASSERT(func->type(), "Failed to get return type");
       GOC_TEST_EQ(func->name(), names[i], "Wrong function name.")
 
-      GOC_TEST_EQ(func->type()->name(), return_types[i], "Wrong return type.")
+      GOC_TEST_EQ(func->type()->type_name(), return_types[i], "Wrong return type.")
       if (!parameters[i].empty()) {
         GOC_TEST_ASSERT(func->parameters(), "Failed to get function arguments.")
         GOC_TEST_EQ(func->parameters()->get_child_count(), 1, "Wrong parameter count.")
@@ -122,7 +122,7 @@ GOC_TEST(ClassMemberFunctions) {
         Ref<Type> parameter_type = parameter->type();
         GOC_TEST_ASSERT(parameter_type, "Failed to get parameter type.")
 
-        GOC_TEST_EQ(parameter_type->name(), parameters[i], "Wrong parameter type.")
+        GOC_TEST_EQ(parameter_type->type_name(), parameters[i], "Wrong parameter type.")
       }
       i++;
     }
@@ -144,7 +144,7 @@ GOC_TEST(ClassMemberFields) {
   Vector<String> public_members = {"a", "b", "c"};
   Vector<String> protected_members = {"d", "e", "f"};
   Vector<String> private_members = {"g", "h", "i"};
-  Vector<String> types = {"int", "bool", "A*"};
+  Vector<String> types = {"int", "bool", "A *"};
 
   Vector<AccessSpecifier::Type> access_specifier = {
       x3(AccessSpecifier::PUBLIC), x3(AccessSpecifier::PROTECTED), x3(AccessSpecifier::PRIVATE)};
@@ -158,7 +158,7 @@ GOC_TEST(ClassMemberFields) {
     for (const Ref<Field>& field : fields) {
       GOC_TEST_ASSERT(field->type(), "Failed to get field type");
       GOC_TEST_EQ(field->name(), names[i], "Wrong field name.")
-      GOC_TEST_EQ(field->type()->name(), types[i], "Wrong field type.")
+      GOC_TEST_EQ(field->type()->type_name(), types[i], "Wrong field type.")
       GOC_TEST_EQ(*field->access_specifier_type(), access_specifier[j], "Wrong access specifier.");
       i++;
       j++;

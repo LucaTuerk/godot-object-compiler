@@ -74,7 +74,7 @@ namespace GodotObjectCompiler {
     const String absolute = path_absolute(p_path);
     PRINT_VERBOSE("Deleting file \"%s\"", absolute.c_str());
     Permissions::instance()->ensure_is_allowed_write_path(absolute);
-    return std::filesystem::remove(absolute.c_str()) == 0;
+    return std::filesystem::remove(absolute.c_str());
   }
 
   bool remove(const String& p_path) {

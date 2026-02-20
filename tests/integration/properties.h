@@ -40,7 +40,7 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(ParseProperties) {
+GOC_INTEGRATION_TEST(GeneratePropertyBinds) {
   GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/properties.h");
 
   GOC_ASSERT_PROP_BOUND("aabb_property", "AABB");

@@ -499,7 +499,7 @@ namespace GodotObjectCompiler {
     for (const String& base : p_target_class->direct_bases_names()) {
       Ref<Class> base_class = ExecutionContext::instance()->get_type_db()->get_type_data<Class>(base);
       if (!base_class) {
-        print_err("Base class not found!");
+        fmt_print_err("%s: Base class \"%s\" not found!", p_target_class->name().c_str(), base.c_str());
         return false;
       }
 
