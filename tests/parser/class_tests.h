@@ -41,6 +41,8 @@
 #include "library/tree/syntax/type.h"
 #include "test_registry.h"
 
+#define x3(x) x, x, x
+
 GOC_TEST(ClassSimple) {
   using namespace GodotObjectCompiler;
   GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_class.h");
@@ -144,17 +146,22 @@ GOC_TEST(ClassMemberFields) {
   Vector<String> private_members = {"g", "h", "i"};
   Vector<String> types = {"int", "bool", "A*"};
 
+  Vector<AccessSpecifier::Type> access_specifier = {
+      x3(AccessSpecifier::PUBLIC), x3(AccessSpecifier::PROTECTED), x3(AccessSpecifier::PRIVATE)};
+
   Vector<Pair<Vector<Ref<Field>>, Vector<String>>> fields_names_pairs = {{A->public_member_fields(), public_members},
       {A->protected_member_fields(), protected_members}, {A->private_member_fields(), private_members}};
 
+  Size j = 0;
   for (const auto& [fields, names] : fields_names_pairs) {
     Size i = 0;
     for (const Ref<Field>& field : fields) {
       GOC_TEST_ASSERT(field->type(), "Failed to get field type");
       GOC_TEST_EQ(field->name(), names[i], "Wrong field name.")
-
       GOC_TEST_EQ(field->type()->name(), types[i], "Wrong field type.")
+      GOC_TEST_EQ(*field->access_specifier_type(), access_specifier[j], "Wrong access specifier.");
       i++;
+      j++;
     }
   }
 

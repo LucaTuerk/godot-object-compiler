@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* build_number.h                                                         */
+/* ref_node.h                                                             */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,5 +34,11 @@
 /**************************************************************************/
 #pragma once
 
-#define GOC_BUILD_NUMBER "ydPq74zpFhstCpNMqlK5"
+GODOT_CLASS();
+class Invalid : Node {
+  GODOT_GENERATED_BODY();
 
+  GODOT_PROPERTY();
+  Ref<Node> ref_node;
+};
+GODOT_GENERATED_GLOBAL();

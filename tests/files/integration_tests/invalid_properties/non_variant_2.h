@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* build_number.h                                                         */
+/* non_variant_2.h                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,5 +34,11 @@
 /**************************************************************************/
 #pragma once
 
-#define GOC_BUILD_NUMBER "ydPq74zpFhstCpNMqlK5"
+GODOT_CLASS();
+class Invalid : Node {
+  GODOT_GENERATED_BODY();
 
+  GODOT_PROPERTY();
+  std::map<int, std::string> no_variant;
+};
+GODOT_GENERATED_GLOBAL();

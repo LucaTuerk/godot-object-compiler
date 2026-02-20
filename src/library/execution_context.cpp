@@ -50,6 +50,13 @@ namespace GodotObjectCompiler {
 
   ExecutionContext::ExecutionContext() { init(); }
 
+  void ExecutionContext::test_force_clear_modified_time(const String& p_path) {
+    String absolute = path_absolute(p_path);
+    _last_modified_times.erase(absolute);
+    _out_last_modified_times.erase(absolute);
+  }
+
+
   String error_level_to_string(ErrorLevel level) {
     switch (level) {
       case ERROR:
@@ -147,9 +154,7 @@ namespace GodotObjectCompiler {
     return config.write_to_file(p_path);
   }
 
-  void ExecutionContext::clear_generated_from() {
-    _generated_from.clear();
-  }
+  void ExecutionContext::clear_generated_from() { _generated_from.clear(); }
 
   void ExecutionContext::clear_last_modified_times() {
     _last_modified_times.clear();

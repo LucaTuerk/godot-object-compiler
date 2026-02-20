@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* main.h                                                                 */
+/* main.cpp                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,15 +32,21 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#pragma once
-#include "library_godot/generators/all.h"
 
-int main(int argc, char* argv[]);
+#include "main.h"
 
-#define APP_ERR(...)              \
-  print_err(format(__VA_ARGS__)); \
-  return 1;
-#define APP_ERR_COND(condition, ...) \
-  if ((condition)) {                 \
-    APP_ERR(__VA_ARGS__)             \
+#include "application/application.h"
+#include "library/core/core.h"
+#include "library/execution_context.h"
+
+using namespace GodotObjectCompiler;
+
+int main(int argc, char* argv[]) {
+  Vector<String> args;
+  for ( int i = 1; i < argc; i++ ) {
+    args.emplace_back(argv[i]);
   }
+
+  ExecutionContext::instance()->set_error_level(ERROR, FULL);
+  return Application::run(args);
+};

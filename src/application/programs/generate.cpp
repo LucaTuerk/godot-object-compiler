@@ -50,7 +50,7 @@ namespace GodotObjectCompiler {
 
     GenerateBindings generate_bindings;
     Ref<ProgramError> generate_bindings_error = generate_bindings.run(p_context);
-    if (generate_type_db_error != ProgramError::OK) {
+    if (generate_bindings_error != ProgramError::OK) {
       return generate_bindings_error;
     }
 

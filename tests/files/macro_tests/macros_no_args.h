@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* build_number.h                                                         */
+/* macros_no_args.h                                                       */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,5 +34,29 @@
 /**************************************************************************/
 #pragma once
 
-#define GOC_BUILD_NUMBER "ydPq74zpFhstCpNMqlK5"
+#include "/home/luca/Repositories/godot-object-compiler-sample/cmake-build-debug/.goc/generated/macros.h"
 
+GODOT_CLASS();
+class A {
+  GODOT_GENERATED_BODY();
+
+  GODOT_CATEGORY();
+  GODOT_GROUP();
+  GODOT_SUBGROUP();
+
+  GODOT_PROPERTY();
+  int property;
+
+  GODOT_FUNCTION();
+  int function();
+
+  GODOT_SIGNAL();
+  void signal();
+
+  GODOT_ENUM();
+  enum Enum {
+    ENUM_VALUE
+  };
+};
+
+GODOT_GENERATED_GLOBAL();

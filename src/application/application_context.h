@@ -39,6 +39,8 @@
 
 namespace GodotObjectCompiler {
 
+  class IProgram;
+
   class ApplicationContext {
    public:
 
@@ -55,6 +57,8 @@ namespace GodotObjectCompiler {
     String paths_generated = ".goc/generated";
     Vector<String> application_arguments;
     Vector<String> program_arguments;
+
+    Ref<IProgram> program;
 
     bool set_from_project(const Project& p_project);
     bool set_from_application_arguments(Vector<String>& p_application_arguments);

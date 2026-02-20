@@ -115,6 +115,8 @@ namespace GodotObjectCompiler {
 
     void print(ErrorLevel p_level, const String& p_message) const;
 
+    void test_force_clear_modified_time(const String& p_path);
+
    private:
 
     void init();

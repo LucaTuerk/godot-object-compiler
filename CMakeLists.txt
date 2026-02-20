@@ -22,7 +22,7 @@ set(EXEC_NAME_TEST "goc_tests")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
-file(GLOB_RECURSE SOURCES_TEST CONFIGURE_DEPENDS "src/library/*.cpp" "src/library_godot/*.cpp" "tests/*.cpp")
+file(GLOB_RECURSE SOURCES_TEST CONFIGURE_DEPENDS "src/application/*.cpp" "src/library/*.cpp" "src/library_godot/*.cpp" "tests/*.cpp")
 
 add_executable(${EXEC_NAME} ${SOURCES})
 add_executable(${EXEC_NAME_TEST} ${SOURCES_TEST})
