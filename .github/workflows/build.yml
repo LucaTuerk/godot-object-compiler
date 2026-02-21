@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
         with:
-          submodules: 'true'
+          submodules: "true"
 
       - name: Install Packages
         run: |
@@ -26,16 +26,16 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ..
-          make
+          cmake .. -DGOC_TESTS_ENABLED=ON
+          make -j$(nproc)
           cd ..
 
       - name: Checkout godot-cpp
         uses: actions/checkout@v4
         with:
-          repository: 'godotengine/godot-cpp'
-          ref: '4.5'
-          path: 'godot-cpp'
+          repository: "godotengine/godot-cpp"
+          ref: "4.5"
+          path: "godot-cpp"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Install Scons
