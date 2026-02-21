@@ -26,13 +26,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 
 add_executable(${EXEC_NAME} ${SOURCES})
-#
-#set(BUILD_NUM_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/application/build_number.h)
-#message(STATUS ${BUILD_NUM_FILE})
-#add_custom_command(TARGET ${EXEC_NAME}
-#        PRE_BUILD
-#        COMMAND ${CMAKE_COMMAND} -DFILE=${BUILD_NUM_FILE} -P ${CMAKE_CURRENT_LIST_DIR}/tools/automatic_build_number.cmake
-#)
 
 target_include_directories(${EXEC_NAME} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/src

@@ -171,6 +171,8 @@ namespace GodotObjectCompiler {
     });
     // clang-format on
 
+    HashSet<String> processed;
+
     for (String input_file : *p_context.files_input) {
       if (string_suffix(input_file, ".cpp")) {
         String h_file = input_file.substr(0, input_file.length() - 3) + "h";
@@ -192,8 +194,12 @@ namespace GodotObjectCompiler {
         continue;
       }
 
-      PRINT_VERBOSE("Generating bindings for \"%s\"", input_file.c_str());
+      if (processed.find(input_file) != processed.end()) {
+        continue;
+      }
+      processed.insert(input_file);
 
+      PRINT_VERBOSE("Generating bindings for \"%s\"", input_file.c_str());
       TreeSitterParser parser;
       Ref<Namespace> global_namespace = node_new<Namespace>();
       Ref<ParserError> error = parser.parse_file(input_file, global_namespace);

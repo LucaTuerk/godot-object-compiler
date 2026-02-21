@@ -5,9 +5,23 @@ function(target_autogoc TARGET ROOT_DIR)
     get_target_property(SOURCES ${TARGET} SOURCES)
     get_target_property(INCLUDE_DIRECTORIES ${TARGET} INCLUDE_DIRECTORIES)
 
+    set(GOC_GENERATED_DIR ${BINARY_DIR}/.goc/generated)
+    set(GOC_GENERATED_FILES "")
+    list(APPEND GOC_GENERATED_FILES  ${GOC_GENERATED_DIR}/generated_register_types.h)
+    list(APPEND GOC_GENERATED_FILES ${GOC_GENERATED_DIR}/generated_register_types.cpp)
+    foreach (SOURCE_PATH ${SOURCES})
+        cmake_path(RELATIVE_PATH SOURCE_PATH BASE_DIRECTORY ${ROOT_DIR} OUTPUT_VARIABLE RELATIVE)
+        cmake_path(REPLACE_EXTENSION RELATIVE "generated.h" OUTPUT_VARIABLE GENERATED_H)
+        cmake_path(REPLACE_EXTENSION RELATIVE "generated.cpp" OUTPUT_VARIABLE GENERATED_CPP)
+        list(APPEND GOC_GENERATED_FILES ${GOC_GENERATED_DIR}/${GENERATED_H})
+        list(APPEND GOC_GENERATED_FILES ${GOC_GENERATED_DIR}/${GENERATED_CPP})
+    endforeach ()
+
     if (TARGET godot-cpp)
         get_target_property(GodotCPP_INCLUDE_DIRECTORIES godot-cpp INCLUDE_DIRECTORIES)
         list(PREPEND INCLUDE_DIRECTORIES ${GodotCPP_INCLUDE_DIRECTORIES})
+    else()
+        message(FATAL_ERROR "AUTOGOC: target godot-cpp not found.")
     endif ()
 
     list(JOIN INCLUDE_DIRECTORIES "," INCLUDE_JOINED)
@@ -15,21 +29,25 @@ function(target_autogoc TARGET ROOT_DIR)
 
     if (TARGET goc)
         get_target_property(GOC_BINARY_DIR goc BINARY_DIR)
-        message(STATUS "AUTOGOC: Using goc target executable ${GOC_BINARY_DIR}/goc")
+        message(VERBOSE "GOC: Using goc target executable ${GOC_BINARY_DIR}/goc")
 
-        add_custom_command(
-                OUTPUT bindings
-                COMMAND ${GOC_BINARY_DIR}/goc generate -R=${ROOT_DIR} -P=.goc -C=.goc/cache -G=.goc/generated -I=${INCLUDE_JOINED} -S=${SOURCES_JOINED}
+        add_custom_target(RunGOC
+                SOURCES ${SOURCES}
+                BYPRODUCTS ${GOC_GENERATED_FILES}
+                COMMAND ${GOC_BINARY_DIR}/goc${CMAKE_EXECUTABLE_SUFFIX} generate -R=${ROOT_DIR} -P=.goc -C=.goc/cache -G=.goc/generated -I=${INCLUDE_JOINED} -S=${SOURCES_JOINED}
                 WORKING_DIRECTORY ${BINARY_DIR}
-                DEPENDS goc godot-cpp generate_bindings
+                DEPENDS goc godot-cpp generate_bindings ${SOURCES}
+                COMMENT "GOC: Generating Bindings"
         )
     elseif (DEFINED ENV{GOC_EXECUTABLE})
-        message(STATUS "AUTOGOC: Using goc executable ${GOC_EXECUTABLE}")
-        add_custom_command(
-                OUTPUT bindings
+        message(VERBOSE "GOC: Using goc executable ${GOC_EXECUTABLE}")
+        add_custom_target(RunGOC
+                SOURCES ${SOURCES}
+                BYPRODUCTS ${GOC_GENERATED_FILES}
                 COMMAND $ENV{GOC_EXECUTABLE} generate -R=${ROOT_DIR} -P=.goc -C=.goc/cache -G=.goc/generated -I=${INCLUDE_JOINED} -S=${SOURCES_JOINED}
                 WORKING_DIRECTORY ${BINARY_DIR}
-                DEPENDS godot-cpp generate_bindings
+                DEPENDS godot-cpp generate_bindings ${SOURCES}
+                COMMENT "GOC: Generating Bindings"
         )
     else ()
         message(FATAL_ERROR "AUTOGOC: goc executable not found\n"
@@ -38,15 +56,13 @@ function(target_autogoc TARGET ROOT_DIR)
         )
     endif ()
 
-    add_custom_target(goc_generated_files DEPENDS bindings)
-    add_dependencies(${TARGET} goc_generated_files)
-
     target_include_directories(${TARGET} PRIVATE
-            ${BINARY_DIR}/.goc/generated
+            ${GOC_GENERATED_DIR}
     )
-    file(GLOB_RECURSE GENERATED_SOURCES CONFIGURE_DEPENDS "${BINARY_DIR}/.goc/generated/*.cpp")
+
+    add_dependencies(${TARGET} RunGOC)
     target_sources(${TARGET}
             PRIVATE
-            ${GENERATED_SOURCES}
+            ${GOC_GENERATED_FILES}
     )
 endfunction()
