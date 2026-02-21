@@ -35,8 +35,6 @@
 
 #include "common.h"
 
-#include <strstream>
-
 #include "application/application.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
@@ -142,6 +140,7 @@ bool property_bound(const char* p_property_name, const char* p_variant_type, con
 
 bool signal_bound(const char* p_signal_name, const char* p_variant_type,
     const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source) {
+  UNUSED(p_generated_header);
   if (get_line_that_contains(p_generated_source, {"ADD_SIGNAL", p_signal_name, p_variant_type}).empty()) {
     fmt_print_err("Function bind for \"%s\" not found in source", p_signal_name);
     return false;
@@ -151,6 +150,7 @@ bool signal_bound(const char* p_signal_name, const char* p_variant_type,
 
 bool function_bound(const char* p_function_name, const GodotObjectCompiler::String& p_generated_header,
     const GodotObjectCompiler::String& p_generated_source) {
+  UNUSED(p_generated_header);
   if (get_line_that_contains(p_generated_source, {"bind_method", p_function_name}).empty()) {
     fmt_print_err("Function bind for \"%s\" not found in source", p_function_name);
     return false;

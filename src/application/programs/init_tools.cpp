@@ -43,7 +43,7 @@
 namespace GodotObjectCompiler {
 
   bool InitTools::validate_arguments(ApplicationContext& p_context) {
-    return p_context.application_arguments.size() == 1 && could_be_dir_path(p_context.application_arguments[0]);
+    return p_context.program_arguments.size() == 1 && could_be_dir_path(p_context.program_arguments[0]);
   }
 
   Ref<ProgramError> InitTools::run(ApplicationContext& p_context) {
