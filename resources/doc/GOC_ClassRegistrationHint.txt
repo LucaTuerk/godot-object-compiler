@@ -1,1 +1,2 @@
-No documentation available
+This parameter type can be used within the GODOT_CLASS marcos parameters to control the classes registration
+behavior.

@@ -1,1 +1,1 @@
-No documentation available
+This parameter type is used to set this class initialization level within the GODOT_CLASS macros parameters.

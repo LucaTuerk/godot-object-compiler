@@ -1,5 +1,1 @@
-Injects the generated code of all classes in this file that
-needs to be added in the global namespace.
-
-For Example:
-    - Enable enum variant casting using the VARIANT_ENUM_CAST macro
+This hook macro is used to inject generated code within the global namespace for all classes within this file.

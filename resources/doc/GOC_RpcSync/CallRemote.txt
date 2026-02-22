@@ -1,1 +1,1 @@
-No documentation available
+When called via RPC, this function will only be called on the remote peer.

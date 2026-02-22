@@ -1,4 +1,3 @@
 The GOC generator creates registration and deregistration code
 to make this class available internally to the Godot editor
-and your extension or module. It will not be visible in the
-Godot editor.
+and your extension or module.

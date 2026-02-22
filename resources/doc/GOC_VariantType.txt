@@ -1,1 +1,2 @@
-No documentation available
+This parameter type is used to set the properties variant type within the GODOT_PROPERTY macros parameters.
+This should be added automatically in all cases.

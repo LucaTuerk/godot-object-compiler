@@ -1,1 +1,2 @@
-No documentation available
+This function cannot be called via RPC in the high-level multiplayer api.
+This is the default value.

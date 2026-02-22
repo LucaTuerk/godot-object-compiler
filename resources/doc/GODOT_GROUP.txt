@@ -1,1 +1,1 @@
-No documentation available
+Use this macro to create a group in the inspector for all properties following this until a new group is defined.

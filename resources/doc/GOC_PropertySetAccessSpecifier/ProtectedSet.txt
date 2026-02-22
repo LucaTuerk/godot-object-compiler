@@ -1,1 +1,1 @@
-No documentation available
+Make the generated setter for this property protected within the extension.

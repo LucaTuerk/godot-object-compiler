@@ -1,1 +1,1 @@
-No documentation available
+This parameter type is used to set the classes type in the GODOT_CLASS macro parameters.

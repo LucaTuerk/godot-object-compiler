@@ -1,1 +1,1 @@
-No documentation available
+When used in the high-level multiplayer api any peer can call this function without permission.

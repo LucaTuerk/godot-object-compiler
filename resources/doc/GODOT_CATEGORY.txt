@@ -1,1 +1,1 @@
-No documentation available
+Use this macro to create a category in the inspector for all properties following this until a new category is defined.

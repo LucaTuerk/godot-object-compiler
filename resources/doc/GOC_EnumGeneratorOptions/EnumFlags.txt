@@ -1,1 +1,1 @@
-No documentation available
+Bind this enum as a bitfield enum and display properties of this type as flags in the inspector.

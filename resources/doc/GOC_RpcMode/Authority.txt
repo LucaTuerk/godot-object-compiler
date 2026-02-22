@@ -1,1 +1,1 @@
-No documentation available
+When used in the high-level multiplayer api only the current authority of the target node can call this function.

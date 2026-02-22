@@ -1,1 +1,1 @@
-No documentation available
+Marks this class as a generator target.

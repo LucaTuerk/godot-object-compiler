@@ -1,1 +1,1 @@
-No documentation available
+Sets this functions rpc channel when used with the high-level multiplayer api.

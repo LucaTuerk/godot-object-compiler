@@ -1,1 +1,2 @@
-No documentation available
+Bind this enum as a regular enum.
+This is the default value.

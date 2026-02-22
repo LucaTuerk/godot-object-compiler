@@ -1,1 +1,1 @@
-No documentation available
+Mark the following field as an exposed property.

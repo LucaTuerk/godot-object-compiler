@@ -1,1 +1,1 @@
-o documentation available
+This parameter type is used to set the generated getters access specifier within the GODOT_PROPERTY macro parameters.

@@ -1,1 +1,1 @@
-No documentation available
+This parameter type is used to set the functions rpc transfer mode within the GODOT_FUNCTION macros body.

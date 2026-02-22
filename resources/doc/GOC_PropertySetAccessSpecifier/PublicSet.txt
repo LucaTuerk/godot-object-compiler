@@ -1,1 +1,1 @@
-No documentation available
+Make the generated setter for this property public within the extension.

@@ -1,1 +1,1 @@
-No documentation available
+This function will not be bound as a script virtual function and can not be overwritten in scripts.

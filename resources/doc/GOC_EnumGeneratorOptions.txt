@@ -1,1 +1,1 @@
-No documentation available
+This parameter type is used to provide options to the enum generator in the GODOT_ENUM macro parameters.

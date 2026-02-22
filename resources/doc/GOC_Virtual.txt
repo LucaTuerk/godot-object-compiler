@@ -1,1 +1,1 @@
-No documentation available
+This parameter type is used to set if this function is overwritable in scripts within the GODOT_FUNCTION macros body.

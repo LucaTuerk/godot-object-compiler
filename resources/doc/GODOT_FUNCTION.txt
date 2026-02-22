@@ -1,1 +1,1 @@
-No documentation available
+Expose this function to scripts.

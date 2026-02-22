@@ -1,1 +1,3 @@
-No documentation available
+Packets are not acknowledged, no resend attempts are made for lost packets. Packets are received in the order they were sent in.
+Potentially faster than "Reliable".
+Use for non-critical data or data that would be outdated if received late due to resend attempt(s) anyway, for example movement and positional data.
