@@ -1,0 +1,123 @@
+name: Workflow
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+jobs:
+  build-project:
+    name: Build Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
+
+      - name: Install Packages
+        run: |
+          sudo apt update
+          sudo apt install cmake -y
+          sudo apt install mold -y
+
+      - name: Build Project
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DGOC_TESTS_ENABLED=ON
+          make -j$(nproc)
+          cd ..
+
+      - name: Checkout godot-cpp
+        uses: actions/checkout@v4
+        with:
+          repository: "godotengine/godot-cpp"
+          ref: "4.5"
+          path: "godot-cpp"
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+
+      - name: Install Scons
+        run: |
+          sudo apt install scons -y
+
+      - name: Generate godot-cpp
+        run: |
+          cd godot-cpp
+          scons
+          cd ..
+
+      - name: Run Tests
+        run: |
+          ./build/goc_tests run_integration_tests godot-cpp/include godot-cpp/gen/include
+
+  run-test-project:
+    name: Run Test Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Test Repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'LucaTuerk/godot-object-compiler-test'
+          submodules: 'false'
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+
+      - name: Checkout Godot Object Compiler
+        uses: actions/checkout@v4
+        with:
+          repository: 'LucaTuerk/godot-object-compiler'
+          submodules: 'recursive'
+          path: 'godot-object-compiler'
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+
+      - name: Checkout godot-cpp
+        uses: actions/checkout@v4
+        with:
+          repository: 'godotengine/godot-cpp'
+          submodules: 'true'
+          path: 'godot-cpp'
+          ref: '4.5'
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+
+      - name: Install Packages
+        run: |
+          sudo apt update
+          sudo apt install cmake -y
+          sudo apt install mold -y
+          sudo apt install ninja-build -y
+
+      - name: Build Project
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j$(nproc)
+          cd ..
+
+      - name: Install Godot
+        shell: bash
+        run: |
+          INSTALL_DIR=${HOME}/.godot-install-dir/4.5.1-stable
+          mkdir -p $INSTALL_DIR
+          
+          echo "Creating $INSTALL_DIR"
+          
+          GODOT_DOWNLOAD_URL=https://github.com/godotengine/godot-builds/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip
+          
+          echo "Downloading: $GODOT_DOWNLOAD_URL"
+          
+          cd $INSTALL_DIR
+          wget -O godot.zip -q $GODOT_DOWNLOAD_URL
+          unzip godot.zip
+          rm -rf godot.zip
+          
+          mv Godot_v4.5.1-stable_linux.x86_64 godot
+          
+          ls -la $INSTALL_DIR
+          echo $INSTALL_DIR >> $GITHUB_PATH
+
+      - name: Run Project
+        run: |
+          godot --headless --path project --editor --quit || true # Godot 4.5.1 crashes after successful import, ignore for now
+          godot --headless --path project
