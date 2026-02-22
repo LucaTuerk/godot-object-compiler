@@ -1,4 +1,3 @@
-Show the parsers syntax tree output before it is transformed to the GOC syntax tree format.
-
-Arguments:
-    [0] - path to the file to parse
+Show the parsers syntax tree output for the provided file.
+[args]
+    <file path> required - path to the file to parse

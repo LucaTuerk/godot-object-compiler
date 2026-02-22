@@ -1,1 +1,1 @@
-Clear the GOC generated files folder.
+Clear all generated files.

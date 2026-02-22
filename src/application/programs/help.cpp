@@ -72,12 +72,14 @@ namespace GodotObjectCompiler {
 
     if (p_context.program_arguments.empty()) {
       print_title(
-          format("Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MAJOR_VERSION, GOC_VERSION_NAME), 71);
+          format("Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MINOR_VERSION, GOC_VERSION_NAME), 100);
       print_ln("");
 
-      print_ln("Usage: goc [PROGRAM PATH...] [OPTIONS...]");
-      print_ln("");
-      print_title("PROGRAMS", 71);
+      if (Resources::instance()->has_resource("res://help/header_content.txt")) {
+        print_ln(Resources::instance()->load_text_resource("res://help/header_content.txt"));
+      }
+
+      print_title("PROGRAMS", 100);
     }
 
     std::unordered_set<ProgramPath, ProgramPathHash> written;
@@ -109,7 +111,7 @@ namespace GodotObjectCompiler {
             written.insert(sub);
 
             print_ln("");
-            print_help_columns({20, sub_writer.get_string()}, {50, ""});
+            print_help_columns({30, sub_writer.get_string()}, {70, ""});
           }
         }
       }
@@ -120,8 +122,12 @@ namespace GodotObjectCompiler {
       }
       identifier_writer.write(path.back());
 
+      if (!program->requires_project()) {
+        identifier_writer.write(" [!p]");
+      }
+
       print_ln("");
-      print_help_columns({20, identifier_writer.get_string()}, {50, get_help_text(path)});
+      print_help_columns({30, identifier_writer.get_string()}, {70, get_help_text(path)});
 
       written.insert(path);
     }

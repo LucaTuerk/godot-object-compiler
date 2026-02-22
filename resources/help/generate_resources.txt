@@ -1,1 +1,1 @@
-DEV: Generate resources such as help and documentation files for programs and attributes.
+DEV_PROGRAM - No help available

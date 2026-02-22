@@ -1,0 +1,26 @@
+Usage: goc [PROGRAM PATH...] [PROGRAM ARGS...] [APPLICATION ARGS...]
+
+The godot-object-compiler requires a project for most programs, project free
+programs are marked [!p] in the program list.
+The project can either be provided via a .goc_project file in the working directory OR via
+the following application arguments:
+
+--root-path=, -R=
+    The projects root path, including the generator target files
+
+--goc-path=, -P=
+    The folder the godot-object-compiler can place files in
+
+--generated-path=, -G=
+    The folder the godot-object-compiler should place generated files in
+
+--cache-path=, -C=
+    The godot-object-compiler cache folder, including the type database
+
+--include_paths=, -I=
+    The generators include paths, comma seperated. Must include the godot-cpp
+    include and gen/include paths.
+
+--sources=, -S=
+    The generators target source file paths, comma seperated.
+

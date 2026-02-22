@@ -1,1 +1,1 @@
-Show the GOC version.
+Show the version number.

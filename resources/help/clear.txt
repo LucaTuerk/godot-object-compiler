@@ -1,1 +1,1 @@
-Clear the GOC TypeDB cache and generated folders.
+Clear the type database and all generated files.

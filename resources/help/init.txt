@@ -1,1 +1,1 @@
-Initialize a new GOC project at the current working directory.
+Interactively initialize a .goc_project file in this directory.

@@ -1,1 +1,1 @@
-No help available
+Clear the imported type db.

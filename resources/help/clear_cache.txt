@@ -1,1 +1,1 @@
-Clear the GOC TypeDB cache.
+Clear the cache.

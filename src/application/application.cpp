@@ -113,7 +113,11 @@ namespace GodotObjectCompiler {
     if (r_context.program->requires_project()) {
       Clear clear;
       InitLocalResources init_local_resources;
-      if (Project project; file_exists(".goc_project") && project.read_from_file(".goc_project")) {
+      Vector<String> cwd_files = directory_files(path_cwd());
+      auto project_path_itr = std::find_if(
+          cwd_files.begin(), cwd_files.end(), [](const String& path) { return string_suffix(path, ".goc_project"); });
+
+      if (Project project; project_path_itr != cwd_files.end() && project.read_from_file(*project_path_itr)) {
         if (!r_context.set_from_project(project)) {
           return 1;
         }

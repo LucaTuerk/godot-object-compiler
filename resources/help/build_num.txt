@@ -1,1 +1,1 @@
-No help available
+Show the current build hash.
