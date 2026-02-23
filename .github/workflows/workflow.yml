@@ -56,18 +56,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "true"
-#
-#      - name: Install Packages
-#        run: |
-#          sudo apt update
-#          sudo apt install cmake -y
-#          sudo apt install mold -y
+
+      - name: Download TreeSitterCLI
+        run: |
+          Invoke-WebRequest https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.5/tree-sitter-windows-x64.gz -OutFile .\tree-sitter.gz
+          7z.exe e .\tree-sitter.gz
 
       - name: Build Project
         run: |
           mkdir build
           cd build
-          cmake .. -DGOC_TESTS_ENABLED=ON
+          cmake .. -DGOC_TESTS_ENABLED=ON -DTREE_SITTER_CLI=.\tree-sitter.exe
           cmake --build .
           cd ..
 
@@ -79,9 +78,9 @@ jobs:
           path: "godot-cpp"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 #
-#      - name: Install Scons
-#        run: |
-#          sudo apt install scons -y
+      - name: Install Scons
+        run: |
+          python.exe -m pip install scons
 
       - name: Generate godot-cpp
         run: |

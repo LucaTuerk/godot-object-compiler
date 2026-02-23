@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
   }
 
   using namespace GodotObjectCompiler;
-  ExecutionContext::instance()->set_error_level(ERROR, FULL);
+  ExecutionContext::instance()->set_error_level(VERBOSE, FULL);
 
   Size failed_count = 0;
   Size success_count = 0, ignore_count = 0, all_count = 0;
