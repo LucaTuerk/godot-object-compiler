@@ -63,7 +63,7 @@ namespace GodotObjectCompiler {
   }
 
   int Application::exit_gracefully(const ApplicationContext& context, int p_return_code) {
-    if (!context.program->requires_project()) {
+    if (context.program == nullptr || !context.program->requires_project()) {
       return p_return_code;
     }
 

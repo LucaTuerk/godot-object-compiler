@@ -151,12 +151,13 @@ namespace GodotObjectCompiler {
   String TypeDB::_get_cache_file_path(const String& qualified_name, CacheType cache_type) const {
     switch (cache_type) {
       case CacheType::READONLY_CACHE: {
-        return path_concat(_readonly_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
+        return path_concat(_readonly_cache_directory, mangle_name(qualified_name, INVALID_SIZE) + ".gocdb");
       } break;
       case CacheType::READWRITE_CACHE: {
-        return path_concat(_cache_directory, string_replace(qualified_name, "::", "/") + ".gocdb");
+        return path_concat(_cache_directory, mangle_name(qualified_name, INVALID_SIZE) + ".gocdb");
       } break;
     }
+
     PANIC("Unhandled cache type.");
   }
 
@@ -164,11 +165,11 @@ namespace GodotObjectCompiler {
       const String& p_qualified_name, const String& p_attribute_name, CacheType cache_type) const {
     switch (cache_type) {
       case CacheType::READONLY_CACHE: {
-        const String base = path_concat(_readonly_cache_directory, string_replace(p_qualified_name, "::", "/"));
+        const String base = path_concat(_readonly_cache_directory, mangle_name(p_qualified_name, INVALID_SIZE));
         return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
       }
       case CacheType::READWRITE_CACHE: {
-        const String base = path_concat(_cache_directory, string_replace(p_qualified_name, "::", "/"));
+        const String base = path_concat(_cache_directory, mangle_name(p_qualified_name, INVALID_SIZE));
         return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
       } break;
     }
@@ -302,10 +303,60 @@ namespace GodotObjectCompiler {
   }
 
   String TypeDB::mangle_name(const String& qualified_name, Size template_parameter_count) {
+    Vector<String> parts = string_split(qualified_name, "::");
+    if (parts.size() > 1) {
+      for (Size i = 0; i < parts.size(); ++i) {
+        if (i != parts.size() - 1) {
+          parts[i] = mangle_name(parts[i], INVALID_SIZE);
+        } else {
+          parts[i] = mangle_name(parts[i], template_parameter_count);
+        }
+      }
+      return string_vector_combine(parts, "/");
+    }
+
+    StreamWriter name_writer;
+    Size hash = 1337;
+
+    Size count = 0;
+    Size open = 0;
+    Size closed = 0;
+
+    for (char c : qualified_name) {
+      if (c == '<') {
+        open++;
+      }
+      if (c == '>') {
+        closed++;
+      }
+      if (c == ',') {
+        count++;
+      }
+      if (open == 0) {
+        name_writer.write_generic(c);
+      } else {
+        hash *= (c + 1);
+      }
+    }
+
+    if (open == closed) {
+      if (open > 0) {
+        count++;
+      }
+    } else {
+      // PRINT_ERROR("Invalid qualified name %s", qualified_name.c_str());
+      return "___INVALID___";
+    }
+
+    if (template_parameter_count == INVALID_SIZE) {
+      template_parameter_count = count;
+    }
+
     if (template_parameter_count == 0) {
       return qualified_name;
     }
-    return format("%s_T_ARGS_%d_", qualified_name.c_str(), template_parameter_count);
+
+    return format("%s_T_ARGS_%d_", name_writer.get_string().c_str(), template_parameter_count);
   }
 
   Vector<String> TypeDB::resolve_possible_namespaces(

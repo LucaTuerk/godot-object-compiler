@@ -61,15 +61,17 @@ namespace GodotObjectCompiler {
           _path(std::move(other._path)),
           _do_not_write_same_content(other._do_not_write_same_content),
           _stream(std::move(other._stream)),
-          _file(std::move(other._file)) {}
+          _file(std::move(other._file)),
+          _generated(other._generated){}
 
     FileWriter& operator=(FileWriter&& other) noexcept {
       if (this == &other) return *this;
-      IStringWriter::operator=(std::move(other));
+      other._moved = true;
       _path = std::move(other._path);
       _do_not_write_same_content = other._do_not_write_same_content;
       _stream = std::move(other._stream);
       _file = std::move(other._file);
+      _generated = other._generated;
       return *this;
     }
 
@@ -91,6 +93,7 @@ namespace GodotObjectCompiler {
     String _path;
     bool _do_not_write_same_content = true;
     bool _generated = false;
+    bool _moved = false;
     StreamWriter _stream;
     std::fstream _file;
   };

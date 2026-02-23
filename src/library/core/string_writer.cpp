@@ -62,6 +62,10 @@ namespace GodotObjectCompiler {
   }
 
   FileWriter::~FileWriter() {
+    if(_moved) {
+      return;
+    }
+
     if (_generated) {
       _stream.write("\n// clang-format on\n// NOLINTEND\n");
     }
@@ -82,7 +86,8 @@ namespace GodotObjectCompiler {
 
     writer.write(_generated_header(path_file_name(path)));
     writer.write("// NOLINTBEGIN\n// clang-format off\n");
-    return writer;
+    writer._moved = true;
+    return std::move(writer);
   }
 
   void FileWriter::write(const String& p_value) {
