@@ -86,8 +86,7 @@ namespace GodotObjectCompiler {
 
     writer.write(_generated_header(path_file_name(path)));
     writer.write("// NOLINTBEGIN\n// clang-format off\n");
-    writer._moved = true;
-    return std::move(writer);
+    return writer;
   }
 
   void FileWriter::write(const String& p_value) {
