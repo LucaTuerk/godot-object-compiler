@@ -75,6 +75,7 @@ namespace GodotObjectCompiler {
     struct Private {};
 
    public:
+    static inline const char* INVALID_NAME = "___INVALID___";
 
     void set_cache_directory(const String& path);
 
@@ -126,15 +127,17 @@ namespace GodotObjectCompiler {
 
     enum class CacheType { READONLY_CACHE, READWRITE_CACHE };
 
-    Ref<Node> _get_type_data(const String& qualified_name, Size template_parameter_count,
-        const Ref<Namespace>& p_from_namespace, CacheType cache_type);
+    Ref<Node> _get_type_data(const String& p_qualified_name, Size template_parameter_count,
+        const Ref<Namespace>& p_from_namespace, CacheType p_cache_type);
 
     Ref<Attribute> _get_type_attribute(const String& p_qualified_name, const String& p_attribute_name,
         Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace, CacheType cache_type);
 
-    [[nodiscard]] String _get_cache_file_path(const String& qualified_name, CacheType cache_type) const;
-    [[nodiscard]] String _get_attribute_cache_file_path(
-        const String& p_qualified_name, const String& p_attribute_name, CacheType cache_type) const;
+    [[nodiscard]] String _get_cache_file_path(
+        const String& p_qualified_name, CacheType p_cache_type, Size p_template_argument_count = INVALID_SIZE) const;
+
+    [[nodiscard]] String _get_attribute_cache_file_path(const String& p_qualified_name, const String& p_attribute_name,
+        CacheType p_cache_type, Size p_template_argument_count = INVALID_SIZE) const;
 
     Dictionary<String, Ref<Node>> _cache;
     String _cache_directory;

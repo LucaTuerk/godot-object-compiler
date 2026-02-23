@@ -38,7 +38,7 @@
 #include "application/application.h"
 #include "core/all.h"
 #include "integration/all.h"
-#include "library/type_db.h"
+#include "library/all.h"
 #include "parser/all.h"
 #include "test_registry.h"
 

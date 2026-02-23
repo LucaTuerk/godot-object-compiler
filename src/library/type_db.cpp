@@ -148,28 +148,31 @@ namespace GodotObjectCompiler {
     _readonly_cache_directory = path_concat(path, ".readonly");
   }
 
-  String TypeDB::_get_cache_file_path(const String& qualified_name, CacheType cache_type) const {
-    switch (cache_type) {
+  String TypeDB::_get_cache_file_path(
+      const String& p_qualified_name, CacheType p_cache_type, Size p_template_argument_count) const {
+    switch (p_cache_type) {
       case CacheType::READONLY_CACHE: {
-        return path_concat(_readonly_cache_directory, mangle_name(qualified_name, INVALID_SIZE) + ".gocdb");
+        return path_concat(
+            _readonly_cache_directory, mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
       } break;
       case CacheType::READWRITE_CACHE: {
-        return path_concat(_cache_directory, mangle_name(qualified_name, INVALID_SIZE) + ".gocdb");
+        return path_concat(_cache_directory, mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
       } break;
     }
 
     PANIC("Unhandled cache type.");
   }
 
-  String TypeDB::_get_attribute_cache_file_path(
-      const String& p_qualified_name, const String& p_attribute_name, CacheType cache_type) const {
-    switch (cache_type) {
+  String TypeDB::_get_attribute_cache_file_path(const String& p_qualified_name, const String& p_attribute_name,
+      CacheType p_cache_type, Size p_template_argument_count) const {
+    switch (p_cache_type) {
       case CacheType::READONLY_CACHE: {
-        const String base = path_concat(_readonly_cache_directory, mangle_name(p_qualified_name, INVALID_SIZE));
+        const String base =
+            path_concat(_readonly_cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
         return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
       }
       case CacheType::READWRITE_CACHE: {
-        const String base = path_concat(_cache_directory, mangle_name(p_qualified_name, INVALID_SIZE));
+        const String base = path_concat(_cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
         return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
       } break;
     }
@@ -177,7 +180,18 @@ namespace GodotObjectCompiler {
   }
 
   void TypeDB::save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const {
-    const auto path = _get_cache_file_path(p_type->mangled_name(), CacheType::READWRITE_CACHE);
+    String path;
+    if (Ref<TemplateParameters> parameters = p_type->find_child<TemplateParameters>(); parameters != nullptr) {
+      path = _get_cache_file_path(p_type->qualified_name(), CacheType::READWRITE_CACHE, parameters->get_child_count());
+    } else {
+      path = _get_cache_file_path(p_type->qualified_name(), CacheType::READWRITE_CACHE);
+    }
+
+    if (string_contains(path, INVALID_NAME)) {
+      PRINT_ERROR("Failed to get cache path for type \"%s\"", p_type->qualified_name().c_str());
+      return;
+    }
+
     if (const auto base = path_base(path); !directory_exits(base) && !create_dir_recursive(base)) {
       return;
     }
@@ -189,9 +203,17 @@ namespace GodotObjectCompiler {
 
   void TypeDB::save_type_attribute(
       const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute, const String& p_generated_from) const {
-    const String qualified_name = p_type->mangled_name();
-    const String path =
-        _get_attribute_cache_file_path(qualified_name, p_attribute->get_type(), CacheType::READWRITE_CACHE);
+    String path;
+    if (Ref<TemplateParameters> parameters = p_type->find_child<TemplateParameters>(); parameters != nullptr) {
+      path = _get_attribute_cache_file_path(p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE, parameters->get_child_count());
+    } else {
+      path = _get_attribute_cache_file_path(p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE);
+    }
+
+    if (string_contains(path, INVALID_NAME)) {
+      PRINT_ERROR("Failed to get cache path for attribute \"%s\" on type \"%s\"", p_attribute->get_type().c_str(), p_attribute->qualified_name().c_str());
+      return;
+    }
 
     if (const String base = path_base(path); !directory_exits(base) && !create_dir_recursive(base)) {
       return;
@@ -202,13 +224,12 @@ namespace GodotObjectCompiler {
     }
   }
 
-  Ref<Node> TypeDB::_get_type_data(const String& qualified_name, Size template_argument_count,
-      const Ref<Namespace>& p_from_namespace, CacheType cache_type) {
+  Ref<Node> TypeDB::_get_type_data(const String& p_qualified_name, Size p_template_argument_count,
+      const Ref<Namespace>& p_from_namespace, CacheType p_cache_type) {
     Reader reader;
 
-    for (const String& name : resolve_possible_namespaces(qualified_name, p_from_namespace)) {
-      String mangled_name = mangle_name(name, template_argument_count);
-      const String& cache_file_path = _get_cache_file_path(mangled_name, cache_type);
+    for (const String& name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
+      const String& cache_file_path = _get_cache_file_path(name, p_cache_type, p_template_argument_count);
 
       if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
         return itr->second->clone();
@@ -220,7 +241,8 @@ namespace GodotObjectCompiler {
         return root;
       }
       for (const String& using_ : ExecutionContext::instance()->get_usings()) {
-        if (String using_path = _get_cache_file_path(using_ + "::" + mangled_name, cache_type);
+        if (String using_path = _get_cache_file_path(
+                format("%s::%s", using_.c_str(), name.c_str()), p_cache_type, p_template_argument_count);
             file_exists(using_path)) {
           Ref<Node> root = reader.read_from_file(using_path);
           _cache[cache_file_path] = root->clone();
@@ -237,8 +259,8 @@ namespace GodotObjectCompiler {
     Reader reader;
 
     for (const String& name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
-      String mangled_name = mangle_name(name, p_template_parameter_count);
-      const String& cache_file_path = _get_attribute_cache_file_path(mangled_name, p_attribute_name, cache_type);
+      const String& cache_file_path =
+          _get_attribute_cache_file_path(name, p_attribute_name, cache_type, p_template_parameter_count);
 
       if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
         return itr->second->as<Attribute>();
@@ -253,8 +275,8 @@ namespace GodotObjectCompiler {
         return root->as<Attribute>();
       }
       for (const String& using_ : ExecutionContext::instance()->get_usings()) {
-        if (String using_path =
-                _get_attribute_cache_file_path(using_ + "::" + mangled_name, p_attribute_name, cache_type);
+        if (String using_path = _get_attribute_cache_file_path(
+                format("%s::%s", using_.c_str(), name.c_str()), p_attribute_name, cache_type);
             file_exists(using_path)) {
           const Ref<Node> root = reader.read_from_file(using_path);
           _cache[cache_file_path] = root->clone();
@@ -304,38 +326,57 @@ namespace GodotObjectCompiler {
 
   String TypeDB::mangle_name(const String& qualified_name, Size template_parameter_count) {
     Vector<String> parts = string_split(qualified_name, "::");
+
+    auto itr = std::find_if(parts.begin(), parts.end(), [](const String& part) { return !part.empty(); });
+    if (itr == parts.end()) {
+      return INVALID_NAME;
+    }
+    parts = {itr, parts.end()};
+
     if (parts.size() > 1) {
       for (Size i = 0; i < parts.size(); ++i) {
         if (i != parts.size() - 1) {
           parts[i] = mangle_name(parts[i], INVALID_SIZE);
         } else {
+          if (parts[i].empty()) {
+            return INVALID_NAME;
+          }
           parts[i] = mangle_name(parts[i], template_parameter_count);
+        }
+
+        if (parts[i] == INVALID_NAME) {
+          return INVALID_NAME;
         }
       }
       return string_vector_combine(parts, "/");
     }
 
     StreamWriter name_writer;
-    Size hash = 1337;
 
     Size count = 0;
     Size open = 0;
     Size closed = 0;
 
     for (char c : qualified_name) {
+      if (!(is_whitespace(c) || c == '<' || c == '>' || c == '_' || isalnum(c) || c == ',')) {
+        return INVALID_NAME;
+      }
+
+      if (open > 0 && open == closed && !is_whitespace(c)) {
+        return INVALID_NAME;
+      }
+
       if (c == '<') {
         open++;
       }
       if (c == '>') {
         closed++;
       }
-      if (c == ',') {
+      if (c == ',' && open - closed == 1) {
         count++;
       }
       if (open == 0) {
         name_writer.write_generic(c);
-      } else {
-        hash *= (c + 1);
       }
     }
 
@@ -344,7 +385,6 @@ namespace GodotObjectCompiler {
         count++;
       }
     } else {
-      // PRINT_ERROR("Invalid qualified name %s", qualified_name.c_str());
       return "___INVALID___";
     }
 
