@@ -17,6 +17,14 @@ jobs:
         with:
           submodules: "false"
 
+      - name: Create all.h
+        run: |
+          python ./tools/create_all_h.py
+
+      - name: Generate licence headers
+        run: |
+          python ./tools/add_licence_headers.py
+
       - name: Run format
         shell: bash
         run: |
@@ -28,14 +36,6 @@ jobs:
 
           rm ./.files.txt
           rm ./.testfiles.txt
-
-      - name: Generate licence headers
-        run: |
-          python ./tools/add_licence_headers.py
-
-      - name: Create all.h
-        run: |
-          python ./tools/create_all_h.py
 
       - name: Verify no changes
         run: git diff-index --quiet HEAD

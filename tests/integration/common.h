@@ -35,50 +35,50 @@
 #pragma once
 #include "library/core/core.h"
 
-bool generate_files(const GodotObjectCompiler::String& p_path, GodotObjectCompiler::String& r_generated_header,
-    GodotObjectCompiler::String& r_generated_source, GodotObjectCompiler::String& r_register_header,
-    GodotObjectCompiler::String& r_register_source);
+bool generate_files(const GodotObjectCompiler::String &p_path, GodotObjectCompiler::String &r_generated_header,
+		GodotObjectCompiler::String &r_generated_source, GodotObjectCompiler::String &r_register_header,
+		GodotObjectCompiler::String &r_register_source);
 
-GodotObjectCompiler::String get_line_that_contains(const GodotObjectCompiler::String& p_content,
-    const GodotObjectCompiler::Vector<GodotObjectCompiler::String>& p_search);
+GodotObjectCompiler::String get_line_that_contains(const GodotObjectCompiler::String &p_content,
+		const GodotObjectCompiler::Vector<GodotObjectCompiler::String> &p_search);
 
-GodotObjectCompiler::Size find_line_that_contains(const GodotObjectCompiler::String& p_content,
-    const GodotObjectCompiler::Vector<GodotObjectCompiler::String>& p_search,
-    GodotObjectCompiler::Size p_start_line = 0);
+GodotObjectCompiler::Size find_line_that_contains(const GodotObjectCompiler::String &p_content,
+		const GodotObjectCompiler::Vector<GodotObjectCompiler::String> &p_search,
+		GodotObjectCompiler::Size p_start_line = 0);
 
-bool property_bound(const char* p_property_name, const char* p_variant_type,
-    const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source);
+bool property_bound(const char *p_property_name, const char *p_variant_type,
+		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source);
 
-bool signal_bound(const char* p_signal_name, const char* p_variant_type,
-    const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source);
+bool signal_bound(const char *p_signal_name, const char *p_variant_type,
+		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source);
 
-bool function_bound(const char* p_function_name, const GodotObjectCompiler::String& p_generated_header,
-    const GodotObjectCompiler::String& p_generated_source);
+bool function_bound(const char *p_function_name, const GodotObjectCompiler::String &p_generated_header,
+		const GodotObjectCompiler::String &p_generated_source);
 
-bool virtual_function_bound(const char* p_function_name, const char* p_type,
-    const GodotObjectCompiler::String& p_generated_header, const GodotObjectCompiler::String& p_generated_source);
+bool virtual_function_bound(const char *p_function_name, const char *p_type,
+		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source);
 
-#define GOC_INTEGRATION_TEST_GEN_FILE(file)                                                                  \
-  String generated_header, generated_source, register_header, register_source;                               \
-  bool success = generate_files(file, generated_header, generated_source, register_header, register_source); \
-  GOC_TEST_ASSERT(success, "Failed to generate files.")
+#define GOC_INTEGRATION_TEST_GEN_FILE(file) \
+	String generated_header, generated_source, register_header, register_source; \
+	bool success = generate_files(file, generated_header, generated_source, register_header, register_source); \
+	GOC_TEST_ASSERT(success, "Failed to generate files.")
 
-#define GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file)                                                          \
-  String generated_header, generated_source, register_header, register_source;                               \
-  bool success = generate_files(file, generated_header, generated_source, register_header, register_source); \
-  GOC_TEST_ASSERT(!success, "Invalid file was succesfully generated.")
+#define GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file) \
+	String generated_header, generated_source, register_header, register_source; \
+	bool success = generate_files(file, generated_header, generated_source, register_header, register_source); \
+	GOC_TEST_ASSERT(!success, "Invalid file was succesfully generated.")
 
-#define GOC_ASSERT_PROP_BOUND(prop, variant_type)                                         \
-  GOC_TEST_ASSERT(property_bound(prop, variant_type, generated_header, generated_source), \
-      format("Property \"%s\" not bound.", prop));
+#define GOC_ASSERT_PROP_BOUND(prop, variant_type) \
+	GOC_TEST_ASSERT(property_bound(prop, variant_type, generated_header, generated_source), \
+			format("Property \"%s\" not bound.", prop));
 
-#define GOC_ASSERT_SIGNAL_BOUND(signal, variant_type)                                     \
-  GOC_TEST_ASSERT(signal_bound(signal, variant_type, generated_header, generated_source), \
-      format("Signal \"%s\" not bound.", signal));
+#define GOC_ASSERT_SIGNAL_BOUND(signal, variant_type) \
+	GOC_TEST_ASSERT(signal_bound(signal, variant_type, generated_header, generated_source), \
+			format("Signal \"%s\" not bound.", signal));
 
 #define GOC_ASSERT_FUNC_BOUND(func) \
-  GOC_TEST_ASSERT(function_bound(func, generated_header, generated_source), format("Function \"%s\" not bound.", func));
+	GOC_TEST_ASSERT(function_bound(func, generated_header, generated_source), format("Function \"%s\" not bound.", func));
 
-#define GOC_ASSERT_VIRTUAL_BOUND(func, type)                                              \
-  GOC_TEST_ASSERT(virtual_function_bound(func, type, generated_header, generated_source), \
-      format("Function \"%s\" not bound.", func));
+#define GOC_ASSERT_VIRTUAL_BOUND(func, type) \
+	GOC_TEST_ASSERT(virtual_function_bound(func, type, generated_header, generated_source), \
+			format("Function \"%s\" not bound.", func));

@@ -30,3 +30,4 @@ __pycache__
 # Build folders
 cmake*
 build
+.vscode

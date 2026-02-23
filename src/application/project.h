@@ -39,30 +39,31 @@
 
 namespace GodotObjectCompiler {
 
-  enum ProjectTarget { TARGET_MODULE, TARGET_GDEXTENSION, TARGET_UNDEFINED = TARGET_GDEXTENSION };
+enum ProjectTarget { TARGET_MODULE,
+	TARGET_GDEXTENSION,
+	TARGET_UNDEFINED = TARGET_GDEXTENSION };
 
-  struct Project {
-    ProjectTarget project_target = TARGET_GDEXTENSION;
-    Vector<String> godot_include_paths;
-    String paths_root;
-    String paths_generated = ".goc/generated";
-    String paths_cache = ".goc/cache";
-    String paths_goc = ".goc";
-    Vector<String> paths_include;
+struct Project {
+	ProjectTarget project_target = TARGET_GDEXTENSION;
+	Vector<String> godot_include_paths;
+	String paths_root;
+	String paths_generated = ".goc/generated";
+	String paths_cache = ".goc/cache";
+	String paths_goc = ".goc";
+	Vector<String> paths_include;
 
-    void read_from(IStructuredReader* p_reader);
+	void read_from(IStructuredReader *p_reader);
 
-    void write_to(IStructuredWriter* p_writer);
+	void write_to(IStructuredWriter *p_writer);
 
-    bool read_from_file(const String& p_path);
+	bool read_from_file(const String &p_path);
 
-    bool write_to_file(const String& p_path);
+	bool write_to_file(const String &p_path);
 
-   private:
+private:
+	static Vector<String> from_comma_separated_string(const String &p_str);
 
-    static Vector<String> from_comma_separated_string(const String& p_str);
+	String to_comma_separated_string(const Vector<String> &p_str);
+};
 
-    String to_comma_separated_string(const Vector<String>& p_str);
-  };
-
-}
+} //namespace GodotObjectCompiler
