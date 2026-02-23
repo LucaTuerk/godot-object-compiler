@@ -1,6 +1,3 @@
-#!/bin/sh
-
-shopt -s globstar
 ls ./src/**/*.{cpp,h} > ./.files.txt
 ls ./tests/**/*.{cpp,h} > ./.testfiles.txt
 

@@ -44,126 +44,141 @@
 #define x3(x) x, x, x
 
 GOC_TEST(ClassSimple) {
-  using namespace GodotObjectCompiler;
-  GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_class.h");
+	using namespace GodotObjectCompiler;
+	GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_class.h");
 
-  Vector<Ref<Class>> classes = global_namespace->classes_recursive();
+	Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 
-  GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
-  GOC_TEST_EQ(classes[0]->name(), "SimpleClass", "Invalid class name.")
+	GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
+	GOC_TEST_EQ(classes[0]->name(), "SimpleClass", "Invalid class name.")
 
-  return TEST_RESULT_SUCCESS;
+	return TEST_RESULT_SUCCESS;
 };
 
 GOC_TEST(ClassSimpleInheritance) {
-  using namespace GodotObjectCompiler;
-  GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_inheritance.h");
+	using namespace GodotObjectCompiler;
+	GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_inheritance.h");
 
-  Vector<Ref<Class>> classes = global_namespace->classes_recursive();
-  GOC_TEST_EQ(classes.size(), 3, "Invalid class count.")
+	Vector<Ref<Class>> classes = global_namespace->classes_recursive();
+	GOC_TEST_EQ(classes.size(), 3, "Invalid class count.")
 
-  Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
-  GOC_TEST_ASSERT(A, "Class named A not found");
+	Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
+	GOC_TEST_ASSERT(A, "Class named A not found");
 
-  Ref<Class> B = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("B"));
-  GOC_TEST_ASSERT(B, "Class named B not found");
+	Ref<Class> B = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("B"));
+	GOC_TEST_ASSERT(B, "Class named B not found");
 
-  Ref<Class> C = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("C"));
-  GOC_TEST_ASSERT(C, "Class named C not found");
+	Ref<Class> C = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("C"));
+	GOC_TEST_ASSERT(C, "Class named C not found");
 
-  Vector<String> A_bases = A->direct_bases_names();
-  GOC_TEST_EQ(A_bases.size(), 0, "Invalid base class count.");
+	Vector<String> A_bases = A->direct_bases_names();
+	GOC_TEST_EQ(A_bases.size(), 0, "Invalid base class count.");
 
-  Vector<String> B_bases = B->direct_bases_names();
-  GOC_TEST_EQ(B_bases.size(), 1, "Invalid base class count.");
-  GOC_TEST_EQ(B_bases[0], "A", "Invalid base class name.");
+	Vector<String> B_bases = B->direct_bases_names();
+	GOC_TEST_EQ(B_bases.size(), 1, "Invalid base class count.");
+	GOC_TEST_EQ(B_bases[0], "A", "Invalid base class name.");
 
-  Vector<String> C_bases = C->direct_bases_names();
-  GOC_TEST_EQ(C_bases.size(), 1, "Invalid base class count.");
-  GOC_TEST_EQ(C_bases[0], "B", "Invalid base class name.");
+	Vector<String> C_bases = C->direct_bases_names();
+	GOC_TEST_EQ(C_bases.size(), 1, "Invalid base class count.");
+	GOC_TEST_EQ(C_bases[0], "B", "Invalid base class name.");
 
-  return TEST_RESULT_SUCCESS;
+	return TEST_RESULT_SUCCESS;
 };
 
 GOC_TEST(ClassMemberFunctions) {
-  using namespace GodotObjectCompiler;
-  GOC_TEST_PARSE_FILE("tests/files/class_tests/member_functions.h");
+	using namespace GodotObjectCompiler;
+	GOC_TEST_PARSE_FILE("tests/files/class_tests/member_functions.h");
 
-  Vector<Ref<Class>> classes = global_namespace->classes_recursive();
-  GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
+	Vector<Ref<Class>> classes = global_namespace->classes_recursive();
+	GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
 
-  Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
-  GOC_TEST_ASSERT(A, "Class named A not found");
+	Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
+	GOC_TEST_ASSERT(A, "Class named A not found");
 
-  Vector<String> public_members = {"a", "b", "c", "d", "e", "f"};
-  Vector<String> protected_members = {"g", "h", "i", "j", "k", "l"};
-  Vector<String> private_members = {"m", "n", "o", "p", "q", "r"};
-  Vector<String> parameters = {"", "", "", "int", "bool", "A *"};
-  Vector<String> return_types = {"int", "bool", "A *", "int", "bool", "A *"};
+	Vector<String> public_members = { "a", "b", "c", "d", "e", "f" };
+	Vector<String> protected_members = { "g", "h", "i", "j", "k", "l" };
+	Vector<String> private_members = { "m", "n", "o", "p", "q", "r" };
+	Vector<String> parameters = { "", "", "", "int", "bool", "A *" };
+	Vector<String> return_types = { "int", "bool", "A *", "int", "bool", "A *" };
 
-  Vector<Pair<Vector<Ref<Function>>, Vector<String>>> functions_names_pairs = {
-      {A->public_member_functions(), public_members}, {A->protected_member_functions(), protected_members},
-      {A->private_member_functions(), private_members}};
+	Vector<Pair<Vector<Ref<Function>>, Vector<String>>> functions_names_pairs = {
+		{ A->public_member_functions(), public_members }, { A->protected_member_functions(), protected_members },
+		{ A->private_member_functions(), private_members }
+	};
 
-  for (const auto& [functions, names] : functions_names_pairs) {
-    Size i = 0;
-    for (const Ref<Function>& func : functions) {
-      GOC_TEST_ASSERT(func->type(), "Failed to get return type");
-      GOC_TEST_EQ(func->name(), names[i], "Wrong function name.")
+	for (const auto &[functions, names] : functions_names_pairs) {
+		Size i = 0;
+		for (const Ref<Function> &func : functions) {
+			GOC_TEST_ASSERT(func->type(), "Failed to get return type");
+			GOC_TEST_EQ(func->name(), names[i], "Wrong function name.")
 
-      GOC_TEST_EQ(func->type()->type_name(), return_types[i], "Wrong return type.")
-      if (!parameters[i].empty()) {
-        GOC_TEST_ASSERT(func->parameters(), "Failed to get function arguments.")
-        GOC_TEST_EQ(func->parameters()->get_child_count(), 1, "Wrong parameter count.")
+			GOC_TEST_EQ(func->type()->type_name(), return_types[i], "Wrong return type.")
+			if (!parameters[i].empty()) {
+				GOC_TEST_ASSERT(func->parameters(), "Failed to get function arguments.")
+				GOC_TEST_EQ(func->parameters()->get_child_count(), 1, "Wrong parameter count.")
 
-        Ref<Parameter> parameter = func->parameters()->get_child(0)->as<Parameter>();
-        GOC_TEST_ASSERT(parameter, "Failed to get parameter.")
+				Ref<Parameter> parameter = func->parameters()->get_child(0)->as<Parameter>();
+				GOC_TEST_ASSERT(parameter, "Failed to get parameter.")
 
-        Ref<Type> parameter_type = parameter->type();
-        GOC_TEST_ASSERT(parameter_type, "Failed to get parameter type.")
+				Ref<Type> parameter_type = parameter->type();
+				GOC_TEST_ASSERT(parameter_type, "Failed to get parameter type.")
 
-        GOC_TEST_EQ(parameter_type->type_name(), parameters[i], "Wrong parameter type.")
-      }
-      i++;
-    }
-  }
+				GOC_TEST_EQ(parameter_type->type_name(), parameters[i], "Wrong parameter type.")
+			}
+			i++;
+		}
+	}
 
-  return TEST_RESULT_SUCCESS;
+	return TEST_RESULT_SUCCESS;
 };
 
 GOC_TEST(ClassMemberFields) {
-  using namespace GodotObjectCompiler;
-  GOC_TEST_PARSE_FILE("tests/files/class_tests/member_fields.h");
+	using namespace GodotObjectCompiler;
+	GOC_TEST_PARSE_FILE("tests/files/class_tests/member_fields.h");
 
-  Vector<Ref<Class>> classes = global_namespace->classes_recursive();
-  GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
+	Vector<Ref<Class>> classes = global_namespace->classes_recursive();
+	GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
 
-  Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
-  GOC_TEST_ASSERT(A, "Class named A not found");
+	Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
+	GOC_TEST_ASSERT(A, "Class named A not found");
 
-  Vector<String> public_members = {"a", "b", "c"};
-  Vector<String> protected_members = {"d", "e", "f"};
-  Vector<String> private_members = {"g", "h", "i"};
-  Vector<String> types = {"int", "bool", "A *"};
+	Vector<String> public_members = { "a", "b", "c" };
+	Vector<String> protected_members = { "d", "e", "f" };
+	Vector<String> private_members = { "g", "h", "i" };
+	Vector<String> types = { "int", "bool", "A *" };
 
-  Vector<AccessSpecifier::Type> access_specifier = {
-      x3(AccessSpecifier::PUBLIC), x3(AccessSpecifier::PROTECTED), x3(AccessSpecifier::PRIVATE)};
+	Vector<AccessSpecifier::Type> access_specifier = {
+		x3(AccessSpecifier::PUBLIC), x3(AccessSpecifier::PROTECTED), x3(AccessSpecifier::PRIVATE)
+	};
 
-  Vector<Pair<Vector<Ref<Field>>, Vector<String>>> fields_names_pairs = {{A->public_member_fields(), public_members},
-      {A->protected_member_fields(), protected_members}, {A->private_member_fields(), private_members}};
+	Vector<Pair<Vector<Ref<Field>>, Vector<String>>> fields_names_pairs = { { A->public_member_fields(), public_members },
+		{ A->protected_member_fields(), protected_members }, { A->private_member_fields(), private_members } };
 
-  Size j = 0;
-  for (const auto& [fields, names] : fields_names_pairs) {
-    Size i = 0;
-    for (const Ref<Field>& field : fields) {
-      GOC_TEST_ASSERT(field->type(), "Failed to get field type");
-      GOC_TEST_EQ(field->name(), names[i], "Wrong field name.")
-      GOC_TEST_EQ(field->type()->type_name(), types[i], "Wrong field type.")
-      GOC_TEST_EQ(*field->access_specifier_type(), access_specifier[j], "Wrong access specifier.");
-      i++;
-      j++;
-    }
-  }
+	Size j = 0;
+	for (const auto &[fields, names] : fields_names_pairs) {
+		Size i = 0;
+		for (const Ref<Field> &field : fields) {
+			GOC_TEST_ASSERT(field->type(), "Failed to get field type");
+			GOC_TEST_EQ(field->name(), names[i], "Wrong field name.")
+			GOC_TEST_EQ(field->type()->type_name(), types[i], "Wrong field type.")
+			GOC_TEST_EQ(*field->access_specifier_type(), access_specifier[j], "Wrong access specifier.");
+			i++;
+			j++;
+		}
+	}
 
-  return TEST_RESULT_SUCCESS;
+	return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(TemplateClass) {
+	GOC_TEST_PARSE_FILE("tests/files/class_tests/template_class.h");
+
+	Ref<Class> template_class = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("TemplateClass"));
+	GOC_TEST_ASSERT(template_class, "Class named TemplateClass not found.");
+
+	Ref<TemplateParameters> template_parameters = template_class->find_child<TemplateParameters>();
+	GOC_TEST_ASSERT(template_parameters, "TemplateParameters not found.");
+	GOC_TEST_EQ(template_parameters->get_child_count(), 1, "Wrong parameter count.");
+
+	return TEST_RESULT_SUCCESS;
 };

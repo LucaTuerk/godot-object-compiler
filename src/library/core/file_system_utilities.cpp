@@ -167,10 +167,10 @@ namespace GodotObjectCompiler {
       return "";
     }
 
-    return path.filename();
+    return path.filename().generic_string();
   }
 
-  String path_cwd() { return std::filesystem::current_path(); }
+  String path_cwd() { return std::filesystem::current_path().generic_string(); }
 
   String path_stem(const String& p_path) { return std::filesystem::path(p_path).stem().generic_string(); }
 
@@ -191,7 +191,11 @@ namespace GodotObjectCompiler {
 
   Vector<String> directory_files_recursive(const String& p_path) {
     const String absolute = path_absolute(p_path);
-    PANIC_COND(!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"", absolute.c_str());
+
+    if(!directory_exits(absolute)) {
+      PRINT_ERROR("Trying to iterate non existing directory \"%s\"", absolute.c_str());
+      return {};
+    }
 
     Vector<String> result;
     std::filesystem::recursive_directory_iterator iter(absolute);

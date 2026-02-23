@@ -38,7 +38,7 @@
 #include "application/application.h"
 #include "core/all.h"
 #include "integration/all.h"
-#include "library/type_db.h"
+#include "library/all.h"
 #include "parser/all.h"
 #include "test_registry.h"
 
@@ -52,25 +52,27 @@ int main(int argc, char* argv[]) {
   }
 
   using namespace GodotObjectCompiler;
-  ExecutionContext::instance()->set_error_level(ERROR, FULL);
+  ExecutionContext::instance()->set_error_level(INFO, FULL);
 
   Size failed_count = 0;
   Size success_count = 0, ignore_count = 0, all_count = 0;
   for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
+    PRINT_INFO("Running test case \"%s\"", test_name.c_str());
     all_count++;
 
     const TestResult result = test_functor();
     switch (result) {
       case TEST_RESULT_SUCCESS:
+        PRINT_INFO("%s\tSuccess!", test_name.c_str());
         print_ln(format("%s\tSuccess!", test_name.c_str()));
         success_count++;
         break;
       case TEST_RESULT_FAILURE:
-        print_err(format("%s\tFailed!", test_name.c_str()));
+        PRINT_INFO("%s\tFailed!", test_name.c_str());
         failed_count++;
         break;
       case TEST_RESULT_IGNORED:
-        print_ln(format("%s\tIgnored!", test_name.c_str()));
+        PRINT_INFO("%s\tIgnored!", test_name.c_str());
         ignore_count++;
         break;
     }
@@ -84,6 +86,8 @@ int main(int argc, char* argv[]) {
     TestRegistry::instance()->set_integration_tests_include_paths(include_paths);
 
     for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_integration_tests()) {
+      PRINT_INFO("Running test case \"%s\"", test_name.c_str());
+
       const Vector<String> args = TestRegistry::instance()->get_test_application_arguments({"generate", "type_db"});
       Application::run(args);  // we need the type db to run integration tests;
 
@@ -91,23 +95,24 @@ int main(int argc, char* argv[]) {
       const TestResult result = test_functor();
       switch (result) {
         case TEST_RESULT_SUCCESS:
+          PRINT_INFO("%s\tSuccess!", test_name.c_str());
           print_ln(format("%s\tSuccess!", test_name.c_str()));
           success_count++;
           break;
         case TEST_RESULT_FAILURE:
-          print_err(format("%s\tFailed!", test_name.c_str()));
+          PRINT_INFO("%s\tFailed!", test_name.c_str());
           failed_count++;
           break;
         case TEST_RESULT_IGNORED:
-          print_ln(format("%s\tIgnored!", test_name.c_str()));
+          PRINT_INFO("%s\tIgnored!", test_name.c_str());
           ignore_count++;
           break;
       }
     }
   }
 
-  print_ln(format("Summary: %d failed, %d succeeded, %d ignored, %d tests run", failed_count, success_count,
-      ignore_count, all_count));
+  PRINT_INFO("Summary: %d failed, %d succeeded, %d ignored, %d tests run", failed_count, success_count, ignore_count,
+      all_count);
 
   if (failed_count != 0) {
     return 1;

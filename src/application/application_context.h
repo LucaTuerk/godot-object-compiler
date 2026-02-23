@@ -39,30 +39,29 @@
 
 namespace GodotObjectCompiler {
 
-  class IProgram;
+class IProgram;
 
-  class ApplicationContext {
-   public:
+class ApplicationContext {
+public:
+	String project_name;
+	ProjectTarget project_target = ProjectTarget::TARGET_GDEXTENSION;
 
-    String project_name;
-    ProjectTarget project_target = ProjectTarget::TARGET_GDEXTENSION;
+	Opt<String> paths_root;
+	Opt<Vector<String>> files_input;
+	Opt<Vector<String>> paths_include;
 
-    Opt<String> paths_root;
-    Opt<Vector<String>> files_input;
-    Opt<Vector<String>> paths_include;
+	String paths_goc = ".goc";
+	String paths_cache = ".goc/cache";
+	String paths_readonly_cache = ".goc/cache/.readonly";
+	String paths_generated = ".goc/generated";
+	Vector<String> application_arguments;
+	Vector<String> program_arguments;
 
-    String paths_goc = ".goc";
-    String paths_cache = ".goc/cache";
-    String paths_readonly_cache = ".goc/cache/.readonly";
-    String paths_generated = ".goc/generated";
-    Vector<String> application_arguments;
-    Vector<String> program_arguments;
+	Ref<IProgram> program;
 
-    Ref<IProgram> program;
+	bool set_from_project(const Project &p_project);
+	bool set_from_application_arguments(Vector<String> &p_application_arguments);
+	bool validate() const;
+};
 
-    bool set_from_project(const Project& p_project);
-    bool set_from_application_arguments(Vector<String>& p_application_arguments);
-    bool validate() const;
-  };
-
-}
+} //namespace GodotObjectCompiler

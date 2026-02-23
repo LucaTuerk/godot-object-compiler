@@ -25,7 +25,23 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 
+set(EXECUTABLE_OUTPUT_DIR ${CMAKE_BINARY_DIR})
+if(WIN32)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${EXECUTABLE_OUTPUT_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${EXECUTABLE_OUTPUT_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${EXECUTABLE_OUTPUT_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${EXECUTABLE_OUTPUT_DIR})
+endif()
+
+
 add_executable(${EXEC_NAME} ${SOURCES})
+#
+#set(BUILD_NUM_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/application/build_number.h)
+#message(STATUS ${BUILD_NUM_FILE})
+#add_custom_command(TARGET ${EXEC_NAME}
+#        PRE_BUILD
+#        COMMAND ${CMAKE_COMMAND} -DFILE=${BUILD_NUM_FILE} -P ${CMAKE_CURRENT_LIST_DIR}/tools/automatic_build_number.cmake
+#)
 
 target_include_directories(${EXEC_NAME} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/src
@@ -38,9 +54,11 @@ target_link_libraries(${EXEC_NAME} PRIVATE
         tree-sitter-cpp
 )
 
-target_compile_options(${EXEC_NAME} PRIVATE
-        $<$<CONFIG:Debug>:-Wall -Wextra -fdiagnostics-color=always -g>
-        $<$<CONFIG:Release>:-O3>)
+if(NOT WIN32)
+        target_compile_options(${EXEC_NAME} PRIVATE
+                $<$<CONFIG:Debug>:-Wall -Wextra -fdiagnostics-color=always -g>
+                $<$<CONFIG:Release>:-O3>)
+endif()
 
 target_precompile_headers(${EXEC_NAME} PRIVATE
         src/library/core/system_includes.h
@@ -71,9 +89,11 @@ if(GOC_TESTS_ENABLED)
 
     target_compile_definitions(${EXEC_NAME_TEST} PRIVATE DEV_BUILD=1)
 
-    target_compile_options(${EXEC_NAME_TEST} PRIVATE
-            $<$<CONFIG:Debug>:-Wall -Wextra -fdiagnostics-color=always -g>
-            $<$<CONFIG:Release>:-O3>)
+    if(NOT WIN32)
+        target_compile_options(${EXEC_NAME_TEST} PRIVATE
+                $<$<CONFIG:Debug>:-Wall -Wextra -fdiagnostics-color=always -g>
+                $<$<CONFIG:Release>:-O3>)
+    endif()
 
     target_precompile_headers(${EXEC_NAME_TEST} REUSE_FROM ${EXEC_NAME})
 

@@ -62,6 +62,10 @@ namespace GodotObjectCompiler {
   }
 
   FileWriter::~FileWriter() {
+    if(_moved) {
+      return;
+    }
+
     if (_generated) {
       _stream.write("\n// clang-format on\n// NOLINTEND\n");
     }

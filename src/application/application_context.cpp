@@ -42,140 +42,140 @@
 
 namespace GodotObjectCompiler {
 
-  bool ApplicationContext::set_from_project(const Project& p_project) {
-    project_target = p_project.project_target;
-    paths_root = path_absolute(p_project.paths_root);
-    paths_generated = path_absolute(p_project.paths_generated);
-    paths_cache = path_absolute(p_project.paths_cache);
-    paths_readonly_cache = path_concat(paths_cache, ".readonly");
-    paths_goc = path_absolute(p_project.paths_goc);
+bool ApplicationContext::set_from_project(const Project &p_project) {
+	project_target = p_project.project_target;
+	paths_root = path_absolute(p_project.paths_root);
+	paths_generated = path_absolute(p_project.paths_generated);
+	paths_cache = path_absolute(p_project.paths_cache);
+	paths_readonly_cache = path_concat(paths_cache, ".readonly");
+	paths_goc = path_absolute(p_project.paths_goc);
 
-    paths_include = p_project.paths_include;
-    for (const auto& godot_include_path : p_project.godot_include_paths) {
-      if (!vector_contains(*paths_include, godot_include_path)) {
-        paths_include->push_back(godot_include_path);
-      }
-    }
+	paths_include = p_project.paths_include;
+	for (const auto &godot_include_path : p_project.godot_include_paths) {
+		if (!vector_contains(*paths_include, godot_include_path)) {
+			paths_include->push_back(godot_include_path);
+		}
+	}
 
-    if (!vector_contains(*paths_include, p_project.paths_root)) {
-      paths_include->push_back(p_project.paths_root);
-    }
+	if (!vector_contains(*paths_include, p_project.paths_root)) {
+		paths_include->push_back(p_project.paths_root);
+	}
 
-    files_input = Vector<String>();
-    for (const String& file_path : directory_files_recursive(p_project.paths_root)) {
-      if (string_suffix(file_path, ".h") || string_suffix(file_path, ".hpp")) {
-        files_input->push_back(file_path);
-      }
-    }
+	files_input = Vector<String>();
+	for (const String &file_path : directory_files_recursive(p_project.paths_root)) {
+		if (string_suffix(file_path, ".h") || string_suffix(file_path, ".hpp")) {
+			files_input->push_back(file_path);
+		}
+	}
 
-    std::transform(paths_include->begin(), paths_include->end(), paths_include->begin(), &path_absolute);
-    std::transform(files_input->begin(), files_input->end(), files_input->begin(), &path_absolute);
-    return validate();
-  }
-
-  bool ApplicationContext::set_from_application_arguments(Vector<String>& p_application_arguments) {
-    auto prefix_extract = [](const String& p_str, const String& p_long, const String& p_short, String& r_out) {
-      if (string_prefix(p_str, p_long)) {
-        r_out = p_str.substr(p_long.size());
-        return true;
-      } else if (string_prefix(p_str, p_short)) {
-        r_out = p_str.substr(p_short.size());
-        return true;
-      }
-      r_out = "";
-      return false;
-    };
-
-    for (auto itr = p_application_arguments.begin(); itr != p_application_arguments.end();) {
-      String content;
-      String arg = *itr;
-
-      if (prefix_extract(arg, "--root_path=", "-R=", content)) {
-        paths_root = content;
-        itr = p_application_arguments.erase(itr);
-      } else if (prefix_extract(arg, "--goc_path=", "-P=", content)) {
-        paths_goc = content;
-        itr = p_application_arguments.erase(itr);
-      } else if (prefix_extract(arg, "--generated_path=", "-G=", content)) {
-        paths_generated = content;
-        itr = p_application_arguments.erase(itr);
-      } else if (prefix_extract(arg, "--cache_path", "-C=", content)) {
-        paths_cache = content;
-        itr = p_application_arguments.erase(itr);
-      } else if (prefix_extract(arg, "--include_paths", "-I=", content)) {
-        paths_include = string_split(content, ",");
-        itr = p_application_arguments.erase(itr);
-      } else if (prefix_extract(arg, "--sources=", "-S=", content)) {
-        files_input = string_split(content, ",");
-        itr = p_application_arguments.erase(itr);
-      } else {
-        ++itr;
-      }
-    }
-
-    paths_goc = path_absolute(paths_goc);
-    paths_cache = path_absolute(paths_cache);
-    paths_readonly_cache = path_absolute(paths_readonly_cache);
-    paths_generated = path_absolute(paths_generated);
-
-    if (files_input.has_value()) {
-      std::transform(files_input->begin(), files_input->end(), files_input->begin(), &path_absolute);
-    }
-
-    if (paths_include.has_value()) {
-      std::transform(paths_include->begin(), paths_include->end(), paths_include->begin(), &path_absolute);
-    }
-
-    return validate();
-  }
-
-  bool ApplicationContext::validate() const {
-    bool success = true;
-    Permissions::instance()->clear();
-    Permissions::instance()->add_write_path(paths_goc);
-    Permissions::instance()->add_write_path(paths_generated);
-    Permissions::instance()->add_write_path(paths_cache);
-
-    if (paths_root.has_value() && !directory_exits(*paths_root)) {
-      if (!create_dir_recursive(*paths_root)) {
-        print_err(format("Invalid root path \"%s\". Could not find or create directory.", paths_root->c_str()));
-        success = false;
-      }
-    }
-
-    if (!directory_exits(paths_cache)) {
-      if (!create_dir_recursive(paths_cache)) {
-        print_err(format("Invalid cache path \"%s\". Could not find or create directory.", paths_cache.c_str()));
-        success = false;
-      }
-    }
-
-    if (!directory_exits(paths_generated)) {
-      if (!create_dir_recursive(paths_generated)) {
-        print_err(
-            format("Invalid generated path \"%s\". Could not find or create directory.", paths_generated.c_str()));
-        success = false;
-      }
-    }
-
-    if (files_input.has_value()) {
-      for (const String& file : *files_input) {
-        if (!file_exists(file)) {
-          print_err(format("Invalid input file \"%s\". File does not exist.", file.c_str()));
-          success = false;
-        }
-      }
-    }
-
-    if (paths_include.has_value()) {
-      for (const String& include_path : *paths_include) {
-        if (!directory_exits(include_path)) {
-          print_err(format("Invalid include path\"%s\". Path is not a directory.", include_path.c_str()));
-        }
-      }
-    }
-
-    return success;
-  }
-
+	std::transform(paths_include->begin(), paths_include->end(), paths_include->begin(), &path_absolute);
+	std::transform(files_input->begin(), files_input->end(), files_input->begin(), &path_absolute);
+	return validate();
 }
+
+bool ApplicationContext::set_from_application_arguments(Vector<String> &p_application_arguments) {
+	auto prefix_extract = [](const String &p_str, const String &p_long, const String &p_short, String &r_out) {
+		if (string_prefix(p_str, p_long)) {
+			r_out = p_str.substr(p_long.size());
+			return true;
+		} else if (string_prefix(p_str, p_short)) {
+			r_out = p_str.substr(p_short.size());
+			return true;
+		}
+		r_out = "";
+		return false;
+	};
+
+	for (auto itr = p_application_arguments.begin(); itr != p_application_arguments.end();) {
+		String content;
+		String arg = *itr;
+
+		if (prefix_extract(arg, "--root_path=", "-R=", content)) {
+			paths_root = content;
+			itr = p_application_arguments.erase(itr);
+		} else if (prefix_extract(arg, "--goc_path=", "-P=", content)) {
+			paths_goc = content;
+			itr = p_application_arguments.erase(itr);
+		} else if (prefix_extract(arg, "--generated_path=", "-G=", content)) {
+			paths_generated = content;
+			itr = p_application_arguments.erase(itr);
+		} else if (prefix_extract(arg, "--cache_path", "-C=", content)) {
+			paths_cache = content;
+			itr = p_application_arguments.erase(itr);
+		} else if (prefix_extract(arg, "--include_paths", "-I=", content)) {
+			paths_include = string_split(content, ",");
+			itr = p_application_arguments.erase(itr);
+		} else if (prefix_extract(arg, "--sources=", "-S=", content)) {
+			files_input = string_split(content, ",");
+			itr = p_application_arguments.erase(itr);
+		} else {
+			++itr;
+		}
+	}
+
+	paths_goc = path_absolute(paths_goc);
+	paths_cache = path_absolute(paths_cache);
+	paths_readonly_cache = path_absolute(paths_readonly_cache);
+	paths_generated = path_absolute(paths_generated);
+
+	if (files_input.has_value()) {
+		std::transform(files_input->begin(), files_input->end(), files_input->begin(), &path_absolute);
+	}
+
+	if (paths_include.has_value()) {
+		std::transform(paths_include->begin(), paths_include->end(), paths_include->begin(), &path_absolute);
+	}
+
+	return validate();
+}
+
+bool ApplicationContext::validate() const {
+	bool success = true;
+	Permissions::instance()->clear();
+	Permissions::instance()->add_write_path(paths_goc);
+	Permissions::instance()->add_write_path(paths_generated);
+	Permissions::instance()->add_write_path(paths_cache);
+
+	if (paths_root.has_value() && !directory_exits(*paths_root)) {
+		if (!create_dir_recursive(*paths_root)) {
+			print_err(format("Invalid root path \"%s\". Could not find or create directory.", paths_root->c_str()));
+			success = false;
+		}
+	}
+
+	if (!directory_exits(paths_cache)) {
+		if (!create_dir_recursive(paths_cache)) {
+			print_err(format("Invalid cache path \"%s\". Could not find or create directory.", paths_cache.c_str()));
+			success = false;
+		}
+	}
+
+	if (!directory_exits(paths_generated)) {
+		if (!create_dir_recursive(paths_generated)) {
+			print_err(
+					format("Invalid generated path \"%s\". Could not find or create directory.", paths_generated.c_str()));
+			success = false;
+		}
+	}
+
+	if (files_input.has_value()) {
+		for (const String &file : *files_input) {
+			if (!file_exists(file)) {
+				print_err(format("Invalid input file \"%s\". File does not exist.", file.c_str()));
+				success = false;
+			}
+		}
+	}
+
+	if (paths_include.has_value()) {
+		for (const String &include_path : *paths_include) {
+			if (!directory_exits(include_path)) {
+				print_err(format("Invalid include path\"%s\". Path is not a directory.", include_path.c_str()));
+			}
+		}
+	}
+
+	return success;
+}
+
+} //namespace GodotObjectCompiler

@@ -7,9 +7,43 @@ on:
     branches:
       - main
 jobs:
-  build-project:
-    name: Build Project
-    runs-on: ubuntu-latest
+
+  check-format:
+    name: Check Formating
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          submodules: "false"
+
+      - name: Create all.h
+        run: |
+          python ./tools/create_all_h.py
+
+      - name: Generate licence headers
+        run: |
+          python ./tools/add_licence_headers.py
+
+      - name: Run format
+        shell: bash
+        run: |
+          ls ./src/**/*.{cpp,h} > ./.files.txt
+          ls ./tests/**/*.{cpp,h} > ./.testfiles.txt
+
+          clang-format -i --files=./.files.txt || true
+          clang-format -i --files=./.testfiles.txt || true
+
+          rm ./.files.txt
+          rm ./.testfiles.txt
+
+      - name: Verify no changes
+        run: git diff-index --quiet HEAD
+
+  linux-build:
+    name: Build (Linux 🐧)
+    runs-on: ubuntu-22.04
+    needs: check-format
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
@@ -21,6 +55,7 @@ jobs:
           sudo apt update
           sudo apt install cmake -y
           sudo apt install mold -y
+          sudo apt install ninja-build -y
 
       - name: Build Project
         run: |
@@ -48,13 +83,55 @@ jobs:
           scons
           cd ..
 
+  windows-build:
+    name: Build (Windows 🪟)
+    runs-on: windows-latest
+    needs: check-format
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
+
+      - name: Download TreeSitterCLI
+        run: |
+          Invoke-WebRequest https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.5/tree-sitter-windows-x64.gz -OutFile .\tree-sitter.gz
+          7z.exe e .\tree-sitter.gz
+
+      - name: Build Project
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DGOC_TESTS_ENABLED=ON -DTREE_SITTER_CLI=.\tree-sitter.exe
+          cmake --build .
+          cd ..
+
+      - name: Checkout godot-cpp
+        uses: actions/checkout@v4
+        with:
+          repository: "godotengine/godot-cpp"
+          ref: "4.5"
+          path: "godot-cpp"
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+#
+      - name: Install Scons
+        run: |
+          python.exe -m pip install scons
+
+      - name: Generate godot-cpp
+        run: |
+          cd godot-cpp
+          scons
+          cd ..
+
       - name: Run Tests
         run: |
-          ./build/goc_tests run_integration_tests godot-cpp/include godot-cpp/gen/include
+          ./build/goc_tests.exe run_integration_tests godot-cpp/include godot-cpp/gen/include
 
-  run-test-project:
-    name: Run Test Project
-    runs-on: ubuntu-latest
+  linux-test-project:
+    name: Run Test Project (Linux 🐧)
+    runs-on: ubuntu-22.04
+    needs: linux-build
     steps:
       - name: Checkout Test Repo
         uses: actions/checkout@v4
@@ -100,20 +177,20 @@ jobs:
         run: |
           INSTALL_DIR=${HOME}/.godot-install-dir/4.5.1-stable
           mkdir -p $INSTALL_DIR
-          
+
           echo "Creating $INSTALL_DIR"
-          
+
           GODOT_DOWNLOAD_URL=https://github.com/godotengine/godot-builds/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip
-          
+
           echo "Downloading: $GODOT_DOWNLOAD_URL"
-          
+
           cd $INSTALL_DIR
           wget -O godot.zip -q $GODOT_DOWNLOAD_URL
           unzip godot.zip
           rm -rf godot.zip
-          
+
           mv Godot_v4.5.1-stable_linux.x86_64 godot
-          
+
           ls -la $INSTALL_DIR
           echo $INSTALL_DIR >> $GITHUB_PATH
 

@@ -148,7 +148,14 @@ namespace GodotObjectCompiler {
 
   bool string_to_int(const String& p_content, int& r_result) {
     char* ptr;
-    r_result = std::strtol(p_content.c_str(), &ptr, 0);
+
+    if(string_prefix(p_content, "0b")) {
+      // automatic base resolution fails here in MSVC
+      r_result = std::strtol(p_content.substr(2).c_str(), &ptr, 2);
+    } else {
+      r_result = std::strtol(p_content.c_str(), &ptr, 0);
+    }
+
     return *ptr == 0;
   }
 
