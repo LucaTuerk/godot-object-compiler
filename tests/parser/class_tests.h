@@ -53,7 +53,7 @@ GOC_TEST(ClassSimple) {
 	GOC_TEST_EQ(classes[0]->name(), "SimpleClass", "Invalid class name.")
 
 	return TEST_RESULT_SUCCESS;
-}
+};
 
 GOC_TEST(ClassSimpleInheritance) {
 	using namespace GodotObjectCompiler;
@@ -83,7 +83,7 @@ GOC_TEST(ClassSimpleInheritance) {
 	GOC_TEST_EQ(C_bases[0], "B", "Invalid base class name.");
 
 	return TEST_RESULT_SUCCESS;
-}
+};
 
 GOC_TEST(ClassMemberFunctions) {
 	using namespace GodotObjectCompiler;
@@ -130,7 +130,7 @@ GOC_TEST(ClassMemberFunctions) {
 	}
 
 	return TEST_RESULT_SUCCESS;
-}
+};
 
 GOC_TEST(ClassMemberFields) {
 	using namespace GodotObjectCompiler;
@@ -168,7 +168,7 @@ GOC_TEST(ClassMemberFields) {
 	}
 
 	return TEST_RESULT_SUCCESS;
-}
+};
 
 GOC_TEST(TemplateClass) {
 	GOC_TEST_PARSE_FILE("tests/files/class_tests/template_class.h");
@@ -181,4 +181,4 @@ GOC_TEST(TemplateClass) {
 	GOC_TEST_EQ(template_parameters->get_child_count(), 1, "Wrong parameter count.");
 
 	return TEST_RESULT_SUCCESS;
-}
+};

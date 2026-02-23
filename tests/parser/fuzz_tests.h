@@ -51,4 +51,4 @@ GOC_TEST(ParserRandStringFuzz) {
 	}
 
 	return TEST_RESULT_SUCCESS;
-}
+};

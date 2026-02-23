@@ -81,7 +81,7 @@ GOC_TEST(MangleNames) {
 	GOC_TEST_EQ(TypeDB::mangle_name("godot::Ref<T>::", 1), TypeDB::INVALID_NAME, "Invalid valid mangled name.");
 	GOC_TEST_EQ(TypeDB::mangle_name("godot:cofeve", INVALID_SIZE), TypeDB::INVALID_NAME, "Invalid valid mangled name.");
 	return TEST_RESULT_SUCCESS;
-}
+};
 
 inline String random_string(Size p_length) {
 	std::random_device random_device;
@@ -109,4 +109,4 @@ GOC_TEST(MangleNamesFuzz) {
 	//       input.c_str());
 	// }
 	// return TEST_RESULT_SUCCESS;
-}
+};

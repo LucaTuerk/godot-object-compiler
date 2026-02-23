@@ -89,4 +89,4 @@ GOC_INTEGRATION_TEST(GenerateFunctionBinds) {
 	GOC_ASSERT_FUNC_BOUND("resource_function");
 
 	return TEST_RESULT_SUCCESS;
-}
+};

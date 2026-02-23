@@ -55,7 +55,7 @@ GOC_TEST(EnumValues) {
 	GOC_TEST_ASSERT(vector_contains(enum2->value_names(), "VALUE_F"), "Failed to find TestEnum1::VALUE_F")
 
 	return TEST_RESULT_SUCCESS;
-}
+};
 
 GOC_TEST(EnumValueAssign) {
 	using namespace GodotObjectCompiler;
@@ -102,4 +102,4 @@ GOC_TEST(EnumValueAssign) {
 	}
 
 	return TEST_RESULT_SUCCESS;
-}
+};

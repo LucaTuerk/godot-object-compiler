@@ -47,4 +47,4 @@ GOC_INTEGRATION_TEST(InvalidPropertiesGracefulExit) {
 		GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file);
 	}
 	return TEST_RESULT_SUCCESS;
-}
+};

@@ -140,4 +140,4 @@ GOC_INTEGRATION_TEST(ParseMacrosWithArguments) {
 	GOC_TEST_ASSERT(godot_generated_global_attribute, "Failed to find generated global attribute");
 
 	return TEST_RESULT_SUCCESS;
-}
+};

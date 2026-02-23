@@ -63,4 +63,4 @@ GOC_INTEGRATION_TEST(RpcConfig) {
 	GOC_ASSERT_RPC_CONFIG("rpc_function_channel_one", "channel", "1")
 
 	return TEST_RESULT_SUCCESS;
-}
+};

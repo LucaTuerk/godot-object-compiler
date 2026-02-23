@@ -90,4 +90,4 @@ GOC_INTEGRATION_TEST(GeneratePropertyBinds) {
 	GOC_ASSERT_PROP_BOUND("enum_property", "INT");
 
 	return TEST_RESULT_SUCCESS;
-}
+};

@@ -133,4 +133,4 @@ GOC_INTEGRATION_TEST(GenerateVirtualFunctionBinds) {
 	GOC_ASSERT_VIRTUAL_BOUND("resource_function", "Resource");
 
 	return TEST_RESULT_SUCCESS;
-}
+};

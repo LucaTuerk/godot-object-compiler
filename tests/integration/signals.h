@@ -89,4 +89,4 @@ GOC_INTEGRATION_TEST(GenerateSignalBinds) {
 	GOC_ASSERT_SIGNAL_BOUND("resource_signal", "OBJECT");
 
 	return TEST_RESULT_SUCCESS;
-}
+};

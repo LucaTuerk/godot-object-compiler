@@ -233,7 +233,7 @@ SpacesInLineCommentPrefix:
 #   InEmptyParentheses: false
 #   Other: false
 # SpacesInSquareBrackets: false
-Standard: c++20
+Standard: c++17
 # StatementAttributeLikeMacros:
 #   - Q_EMIT
 # StatementMacros:
@@ -248,3 +248,6 @@ UseTab: Always
 #   - NS_SWIFT_NAME
 #   - PP_STRINGIZE
 #   - STRINGIZE
+Macros:
+  - GOC_TEST(x)=struct x
+  - GOC_INTEGRATION_TEST(x)=struct x

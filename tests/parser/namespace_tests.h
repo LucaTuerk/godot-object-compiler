@@ -51,7 +51,7 @@ GOC_TEST(ParserSimpleNamespace) {
 
 	GOC_TEST_EQ(namespaces[0]->name(), "A", "Invalid name for parsed namespace!");
 	return TEST_RESULT_SUCCESS;
-}
+};
 
 GOC_TEST(ParserNestedNamespace) {
 	using namespace GodotObjectCompiler;
@@ -73,7 +73,7 @@ GOC_TEST(ParserNestedNamespace) {
 	GOC_TEST_EQ(namespacesB->qualified_name(), "A::B", "Invalid qualified name for inner namespace B")
 
 	return TEST_RESULT_SUCCESS;
-}
+};
 
 GOC_TEST(ParseNestedNamespaces2) {
 	using namespace GodotObjectCompiler;
@@ -117,4 +117,4 @@ GOC_TEST(ParseNestedNamespaces2) {
 	GOC_TEST_EQ(J->qualified_name(), "F::G::H::J", "Invalid qualified name for namespace J");
 
 	return TEST_RESULT_SUCCESS;
-}
+};
