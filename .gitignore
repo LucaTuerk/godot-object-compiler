@@ -31,3 +31,4 @@ __pycache__
 cmake*
 build
 .vscode
+docs/_build

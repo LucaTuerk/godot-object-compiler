@@ -1,0 +1,2 @@
+generate type_db
+================
