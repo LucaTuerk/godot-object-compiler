@@ -59,7 +59,7 @@ namespace GodotObjectCompiler {
   };
 
   class SigndednessModifier : public Node {
-    NODE_TYPE(SigndednessModifier)
+    NODE_TYPE(SigndednessModifier);
   };
 
   class Const : public TypeQualifier {
@@ -87,11 +87,11 @@ namespace GodotObjectCompiler {
   };
 
   class Short : public SigndednessModifier {
-    NODE_TYPE(Short)
+    NODE_TYPE(Short);
   };
 
   class Long : public SigndednessModifier {
-    NODE_TYPE(Long)
+    NODE_TYPE(Long);
   };
 
 }

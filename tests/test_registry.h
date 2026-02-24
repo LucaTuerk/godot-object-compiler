@@ -113,10 +113,10 @@ namespace GodotObjectCompiler {
     return GodotObjectCompiler::TEST_RESULT_FAILURE; \
   }
 
-#define GOC_TEST_EQ(a, b, message)                              \
+#define GOC_TEST_EQ(a, b, ...)                              \
   if (!((a) == (b))) {                                          \
     GodotObjectCompiler::StreamWriter writer;                   \
-    writer.write(message);                                      \
+    writer.write(format(__VA_ARGS__));                                      \
     writer.write(" Expected to be ");                           \
     writer.write_generic(b);                                    \
     writer.write_generic(" but was "), writer.write_generic(a); \
@@ -124,10 +124,10 @@ namespace GodotObjectCompiler {
     return GodotObjectCompiler::TEST_RESULT_FAILURE;            \
   }
 
-#define GOC_TEST_NEQ(a, b, message)                             \
+#define GOC_TEST_NEQ(a, b, ...)                             \
   if (((a) == (b))) {                                           \
     GodotObjectCompiler::StreamWriter writer;                   \
-    writer.write(message);                                      \
+    writer.write(format(__VA_ARGS__));                                      \
     writer.write(" Expected not equal to ");                    \
     writer.write_generic(b);                                    \
     writer.write_generic(" but was "), writer.write_generic(a); \

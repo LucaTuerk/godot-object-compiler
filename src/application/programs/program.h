@@ -41,7 +41,8 @@
 namespace GodotObjectCompiler {
 
   class ProgramError : public Error {
-    NODE_TYPE(ProgramError)
+    NODE_TYPE(ProgramError);
+  public:
 
     ProgramError(ErrorLevel level, const String& message) : Error(level, message) {}
 

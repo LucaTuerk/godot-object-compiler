@@ -40,6 +40,7 @@ namespace GodotObjectCompiler {
 
   class Include : public Context {
     NODE_TYPE(Include);
+  public:
 
     Include(String include_path, bool is_system_include)
         : is_system_include(is_system_include), include_path(std::move(include_path)) {}

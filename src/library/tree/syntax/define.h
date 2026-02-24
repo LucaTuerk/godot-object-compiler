@@ -39,7 +39,7 @@
 namespace GodotObjectCompiler {
 
   class Define : public NamedContext {
-    NODE_TYPE(Define)
+    NODE_TYPE(Define);
   };
 
 }

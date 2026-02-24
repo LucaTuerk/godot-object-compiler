@@ -38,23 +38,25 @@
 
 namespace GodotObjectCompiler {
 
-  class EnumValue;
+class EnumValue;
 
-  class Enum : public NamedContext {
-    NODE_TYPE(Enum);
+class Enum : public NamedContext {
+	NODE_TYPE(Enum);
 
-    LAZY(Enum, Vector<Ref<EnumValue>>, values);
-    LAZY(Enum, Vector<String>, value_names);
-  };
+public:
+	LAZY(Enum, Vector<Ref<EnumValue>>, values);
+	LAZY(Enum, Vector<String>, value_names);
+};
 
-  class EnumValues : public Context {
-    NODE_TYPE(EnumValues);
-  };
+class EnumValues : public Context {
+	NODE_TYPE(EnumValues);
+};
 
-  class EnumValue : public NamedContext {
-    NODE_TYPE(EnumValue);
+class EnumValue : public NamedContext {
+	NODE_TYPE(EnumValue);
 
-    LAZY(EnumValue, Ref<Literal>, literal);
-  };
+public:
+	LAZY(EnumValue, Ref<Literal>, literal);
+};
 
-}
+} //namespace GodotObjectCompiler

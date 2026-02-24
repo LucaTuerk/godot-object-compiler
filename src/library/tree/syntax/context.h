@@ -87,8 +87,9 @@ private:
 };
 
 class Context : public Node {
-	NODE_TYPE(Context)
+	NODE_TYPE(Context);
 
+public:
 	bool copy_to(const Ref<Node> &p_other) const override;
 
 	void add_child(Ref<Node> p_child);
@@ -167,8 +168,9 @@ class Body : public Context {
 };
 
 class NamedContext : public Context {
-	NODE_TYPE(NamedContext)
+	NODE_TYPE(NamedContext);
 
+public:
 	bool copy_to(const Ref<Node> &p_other) const override;
 
 	void read_from(IStructuredReader *p_reader) override;

@@ -36,50 +36,50 @@
 #include "context.h"
 #include "library/parser/attribute_argument_parser.h"
 
-#define ATTRIBUTE_TYPE(node_type, target_type, target)                                                             \
-  NODE_TYPE(node_type)                                                                                             \
- protected:                                                                                                        \
-                                                                                                                   \
-  virtual bool _verify_target_class(Ref<Node> p_resolved) const override { return p_resolved->is<target_type>(); } \
-                                                                                                                   \
-  virtual Target _get_target() const override { return target; }                                                   \
-                                                                                                                   \
- public:                                                                                                           \
-                                                                                                                   \
-  Ref<target_type> Target##target_type() {                                                                         \
-    Ref<Node> node_target = resolve_target();                                                                      \
-    if (!node_target) {                                                                                            \
-      return nullptr;                                                                                              \
-    }                                                                                                              \
-    return node_target->as<target_type>();                                                                         \
-  }                                                                                                                \
-                                                                                                                   \
- private:
+#define ATTRIBUTE_TYPE(node_type, target_type, target) \
+	NODE_TYPE(node_type); \
+protected: \
+	virtual bool _verify_target_class(Ref<Node> p_resolved) const override { \
+		return p_resolved->is<target_type>(); \
+	} \
+\
+	virtual Target _get_target() const override { \
+		return target; \
+	} \
+\
+public: \
+	Ref<target_type> Target##target_type() { \
+		Ref<Node> node_target = resolve_target(); \
+		if (!node_target) { \
+			return nullptr; \
+		} \
+		return node_target->as<target_type>(); \
+	} \
+\
+private:
 
 namespace GodotObjectCompiler {
 
-  class Attribute : public NamedContext {
-   public:
+class Attribute : public NamedContext {
+public:
+	enum Target {
+		NEXT, // attribute applies to next sibling in the context
+		CONTAINING, // attribute applies to a containing ancestral context
+		NONE, // no target
+	};
 
-    enum Target {
-      NEXT,        // attribute applies to next sibling in the context
-      CONTAINING,  // attribute applies to a containing ancestral context
-      NONE,        // no target
-    };
+	Ref<Node> resolve_target() const;
+	bool verify_target(const Ref<Node> &p_resolved) const;
+	virtual Ref<IAttributeArgumentParser> get_argument_parser();
 
-    Ref<Node> resolve_target() const;
-    bool verify_target(const Ref<Node>& p_resolved) const;
-    virtual Ref<IAttributeArgumentParser> get_argument_parser();
+	Size start{};
+	Size end{};
+	Size line{};
 
-    Size start{};
-    Size end{};
-    Size line{};
+protected:
+	virtual Target _get_target() const = 0;
+	virtual bool _verify_target_class(Ref<Node> p_resolved) const = 0;
+	virtual bool _verify_target(const Ref<Node> &p_resolved) const;
+};
 
-   protected:
-
-    virtual Target _get_target() const = 0;
-    virtual bool _verify_target_class(Ref<Node> p_resolved) const = 0;
-    virtual bool _verify_target(const Ref<Node>& p_resolved) const;
-  };
-
-}
+} //namespace GodotObjectCompiler

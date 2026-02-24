@@ -48,6 +48,8 @@ namespace GodotObjectCompiler {
   class Namespace : public NamedContext {
     NODE_TYPE(Namespace);
 
+  public:
+
     /* collections */
     LAZY(Namespace, Vector<Ref<Namespace>>, namespaces);
     LAZY(Namespace, Vector<Ref<Namespace>>, child_namespaces);

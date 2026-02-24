@@ -83,16 +83,16 @@ GOC_TEST(MangleNames) {
 	return TEST_RESULT_SUCCESS;
 };
 
-inline String random_string(Size p_length) {
+inline String random_string(size_t p_length) {
 	std::random_device random_device;
 	std::mt19937 generator(random_device());
-	std::uniform_int_distribution<> distribution(20, 255);
+	std::uniform_int_distribution<> distribution(1, 255);
 
-	std::string random_string;
-	for (Size i = 0; i < p_length; ++i) {
-		random_string += static_cast<char>(distribution(generator));
+	StreamWriter writer;
+	for (size_t i = 0; i < p_length; ++i) {
+		writer.write_generic(distribution(generator));
 	}
-	return random_string;
+	return writer.get_string();
 }
 
 inline bool valid_mangled_or_invalid(const String &mangled_name) {
@@ -101,12 +101,10 @@ inline bool valid_mangled_or_invalid(const String &mangled_name) {
 }
 
 GOC_TEST(MangleNamesFuzz) {
-	return TEST_RESULT_IGNORED;
-
-	// for (Size i = 0; i < 10000; ++i) {
-	//   String input = random_string(15);
-	//   GOC_TEST_ASSERT(valid_mangled_or_invalid(TypeDB::mangle_name(input, INVALID_SIZE)), "Invalid result for input %s",
-	//       input.c_str());
-	// }
-	// return TEST_RESULT_SUCCESS;
+	for (Size i = 0; i < 1000; ++i) {
+		String input = random_string(15);
+		auto mangled_name = TypeDB::mangle_name(input, INVALID_SIZE);
+		GOC_TEST_ASSERT(valid_mangled_or_invalid(mangled_name), "Invalid result for input");
+	}
+	return TEST_RESULT_SUCCESS;
 };

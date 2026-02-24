@@ -70,7 +70,7 @@ namespace GodotObjectCompiler {
   }
 
   template <typename T>
-  using Predicate = std::function<bool(Ref<T>)>;
+  using Predicate = std::function<bool(const Ref<T>&)>;
 
   template <typename T>
   using Creator = std::function<Ref<T>()>;
@@ -83,7 +83,7 @@ namespace GodotObjectCompiler {
   using Index = std::size_t;
   using SignedIndex = int32_t;
 
-  static const UID INVALID_ID = 0;
+  static const UID INVALID_ID = -1;
   static const Index INVALID_INDEX = -1;
   static const Size INVALID_SIZE = -1;
 

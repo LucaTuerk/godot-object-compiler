@@ -314,6 +314,10 @@ Ref<Node> TypeDB::get_type_data(const Ref<Type> &type, const Ref<Namespace> &fro
 }
 
 String TypeDB::mangle_name(const String &qualified_name, Size template_parameter_count) {
+	if (qualified_name.empty() || std::any_of(qualified_name.begin(), qualified_name.end() - 1, [](char c) { return std::iscntrl(c); })) {
+		return INVALID_NAME;
+	}
+
 	Vector<String> parts = string_split(qualified_name, "::");
 
 	auto itr = std::find_if(parts.begin(), parts.end(), [](const String &part) { return !part.empty(); });
@@ -365,6 +369,9 @@ String TypeDB::mangle_name(const String &qualified_name, Size template_parameter
 			count++;
 		}
 		if (open == 0) {
+			if (!(isalnum(c) || c == '_')) {
+				return INVALID_NAME;
+			}
 			name_writer.write_generic(c);
 		}
 	}
