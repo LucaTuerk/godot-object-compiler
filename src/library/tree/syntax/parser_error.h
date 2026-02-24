@@ -40,50 +40,52 @@
 
 namespace GodotObjectCompiler {
 
-  class Error : public Node {
-    NODE_TYPE(Error);
+class Error : public Node {
+	NODE_TYPE(Error);
 
-    explicit Error(ErrorLevel level, const String& message) : error_level(level), message(message) {}
+public:
+	explicit Error(ErrorLevel level, const String &message) : error_level(level), message(message) {}
 
-    ~Error() override;
+	~Error() override;
 
-    String to_string() const override;
-    bool copy_to(const Ref<Node>& p_other) const override;
-    void write_to(IStructuredWriter* p_writer) override;
-    void read_from(IStructuredReader* p_reader) override;
-    void set_handled();
+	String to_string() const override;
+	bool copy_to(const Ref<Node> &p_other) const override;
+	void write_to(IStructuredWriter *p_writer) override;
+	void read_from(IStructuredReader *p_reader) override;
+	void set_handled();
 
-    ErrorLevel error_level;
-    String message;
+	ErrorLevel error_level;
+	String message;
 
-    static inline const Ref<Error> OK = nullptr;
+	static inline const Ref<Error> OK = nullptr;
 
-   private:
+private:
+	bool handled = false;
+};
 
-    bool handled = false;
-  };
+class GeneratorError : public Error {
+	NODE_TYPE(GeneratorError);
 
-  class GeneratorError : public Error {
-    NODE_TYPE(GeneratorError);
+public:
+	explicit GeneratorError(ErrorLevel level, const String &message) : Error(level, message) {}
 
-    explicit GeneratorError(ErrorLevel level, const String& message) : Error(level, message) {}
+	explicit GeneratorError(ErrorLevel level, const String &generator_name, const String &message, Ref<Node> node);
 
-    explicit GeneratorError(ErrorLevel level, const String& generator_name, const String& message, Ref<Node> node);
+	static inline const Ref<GeneratorError> OK = nullptr;
+};
 
-    static inline const Ref<GeneratorError> OK = nullptr;
-  };
+class ParserError : public Error {
+	NODE_TYPE(ParserError);
 
-  class ParserError : public Error {
-    NODE_TYPE(ParserError);
+public:
+	explicit ParserError(ErrorLevel level, const String &message) : Error(level, message) {}
 
-    explicit ParserError(ErrorLevel level, const String& message) : Error(level, message) {}
+	explicit ParserError(ErrorLevel level, const Ref<TreeSitterNode> &node, const String &message);
 
-    explicit ParserError(ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message);
+	explicit ParserError(ErrorLevel level, const String &parser_name, const String &message, const String &file_path,
+			const String &file_content, Size line, Size column);
 
-    explicit ParserError(ErrorLevel level, const String& parser_name, const String& message, const String& file_path,
-        const String& file_content, Size line, Size column);
+	static inline const Ref<ParserError> OK = nullptr;
+};
 
-    static inline const Ref<ParserError> OK = nullptr;
-  };
-
-}
+} //namespace GodotObjectCompiler

@@ -50,6 +50,12 @@ namespace GodotObjectCompiler {
   }
 
   ParserStep IdentifierHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+  	Ref<TreeSitterNode> previous = p_current_src->get_previous_sibling<TreeSitterNode>();
+  	if (r_current_target->is<Field>() && previous && previous->type == "=" ) {
+		r_current_target->create_child<Literal>(p_current_src->content());
+  		return ParserStep::StepOver();
+  	}
+
     r_current_target->create_child<Identifier>(p_current_src->content());
     return ParserStep::StepOver();
   }

@@ -45,11 +45,13 @@ namespace GodotObjectCompiler {
   class Body;
 
   class BaseClasses : public Context {
-    NODE_TYPE(BaseClasses)
+    NODE_TYPE(BaseClasses);
   };
 
   class Class : public Namespace {
     NODE_TYPE(Class);
+
+  public:
 
     /* collections */
     LAZY(Class, Vector<String>, direct_bases_names);

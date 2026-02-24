@@ -52,7 +52,7 @@ class A : public Node {
   Basis basis_property;
 
   GODOT_PROPERTY();
-  bool bool_property;
+  bool bool_property = false;
 
   GODOT_PROPERTY();
   Callable callable_property;
@@ -67,25 +67,25 @@ class A : public Node {
   TypedDictionary<int, Resource> typed_dictionary_property;
 
   GODOT_PROPERTY();
-  float float_property;
+  float float_property = 0;
 
   GODOT_PROPERTY();
-  real_t real_t_property;
+  real_t real_t_property = 0;
 
   GODOT_PROPERTY();
-  double double_property;
+  double double_property = 0;
 
   GODOT_PROPERTY();
-  int int_property;
+  int int_property = 0;
 
   GODOT_PROPERTY();
-  long long_property;
+  long long_property = 0;
 
   GODOT_PROPERTY();
   NodePath node_path_property;
 
   GODOT_PROPERTY();
-  Object* object_property;
+  Object* object_property = nullptr;
 
   GODOT_PROPERTY();
   PackedByteArray packed_byte_array_property;
@@ -176,7 +176,7 @@ class A : public Node {
   enum Enum { ENUM_VALUE };
 
   GODOT_PROPERTY();
-  Enum enum_property;
+  Enum enum_property = ENUM_VALUE;
 };
 
 GODOT_GENERATED_GLOBAL();

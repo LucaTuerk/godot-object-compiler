@@ -40,7 +40,7 @@
 namespace GodotObjectCompiler {
 
   class GodotVariantTypeArgument : public Argument {
-    NODE_TYPE(GodotVariantTypeArgument)
+    NODE_TYPE(GodotVariantTypeArgument);
 
     LAZY(GodotVariantTypeArgument, String, godot_variant_type)
   };

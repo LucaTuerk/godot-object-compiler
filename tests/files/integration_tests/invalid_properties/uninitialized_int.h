@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* program_functions.h                                                    */
+/* uninitialized_int.h                                                    */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,14 +33,14 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "library/core/core.h"
 
-namespace GodotObjectCompiler {
+GODOT_CLASS();
 
-  namespace ProgramFunctions {
+class Invalid : Node {
+  GODOT_GENERATED_BODY();
 
-    bool copy_resources_to_folder(const Vector<String>& p_resource_glob_paths, const String& p_target_folder);
+  GODOT_PROPERTY();
+  int unitialized_int;
+};
 
-  };
-
-}
+GODOT_GENERATED_GLOBAL();

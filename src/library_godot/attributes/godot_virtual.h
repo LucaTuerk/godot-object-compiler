@@ -38,21 +38,21 @@
 
 namespace GodotObjectCompiler {
 
-  class GodotVirtualArgument : public Argument {
-    NODE_TYPE(GodotVirtualArgument);
+class GodotVirtualArgument : public Argument {
+	NODE_TYPE(GodotVirtualArgument);
 
-    bool is_script_virtual() const;
-    bool is_required() const;
-  };
+public:
+	bool is_script_virtual() const;
+	bool is_required() const;
+};
 
-  class GodotVirtualParameterType : public IAttributeParameterType {
-    PARAM_TYPE(GodotVirtualParameterType, GodotVirtualArgument);
+class GodotVirtualParameterType : public IAttributeParameterType {
+	PARAM_TYPE(GodotVirtualParameterType, GodotVirtualArgument);
 
-   public:
+public:
+	String get_return_type() override;
+	Vector<String> get_value_names() override;
+	Vector<Argument> get_arguments() override;
+};
 
-    String get_return_type() override;
-    Vector<String> get_value_names() override;
-    Vector<Argument> get_arguments() override;
-  };
-
-}
+} //namespace GodotObjectCompiler

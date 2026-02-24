@@ -45,6 +45,8 @@ namespace GodotObjectCompiler {
 
    public:
 
+  	Ref<GeneratorError> check_for_property_type_errors(const Ref<Field> &p_field, const Ref<Namespace> &p_from_namespace);
+
     Ref<GeneratorError> do_generate_default_attribute_arguments(
         Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute, Ref<Context> p_default_values) override;
 

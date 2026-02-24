@@ -46,6 +46,7 @@ class Type;
 class Define;
 class Class;
 class Enum;
+class EnumValue;
 
 class ConfigNodeReaderWriter : public INodeReader, public INodeWriter {
 public:
@@ -68,7 +69,8 @@ struct AssumeType {
 
 class TypeDB : public IAssumptionValidator<AssumeType<Enum>>,
 			   public IAssumptionValidator<AssumeType<Class>>,
-			   public IAssumptionValidator<AssumeType<Define>> {
+			   public IAssumptionValidator<AssumeType<Define>>,
+			   public IAssumptionValidator<AssumeType<EnumValue>> {
 private:
 	struct Private {};
 
@@ -109,6 +111,8 @@ public:
 
 	AssumptionState validate_assumption(Assumption<AssumeType<Define>> &p_assumption) override;
 
+	AssumptionState validate_assumption(Assumption<AssumeType<EnumValue>> &p_assumption) override;
+
 	static String mangle_name(const String &qualified_name, Size template_parameter_count);
 
 	static Vector<String> resolve_possible_namespaces(
@@ -116,7 +120,7 @@ public:
 
 	TypeDB() = delete;
 
-	TypeDB(Private){};
+	TypeDB(Private) {}
 
 private:
 	using Reader = ConfigNodeReaderWriter;

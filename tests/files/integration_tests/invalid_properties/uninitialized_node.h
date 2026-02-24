@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* property_access_specifier.h                                            */
+/* uninitialized_node.h                                                   */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,53 +32,15 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
-#include "library/tree/syntax/function.h"
 
-namespace GodotObjectCompiler {
+GODOT_CLASS();
 
-class PropertyGetAccessSpecifierArgument : public Argument {
-	NODE_TYPE(PropertyGetAccessSpecifierArgument);
+class Invalid : Node {
+  GODOT_GENERATED_BODY();
 
-public:
-	static inline const char *PublicGet = "PublicGet";
-	static inline const char *ProtectedGet = "ProtectedGet";
-	static inline const char *PrivateGet = "PrivateGet";
-
-	bool get_specifier(AccessSpecifier::Type &r_specifier) const;
-	bool get_specifier_cpp_name(String &r_specifier_name) const;
+  GODOT_PROPERTY();
+  Node* unitialized_node;
 };
 
-class PropertySetAccessSpecifierArgument : public Argument {
-	NODE_TYPE(PropertySetAccessSpecifierArgument);
-
-public:
-	static inline const char *PublicSet = "PublicSet";
-	static inline const char *ProtectedSet = "ProtectedSet";
-	static inline const char *PrivateSet = "PrivateSet";
-
-	bool get_specifier(AccessSpecifier::Type &r_specifier) const;
-	bool get_specifier_cpp_name(String &r_specifier_name) const;
-};
-
-class PropertyGetAccessSpecifierParameterType : public IAttributeParameterType {
-	PARAM_TYPE(PropertyGetAccessSpecifierParameterType, PropertyGetAccessSpecifierArgument)
-
-public:
-	String get_return_type() override;
-	Vector<String> get_value_names() override;
-	Vector<Argument> get_arguments() override;
-};
-
-class PropertySetAccessSpecifierParameterType : public IAttributeParameterType {
-	PARAM_TYPE(PropertySetAccessSpecifierParameterType, PropertySetAccessSpecifierArgument)
-
-public:
-	String get_return_type() override;
-	Vector<String> get_value_names() override;
-	Vector<Argument> get_arguments() override;
-};
-
-} //namespace GodotObjectCompiler
+GODOT_GENERATED_GLOBAL();

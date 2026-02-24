@@ -254,12 +254,12 @@ namespace GodotObjectCompiler {
     std::mt19937 generator(random_device());
     std::uniform_int_distribution<> distribution(0, characters.size() - 1);
 
-    std::string random_string;
+  	StreamWriter writer;
     for (size_t i = 0; i < p_length; ++i) {
-      random_string += characters[distribution(generator)];
+      writer.write_generic(characters[distribution(generator)]);
     }
 
-    return random_string;
+    return writer.get_string();
   }
 
   bool string_contains(const String& p_content, const String& p_check) {

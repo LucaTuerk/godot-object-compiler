@@ -40,7 +40,9 @@
 namespace GodotObjectCompiler {
 
   class Member : public NamedContext {
-    NODE_TYPE(Member)
+    NODE_TYPE(Member);
+
+  public:
     /* info */
     LAZY(Member, bool, is_virtual);
     LAZY(Member, bool, is_override);

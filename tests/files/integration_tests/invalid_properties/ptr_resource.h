@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* no_ptr_resource.h                                                      */
+/* ptr_resource.h                                                         */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,6 +32,7 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
 
 GODOT_CLASS();
@@ -40,7 +41,7 @@ class Invalid : Node {
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY();
-  Resource no_ptr_resource;
+  Resource* ptr_resource;
 };
 
 GODOT_GENERATED_GLOBAL();

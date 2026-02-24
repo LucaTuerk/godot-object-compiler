@@ -44,97 +44,126 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<GeneratorError> GodotPropertyGenerator::do_generate_default_attribute_arguments(
-      Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute, Ref<Context> p_default_values) {
-    using namespace GodotGeneratorUtils;
-    using namespace AssumedParameterValues;
+Ref<GeneratorError> GodotPropertyGenerator::check_for_property_type_errors(const Ref<Field> &p_field, const Ref<Namespace> &p_from_namespace) {
+	Ref<Type> type = p_field->type();
+	GEN_ERROR_COND(!type, p_field, "Failed to get type field type.");
 
-    Ref<Field> target_field = p_attribute->TargetField();
-    GEN_ERROR_COND(!target_field, p_attribute, "Failed to get target field for GodotProperty attribute.");
+	Ref<Literal> literal = p_field->find_descendant<Literal>();
 
-    const Ref<Type> field_type = target_field->type();
-    GEN_ERROR_COND(!field_type, target_field, "Target field does not name a type.");
+	bool is_object_type = GodotGeneratorUtils::type_is_object_type(type, p_from_namespace);
+	bool is_ptr = type->find_child<Pointer>() != nullptr;
+	bool is_primitive_type = GodotGeneratorUtils::type_is_primitive_type(type);
 
-    const String field_type_name = field_type->type_name();
-    GEN_ERROR_COND(field_type_name.empty(), target_field, "Invalid type name for target field.");
+	Ref<Type> inner;
+	bool is_refcounted_type = GodotGeneratorUtils::type_is_ref_counted_type(type, p_from_namespace);
+	bool is_ref_type = GodotGeneratorUtils::type_is_godot_ref_type(type, inner, p_from_namespace);
+	bool is_inner_refcounted_type = is_ref_type ? GodotGeneratorUtils::type_is_ref_counted_type(inner, p_from_namespace) : false;
 
-    Ref<GodotVariantTypeArgument> variant_type;
-    Ref<GodotPropertyHintArgument> property_hint;
-    Ref<GodotPropertyUsageFlagsArgument> property_usage_flags;
+	Ref<Enum> enum_;
+	bool is_enum_type = GodotGeneratorUtils::type_is_enum_type(type, enum_, p_from_namespace);
 
-    if (!get_defaults_for_type(field_type, variant_type, property_hint, property_usage_flags, p_target_class)) {
-      GEN_ERROR(target_field, "Unknown type. Failed to determine default property info.");
-    }
+	GEN_ERROR_COND(is_ref_type && !is_inner_refcounted_type, p_field, "Ref<%s> inner type is invalid, %s is not a RefCounted type.", inner->type_name().c_str(), inner->type_name().c_str());
+	GEN_ERROR_COND(is_refcounted_type && !is_ref_type, p_field, "RefCounted property backing field needs to be wrapped in Ref<...>.");
+	GEN_ERROR_COND(is_object_type && !is_ref_type && literal == nullptr, p_field, "Object type property backing field needs to be initialized.");
+	GEN_ERROR_COND(is_primitive_type && literal == nullptr, p_field, "Primitive type property backing field needs to be initialized.");
+	GEN_ERROR_COND(is_enum_type && literal == nullptr, p_field, "Enum type property backing field needs to be initialized.");
+	GEN_ERROR_COND(is_object_type && !is_ptr, p_field, "Object type property backing field needs to be a pointer type.");
 
-    Ref<PropertyGetAccessSpecifierArgument> property_get_access_specifier =
-        node_new<PropertyGetAccessSpecifierArgument>();
-    Ref<PropertySetAccessSpecifierArgument> property_set_access_specifier =
-        node_new<PropertySetAccessSpecifierArgument>();
+	return GeneratorError::OK;
+}
 
-    property_get_access_specifier->build_child<Identifier>(PropertyGetAccessSpecifierArgument::PublicGet);
-    if (target_field->is_private_member()) {
-      property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::PrivateSet);
-    } else if (target_field->is_protected_member()) {
-      property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::ProtectedSet);
-    } else {
-      property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::PublicSet);
-    }
+Ref<GeneratorError> GodotPropertyGenerator::do_generate_default_attribute_arguments(
+		Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute, Ref<Context> p_default_values) {
+	using namespace GodotGeneratorUtils;
+	using namespace AssumedParameterValues;
 
-    p_default_values->add_children({variant_type, property_hint, property_usage_flags, property_get_access_specifier,
-        property_set_access_specifier});
-    return GeneratorError::OK;
-  }
+	Ref<Field> target_field = p_attribute->TargetField();
+	GEN_ERROR_COND(!target_field, p_attribute, "Failed to get target field for GodotProperty attribute.");
 
-  Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_class,
-      Ref<GodotPropertyAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-      Ref<Context> p_generated_global) {
-    UNUSED(p_generated_global);
+	const Ref<Type> field_type = target_field->type();
+	GEN_ERROR_COND(!field_type, target_field, "Target field does not name a type.");
 
-    using namespace GodotGeneratorUtils;
+	const String field_type_name = field_type->type_name();
+	GEN_ERROR_COND(field_type_name.empty(), target_field, "Invalid type name for target field.");
 
-    Ref<Body> bind_methods_body = get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
-    GEN_ERROR_COND(!bind_methods_body, p_target_class, "Failed to find or generate the _bind_methods function body.");
+	Ref<GodotVariantTypeArgument> variant_type;
+	Ref<GodotPropertyHintArgument> property_hint;
+	Ref<GodotPropertyUsageFlagsArgument> property_usage_flags;
 
-    Ref<Body> get_property_list_body =
-        get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
-    GEN_ERROR_COND(
-        !get_property_list_body, p_target_class, "Failed to find or generate the _get_property_list function body.");
+	if (!get_defaults_for_type(field_type, variant_type, property_hint, property_usage_flags, p_target_class)) {
+		GEN_ERROR(target_field, "Unknown type. Failed to determine default property info.");
+	}
 
-    Ref<Context> generated_public_members, generated_protected_members, generated_private_members;
-    GEN_ERROR_COND(unzip_generated_body(p_generated_body, &generated_public_members, &generated_protected_members,
-                       &generated_private_members) != GeneratorError::OK,
-        p_target_class, "Failed to find generated body groups");
+	Ref<PropertyGetAccessSpecifierArgument> property_get_access_specifier =
+			node_new<PropertyGetAccessSpecifierArgument>();
+	Ref<PropertySetAccessSpecifierArgument> property_set_access_specifier =
+			node_new<PropertySetAccessSpecifierArgument>();
 
-    const Ref<Field> target_field = p_attribute->TargetField();
+	property_get_access_specifier->build_child<Identifier>(PropertyGetAccessSpecifierArgument::PublicGet);
+	if (target_field->is_private_member()) {
+		property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::PrivateSet);
+	} else if (target_field->is_protected_member()) {
+		property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::ProtectedSet);
+	} else {
+		property_set_access_specifier->build_child<Identifier>(PropertySetAccessSpecifierArgument::PublicSet);
+	}
 
-    GEN_ERROR_COND(!target_field, p_attribute, "Failed to get target field for property attribute");
-    GEN_ERROR_COND(target_field->is_const(), target_field, "Property target field is constant.");
-    GEN_ERROR_COND(target_field->is_static(), target_field, "Property target field is static.");
+	p_default_values->add_children({ variant_type, property_hint, property_usage_flags, property_get_access_specifier,
+			property_set_access_specifier });
+	return GeneratorError::OK;
+}
 
-    const Ref<Type> field_type = target_field->type();
-    GEN_ERROR_COND(!field_type, p_target_class, "Field does not name a type. Abort!");
+Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_class,
+		Ref<GodotPropertyAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
+		Ref<Context> p_generated_global) {
+	UNUSED(p_generated_global);
 
-    const String property_name = target_field->name();
-    const String type_name = field_type->type_name();
-    const String getter_name = format("get_%s", property_name.c_str());
-    const String setter_name = format("set_%s", property_name.c_str());
+	using namespace GodotGeneratorUtils;
 
-    Ref<Type> ref_inner;
-    Ref<Enum> enum_object;
-    bool is_obj_type = type_is_object_type(field_type, p_target_class);
-    bool is_enum_type = type_is_enum_type(field_type, enum_object, p_target_class);
+	Ref<Body> bind_methods_body = get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+	GEN_ERROR_COND(!bind_methods_body, p_target_class, "Failed to find or generate the _bind_methods function body.");
 
-    bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, {}));
-    bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, {property_name}));
+	Ref<Body> get_property_list_body =
+			get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+	GEN_ERROR_COND(
+			!get_property_list_body, p_target_class, "Failed to find or generate the _get_property_list function body.");
 
-    Ref<Node> get_type = field_type->clone();
-    Ref<Node> set_type = !is_obj_type ? const_ref(type_name) : field_type->clone();
-    if (is_enum_type) {
-      get_type = build<Type>().with_child<Identifier>("int");
-      set_type = build<Type>().with_child<Identifier>("int");
-    }
+	Ref<Context> generated_public_members, generated_protected_members, generated_private_members;
+	GEN_ERROR_COND(unzip_generated_body(p_generated_body, &generated_public_members, &generated_protected_members,
+						   &generated_private_members) != GeneratorError::OK,
+			p_target_class, "Failed to find generated body groups");
 
-    // clang-format off
+	const Ref<Field> target_field = p_attribute->TargetField();
+
+	GEN_ERROR_PASS_ON(check_for_property_type_errors(target_field, p_target_class));
+	GEN_ERROR_COND(!target_field, p_attribute, "Failed to get target field for property attribute");
+	GEN_ERROR_COND(target_field->is_const(), target_field, "Property target field is constant.");
+	GEN_ERROR_COND(target_field->is_static(), target_field, "Property target field is static.");
+
+	const Ref<Type> field_type = target_field->type();
+	GEN_ERROR_COND(!field_type, p_target_class, "Field does not name a type. Abort!");
+
+	const String property_name = target_field->name();
+	const String type_name = field_type->type_name();
+	const String getter_name = format("get_%s", property_name.c_str());
+	const String setter_name = format("set_%s", property_name.c_str());
+
+	Ref<Type> ref_inner;
+	Ref<Enum> enum_object;
+	bool is_obj_type = type_is_object_type(field_type, p_target_class);
+	bool is_enum_type = type_is_enum_type(field_type, enum_object, p_target_class);
+
+	bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, {}));
+	bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, { property_name }));
+
+	Ref<Node> get_type = field_type->clone();
+	Ref<Node> set_type = !is_obj_type ? const_ref(type_name) : field_type->clone();
+	if (is_enum_type) {
+		get_type = build<Type>().with_child<Identifier>("int");
+		set_type = build<Type>().with_child<Identifier>("int");
+	}
+
+	// clang-format off
     Ref<Function> get_def = build<Function>().with_children({
       get_type->clone(),
       build<Identifier>(getter_name),
@@ -207,61 +236,61 @@ namespace GodotObjectCompiler {
         build<Argument>().with_child(property_info)
       })
     }).with_child(Output::Semicolon());
-    // clang-format on
+	// clang-format on
 
-    Ref<PropertyGetAccessSpecifierArgument> get_access_specifier_argument =
-        p_attribute->arguments()->find_child<PropertyGetAccessSpecifierArgument>();
-    GEN_ERROR_COND(!get_access_specifier_argument, p_attribute, "Failed to get get specifier argument");
+	Ref<PropertyGetAccessSpecifierArgument> get_access_specifier_argument =
+			p_attribute->arguments()->find_child<PropertyGetAccessSpecifierArgument>();
+	GEN_ERROR_COND(!get_access_specifier_argument, p_attribute, "Failed to get get specifier argument");
 
-    Ref<PropertySetAccessSpecifierArgument> set_access_specifier_argument =
-        p_attribute->arguments()->find_child<PropertySetAccessSpecifierArgument>();
-    GEN_ERROR_COND(!set_access_specifier_argument, p_attribute, "Failed to get set specifier argument");
+	Ref<PropertySetAccessSpecifierArgument> set_access_specifier_argument =
+			p_attribute->arguments()->find_child<PropertySetAccessSpecifierArgument>();
+	GEN_ERROR_COND(!set_access_specifier_argument, p_attribute, "Failed to get set specifier argument");
 
-    AccessSpecifier::Type get_specifier, set_specifier;
-    GEN_ERROR_COND(!get_access_specifier_argument->get_specifier(get_specifier), p_attribute,
-        "Failed to get property getter access specifier.");
-    GEN_ERROR_COND(!set_access_specifier_argument->get_specifier(set_specifier), p_attribute,
-        "Failed to get property setter access specifier.");
+	AccessSpecifier::Type get_specifier, set_specifier;
+	GEN_ERROR_COND(!get_access_specifier_argument->get_specifier(get_specifier), p_attribute,
+			"Failed to get property getter access specifier.");
+	GEN_ERROR_COND(!set_access_specifier_argument->get_specifier(set_specifier), p_attribute,
+			"Failed to get property setter access specifier.");
 
-    switch (get_specifier) {
-      case AccessSpecifier::PUBLIC: {
-        generated_public_members->add_child(get_def);
-      } break;
-      case AccessSpecifier::PRIVATE:
-        generated_private_members->add_child(get_def);
-        break;
-      case AccessSpecifier::PROTECTED:
-        generated_protected_members->add_child(get_def);
-        break;
-    }
+	switch (get_specifier) {
+		case AccessSpecifier::PUBLIC: {
+			generated_public_members->add_child(get_def);
+		} break;
+		case AccessSpecifier::PRIVATE:
+			generated_private_members->add_child(get_def);
+			break;
+		case AccessSpecifier::PROTECTED:
+			generated_protected_members->add_child(get_def);
+			break;
+	}
 
-    switch (set_specifier) {
-      case AccessSpecifier::PUBLIC: {
-        generated_public_members->add_child(set_def);
-      } break;
-      case AccessSpecifier::PRIVATE:
-        generated_private_members->add_child(set_def);
-        break;
-      case AccessSpecifier::PROTECTED:
-        generated_protected_members->add_child(set_def);
-        break;
-    }
+	switch (set_specifier) {
+		case AccessSpecifier::PUBLIC: {
+			generated_public_members->add_child(set_def);
+		} break;
+		case AccessSpecifier::PRIVATE:
+			generated_private_members->add_child(set_def);
+			break;
+		case AccessSpecifier::PROTECTED:
+			generated_protected_members->add_child(set_def);
+			break;
+	}
 
-    p_generated_sources->add_children({
-        get_impl,
-        set_impl,
-    });
+	p_generated_sources->add_children({
+			get_impl,
+			set_impl,
+	});
 
-    bind_methods_body->add_child(add_property);
+	bind_methods_body->add_child(add_property);
 
-    Ref<Body> property_names_body = get_property_names_body(p_target_class, p_generated_body);
-    GEN_ERROR_COND(!property_names_body, p_attribute, "Failed to get property names body.");
+	Ref<Body> property_names_body = get_property_names_body(p_target_class, p_generated_body);
+	GEN_ERROR_COND(!property_names_body, p_attribute, "Failed to get property names body.");
 
-    property_names_body->add_child(
-        Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
-            property_name.c_str(), property_name.c_str())));
+	property_names_body->add_child(
+			Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
+					property_name.c_str(), property_name.c_str())));
 
-    return GeneratorError::OK;
-  }
-
+	return GeneratorError::OK;
 }
+
+} //namespace GodotObjectCompiler

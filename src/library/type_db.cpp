@@ -41,6 +41,7 @@
 #include "library/core/core.h"
 #include "library/execution_context.h"
 #include "library/tree/syntax/attribute.h"
+#include "tree/predicates.h"
 #include "tree/syntax/class.h"
 #include "tree/syntax/define.h"
 #include "tree/syntax/enum.h"
@@ -312,19 +313,11 @@ Ref<Node> TypeDB::get_type_data(const Ref<Type> &type, const Ref<Namespace> &fro
 	return get_type_data(type->qualified_name(), type->template_argument_count(), from_namespace);
 }
 
-AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Enum>> &p_assumption) {
-	return validate_t<Enum>(p_assumption);
-}
-
-AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Class>> &p_assumption) {
-	return validate_t<Class>(p_assumption);
-}
-
-AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Define>> &p_assumption) {
-	return validate_t<Define>(p_assumption);
-}
-
 String TypeDB::mangle_name(const String &qualified_name, Size template_parameter_count) {
+	if (qualified_name.empty() || std::any_of(qualified_name.begin(), qualified_name.end() - 1, [](char c) { return std::iscntrl(c); })) {
+		return INVALID_NAME;
+	}
+
 	Vector<String> parts = string_split(qualified_name, "::");
 
 	auto itr = std::find_if(parts.begin(), parts.end(), [](const String &part) { return !part.empty(); });
@@ -358,7 +351,7 @@ String TypeDB::mangle_name(const String &qualified_name, Size template_parameter
 	Size closed = 0;
 
 	for (char c : qualified_name) {
-		if (!(is_whitespace(c) || c == '<' || c == '>' || c == '_' || isalnum(c) || c == ',')) {
+		if (!(is_whitespace(c) || c == '<' || c == '>' || c == '_' || isalnum(c) || c == ',' || c == '&' || c == '*')) {
 			return INVALID_NAME;
 		}
 
@@ -376,6 +369,9 @@ String TypeDB::mangle_name(const String &qualified_name, Size template_parameter
 			count++;
 		}
 		if (open == 0) {
+			if (!(isalnum(c) || c == '_')) {
+				return INVALID_NAME;
+			}
 			name_writer.write_generic(c);
 		}
 	}
@@ -420,6 +416,43 @@ Vector<String> TypeDB::resolve_possible_namespaces(
 	}
 
 	return result;
+}
+
+AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Enum>> &p_assumption) {
+	return validate_t<Enum>(p_assumption);
+}
+
+AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Class>> &p_assumption) {
+	return validate_t<Class>(p_assumption);
+}
+
+AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Define>> &p_assumption) {
+	return validate_t<Define>(p_assumption);
+}
+
+AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<EnumValue>> &p_assumption) {
+	Vector<String> namespaces = string_split(p_assumption().qualified_name, "::");
+	if (namespaces.size() == 1) {
+		PRINT_ERROR("EnumValue assumption required fully qualified name. Got: \"%s\"", p_assumption().qualified_name.c_str());
+		return STATE_INVALID;
+	}
+
+	Vector<String> enum_name_split{ namespaces.begin(), namespaces.end() - 1 };
+	String enum_name = string_vector_combine(enum_name_split, "::");
+
+	Ref<Enum> enum_ = get_type_data<Enum>(enum_name);
+	if (enum_ == nullptr) {
+		return STATE_INVALID;
+	}
+
+	Ref<EnumValue> value = enum_->find_chain<EnumValue, EnumValues>(
+			NamedContextPredicates::name<EnumValue>(namespaces.back().c_str()));
+
+	if (value == nullptr) {
+		return STATE_INVALID;
+	}
+
+	return STATE_VALID;
 }
 
 } //namespace GodotObjectCompiler

@@ -40,6 +40,7 @@ namespace GodotObjectCompiler {
 
   class AccessSpecifier : public Node {
     NODE_TYPE(AccessSpecifier);
+  public:
 
     enum Type { PUBLIC, PRIVATE, PROTECTED };
 
