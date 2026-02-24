@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* non_ref_resource.h                                                     */
+/* uninitialized_float.h                                                  */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -40,7 +40,7 @@ class Invalid : Node {
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY();
-  Resource* non_ref_resource;
+  float unitialized_float;
 };
 
 GODOT_GENERATED_GLOBAL();

@@ -101,6 +101,12 @@ namespace GodotObjectCompiler {
     template <class T>
     Ref<T> find_parent(Predicate<T> p_predicate = default_node_predicate<T>) const;
 
+  	template <class T>
+  	Ref<T> get_previous_sibling() const;
+
+  	template <class T>
+  	Ref<T> get_next_sibling() const;
+
     template <class T>
     Ref<T> find_previous_sibling();
 

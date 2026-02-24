@@ -92,7 +92,7 @@ public:
 
 	[[nodiscard]] const Vector<Ref<ClassGenerator>> &class_generators() const;
 
-	AttributeDB(Private){};
+	AttributeDB(Private) {}
 	AttributeDB() = delete;
 
 private:

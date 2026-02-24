@@ -66,7 +66,7 @@ bool virtual_function_bound(const char *p_function_name, const char *p_type,
 #define GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file) \
 	String generated_header, generated_source, register_header, register_source; \
 	bool success = generate_files(file, generated_header, generated_source, register_header, register_source); \
-	GOC_TEST_ASSERT(!success, "Invalid file was succesfully generated.")
+	GOC_TEST_ASSERT(!success, "Invalid file \"%s\" was succesfully generated.", file)
 
 #define GOC_ASSERT_PROP_BOUND(prop, variant_type) \
 	GOC_TEST_ASSERT(property_bound(prop, variant_type, generated_header, generated_source), \

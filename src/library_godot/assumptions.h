@@ -35,6 +35,7 @@
 #pragma once
 #include "generated_assumptions/all.h"
 #include "library/core/assumption.h"
+#include "library/tree/syntax/enum.h"
 #include "library/type_db.h"
 
 namespace GodotObjectCompiler {
@@ -89,6 +90,18 @@ inline Assumption<AssumeType<Class>> Variant{
 
 inline Assumption<AssumeType<Enum>> VariantTypeEnum{
 	{ "Variant::Type" }, "Assume that an enum type of name \"Variant::Type\" exists in the TypeDB"
+};
+
+inline Assumption<AssumeType<EnumValue>> VariantTypeInt{
+	{ "Variant::Type::INT" }, "Assume thet an enum value of name \"Variant::Type::INT\" exists in the TypeDB"
+};
+
+inline Assumption<AssumeType<EnumValue>> VariantTypeFloat{
+	{ "Variant::Type::FLOAT" }, "Assume thet an enum value of name \"Variant::Type::FLOAT\" exists in the TypeDB"
+};
+
+inline Assumption<AssumeType<EnumValue>> VariantTypeBool{
+	{ "Variant::Type::BOOL" }, "Assume thet an enum value of name \"Variant::Type::BOOL\" exists in the TypeDB"
 };
 
 inline Assumption<AssumeType<Define>> GDCLASS{

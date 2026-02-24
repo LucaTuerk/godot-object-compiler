@@ -166,6 +166,8 @@ namespace GodotObjectCompiler {
 
     bool type_is_variant_type(const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace = nullptr);
 
+	bool type_is_primitive_type(const Ref<Type>& p_target_type);
+
     bool get_variant_type_from_type(const Ref<Type>& p_target_type, String& p_variant_type);
 
     Ref<GodotVariantTypeArgument> build_variant_type_argument(const Ref<Type>& p_type);

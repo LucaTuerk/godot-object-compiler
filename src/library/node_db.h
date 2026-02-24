@@ -63,7 +63,7 @@ public:
 	static Ref<Node> create(const String &p_type);
 
 	NodeDB() = delete;
-	NodeDB(Private){};
+	NodeDB(Private) {}
 	~NodeDB();
 
 private:

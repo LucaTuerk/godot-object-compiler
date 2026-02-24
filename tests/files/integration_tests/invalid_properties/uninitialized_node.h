@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* godot_property_generator.h                                             */
+/* uninitialized_node.h                                                   */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,28 +32,15 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "library/attribute_db.h"
-#include "library/generator/generator.h"
-#include "library_godot/attributes/godot_attributes.h"
 
-namespace GodotObjectCompiler {
+GODOT_CLASS();
 
-  class GodotPropertyGenerator : public IClassGenerator<GodotPropertyAttribute> {
-    GENERATOR(GodotPropertyGenerator);
+class Invalid : Node {
+  GODOT_GENERATED_BODY();
 
-   public:
+  GODOT_PROPERTY();
+  Node* unitialized_node;
+};
 
-  	Ref<GeneratorError> check_for_property_type_errors(const Ref<Field> &p_field, const Ref<Namespace> &p_from_namespace);
-
-    Ref<GeneratorError> do_generate_default_attribute_arguments(
-        Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute, Ref<Context> p_default_values) override;
-
-    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute,
-        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
-  };
-
-  REGISTER_CLASS_GENERATOR(GodotPropertyGenerator);
-
-}
+GODOT_GENERATED_GLOBAL();

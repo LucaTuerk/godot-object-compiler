@@ -63,14 +63,6 @@ namespace GodotObjectCompiler {
     static inline String skip_type = "compound_statement";
   };
 
-  class NumberLiteralSkip : public SkipHandler<NumberLiteralSkip> {
-    NODE_HANDLER(NumberLiteralSkip);
-
-   public:
-
-    static inline String skip_type = "number_literal";
-  };
-
   class PreprocCallSkip : public SkipHandler<PreprocCallSkip> {
     NODE_HANDLER(PreprocCallSkip);
 
