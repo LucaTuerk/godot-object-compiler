@@ -1,0 +1,214 @@
+@media only screen and (min-width: 769px) {
+    .wy-body-for-nav {
+        /* Center the page on wide displays for better readability */
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}
+
+@media only screen and (min-width: 769px) {
+    .wy-nav-side {
+        /* Required to center the page on wide displays */
+        left: inherit;
+    }
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url("fonts/JetBrainsMono-Regular.woff2");
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: url("fonts/JetBrainsMono-Medium.woff2");
+}
+
+
+/* Default (light) theme colors */
+:root {
+    color-scheme: light dark;
+    --body-color: #404040;
+    --content-wrap-background-color: #efefef;
+    --content-background-color: #fcfcfc;
+    --logo-opacity: 1.0;
+
+    --navbar-background-color: #333f67;
+    --navbar-background-color-hover: #29355c;
+    --navbar-background-color-active: #212d51;
+    --navbar-current-background-color: #212d51;
+    --navbar-current-background-color-hover: #182343;
+    --navbar-current-background-color-active: #131e3b;
+    --navbar-category-active-color: rgba(255 115 129 / 10%);
+    --navbar-current-color: #f1f9ff;
+    --navbar-level-1-color: #c3e3ff;
+    --navbar-level-2-color: #b8d6f0;
+    --navbar-level-3-color: #a3c4e1;
+    --navbar-expand-base-color: #81a3c2;
+    --navbar-expand-hover-color: #c3e3ff;
+    --navbar-expand-active-color: #f1f9ff;
+    --navbar-dimmed-color: #a3c4e1;
+    --navbar-heading-color: #ff7381;
+    --navbar-scrollbar-color: #d45a66;
+    --navbar-scrollbar-hover-color: #b14550;
+    --navbar-scrollbar-active-color: #72383e;
+    --navbar-scrollbar-background: #131e2b;
+
+    --link-color: #2980b9;
+    --link-color-hover: #3091d1;
+    --link-color-active: #105078;
+    --link-color-visited: #9b59b6;
+    --class-reference-icon: url("data:image/svg+xml;base64,PHN2ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjIiIHZpZXdCb3g9IjAgMCAxNiAxNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtNS4wMjkgMWMtLjk5OS0uMDExLTIuMDA5LjMxMi0zLjAyOSAxdjdjMi4wMTctMS4zNTMgNC4wMTctMS4zMTQgNiAwIDEuOTgzLTEuMzE0IDMuOTgzLTEuMzUzIDYgMHYtN2MtMS4wMi0uNjg4LTIuMDMtMS4wMTEtMy4wMjktMS0uNjYyLjAwNy0xLjMxOC4xNzMtMS45NzEuNDYzdjQuNTM3aC0xdi00Yy0uOTgyLS42NDUtMS45NzEtLjk4OS0yLjk3MS0xem0tNS4wMjkgOXY2aDJjMS42NDYgMCAzLTEuMzU0IDMtM3MtMS4zNTQtMy0zLTN6bTUgM2MwIDEuNjQ2IDEuMzU0IDMgMyAzczMtMS4zNTQgMy0zLTEuMzU0LTMtMy0zLTMgMS4zNTQtMyAzem02IDBjMCAxLjY0NiAxLjM1NCAzIDMgM2gxdi0yaC0xYy0uNTQ5IDAtMS0uNDUxLTEtMXMuNDUxLTEgMS0xaDF2LTJoLTFjLTEuNjQ2IDAtMyAxLjM1NC0zIDN6bS05LTFjLjU0OSAwIDEgLjQ1MSAxIDFzLS40NTEgMS0xIDF6bTYgMGMuNTQ5IDAgMSAuNDUxIDEgMXMtLjQ1MSAxLTEgMS0xLS40NTEtMS0xIC40NTEtMSAxLTF6IiBmaWxsPSIjNDE0MTQxIiBmaWxsLW9wYWNpdHk9Ii41OSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PC9zdmc+Cg==");
+    --external-reference-icon: url("data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEyIiB3aWR0aD0iMTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjk4MGI5Ij48cGF0aCBkPSJtNy41IDcuMXYzLjRoLTZ2LTZoMy40Ii8+PHBhdGggZD0ibTUuNzY1IDFoNS4yMzV2NS4zOWwtMS41NzMgMS41NDctMS4zMS0xLjMxLTIuNzI0IDIuNzIzLTIuNjktMi42ODggMi44MS0yLjgwOC0xLjMxMy0xLjMxeiIvPjwvZz48L3N2Zz4K");
+
+    --hr-color: #e1e4e5;
+    --table-row-odd-background-color: #f3f6f6;
+    --code-background-color: #e9eae5;
+    --code-border-color: #e1e4e5;
+    --code-literal-color: #c03e41;
+    --input-background-color: #fcfcfc;
+    --input-focus-border-color: #5f8cff;
+
+    --tabs-background-color: #e1e4e5;
+    --tabs-selected-color: #a2a9ae;
+    --code-tabs-background-color: #e6e6e6;
+    --code-tabs-selected-color: #8a9378;
+
+    --classref-primary-color: #252525;
+    --classref-secondary-color: #616770;
+    --classref-setget-color: #56585b;
+
+    --search-input-background-color: #e6eef3; /* derived from --input-background-color */
+    --search-match-color: #2c6b96; /* derived from --link-color */
+    --search-match-background-color: #e3f2fd; /* derived from --link-color */
+    --search-active-color: #efefef;
+    --search-credits-background-color: #333f67; /* derived from --navbar-background-color */
+    --search-credits-color: #b3b3b3; /* derived from --footer-color */
+    --search-credits-link-color: #4392c5; /* derived from --link-color */
+
+    --search-odd-color: rgb(133 160 253 / 24%);
+    --search-even-color: rgb(202 209 239 / 30%);
+    --search-highlighted-color: rgb(255 205 0 / 25%);
+    --search-context-color: #6c6e72;
+
+    --highlight-background-color: #f0f0f0;
+    --highlight-background-emph-color: #dfdfdf;
+    --highlight-default-color: #3c3c3c;
+    --highlight-comment-color: rgba(20, 20, 20, 0.5);
+    --highlight-doc-comment-color: rgba(38, 38, 102, 0.7);
+    --highlight-region-comment-color: rgba(173, 117, 196, 20);
+    --highlight-keyword-color: #e62282;
+    --highlight-literal-color: var(--highlight-keyword-color);
+    --highlight-keyword2-color: #009933;
+    --highlight-control-flow-keyword-color: #bd1fcc;
+    --highlight-number-color: #008c47;
+    --highlight-decorator-color: #cc5e00;
+    --highlight-base-type-color: #009933;
+    --highlight-engine-type-color: #1c8c66;
+    --highlight-user-type-color: #2e7366;
+    --highlight-member-variable-color: #0066ad;
+    --highlight-function-color: #0039e6;
+    --highlight-function-declaration-color: #009999;
+    --highlight-global-function-color: #5c2eb8;
+    --highlight-operator-color: #00009c;
+    --highlight-string-color: #996b00;
+    --highlight-get-node-shorthand-color: #2e8c00;
+    --highlight-node-path-color: #008000;
+    --highlight-string-name-color: #ffc2a6;
+
+    --copybtn-background-color: #f6f8fa;
+    --copybtn-background-color-hover: #f3f4f6;
+    --copybtn-border-color: #d5d8da;
+    --copybtn-border-color-hover: #d5d8da;
+    --copybtn-icon-color: #57606a;
+    --copybtn-icon-color-success: #1a7f37;
+    --copybtn-tooltip-background-color: #24292f;
+    --copybtn-box-shadow: 0 1px 0 rgba(27,31,36,0.04), inset 0 1px 0 rgba(255,255,255,0.25);
+    --copybtn-border-color-success: #2da44e;
+
+    --contribute-background-color: #d7dee8;
+    --contribute-text-color: #646e72;
+
+    --admonition-note-background-color: #e7f2fa;
+    --admonition-note-color: #404040;
+    --admonition-note-title-background-color: #6ab0de;
+    --admonition-note-title-color: #fff;
+    --admonition-attention-background-color: #ffedcc;
+    --admonition-attention-color: #404040;
+    --admonition-attention-title-background-color: #f0b37e;
+    --admonition-attention-title-color: #fff;
+    --admonition-danger-background-color: #fcf3f2;
+    --admonition-danger-color: #404040;
+    --admonition-danger-title-background-color: #e9a499;
+    --admonition-danger-title-color: #fff;
+    --admonition-tip-background-color: #dbfaf4;
+    --admonition-tip-color: #404040;
+    --admonition-tip-title-background-color: #1abc9c;
+    --admonition-tip-title-color: #fff;
+
+    --kbd-background-color: #fafbfc;
+    --kbd-outline-color: #d1d5da;
+    --kbd-shadow-color: #b0b7bf;
+    --kbd-text-color: #444d56;
+
+    --role-button-background-color: #d3d7e1;
+
+    --code-example-good-color: #3fb950;
+    --code-example-bad-color: #f85149;
+
+    --btn-neutral-background-color: #f3f6f6;
+    --btn-neutral-hover-background-color: #e5ebeb;
+    --footer-color: #808080;
+
+    /* Use the same fonts as Godot's modern editor theme, with a system font fallback in case the web fonts fail to load. */
+    --sans-serif-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --monospace-font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, Courier, monospace;
+}
+
+
+h1 {
+    font-size: 20pt;
+}
+
+h2 {
+    font-size: 17pt;
+}
+
+h3 {
+    font-size: 14pt;
+}
+
+:is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--sans-serif-font-family)
+}
+
+.admonition {
+    box-shadow: 0px 8px 24px -4px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+:is(.highlight-CMake,.highlight-C\+\+, .highlight-bash, .highlight-sh) {
+    font-family: var(--monospace-font-family);
+    box-shadow: 0px 8px 24px -4px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.admonition-title {
+    border-radius: 10px 10px 0px 0px;
+}
+
+.highlight span {
+    font-family: var(--monospace-font-family);
+    font-size: 10pt;
+}
+
+p {
+    font-size: 12pt;
+    margin-left: 10px;
+    font-family: var(--sans-serif-font-family)
+}

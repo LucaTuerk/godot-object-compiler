@@ -40,10 +40,16 @@ html_theme_options = {
     # if we have a html_logo below, this shows /only/ the logo with no title text
     "logo_only": True,
     # Collapse navigation (False makes it tree-like)
-    "collapse_navigation": False,
+    "collapse_navigation": True,
     # Remove version and language picker beneath the title
     "version_selector": False,
     "language_selector": False,
     # Set Flyout menu to attached
     "flyout_display": "attached",
 }
+
+html_logo = "img/docs_logo.svg"
+html_static_path = ["_static"]
+html_css_files = [
+    "css/custom.css",
+]

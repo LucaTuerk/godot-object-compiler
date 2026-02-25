@@ -2,8 +2,6 @@ Using the CLI
 =============
 
 .. toctree::
-    :hidden:
-    :maxdepth: 2
     :name: sec-cli-inner
 
     build_num

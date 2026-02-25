@@ -120,7 +120,7 @@ Last but not least we add a generated global macro outside the class body. GOC u
 Check out :doc:`../macros/GODOT_ENUM` and :doc:`../macros/GODOT_GENERATED_GLOBAL` for more information.
 
 Usage
-=====
+~~~~~
 
 GOC currently ships with integrations for CMake. The tools can be dumped into a local folder by calling the GOC executables init_tools program with a local path argument.
 
@@ -129,7 +129,7 @@ GOC currently ships with integrations for CMake. The tools can be dumped into a 
     $ goc init_tools tools
 
 CMake Integration
-~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^
 
 Include the tools file in your CMakeLists.txt and activate the GOC generator for your GDExtension target by specifying the target name the and sources root directory. GOC will then generate the bindings code for your targets source files.
 
@@ -142,14 +142,14 @@ Include the tools file in your CMakeLists.txt and activate the GOC generator for
 Check out :doc:`../integrations/CMake` for more information.
 
 SConstruct Integration
-~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^
 
 tbd
 
 Check out :doc:`../integrations/SConstruct` for more information.
 
 Command Line Usage
-~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^
 
 You can also use the GOC as a CLI tool to manually generate the sources or build your own integrations. Execute
 

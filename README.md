@@ -2,7 +2,7 @@
 > This is experimental software, please do not use this application in a production environment.
 > This project is currently only tested on Linux. Everything is still subject to change.
 
-![Header Image](./assets/header.png)
+![Header Image](./docs/img/docs_logo.svg)
 
 ___
 

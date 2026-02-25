@@ -2,9 +2,6 @@ clear
 =====
 
 .. toctree::
-    :hidden:
-    :maxdepth: 2
-    :caption: clear
     :name: sec-cli-clear
 
     clear_generated
