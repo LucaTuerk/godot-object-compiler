@@ -1,6 +1,3 @@
-> [!WARNING]
-> This is experimental software, please do not use this application in a production environment.
-> This project is currently only tested on Linux. Everything is still subject to change.
 
 ![Header Image](./docs/img/docs_logo.svg)
 
@@ -12,7 +9,9 @@ The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It 
 
 ___
 
-
+> [!WARNING]
+> This is experimental software, please do not use this application in a production environment.
+> This project is currently only tested on Linux. Everything is still subject to change.
 
 # Example
 
