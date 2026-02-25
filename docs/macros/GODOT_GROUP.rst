@@ -1,8 +1,6 @@
 GODOT_GROUP
 ===========
 
-.. include:: descriptions/GODOT_GROUP.rst
-
 Usage
 ~~~~~
 
@@ -13,3 +11,4 @@ Usage
     GODOT_PROPERTY();
     int some_property = 0;
 
+.. include:: descriptions/GODOT_GROUP.rst

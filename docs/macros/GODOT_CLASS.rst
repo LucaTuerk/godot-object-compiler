@@ -1,8 +1,6 @@
 GODOT_CLASS
 ===========
 
-.. include:: descriptions/GODOT_CLASS.rst
-
 Usage
 ~~~~~
 
@@ -12,6 +10,8 @@ Usage
     class Example : Node {
         GODOT_GENERATED_BODY();
     };
+
+.. include:: descriptions/GODOT_CLASS.rst
 
 Available Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~

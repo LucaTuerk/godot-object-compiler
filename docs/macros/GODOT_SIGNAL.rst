@@ -1,8 +1,6 @@
 GODOT_SIGNAL
 ============
 
-.. include:: descriptions/GODOT_SIGNAL.rst
-
 Usage
 ~~~~~
 
@@ -10,3 +8,5 @@ Usage
 
     GODOT_SIGNAL();
     void signal_name(int p_param);
+
+.. include:: descriptions/GODOT_SIGNAL.rst

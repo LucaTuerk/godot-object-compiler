@@ -1,8 +1,6 @@
 GODOT_GENERATED_BODY
 ====================
 
-.. include:: descriptions/GODOT_GENERATED_BODY.rst
-
 Usage
 ~~~~~
 
@@ -12,3 +10,5 @@ Usage
     class Example : Node {
         GODOT_GENERATED_BODY();  // <-- Insert inside the class body
     };
+
+.. include:: descriptions/GODOT_GENERATED_BODY.rst

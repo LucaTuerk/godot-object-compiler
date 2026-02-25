@@ -1,8 +1,6 @@
 GODOT_PROPERTY
 ==============
 
-.. include:: descriptions/GODOT_PROPERTY.rst
-
 Usage
 ~~~~~
 
@@ -10,6 +8,8 @@ Usage
 
     GODOT_PROPERTY();
     int some_property = 0;
+
+.. include:: descriptions/GODOT_PROPERTY.rst
 
 Available Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~

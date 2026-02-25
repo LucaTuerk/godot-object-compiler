@@ -1,8 +1,6 @@
 GODOT_FUNCTION
 ==============
 
-.. include:: descriptions/GODOT_FUNCTION.rst
-
 Usage
 ~~~~~
 
@@ -11,6 +9,7 @@ Usage
     GODOT_FUNCTION();
     void function_name(int p_param);
 
+.. include:: descriptions/GODOT_FUNCTION.rst
 
 Available Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,8 +1,6 @@
 GODOT_ENUM
 ===========
 
-.. include:: descriptions/GODOT_ENUM.rst
-
 Usage
 ~~~~~
 
@@ -15,6 +13,7 @@ Usage
         ENUM_VALUE_C
     };
 
+.. include:: descriptions/GODOT_ENUM.rst
 
 Available Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~

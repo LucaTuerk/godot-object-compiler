@@ -1,8 +1,6 @@
 GODOT_CATEGORY
 ==============
 
-.. include:: descriptions/GODOT_CATEGORY.rst
-
 Usage
 ~~~~~
 
@@ -12,3 +10,5 @@ Usage
 
     GODOT_PROPERTY();
     int some_property = 0;
+
+.. include:: descriptions/GODOT_CATEGORY.rst
