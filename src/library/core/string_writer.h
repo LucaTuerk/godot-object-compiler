@@ -38,65 +38,75 @@
 
 namespace GodotObjectCompiler {
 
-  class StreamWriter : public IStringWriter {
-   public:
+class StreamWriter : public IStringWriter {
+public:
+	void write(const String &p_value) override;
 
-    void write(const String& p_value) override;
+	String get_string() override;
 
-    String get_string() override;
+	Size current_length() override;
 
-    Size current_length() override;
+private:
+	std::stringstream _stream;
+	Size _current_length = 0;
+};
 
-   private:
+class FileWriter : public IStringWriter {
+public:
 
-    std::stringstream _stream;
-    Size _current_length = 0;
-  };
+	FileWriter(const FileWriter &other) = delete;
 
-  class FileWriter : public IStringWriter {
-   public:
+	FileWriter(FileWriter &&other) noexcept
+			: IStringWriter(std::move(other)),
+			  _path(std::move(other._path)),
+			  _do_not_write_same_content(other._do_not_write_same_content),
+			  _generated(other._generated),
+			  _moved(false),
+			  _stream(std::move(other._stream)),
+			  _file(std::move(other._file)) {
+		other._moved = true;
+	}
 
-    FileWriter(FileWriter&& other) noexcept
-        :_path(std::move(other._path)),
-          _do_not_write_same_content(other._do_not_write_same_content),
-          _generated(other._generated),
-          _stream(std::move(other._stream)),
-          _file(std::move(other._file)) {
-      other._moved = true;
-    }
+	FileWriter &operator=(const FileWriter &other) = delete;
 
-    FileWriter& operator=(FileWriter&& other) noexcept {
-      if (this == &other) return *this;
-      other._moved = true;
-      _path = std::move(other._path);
-      _do_not_write_same_content = other._do_not_write_same_content;
-      _generated = other._generated;
-      _stream = std::move(other._stream);
-      _file = std::move(other._file);
-      return *this;
-    }
+	FileWriter &operator=(FileWriter &&other) noexcept {
+		if (this == &other) {
+			return *this;
+		}
+		IStringWriter::operator=(std::move(other));
+		other._moved = true;
+		_path = std::move(other._path);
+		_do_not_write_same_content = other._do_not_write_same_content;
+		_generated = other._generated;
+		_moved = false;
+		_stream = std::move(other._stream);
+		_file = std::move(other._file);
+		return *this;
+	}
 
-    explicit FileWriter(const String& path, bool do_not_write_same_content = true);
-    ~FileWriter() override;
+	explicit FileWriter(const String &path, bool do_not_write_same_content = true);
 
-    static FileWriter generated(const String& path, const String& p_generated_from);
+	~FileWriter() override;
 
-    void write(const String& p_value) override;
+	static FileWriter generated(const String &path, const String &p_generated_from);
 
-    String get_string() override;
+	void write(const String &p_value) override;
 
-    Size current_length() override;
+	String get_string() override;
 
-   private:
+	Size current_length() override;
 
-    static String _generated_header(const String& p_file_name);
+private:
+	FileWriter(const String &path, const String &initial_content);
 
-    String _path;
-    bool _do_not_write_same_content = true;
-    bool _generated = false;
-    bool _moved = false;
-    StreamWriter _stream;
-    std::fstream _file;
-  };
+	static String _generated_header(const String &p_file_name);
 
-}
+	String _path;
+	bool _do_not_write_same_content = true;
+	bool _generated = false;
+	bool _moved = false;
+	StreamWriter _stream;
+	std::fstream _file;
+};
+
+} //namespace GodotObjectCompiler

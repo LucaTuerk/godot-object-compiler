@@ -161,13 +161,13 @@ bool string_to_int(const String &p_content, int &r_result) {
 	return *ptr == 0;
 }
 
-void string_get_2d_size(const String &p_content, Size& p_x, Size& p_y) {
+void string_get_2d_size(const String &p_content, Size &p_x, Size &p_y) {
 	Vector<String> split = string_split(p_content, "\n");
 
 	p_x = 0;
 	p_y = 0;
 
-	for (const String& row : split) {
+	for (const String &row : split) {
 		p_x = std::max(p_x, row.size());
 		p_y++;
 	}
@@ -232,7 +232,7 @@ String cpp_enum_case_to_exposed_enum_case(const String &p_content) {
 	return writer.get_string();
 }
 
-Vector<String> string_split(const String &p_content, const String &p_delimiter) {
+Vector<String> string_split(const String &p_content, const String &p_delimiter, bool p_leave_empty) {
 	Vector<String> result;
 
 	Size start = 0;
@@ -245,7 +245,9 @@ Vector<String> string_split(const String &p_content, const String &p_delimiter) 
 		start = end + p_delimiter.length();
 	} while (end < length);
 
-	if (result.empty()) {
+	if (p_leave_empty && (result.empty() || std::all_of(result.begin(), result.end(), [](const String &string) { return string.empty(); }))) {
+		return {};
+	} else if (result.empty()) {
 		result.emplace_back(p_content);
 	}
 

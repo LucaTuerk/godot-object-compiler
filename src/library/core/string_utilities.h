@@ -84,7 +84,7 @@ String macro_case_to_pascal_case(const String &p_content);
 
 String cpp_enum_case_to_exposed_enum_case(const String &p_content);
 
-Vector<String> string_split(const String &p_content, const String &p_delimiter);
+Vector<String> string_split(const String &p_content, const String &p_delimiter, bool p_leave_empty = false);
 
 Vector<String> string_split_length(const String &p_content, Size length);
 

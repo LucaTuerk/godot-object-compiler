@@ -61,6 +61,11 @@ namespace GodotObjectCompiler {
     PRINT_VERBOSE("Writing file \"%s\"", absolute.c_str());
     Permissions::instance()->ensure_is_allowed_write_path(absolute);
 
+  	String base = path_base(p_path);
+  	if (!directory_exits(base)) {
+  		create_dir_recursive(base);
+  	}
+
     std::ofstream ofs(absolute.c_str(), std::ios::out | std::ios::binary);
     ofs.write(p_content.c_str(), static_cast<long>(p_content.size()));
   }

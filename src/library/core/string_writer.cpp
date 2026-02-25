@@ -82,8 +82,7 @@ FileWriter::~FileWriter() {
 }
 
 FileWriter FileWriter::generated(const String &path, const String &p_generated_from) {
-	FileWriter writer(path, true);
-	writer._generated = true;
+	StreamWriter writer;
 
 	if (!p_generated_from.empty()) {
 		ExecutionContext::instance()->register_generated_file(path, p_generated_from);
@@ -91,7 +90,7 @@ FileWriter FileWriter::generated(const String &path, const String &p_generated_f
 
 	writer.write(_generated_header(path_file_name(path)));
 	writer.write("// NOLINTBEGIN\n// clang-format off\n");
-	return writer;
+	return FileWriter(path, writer.get_string());
 }
 
 void FileWriter::write(const String &p_value) {
@@ -107,6 +106,11 @@ String FileWriter::get_string() {
 
 Size FileWriter::current_length() {
 	return _stream.current_length();
+}
+
+FileWriter::FileWriter(const String &path, const String &initial_content) : FileWriter(path, true){
+	_generated = true;
+	_stream.write(initial_content);
 }
 
 String FileWriter::_generated_header(const String &p_file_name) {
