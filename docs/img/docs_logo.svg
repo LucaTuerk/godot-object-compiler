@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="1430.5685"
-   height="594.92395"
-   viewBox="0 0 1430.5685 594.92395"
+   width="1454.5685"
+   height="631.68115"
+   viewBox="0 0 1454.5685 631.68115"
    version="1.1"
    id="svg1"
    xml:space="preserve"
@@ -89,11 +89,41 @@
          operator="over"
          in="SourceGraphic"
          in2="comp1"
-         id="feComposite48" /></filter></defs><g
+         id="feComposite48" /></filter><filter
+       style="color-interpolation-filters:sRGB"
+       id="filter72"
+       x="-0.030122752"
+       y="-0.041118338"
+       width="1.0602455"
+       height="1.0822367"><feFlood
+         result="flood"
+         in="SourceGraphic"
+         flood-opacity="0.501961"
+         flood-color="rgb(0,0,0)"
+         id="feFlood71" /><feGaussianBlur
+         result="blur"
+         in="SourceGraphic"
+         stdDeviation="10.000000"
+         id="feGaussianBlur71" /><feOffset
+         result="offset"
+         in="blur"
+         dx="0.000000"
+         dy="0.000000"
+         id="feOffset71" /><feComposite
+         result="comp1"
+         operator="in"
+         in="flood"
+         in2="offset"
+         id="feComposite71" /><feComposite
+         result="comp2"
+         operator="over"
+         in="SourceGraphic"
+         in2="comp1"
+         id="feComposite72" /></filter></defs><g
      id="layer1"
-     transform="translate(-50.400423,-76.705663)"><text
+     transform="translate(-50.400423,-63.948458)"><text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:170.667px;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono Bold';letter-spacing:-0.21px;writing-mode:lr-tb;direction:ltr;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:170.667px;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono Bold';letter-spacing:-0.21px;writing-mode:lr-tb;direction:ltr;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;filter:url(#filter72)"
        x="671.9408"
        y="214.242"
        id="text50"><tspan
@@ -118,7 +148,7 @@
    style="fill:#1a1a1a;stroke:none"
    id="tspan59">ompiler</tspan></tspan></text></g><g
      id="layer3"
-     transform="translate(-50.400423,-76.705663)"><g
+     transform="translate(-50.400423,-63.948458)"><g
        id="g58"
        transform="translate(-44,-6)"><g
          id="g25"
