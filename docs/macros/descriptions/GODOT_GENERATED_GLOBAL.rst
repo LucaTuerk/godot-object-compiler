@@ -1,0 +1,1 @@
+This hook macro is used to inject generated code within the global namespace for all classes within this file.

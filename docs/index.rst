@@ -1,22 +1,13 @@
-godot-object-compiler documentation
+Godot Object Compiler Documentation
 ===================================
 
 .. toctree::
-   :hidden:
-   :maxdepth: 1
-   :caption: Macros
-   :name: sec-macros
+    :hidden:
+    :maxdepth: 1
+    :caption: Macros
+    :name: sec-macros
 
-   macros/GODOT_CLASS
-   macros/GODOT_ENUM
-   macros/GODOT_PROPERTY
-   macros/GODOT_FUNCTION
-   macros/GODOT_SIGNAL
-   macros/GODOT_CATEGORY
-   macros/GODOT_GROUP
-   macros/GODOT_SUBGROUP
-   macros/GODOT_GENERATED_BODY
-   macros/GODOT_GENERATED_GLOBAL
+    macros/index
 
 .. toctree::
     :hidden:
@@ -24,8 +15,7 @@ godot-object-compiler documentation
     :caption: Integrations
     :name: sec-integrations
 
-    integrations/CMake
-    integrations/SConstruct
+    integrations/index
 
 .. toctree::
     :hidden:
@@ -33,12 +23,16 @@ godot-object-compiler documentation
     :caption: Using the CLI
     :name: sec-cli
 
-    cli/build_num
-    cli/clear
-    cli/export_type_db
-    cli/generate
-    cli/help
-    cli/import_type_db
-    cli/init
-    cli/print
-    cli/version
+    cli/index
+
+The Godot Object Compiler is a **code generation tool for GDExtensions**. 
+It generates bindings and other builderplate code for **efficent development in C++** while maintaining full configurability via
+**expressive macros** generated directly from the godot-cpp source used to build your extension.
+
+Check out the :doc:`about/example` for a general overview of the features and :doc:`example` for a peek at the
+generated code.
+
+.. WARNING::
+    This is experimental software, please do not use this application in a production environment.
+    This project is currently only tested on Linux. Everything is still subject to change.
+

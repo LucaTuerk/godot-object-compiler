@@ -1,4 +1,12 @@
 GODOT_SIGNAL
 ============
 
-No documentation available
+.. include:: descriptions/GODOT_SIGNAL.rst
+
+Usage
+~~~~~
+
+.. code-block:: C++
+
+    GODOT_SIGNAL();
+    void signal_name(int p_param);

@@ -42,7 +42,13 @@ namespace GodotObjectCompiler {
     PROGRAM(GenerateResources, "generate/resources");
     PROG_NO_ARGS
 
-   public:
+  public:
+  	using TableRow = Vector<String>;
+  	using Table = Vector<TableRow>;
+
+  	String rst_header(const String &p_text, char p_punctioation);
+  	String rst_table(const Table &table);
+
 
     Ref<ProgramError> run(ApplicationContext& p_context) override;
   };

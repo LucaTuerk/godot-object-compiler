@@ -1,1 +1,1 @@
-When called via RPC, this function will only be called on both the remote peer and locally.
+When called via RPC, this function will be called on both the remote peer and locally.

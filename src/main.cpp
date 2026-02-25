@@ -36,6 +36,7 @@
 #include "main.h"
 
 #include "application/application.h"
+#include "application/programs/generate_resources.h"
 #include "library/core/core.h"
 #include "library/execution_context.h"
 
