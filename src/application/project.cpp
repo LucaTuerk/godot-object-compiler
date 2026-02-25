@@ -43,14 +43,14 @@ namespace GodotObjectCompiler {
 
 void Project::read_from(IStructuredReader *p_reader) {
 	p_reader->read_from_section("Godot");
-	godot_include_paths = string_split(p_reader->read<String, String>("IncludePaths"), ",");
+	godot_include_paths = string_split(p_reader->read<String, String>("IncludePaths"), ",", true);
 
 	p_reader->read_from_section("Paths");
 	paths_root = p_reader->read<String, String>("RootPath");
 	paths_goc = p_reader->read<String, String>("GOCPath");
 	paths_generated = p_reader->read<String, String>("GeneratedPath");
 	paths_cache = p_reader->read<String, String>("CachePath");
-	paths_include = string_split(p_reader->read<String, String>("IncludePaths"), ",");
+	paths_include = string_split(p_reader->read<String, String>("IncludePaths"), ",", true);
 }
 
 void Project::write_to(IStructuredWriter *p_writer) {

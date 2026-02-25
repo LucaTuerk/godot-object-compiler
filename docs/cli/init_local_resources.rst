@@ -1,0 +1,2 @@
+init local_resources
+====================

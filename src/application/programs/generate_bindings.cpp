@@ -80,7 +80,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 	Ref<Context> macro_include_content = node_new<Context>();
 	macro_include_generator.generate(nullptr, macro_include_content);
 
-	FileWriter marco_writer = FileWriter::generated(path_concat(p_context.paths_generated, "macros.h"), "");
+	FileWriter marco_writer = FileWriter::generated(path_concat(p_context.paths_generated, "godot_object_compiler/macros.h"), "");
 	Ref<Output::OutputNode> macro_output = transformator.transform(macro_include_content);
 	macro_output->get_output(&marco_writer);
 

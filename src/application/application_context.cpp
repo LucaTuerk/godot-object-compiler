@@ -50,10 +50,10 @@ bool ApplicationContext::set_from_project(const Project &p_project) {
 	paths_readonly_cache = path_concat(paths_cache, ".readonly");
 	paths_goc = path_absolute(p_project.paths_goc);
 
-	paths_include = p_project.paths_include;
-	for (const auto &godot_include_path : p_project.godot_include_paths) {
-		if (!vector_contains(*paths_include, godot_include_path)) {
-			paths_include->push_back(godot_include_path);
+	paths_include = p_project.godot_include_paths;
+	for (const auto &include_path : p_project.paths_include) {
+		if (!vector_contains(*paths_include, include_path)) {
+			paths_include->push_back(include_path);
 		}
 	}
 

@@ -17,11 +17,6 @@ goc
 .goc
 .goc_tests
 -.goc_project
-*.h.generated
-*.cpp.generated
-*.generated.h
-*.generated.cpp
-.generated
 
 #scon
 .sconsign.dblite
@@ -31,3 +26,4 @@ __pycache__
 cmake*
 build
 .vscode
+docs/_build

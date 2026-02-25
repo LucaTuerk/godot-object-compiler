@@ -36,6 +36,9 @@
 #ifdef DEV_BUILD
 #include "generate_resources.h"
 
+#include "application/application.h"
+#include "generate.h"
+#include "generate_bindings.h"
 #include "generate_type_db.h"
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
@@ -49,70 +52,171 @@
 
 namespace GodotObjectCompiler {
 
-  String resource_variable_name(const String& p_path) {
-    String result = p_path;
-    result = string_replace(result, "/", "_");
-    result = string_replace(result, ".", "_");
-    result = string_replace(result, "\\", "_");
-    result = string_replace(result, ":", "_");
-    return result;
-  }
+String resource_variable_name(const String &p_path) {
+	String result = p_path;
+	result = string_replace(result, "/", "_");
+	result = string_replace(result, ".", "_");
+	result = string_replace(result, "\\", "_");
+	result = string_replace(result, ":", "_");
+	return result;
+}
 
-  Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
-    UNUSED(p_context);
+String GenerateResources::rst_header(const String &p_text, char p_punctioation) {
+	StreamWriter writer;
+	writer.write(p_text);
+	writer.write("\n");
+	writer.write(char_times_n(p_punctioation, p_text.size()));
+	writer.write("\n");
+	return writer.get_string();
+}
 
-    GenerateTypeDB generate_type_db;
-    PROG_ERR_COND(generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the TypeDB");
+String GenerateResources::rst_table(const Table &table) {
+	Vector<Size> per_column_length;
+	Vector<Size> per_row_height;
 
-    Permissions::instance()->add_write_path("resources");
-    Permissions::instance()->add_write_path("docs");
+	for (Size y = 0; y < table.size(); ++y) {
+		for (Size x = 0; x < table[y].size(); ++x) {
+			const String &cell = table[y][x];
+			Size size_x, size_y;
+			string_get_2d_size(cell, size_x, size_y);
 
-    // Generate Program help resources
-    Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
-    for (const auto& [path, program] : programs) {
-      String file_stem = string_vector_combine(path, "_");
-      String file_path = path_concat_ext("resources/help", file_stem, "txt");
-      if (!file_exists(file_path)) {
-        FileWriter writer(file_path);
-        writer.write("No help available");
-      }
+			if (x >= per_column_length.size()) {
+				per_column_length.push_back(size_x);
+			} else {
+				per_column_length[x] = std::max(per_column_length[x], size_x);
+			}
 
-      String doc_path = path_concat_ext("docs/cli/", string_replace(program->program_name(), "/", "_"), "md");
-      write_initial_file_content(doc_path, "No documentation available");
-    }
+			if (y >= per_row_height.size()) {
+				per_row_height.push_back(size_y);
+			} else {
+				per_row_height[y] = std::max(per_row_height[y], size_y);
+			}
+		}
+	}
 
-    // Generate macro help docs
-    for (const String& macro : ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
-      String internal_doc_path = path_concat_ext("resources/doc", macro, "txt");
-      write_initial_file_content(internal_doc_path, "No documentation available");
+	StreamWriter writer;
+	for (Size y = 0; y < table.size(); ++y) {
+		const TableRow &row = table[y];
+		Size row_height = per_row_height[y];
 
-      String doc_path = path_concat_ext("docs/macros/", macro, "md");
-      write_initial_file_content(doc_path, "No documentation available");
+		Vector<Vector<String>> row_cell_lines;
+		for (const String &cell : row) {
+			row_cell_lines.push_back(string_split(cell, "\n"));
+		}
 
-      Vector<Ref<IAttributeParameterType>> params =
-          ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
+		for (Size x = 0; x < row.size(); ++x) {
+			Size col_width = per_column_length[x];
+			writer.write("+");
+			writer.write(char_times_n(y == 1 ? '=' : '-', col_width + 2));
+			if (x == row.size() - 1) {
+				writer.write("+\n");
+			}
+		}
 
-      for (const auto& param : params) {
-        if (param->is_builtin()) {
-          continue;
-        }
+		for (Size row_y = 0; row_y < row_height; ++row_y) {
+			for (Size x = 0; x < row.size(); ++x) {
+				Size col_width = per_column_length[x];
+				writer.write("| ");
 
-        auto param_doc_file = path_concat_ext("resources/doc", param->get_return_type(), "txt");
-        auto param_doc_dir = path_concat("resources/doc", param->get_return_type());
+				if (x < row_cell_lines.size() && row_y < row_cell_lines[x].size()) {
+					writer.write(string_pad_right(row_cell_lines[x][row_y], ' ', col_width + 1));
+				} else {
+					writer.write(char_times_n(' ', col_width + 1));
+				}
 
-        create_dir_recursive(param_doc_dir);
-        write_initial_file_content(param_doc_file, "No documentation available");
+				if (x == row.size() - 1) {
+					writer.write("|\n");
+				}
+			}
+		}
+	}
 
-        for (const auto& value_name : param->get_value_names()) {
-          auto value_doc_path = path_concat_ext(param_doc_dir, value_name, "txt");
-          write_initial_file_content(value_doc_path, "No documentation available");
-        }
-      }
-    }
+	for (Size x = 0; x < per_column_length.size(); ++x) {
+		Size col_width = per_column_length[x];
+		writer.write("+");
+		writer.write(char_times_n('-', col_width + 2));
+	}
+	writer.write("+\n");
 
-    Ref<Namespace> global_namespace = make_ref<Namespace>();
-    Ref<Body> body;
-    // clang-format off
+	return writer.get_string();
+}
+
+Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
+	UNUSED(p_context);
+
+	GenerateTypeDB generate_type_db;
+	PROG_ERR_PASS_ON(generate_type_db.run(p_context));
+
+	Permissions::instance()->add_write_path("resources");
+	Permissions::instance()->add_write_path("docs");
+
+	// Generate Program help resources
+	Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
+	for (const auto &[path, program] : programs) {
+		String file_stem = string_vector_combine(path, "_");
+		String file_path = path_concat_ext("resources/help", file_stem, "txt");
+		if (!file_exists(file_path)) {
+			FileWriter writer(file_path);
+			writer.write("No help available");
+		}
+
+		String doc_path = path_concat_ext("docs/cli/", string_replace(program->program_name(), "/", "_"), "rst");
+		write_initial_file_content(doc_path, "No documentation available");
+	}
+
+	// Generate macro help docs
+	for (const String &macro : ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
+		String internal_doc_path = path_concat_ext("resources/doc", macro, "txt");
+		write_initial_file_content(internal_doc_path, "No documentation available");
+
+		String doc_path = path_concat_ext("docs/macros/", macro, "rst");
+		write_initial_file_content(doc_path, "No documentation available");
+
+		String doc_desc_path = path_concat_ext("docs/macros/descriptions/", macro, "rst");
+		create_dir_recursive(path_base(doc_desc_path));
+		write_file(doc_desc_path, read_file(internal_doc_path));
+
+		Vector<Ref<IAttributeParameterType>> params =
+				ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
+
+		for (const auto &param : params) {
+			if (param->is_builtin()) {
+				continue;
+			}
+			Table table;
+			table.push_back({ "Value", "Description" });
+
+			auto param_res_doc_dir = path_concat("resources/doc", param->get_return_type());
+			auto param_res_doc_path = path_concat_ext("resources/doc", param->get_return_type(), "txt");
+
+			create_dir_recursive(param_res_doc_dir);
+			write_initial_file_content(param_res_doc_path, "No documentation available");
+
+			for (const auto &value_name : param->get_value_names()) {
+				auto value_doc_path = path_concat_ext(param_res_doc_dir, value_name, "txt");
+				write_initial_file_content(value_doc_path, "No documentation available");
+
+				table.push_back({ value_name, read_file(value_doc_path) });
+			}
+
+			String param_doc_path = path_concat_ext("docs/macros/parameters/", param->get_return_type(), "rst");
+			create_dir_recursive(path_base(param_doc_path));
+
+			StreamWriter writer;
+			writer.write(rst_header(param->get_return_type(), '^'));
+			writer.write("\n");
+			writer.write(read_file(param_res_doc_path));
+			writer.write("\n");
+			writer.write("\n");
+			writer.write("The following values are available:\n\n");
+			writer.write(rst_table(table));
+			write_file(param_doc_path, writer.get_string());
+		}
+	}
+
+	Ref<Namespace> global_namespace = make_ref<Namespace>();
+	Ref<Body> body;
+	// clang-format off
     global_namespace->add_children({
       build<Body>().with_children({
         Output::PragmaOnce(),
@@ -123,16 +227,16 @@ namespace GodotObjectCompiler {
         })
       })
     });
-    // clang-format on
+	// clang-format on
 
-    auto files = directory_files_recursive("resources");
-    // Compile Resources
-    for (const String& file : files) {
-      String content = read_file(file);
-      String relative = path_relative(file, path_cwd());
+	auto files = directory_files_recursive("resources");
+	// Compile Resources
+	for (const String &file : files) {
+		String content = read_file(file);
+		String relative = path_relative(file, path_cwd());
 
-      Ref<Output::ListNode> values;
-      // clang-format off
+		Ref<Output::ListNode> values;
+		// clang-format off
       body->add_children({
         Output::FmtText("constexpr char %s[] = ", resource_variable_name(relative).c_str() ),
         build<Body>().with_child(build_ref<Output::ListNode>(&values, ", ", false, false)),
@@ -157,23 +261,53 @@ namespace GodotObjectCompiler {
         build<Body>().with_child(build_ref<Output::ListNode>(&values, ",\n", false, false)),
         Output::Semicolon()
       });
-      // clang-format on
+		// clang-format on
 
-      for (const String& file : files) {
-        String relative = path_relative(file, path_cwd());
-        String res_path = "res://" + path_relative(relative, "resources");
-        values->add_child(
-            Output::FmtText("{\"%s\", &%s[0]}", res_path.c_str(), resource_variable_name(relative).c_str()));
-      }
-    }
+		for (const String &file : files) {
+			String relative = path_relative(file, path_cwd());
+			String res_path = "res://" + path_relative(relative, "resources");
+			values->add_child(
+					Output::FmtText("{\"%s\", &%s[0]}", res_path.c_str(), resource_variable_name(relative).c_str()));
+		}
+	}
 
-    Permissions::instance()->add_write_path("src/application/compiled_resources");
-    FileWriter writer = FileWriter::generated("src/application/compiled_resources/res.gen.h", "");
-    OutputTransformator transformator;
+	Permissions::instance()->add_write_path("src/application/compiled_resources");
+	FileWriter writer = FileWriter::generated("src/application/compiled_resources/res.gen.h", "");
+	OutputTransformator transformator;
 
-    transformator.transform(global_namespace)->get_output(&writer);
-    return ProgramError::OK;
-  }
+	transformator.transform(global_namespace)->get_output(&writer);
 
+	GenerateBindings generate_example;
+	p_context.paths_root = path_absolute("docs/files");
+	p_context.paths_include->push_back(*p_context.paths_root);
+	p_context.paths_generated = path_absolute("docs/generated_files");
+	PROG_ERR_PASS_ON(generate_example.run(p_context));
+
+	for (const String &file : {
+		path_concat(p_context.paths_generated, "example.generated.cpp"),
+		path_concat(p_context.paths_generated, "example.generated.h"),
+		path_concat(p_context.paths_generated, "generated_register_types.h"),
+		path_concat(p_context.paths_generated, "generated_register_types.cpp"),
+	}) {
+		PROG_ERR_COND(!file_exists(file), "Expected generated file \"%s\" does not exist", file.c_str());
+
+		String content = read_file(file);
+		StreamWriter writer;
+
+		for (const String& line: string_split(content, "\n")) {
+			if (string_prefix(line, "#include") && string_contains(line, "\"")) {
+				writer.write("#include \"purged local file path\"");
+			} else {
+				writer.write(line);
+			}
+			writer.write("\n");
+		}
+
+		write_file(file, writer.get_string());
+	}
+
+	return ProgramError::OK;
 }
+
+} //namespace GodotObjectCompiler
 #endif

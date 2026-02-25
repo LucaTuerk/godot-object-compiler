@@ -88,6 +88,10 @@ namespace GodotObjectCompiler {
 
 #define PROG_ERR(...) return make_ref<ProgramError>(ERROR, format(__VA_ARGS__));
 
+#define PROG_ERR_PASS_ON(target) \
+{Ref<ProgramError> __err = (target); \
+if(__err != ProgramError::OK) { return __err;}}
+
 #define PROG_NO_ARGS \
   bool validate_arguments(ApplicationContext& p_context) override { return p_context.program_arguments.empty(); }
 

@@ -1,4 +1,7 @@
-This function will be bound as a script virtual function and must be overwritten in scripts.
-A bounds virtual name will be _<function_name>. When called from within the extension this
-method can be used to call the script virtual function if it exists, otherwise this function
-will be called and an error is displayed.
+This function will be bound as a script virtual function
+and must be overwritten in scripts.
+The bounds virtual name will be _<function_name>.
+When called from within the extension this
+method can be used to call the script virtual function
+if it exists, otherwise this function will be called and
+an error is displayed.
