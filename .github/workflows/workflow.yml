@@ -54,8 +54,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install cmake -y
-          sudo apt install mold -y
-          sudo apt install ninja-build -y
 
       - name: Build Project
         run: |
@@ -161,8 +159,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install cmake -y
-          sudo apt install mold -y
-          sudo apt install ninja-build -y
 
       - name: Build Project
         run: |
