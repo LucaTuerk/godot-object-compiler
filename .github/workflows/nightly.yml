@@ -55,3 +55,19 @@ jobs:
 
           gh release upload nightly goc_nightly-linux.x86_64.zip --clobber
           gh release upload nightly goc_nightly-win64.zip --clobber
+          
+      - uses: Oval-Tutu/publish-to-itch-with-butler@1.0.0
+        with:
+          api-key: ${{ secrets.BUTLER_API_KEY }}
+          itch_user: LucaTuerk
+          itch_game: godot-object-compiler
+          channel: windows
+          package: goc_nightly-win64.zip
+
+      - uses: Oval-Tutu/publish-to-itch-with-butler@1.0.0
+        with:
+          api-key: ${{ secrets.BUTLER_API_KEY }}
+          itch_user: LucaTuerk
+          itch_game: godot-object-compiler
+          channel: linux
+          package: goc_nightly-linux.x86_64.zip
