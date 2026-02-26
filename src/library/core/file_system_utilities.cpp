@@ -52,8 +52,10 @@ namespace GodotObjectCompiler {
     std::ifstream ifs;
     ifs.open(absolute);
     PANIC_COND(!ifs.is_open() || ifs.bad() || ifs.fail(), "Failed to open file \"%s\"", absolute.c_str());
-    std::string str(std::istreambuf_iterator{ifs}, {});
-    return str;
+
+  	std::ostringstream strstr;
+  	strstr << ifs.rdbuf();
+  	return strstr.str();
   }
 
   void write_file(const String& p_path, const String& p_content) {

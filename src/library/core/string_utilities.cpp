@@ -149,16 +149,19 @@ int string_to_int(const String &p_content) {
 }
 
 bool string_to_int(const String &p_content, int &r_result) {
-	size_t idx = 0;
+	try {
+		size_t idx = 0;
+		if (string_prefix(p_content, "0b")) {
+			idx = 2;
+			r_result = stoi(p_content, &idx, 2);
+		} else {
+			r_result = stoi(p_content, &idx, 0);
+		}
 
-	if (string_prefix(p_content, "0b")) {
-		idx = 2;
-		r_result = stoi(p_content, &idx, 2);
-	} else {
-		r_result = stoi(p_content, &idx, 0);
+		return true;
+	} catch (const std::exception &e) {
+		return false;
 	}
-
-	return idx == 0;
 }
 
 void string_get_2d_size(const String &p_content, Size &p_x, Size &p_y) {
