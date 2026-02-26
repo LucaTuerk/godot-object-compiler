@@ -46,4 +46,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ls
+          zip goc-x64-linux.zip goc
+          gh release upload nightly goc-x64-linux.zip
