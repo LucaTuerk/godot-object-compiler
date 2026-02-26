@@ -149,20 +149,20 @@ int string_to_int(const String &p_content) {
 }
 
 bool string_to_int(const String &p_content, int &r_result) {
-	char *ptr;
+	size_t idx = 0;
 
 	if (string_prefix(p_content, "0b")) {
-		// automatic base resolution fails here in MSVC
-		r_result = std::strtol(p_content.substr(2).c_str(), &ptr, 2);
+		idx = 2;
+		r_result = stoi(p_content, &idx, 2);
 	} else {
-		r_result = std::strtol(p_content.c_str(), &ptr, 0);
+		r_result = stoi(p_content, &idx, 0);
 	}
 
-	return *ptr == 0;
+	return idx == 0;
 }
 
 void string_get_2d_size(const String &p_content, Size &p_x, Size &p_y) {
-	Vector<String> split = string_split(p_content, "\n");
+	const Vector<String> split = string_split(p_content, "\n");
 
 	p_x = 0;
 	p_y = 0;
@@ -187,10 +187,10 @@ String macro_case_to_pascal_case(const String &p_content) {
 	Size start = 0;
 	Size end = String::npos;
 	do {
-		end = p_content.find("_", start);
+		end = p_content.find('_', start);
 
 		for (Size i = start; i < std::min(end, p_content.length()); ++i) {
-			strstr << ((i == start) ? (char)std::toupper(p_content[i]) : (char)std::tolower(p_content[i]));
+			strstr << ((i == start) ? static_cast<char>(std::toupper(p_content[i])) : static_cast<char>(std::tolower(p_content[i])));
 		}
 
 		start = end + 1;

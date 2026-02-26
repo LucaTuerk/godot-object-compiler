@@ -10,7 +10,7 @@ jobs:
 
   check-format:
     name: Check Formating
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
 
   linux-build:
     name: Build (Linux 🐧)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: check-format
     steps:
       - name: Checkout Project
@@ -130,7 +130,7 @@ jobs:
 
   linux-test-project:
     name: Run Test Project (Linux 🐧)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: linux-build
     steps:
       - name: Checkout Test Repo
