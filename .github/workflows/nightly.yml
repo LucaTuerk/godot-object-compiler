@@ -42,7 +42,7 @@ jobs:
           name: linux-binary
 
       - name: Download Windows Artifact
-        uses: actions/download-artifact@v6
+        uses: actions/downloads-artifact@v6
         with:
           name: windows-binary
 
@@ -55,12 +55,13 @@ jobs:
 
           gh release upload nightly goc_nightly-linux.x86_64.zip --clobber
           gh release upload nightly goc_nightly-win64.zip --clobber
-          
+
       - uses: Ayowel/butler-to-itch@v1
         with:
           butler_key: ${{ secrets.BUTLER_API_KEY }}
           itch_user: lucatuerk
           itch_game: godot-object-compiler
+          version: nightly
           files: |
-            goc_nightly-win64.zip
-            goc_nightly-linux.x86_64.zip
+            windows goc.exe
+            linux goc
