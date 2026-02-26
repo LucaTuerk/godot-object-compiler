@@ -27,7 +27,8 @@ jobs:
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
-  download-linux-artifacts:
+  upload-artifacts:
+    name: Upload release artifacts
     runs-on: ubuntu-22.04
     needs: [linux-build, windows-build]
     permissions: write-all

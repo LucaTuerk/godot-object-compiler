@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: windows-binary
-          path: build/godot-object-compiler/goc.exe
+          path: build/goc.exe
           compression-level: 9
           if-no-files-found: error
           overwrite: true

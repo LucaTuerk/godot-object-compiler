@@ -51,7 +51,6 @@ jobs:
           scons
           cd ..
 
-
   linux-test-project:
     name: Run Test Project (Linux 🐧)
     runs-on: ubuntu-22.04
@@ -60,25 +59,25 @@ jobs:
       - name: Checkout Test Repo
         uses: actions/checkout@v4
         with:
-          repository: 'LucaTuerk/godot-object-compiler-test'
-          submodules: 'false'
+          repository: "LucaTuerk/godot-object-compiler-test"
+          submodules: "false"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Checkout Godot Object Compiler
         uses: actions/checkout@v4
         with:
-          repository: 'LucaTuerk/godot-object-compiler'
-          submodules: 'recursive'
-          path: 'godot-object-compiler'
+          repository: "LucaTuerk/godot-object-compiler"
+          submodules: "recursive"
+          path: "godot-object-compiler"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Checkout godot-cpp
         uses: actions/checkout@v4
         with:
-          repository: 'godotengine/godot-cpp'
-          submodules: 'true'
-          path: 'godot-cpp'
-          ref: '4.5'
+          repository: "godotengine/godot-cpp"
+          submodules: "true"
+          path: "godot-cpp"
+          ref: "4.5"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Install Packages
