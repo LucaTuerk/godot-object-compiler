@@ -19,17 +19,17 @@ jobs:
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
-  # windows-build:
-  #   uses: ./.github/workflows/build_windows.yml
-  #   needs: linux-build
-  #   with:
-  #     create_artifact: true
-  #   secrets:
-  #     GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+  windows-build:
+    uses: ./.github/workflows/build_windows.yml
+    needs: check-format
+    with:
+      create_artifact: true
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
   download-linux-artifacts:
     runs-on: ubuntu-22.04
-    needs: linux-build
+    needs: [linux-build, windows-build]
     permissions: write-all
 
     steps:
@@ -38,14 +38,22 @@ jobs:
         with:
           submodules: "false"
 
-      - name: Download Artifacts
+      - name: Download Linux Artifact
         uses: actions/download-artifact@v6
         with:
           name: linux-binary
+
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: windows-binary
 
       - name: Add Artifacts to release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          zip goc-x64-linux.zip goc
-          gh release upload nightly goc-x64-linux.zip
+          zip goc-nightly-x86_64.zip goc
+          zip goc-nightly-win64.zip goc.exe
+
+          gh release upload nightly goc-nightly-x86_64.zip
+          gh release upload nightly goc-nightly-win64.zip
