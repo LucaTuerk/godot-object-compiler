@@ -3,9 +3,6 @@ on:
   schedule:
     - cron: "0 2 * * *"
   workflow_dispatch:
-  push:
-    branches:
-      - nightly_workflow
 
 jobs:
   check-format:
@@ -56,5 +53,5 @@ jobs:
           zip goc-nightly-x86_64.zip goc
           zip goc-nightly-win64.zip goc.exe
 
-          gh release upload nightly goc-nightly-x86_64.zip
-          gh release upload nightly goc-nightly-win64.zip
+          gh release upload nightly goc-nightly-x86_64.zip --clobber
+          gh release upload nightly goc-nightly-win64.zip --clobber
