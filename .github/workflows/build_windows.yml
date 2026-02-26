@@ -6,6 +6,9 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      GOC_RUNNER_TOKEN:
+        required: true
 jobs:
   windows-build:
     name: Build (Windows 🪟)

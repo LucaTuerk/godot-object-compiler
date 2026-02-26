@@ -14,8 +14,11 @@ jobs:
   linux-build:
     uses: ./.github/workflows/build_linux.yml
     needs: check-format
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
   windows-build:
-
     uses: ./.github/workflows/build_windows.yml
     needs: check-format
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}

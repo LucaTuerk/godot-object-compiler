@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
+  push:
+    branches:
+      - nightly_workflow
 
 jobs:
   check-format:
@@ -13,15 +16,20 @@ jobs:
     needs: check-format
     with:
       create_artifact: true
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml
     needs: linux-build
     with:
       create_artifact: true
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
   download-linux-artifacts:
     runs-on: ubuntu-22.04
+    needs: linux-build
 
     steps:
       - name: Download Artifacts

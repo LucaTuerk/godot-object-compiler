@@ -6,6 +6,9 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      GOC_RUNNER_TOKEN:
+        required: true
 
 jobs:
   linux-build:
@@ -119,10 +122,11 @@ jobs:
           godot --headless --path project
 
       - name: Upload artifact
-        if: ${{inputs.create_artifact}} == true
+        if: ${{inputs.create_artifact == true}}
         uses: actions/upload_artifact@v4
         with:
           name: linux-binary
           path: build/godot-object-compiler/goc
           compression-level: 9
           if-no-files-found: error
+          overwrite: true
