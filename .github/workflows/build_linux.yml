@@ -121,9 +121,9 @@ jobs:
           godot --headless --path project --editor --quit || true # Godot 4.5.1 crashes after successful import, ignore for now
           godot --headless --path project
 
-      - name: Upload artifact
+      - name: Upload Binary
         if: ${{inputs.create_artifact == true}}
-        uses: actions/upload_artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: linux-binary
           path: build/godot-object-compiler/goc

@@ -1,7 +1,7 @@
 name: Nightly Workflow
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
   workflow_dispatch:
   push:
     branches:
@@ -19,21 +19,26 @@ jobs:
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
-  windows-build:
-    uses: ./.github/workflows/build_windows.yml
-    needs: linux-build
-    with:
-      create_artifact: true
-    secrets:
-      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+  # windows-build:
+  #   uses: ./.github/workflows/build_windows.yml
+  #   needs: linux-build
+  #   with:
+  #     create_artifact: true
+  #   secrets:
+  #     GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
   download-linux-artifacts:
     runs-on: ubuntu-22.04
     needs: linux-build
 
     steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          submodules: "false"
+
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: linux-binary
 
@@ -41,5 +46,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          zip goc-x64-linux.zip goc
-          gh release upload nightly goc-x64-linux.zip
+          ls
