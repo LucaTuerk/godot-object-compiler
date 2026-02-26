@@ -30,6 +30,7 @@ jobs:
   download-linux-artifacts:
     runs-on: ubuntu-22.04
     needs: linux-build
+    permissions: write-all
 
     steps:
       - name: Checkout Project
