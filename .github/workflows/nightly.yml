@@ -1,0 +1,57 @@
+name: Nightly Workflow
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-format:
+    uses: ./.github/workflows/format.yml
+
+  linux-build:
+    uses: ./.github/workflows/build_linux.yml
+    needs: check-format
+    with:
+      create_artifact: true
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+
+  windows-build:
+    uses: ./.github/workflows/build_windows.yml
+    needs: check-format
+    with:
+      create_artifact: true
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+
+  upload-artifacts:
+    name: Upload release artifacts
+    runs-on: ubuntu-22.04
+    needs: [linux-build, windows-build]
+    permissions: write-all
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          submodules: "false"
+
+      - name: Download Linux Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: linux-binary
+
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: windows-binary
+
+      - name: Add Artifacts to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          zip goc-nightly-x86_64.zip goc
+          zip goc-nightly-win64.zip goc.exe
+
+          gh release upload nightly goc-nightly-x86_64.zip --clobber
+          gh release upload nightly goc-nightly-win64.zip --clobber

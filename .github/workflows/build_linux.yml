@@ -1,0 +1,131 @@
+name: Linux Build
+on:
+  workflow_call:
+    inputs:
+      create_artifact:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      GOC_RUNNER_TOKEN:
+        required: true
+
+jobs:
+  linux-build:
+    name: Build (Linux 🐧)
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
+
+      - name: Install Packages
+        run: |
+          sudo apt update
+          sudo apt install cmake -y
+
+      - name: Build Project
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc)
+          cd ..
+
+      - name: Checkout godot-cpp
+        uses: actions/checkout@v4
+        with:
+          repository: "godotengine/godot-cpp"
+          ref: "4.5"
+          path: "godot-cpp"
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+
+      - name: Install Scons
+        run: |
+          sudo apt install scons -y
+
+      - name: Generate godot-cpp
+        run: |
+          cd godot-cpp
+          scons
+          cd ..
+
+  linux-test-project:
+    name: Run Test Project (Linux 🐧)
+    runs-on: ubuntu-22.04
+    needs: linux-build
+    steps:
+      - name: Checkout Test Repo
+        uses: actions/checkout@v4
+        with:
+          repository: "LucaTuerk/godot-object-compiler-test"
+          submodules: "false"
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+
+      - name: Checkout Godot Object Compiler
+        uses: actions/checkout@v4
+        with:
+          repository: "LucaTuerk/godot-object-compiler"
+          submodules: "recursive"
+          path: "godot-object-compiler"
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+
+      - name: Checkout godot-cpp
+        uses: actions/checkout@v4
+        with:
+          repository: "godotengine/godot-cpp"
+          submodules: "true"
+          path: "godot-cpp"
+          ref: "4.5"
+          token: ${{secrets.GOC_RUNNER_TOKEN}}
+
+      - name: Install Packages
+        run: |
+          sudo apt update
+          sudo apt install cmake -y
+
+      - name: Build Project
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j$(nproc)
+          cd ..
+
+      - name: Install Godot
+        shell: bash
+        run: |
+          INSTALL_DIR=${HOME}/.godot-install-dir/4.5.1-stable
+          mkdir -p $INSTALL_DIR
+
+          echo "Creating $INSTALL_DIR"
+
+          GODOT_DOWNLOAD_URL=https://github.com/godotengine/godot-builds/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip
+
+          echo "Downloading: $GODOT_DOWNLOAD_URL"
+
+          cd $INSTALL_DIR
+          wget -O godot.zip -q $GODOT_DOWNLOAD_URL
+          unzip godot.zip
+          rm -rf godot.zip
+
+          mv Godot_v4.5.1-stable_linux.x86_64 godot
+
+          ls -la $INSTALL_DIR
+          echo $INSTALL_DIR >> $GITHUB_PATH
+
+      - name: Run Project
+        run: |
+          godot --headless --path project --editor --quit || true # Godot 4.5.1 crashes after successful import, ignore for now
+          godot --headless --path project
+
+      - name: Upload Binary
+        if: ${{inputs.create_artifact == true}}
+        uses: actions/upload-artifact@v6
+        with:
+          name: linux-binary
+          path: build/godot-object-compiler/goc
+          compression-level: 9
+          if-no-files-found: error
+          overwrite: true

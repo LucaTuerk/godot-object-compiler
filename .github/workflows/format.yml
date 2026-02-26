@@ -1,0 +1,37 @@
+name: format.yml
+on:
+  workflow_call:
+
+jobs:
+
+  check-format:
+    name: Check Formating
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          submodules: "false"
+
+      - name: Create all.h
+        run: |
+          python ./tools/create_all_h.py
+
+      - name: Generate licence headers
+        run: |
+          python ./tools/add_licence_headers.py
+
+      - name: Run format
+        shell: bash
+        run: |
+          ls ./src/**/*.{cpp,h} > ./.files.txt
+          ls ./tests/**/*.{cpp,h} > ./.testfiles.txt
+
+          clang-format -i --files=./.files.txt || true
+          clang-format -i --files=./.testfiles.txt || true
+
+          rm ./.files.txt
+          rm ./.testfiles.txt
+
+      - name: Verify no changes
+        run: git diff-index --quiet HEAD
