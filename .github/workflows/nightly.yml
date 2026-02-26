@@ -53,5 +53,5 @@ jobs:
           zip goc_nightly-linux.x86_64.zip goc
           zip goc_nightly-win64.zip goc.exe
 
-          gh release upload nightly goc-nightly-x86_64.zip --clobber
-          gh release upload nightly goc-nightly-win64.zip --clobber
+          gh release upload nightly goc_nightly-linux.x86_64.zip --clobber
+          gh release upload nightly goc_nightly-win64.zip --clobber
