@@ -40,9 +40,7 @@ AlignAfterOpenBracket: DontAlign
 #   AlignCaseColons: false
 AlignEscapedNewlines: DontAlign # Aligning leads to long diffs
 AlignOperands: DontAlign
-AlignTrailingComments:
-  Kind: Never
-  OverEmptyLines: 0
+AlignTrailingComments: false
 # AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: false
 # AllowBreakBeforeNoexceptSpecifier: Never
