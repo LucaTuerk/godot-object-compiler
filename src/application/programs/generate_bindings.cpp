@@ -180,8 +180,8 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		}
 
 		if (string_suffix(input_file, ".cpp")) {
-			String h_file = input_file.substr(0, input_file.length() - 3) + "h";
-			String hpp_file = input_file.substr(0, input_file.length() - 3) + "hpp";
+			String h_file = input_file.substr(0, input_file.size()-3) + "h";
+			String hpp_file = input_file.substr(0, input_file.size()-3)  + "hpp";
 			bool h_exists = file_exists(h_file);
 			bool hpp_exists = file_exists(hpp_file);
 			if (!h_exists && !hpp_exists) {

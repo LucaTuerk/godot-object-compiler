@@ -78,6 +78,8 @@ public:
 
 	void clear_generated_from();
 
+	void regenerate_file(const String &p_path);
+
 	bool load_last_modified_times_file(const String &p_path);
 
 	bool save_last_modified_times_file(const String &p_path);
@@ -86,7 +88,7 @@ public:
 
 	bool file_modified(const String &p_path, bool p_update_time = true);
 
-	void clean_orphan_generated_files();
+	void clean_generated_files();
 
 	bool clear_generated_files(const String &p_path);
 

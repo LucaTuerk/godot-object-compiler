@@ -183,7 +183,22 @@ void ExecutionContext::clear_last_modified_times() {
 	_out_last_modified_times.clear();
 }
 
-void ExecutionContext::clean_orphan_generated_files() {
+void ExecutionContext::regenerate_file(const String &p_path) {
+	_last_modified_times.erase(p_path);
+	_out_last_modified_times.erase(p_path);
+
+	auto itr = _generated_from.find(p_path);
+	if (itr != _generated_from.end()) {
+		for (const String &generated_file : itr->second) {
+			if (file_exists(generated_file)) {
+				read_file(p_path);
+			}
+		}
+	}
+	_generated_from.erase(p_path);
+}
+
+void ExecutionContext::clean_generated_files() {
 	auto itr = _generated_from.begin();
 	while (itr != _generated_from.end()) {
 		const auto &[path, generated_files] = *itr;
@@ -198,6 +213,14 @@ void ExecutionContext::clean_orphan_generated_files() {
 			itr = _generated_from.erase(itr);
 			continue;
 		}
+
+		for (const String &generated_file : generated_files) {
+			if (!file_exists(generated_file)) {
+				regenerate_file(path);
+				break;
+			}
+		}
+
 		itr++;
 	}
 }
