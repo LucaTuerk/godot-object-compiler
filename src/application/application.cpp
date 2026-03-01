@@ -153,7 +153,7 @@ int Application::setup_context(Vector<String> p_arguments, ApplicationContext &r
 		ExecutionContext::instance()->load_generated_from_file(
 				path_concat_ext(r_context.paths_goc, "generated_from", "gocdb"));
 
-		ExecutionContext::instance()->clean_orphan_generated_files();
+		ExecutionContext::instance()->clean_generated_files();
 
 		if (r_context.project_target == TARGET_GDEXTENSION) {
 			ExecutionContext::instance()->add_using("godot");
