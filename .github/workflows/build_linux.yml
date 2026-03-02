@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir -p build
           cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build build
+          cmake --build build --parallel $(nproc)
 
       - name: Generate godot-cpp
         run: |
@@ -110,7 +110,7 @@ jobs:
         run: |
           mkdir -p build
           cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release
-          cmake --build build
+          cmake --build build --parallel $(nproc)
 
       - name: Install Godot
         shell: bash
