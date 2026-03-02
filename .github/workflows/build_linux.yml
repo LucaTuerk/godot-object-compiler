@@ -18,20 +18,13 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
         with:
-          submodules: "true"
+          submodules: true
 
       - name: Install Packages
         run: |
           sudo apt update
           sudo apt install cmake -y
-
-      - name: Build Project
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
-          make -j$(nproc)
-          cd ..
+          sudo apt install scons -y
 
       - name: Checkout godot-cpp
         uses: actions/checkout@v4
@@ -41,15 +34,37 @@ jobs:
           path: "godot-cpp"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
-      - name: Install Scons
+      - name: Restore Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ${{github.workspace}}/build/
+            ${{github.workspace}}/godot-cpp/.scons_cache/
+          key: build-cache-linux
+
+      - name: Build Project
         run: |
-          sudo apt install scons -y
+          mkdir -p build
+          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
 
       - name: Generate godot-cpp
         run: |
           cd godot-cpp
           scons
           cd ..
+
+      - name: Run Tests
+        run: |
+          ./build/goc_tests run_integration_tests godot-cpp/include godot-cpp/gen/include
+
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{github.workspace}}/build/
+            ${{github.workspace}}/godot-cpp/.scons_cache/
+          key: build-cache-linux
 
   linux-test-project:
     name: Run Test Project (Linux 🐧)
@@ -85,13 +100,17 @@ jobs:
           sudo apt update
           sudo apt install cmake -y
 
+      - name: Restore Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{github.workspace}}/build/
+          key: test-build-cache-linux
+
       - name: Build Project
         run: |
-          mkdir build
-          cd build
-          cmake ..
-          make -j$(nproc)
-          cd ..
+          mkdir -p build
+          cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
 
       - name: Install Godot
         shell: bash
@@ -119,6 +138,12 @@ jobs:
         run: |
           godot --headless --path project --editor --quit || true # Godot 4.5.1 crashes after successful import, ignore for now
           godot --headless --path project
+
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{github.workspace}}/build/
+          key: test-build-cache-linux
 
       - name: Upload Binary
         if: ${{inputs.create_artifact == true}}
