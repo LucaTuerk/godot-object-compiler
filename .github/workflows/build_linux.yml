@@ -26,6 +26,12 @@ jobs:
           sudo apt install cmake -y
           sudo apt install scons -y
 
+      - name: Build Project
+        run: |
+          mkdir -p build
+          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel $(nproc)
+
       - name: Checkout godot-cpp
         uses: actions/checkout@v4
         with:
@@ -34,37 +40,17 @@ jobs:
           path: "godot-cpp"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
-      - name: Restore Cache
+      - name: Restore Include Cache
         uses: actions/cache/restore@v4
         with:
           path: |
-            ${{github.workspace}}/build/
-            ${{github.workspace}}/godot-cpp/.scons_cache/
-          key: build-cache-linux
-
-      - name: Build Project
-        run: |
-          mkdir -p build
-          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --parallel $(nproc)
-
-      - name: Generate godot-cpp
-        run: |
-          cd godot-cpp
-          scons
-          cd ..
+            ${{github.workspace}}/godot-cpp/include
+            ${{github.workspace}}/godot-cpp/gen/include
+          key: godot-cpp-include-cache
 
       - name: Run Tests
         run: |
           ./build/goc_tests run_integration_tests godot-cpp/include godot-cpp/gen/include
-
-      - name: Save Cache
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            ${{github.workspace}}/build/
-            ${{github.workspace}}/godot-cpp/.scons_cache/
-          key: build-cache-linux
 
   linux-test-project:
     name: Run Test Project (Linux 🐧)

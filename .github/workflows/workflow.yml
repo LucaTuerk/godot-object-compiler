@@ -11,14 +11,19 @@ jobs:
   check-format:
     uses: ./.github/workflows/format.yml
 
+  generate-godot-cpp:
+    uses: ./.github/workflows/build_godot_cpp.yml
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+
   linux-build:
     uses: ./.github/workflows/build_linux.yml
-    needs: check-format
+    needs: [check-format, generate-godot-cpp]
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml
-    needs: check-format
+    needs: [check-format, generate-godot-cpp]
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
