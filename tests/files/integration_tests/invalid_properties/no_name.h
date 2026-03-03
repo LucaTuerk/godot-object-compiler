@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* literal.h                                                              */
+/* no_name.h                                                              */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,27 +32,18 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
-#include "node.h"
 
-namespace GodotObjectCompiler {
+GODOT_CLASS();
 
-class Literal : public Node {
-	NODE_TYPE(Literal);
+class Invalid : Node {
+	GODOT_GENERATED_BODY();
 
-public:
-	explicit Literal(const String &content) : content(content) {}
+	GODOT_PROPERTY(Get("get_property"), Set("set_property"));
 
-	static Ref<Literal> StringLiteral(const String &content);
-
-	String to_string() const override;
-	bool copy_to(const Ref<Node> &p_other) const override;
-	void write_to(IStructuredWriter *p_writer) override;
-	void read_from(IStructuredReader *p_reader) override;
-
-	bool unwrap_string_literal(String& p_content) const;
-
-	String content;
+	int get_property() const;
+	void set_property(const int& p_value);
 };
 
-} //namespace GodotObjectCompiler
+GODOT_GENERATED_GLOBAL();

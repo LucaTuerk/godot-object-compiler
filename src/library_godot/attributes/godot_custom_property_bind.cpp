@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* literal.h                                                              */
+/* godot_custom_property_bind.cpp                                         */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,27 +32,48 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#pragma once
-#include "node.h"
+//
+// Created by luca on 03.03.26.
+//
+
+#include "godot_custom_property_bind.h"
 
 namespace GodotObjectCompiler {
 
-class Literal : public Node {
-	NODE_TYPE(Literal);
+String GodotCustomPropertyBindParameterType::get_return_type() {
+	return "GOC_CustomPropertyBind";
+}
 
-public:
-	explicit Literal(const String &content) : content(content) {}
+Vector<String> GodotCustomPropertyBindParameterType::get_value_names() {
+	return { AutoBind, Name };
+}
 
-	static Ref<Literal> StringLiteral(const String &content);
+Vector<IAttributeParameterType::Argument> GodotCustomPropertyBindParameterType::get_arguments() {
+	return { { ARG_STRING, "const char*", "p_name", false } };
+}
 
-	String to_string() const override;
-	bool copy_to(const Ref<Node> &p_other) const override;
-	void write_to(IStructuredWriter *p_writer) override;
-	void read_from(IStructuredReader *p_reader) override;
+String GodotCustomPropertyGetParameterType::get_return_type() {
+	return "GOC_CustomPropertyGet";
+}
 
-	bool unwrap_string_literal(String& p_content) const;
+Vector<String> GodotCustomPropertyGetParameterType::get_value_names() {
+	return { AutoGet, Get };
+}
 
-	String content;
-};
+Vector<IAttributeParameterType::Argument> GodotCustomPropertyGetParameterType::get_arguments() {
+	return { { ARG_STRING, "const char*", "p_getter_name", false } };
+}
+
+String GodotCustomPropertySetParameterType::get_return_type() {
+	return "GOC_CustomPropertySet";
+}
+
+Vector<String> GodotCustomPropertySetParameterType::get_value_names() {
+	return { AutoSet, Set };
+}
+
+Vector<IAttributeParameterType::Argument> GodotCustomPropertySetParameterType::get_arguments() {
+	return { { ARG_STRING, "const char*", "p_setter_name", false } };
+}
 
 } //namespace GodotObjectCompiler

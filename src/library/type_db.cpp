@@ -238,6 +238,10 @@ Ref<Node> TypeDB::_get_type_data(const String &p_qualified_name, Size p_template
 
 		if (file_exists(cache_file_path)) {
 			Ref<Node> root = reader.read_from_file(cache_file_path);
+			if (!root) {
+				ERR("Failed to read node from cache file \"%s\"", cache_file_path.c_str());
+				return nullptr;
+			}
 			_cache[cache_file_path] = root->clone();
 			return root;
 		}
@@ -246,6 +250,10 @@ Ref<Node> TypeDB::_get_type_data(const String &p_qualified_name, Size p_template
 						format("%s::%s", using_.c_str(), name.c_str()), p_cache_type, p_template_argument_count);
 					file_exists(using_path)) {
 				Ref<Node> root = reader.read_from_file(using_path);
+				if (!root) {
+					ERR("Failed to read node from cache file \"%s\"", cache_file_path.c_str());
+					return nullptr;
+				}
 				_cache[cache_file_path] = root->clone();
 				return root;
 			}
