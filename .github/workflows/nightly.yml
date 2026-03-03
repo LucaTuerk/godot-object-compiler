@@ -35,7 +35,7 @@ jobs:
   upload-artifacts:
     name: Upload release artifacts
     runs-on: ubuntu-22.04
-    needs: [linux-build, windows-build]
+    needs: [linux-build, windows-build, mac-build]
     permissions: write-all
 
     steps:
