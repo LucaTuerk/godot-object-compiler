@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir -p build
           cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --parallel $(nproc)
+          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
 
       - name: Checkout godot-cpp
         uses: actions/checkout@v4
@@ -102,7 +102,7 @@ jobs:
         run: |
           mkdir -p build
           cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --parallel $(nproc)
+          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
 
       - name: Install Godot
         shell: bash

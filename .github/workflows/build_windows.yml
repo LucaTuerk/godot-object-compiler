@@ -19,9 +19,10 @@ jobs:
         with:
           submodules: "true"
 
-      - name: Setup TreeSitter
+      - name: Install Packages
         run: |
           choco install tree-sitter
+          python -m pip install scons
 
       - name: Build Project
         run: |
