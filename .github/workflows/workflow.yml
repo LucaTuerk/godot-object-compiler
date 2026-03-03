@@ -22,3 +22,9 @@ jobs:
     needs: check-format
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+
+  mac-build:
+    uses: ./.github/workflows/build_mac.yml
+    needs: check-format
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}

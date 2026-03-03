@@ -18,20 +18,19 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
         with:
-          submodules: "true"
+          submodules: true
 
       - name: Install Packages
         run: |
           sudo apt update
           sudo apt install cmake -y
+          sudo apt install scons -y
 
       - name: Build Project
         run: |
-          mkdir build
-          cd build
-          cmake .. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
-          make -j$(nproc)
-          cd ..
+          mkdir -p build
+          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
 
       - name: Checkout godot-cpp
         uses: actions/checkout@v4
@@ -41,15 +40,29 @@ jobs:
           path: "godot-cpp"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
-      - name: Install Scons
-        run: |
-          sudo apt install scons -y
+      - name: Restore godot-cpp Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{github.workspace}}/godot-cpp/.scons_cache/
+          key: linux-godot-cpp
 
-      - name: Generate godot-cpp
+      - name: Build godot-cpp
+        env:
+          SCONS_CACHE: ${{github.workspace}}/godot-cpp/.scons_cache/
         run: |
           cd godot-cpp
           scons
           cd ..
+
+      - name: Save godot-cpp Cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{github.workspace}}/godot-cpp/.scons_cache/
+          key: linux-godot-cpp
+
+      - name: Run Tests
+        run: |
+          ./build/goc_tests run_integration_tests godot-cpp/include godot-cpp/gen/include
 
   linux-test-project:
     name: Run Test Project (Linux 🐧)
@@ -87,11 +100,9 @@ jobs:
 
       - name: Build Project
         run: |
-          mkdir build
-          cd build
-          cmake ..
-          make -j$(nproc)
-          cd ..
+          mkdir -p build
+          cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
 
       - name: Install Godot
         shell: bash
