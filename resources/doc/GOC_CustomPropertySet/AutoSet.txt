@@ -1,0 +1,2 @@
+The generator creates getters, setters and property bindings based on the member fields it is applied to.
+This is the default value.

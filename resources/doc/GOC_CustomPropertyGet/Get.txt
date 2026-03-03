@@ -1,0 +1,1 @@
+The generator uses the member function identified by this name as the properties getter.
