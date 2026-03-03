@@ -24,6 +24,14 @@ jobs:
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
+  mac-build:
+    uses: ./.github/workflows/build_mac.yml
+    needs: check-format
+    with:
+      create_artifact: true
+    secrets:
+      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+
   upload-artifacts:
     name: Upload release artifacts
     runs-on: ubuntu-22.04
@@ -40,21 +48,31 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: linux-binary
+          path: linux
 
       - name: Download Windows Artifact
         uses: actions/download-artifact@v7
         with:
           name: windows-binary
+          path: windows
+
+      - name: Download Mac Artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: macos-binary
+          path: macos
 
       - name: Add Artifacts to release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          zip goc_nightly-linux.x86_64.zip goc
-          zip goc_nightly-win64.zip goc.exe
+          zip goc_nightly-linux.x86_64.zip linux/goc
+          zip goc_nightly-win64.zip windows/goc.exe
+          zip goc_nightly-macos.universal.zip macos/goc
 
           gh release upload nightly goc_nightly-linux.x86_64.zip --clobber
           gh release upload nightly goc_nightly-win64.zip --clobber
+          gh release upload nightly goc_nightly-macos.universal.zip --clobber
 
       - uses: Ayowel/butler-to-itch@v1
         with:
@@ -63,5 +81,6 @@ jobs:
           itch_game: godot-object-compiler
           version: nightly
           files: |
-            windows goc.exe
-            linux goc
+            windows windows/goc.exe
+            linux linux/goc
+            mac macos/goc

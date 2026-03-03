@@ -11,23 +11,24 @@ on:
         required: true
 jobs:
   windows-build:
-    name: Build (Windows 🪟)
-    runs-on: windows-latest
+    name: Build (Mac 🍎)
+    runs-on: macos-latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
         with:
           submodules: "true"
 
-      - name: Setup TreeSitter
+      - name: Install Packages
         run: |
-          choco install tree-sitter
+          brew install tree-sitter-cli
+          brew install scons
 
       - name: Build Project
         run: |
-          mkdir build -Force
-          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON
-          cmake --build build --config Release
+          mkdir -p build
+          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+          cmake --build build --parallel $(nproc)
 
       - name: Checkout godot-cpp
         uses: actions/checkout@v4
@@ -41,7 +42,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{github.workspace}}/godot-cpp/.scons_cache/
-          key: windows-godot-cpp
+          key: macos-godot-cpp
 
       - name: Build godot-cpp
         env:
@@ -55,18 +56,18 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{github.workspace}}/godot-cpp/.scons_cache/
-          key: windows-godot-cpp
+          key: macos-godot-cpp
 
       - name: Run Tests
         run: |
-          ./build/goc_tests.exe run_integration_tests godot-cpp/include godot-cpp/gen/include
+          ./build/goc_tests run_integration_tests godot-cpp/include godot-cpp/gen/include
 
       - name: Upload Binary
         if: ${{inputs.create_artifact == true}}
         uses: actions/upload-artifact@v7
         with:
-          name: windows-binary
-          path: build/goc.exe
+          name: macos-binary
+          path: build/goc
           compression-level: 9
           if-no-files-found: error
           overwrite: true

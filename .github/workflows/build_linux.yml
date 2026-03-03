@@ -40,13 +40,25 @@ jobs:
           path: "godot-cpp"
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
-      - name: Restore Include Cache
+      - name: Restore godot-cpp Cache
         uses: actions/cache/restore@v4
         with:
-          path: |
-            ${{github.workspace}}/godot-cpp/include
-            ${{github.workspace}}/godot-cpp/gen/include
-          key: godot-cpp-include-cache
+          path: ${{github.workspace}}/godot-cpp/.scons_cache/
+          key: linux-godot-cpp
+
+      - name: Build godot-cpp
+        env:
+          SCONS_CACHE: ${{github.workspace}}/godot-cpp/.scons_cache/
+        run: |
+          cd godot-cpp
+          scons
+          cd ..
+
+      - name: Save godot-cpp Cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{github.workspace}}/godot-cpp/.scons_cache/
+          key: linux-godot-cpp
 
       - name: Run Tests
         run: |
@@ -86,12 +98,6 @@ jobs:
           sudo apt update
           sudo apt install cmake -y
 
-      - name: Restore Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{github.workspace}}/build/
-          key: test-build-cache-linux
-
       - name: Build Project
         run: |
           mkdir -p build
@@ -124,12 +130,6 @@ jobs:
         run: |
           godot --headless --path project --editor --quit || true # Godot 4.5.1 crashes after successful import, ignore for now
           godot --headless --path project
-
-      - name: Save Cache
-        uses: actions/cache/save@v4
-        with:
-          path: ${{github.workspace}}/build/
-          key: test-build-cache-linux
 
       - name: Upload Binary
         if: ${{inputs.create_artifact == true}}
