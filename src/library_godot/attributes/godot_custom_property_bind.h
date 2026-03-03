@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* literal.h                                                              */
+/* godot_custom_property_bind.h                                           */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,26 +33,77 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "node.h"
+#include "library/generator/attribute_parameter_type.h"
+#include "library/tree/syntax/function.h"
 
 namespace GodotObjectCompiler {
 
-class Literal : public Node {
-	NODE_TYPE(Literal);
+struct GodotCustomPropertyBind {
+	String property_name;
+	String getter_name;
+	String setter_name;
+	Ref<Function> getter;
+	Ref<Function> setter;
+};
 
-public:
-	explicit Literal(const String &content) : content(content) {}
+class GodotCustomPropertyBindArgument : public Argument {
+	NODE_TYPE(GodotCustomPropertyBindArgument);
+};
 
-	static Ref<Literal> StringLiteral(const String &content);
+class GodotCustomPropertyBindParameterType : public IAttributeParameterType {
+	PARAM_TYPE(GodotCustomPropertyBindParameterType, GodotCustomPropertyBindArgument)
 
-	String to_string() const override;
-	bool copy_to(const Ref<Node> &p_other) const override;
-	void write_to(IStructuredWriter *p_writer) override;
-	void read_from(IStructuredReader *p_reader) override;
+   public:
+	static inline const char* AutoBind = "AutoBind";
+	static inline const char* Name = "Name";
 
-	bool unwrap_string_literal(String& p_content) const;
 
-	String content;
+	String get_return_type() override;
+
+	Vector<String> get_value_names() override;
+
+	Vector<Argument> get_arguments() override;
+
+};
+
+class GodotCustomPropertyGetArgument : public Argument {
+	NODE_TYPE(GodotCustomPropertyGetArgument);
+};
+
+class GodotCustomPropertyGetParameterType : public IAttributeParameterType {
+	PARAM_TYPE(GodotCustomPropertyGetParameterType, GodotCustomPropertyGetArgument)
+
+   public:
+	static inline const char* AutoGet = "AutoGet";
+	static inline const char* Get = "Get";
+
+
+	String get_return_type() override;
+
+	Vector<String> get_value_names() override;
+
+	Vector<Argument> get_arguments() override;
+
+};
+
+class GodotCustomPropertySetArgument : public Argument {
+	NODE_TYPE(GodotCustomPropertySetArgument);
+};
+
+class GodotCustomPropertySetParameterType : public IAttributeParameterType {
+	PARAM_TYPE(GodotCustomPropertySetParameterType, GodotCustomPropertySetArgument)
+
+   public:
+	static inline const char* AutoSet = "AutoSet";
+	static inline const char* Set = "Set";
+
+
+	String get_return_type() override;
+
+	Vector<String> get_value_names() override;
+
+	Vector<Argument> get_arguments() override;
+
 };
 
 } //namespace GodotObjectCompiler

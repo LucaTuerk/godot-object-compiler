@@ -49,6 +49,9 @@ GodotObjectCompiler::Size find_line_that_contains(const GodotObjectCompiler::Str
 bool property_bound(const char *p_property_name, const char *p_variant_type,
 		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source);
 
+bool custom_property_bound(const char *p_property_name, const char *p_variant_type,
+		const GodotObjectCompiler::String &p_generated_source);
+
 bool signal_bound(const char *p_signal_name, const char *p_variant_type,
 		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source);
 
@@ -70,6 +73,10 @@ bool virtual_function_bound(const char *p_function_name, const char *p_type,
 
 #define GOC_ASSERT_PROP_BOUND(prop, variant_type) \
 	GOC_TEST_ASSERT(property_bound(prop, variant_type, generated_header, generated_source), \
+			format("Property \"%s\" not bound.", prop));
+
+#define GOC_ASSERT_CUSTOM_PROP_BOUND(prop, variant_type) \
+	GOC_TEST_ASSERT(custom_property_bound(prop, variant_type, generated_source), \
 			format("Property \"%s\" not bound.", prop));
 
 #define GOC_ASSERT_SIGNAL_BOUND(signal, variant_type) \

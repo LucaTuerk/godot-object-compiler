@@ -35,6 +35,7 @@
 #pragma once
 #include "enum_generator_options.h"
 #include "godot_class_type.h"
+#include "godot_custom_property_bind.h"
 #include "godot_module_init_level.h"
 #include "godot_property_hint.h"
 #include "godot_property_usage_flags.h"
@@ -51,90 +52,102 @@
 
 namespace GodotObjectCompiler {
 
-  class GodotAttributeWithParams : public Attribute {
-    ATTRIBUTE_TYPE(GodotAttributeWithParams, Node, NONE)
-    Ref<IAttributeArgumentParser> get_argument_parser() override;
+class GodotAttributeWithParams : public Attribute {
+	ATTRIBUTE_TYPE(GodotAttributeWithParams, Node, NONE)
+	Ref<IAttributeArgumentParser> get_argument_parser() override;
 
-    LAZY(GodotAttributeWithParams, Ref<Arguments>, arguments)
-  };
+	LAZY(GodotAttributeWithParams, Ref<Arguments>, arguments)
+};
 
-  class GodotGeneratedBodyAttribute : public GeneratedBodyAttribute {
-    ATTRIBUTE_TYPE(GodotGeneratedBodyAttribute, Class, CONTAINING)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_GENERATED_BODY)
-  };
+class GodotGeneratedBodyAttribute : public GeneratedBodyAttribute {
+	ATTRIBUTE_TYPE(GodotGeneratedBodyAttribute, Class, CONTAINING)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_GENERATED_BODY)
+};
 
-  class GodotGeneratedGlobalAttribute : public GeneratedGlobalAttribute {
-    ATTRIBUTE_TYPE(GodotGeneratedGlobalAttribute, Namespace, CONTAINING)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_GENERATED_GLOBAL)
-  };
+class GodotGeneratedGlobalAttribute : public GeneratedGlobalAttribute {
+	ATTRIBUTE_TYPE(GodotGeneratedGlobalAttribute, Namespace, CONTAINING)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_GENERATED_GLOBAL)
+};
 
-  class GodotClassAttribute : public GodotAttributeWithParams {
-    ATTRIBUTE_TYPE(GodotClassAttribute, Class, NEXT)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_CLASS)
+class GodotClassAttribute : public GodotAttributeWithParams {
+	ATTRIBUTE_TYPE(GodotClassAttribute, Class, NEXT)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_CLASS)
 
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotClassType)
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotModuleInitializationLevel)
-  };
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotClassType)
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotModuleInitializationLevel)
+};
 
-  class GodotEnumAttribute : public GodotAttributeWithParams {
-    ATTRIBUTE_TYPE(GodotEnumAttribute, Enum, NEXT)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_ENUM)
+class GodotEnumAttribute : public GodotAttributeWithParams {
+	ATTRIBUTE_TYPE(GodotEnumAttribute, Enum, NEXT)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_ENUM)
 
-    ATTRIBUTE_REGISTER_PARAMETERS(EnumGeneratorOptions)
-  };
+	ATTRIBUTE_REGISTER_PARAMETERS(EnumGeneratorOptions)
+};
 
-  class GodotPropertyAttribute : public GodotAttributeWithParams {
-    ATTRIBUTE_TYPE(GodotPropertyAttribute, Field, NEXT)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_PROPERTY)
+class GodotPropertyAttribute : public GodotAttributeWithParams {
+	NODE_TYPE(GodotPropertyAttribute)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_PROPERTY)
 
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotVariantType)
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyHint)
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlags)
-    ATTRIBUTE_REGISTER_PARAMETERS(PropertyGetAccessSpecifier)
-    ATTRIBUTE_REGISTER_PARAMETERS(PropertySetAccessSpecifier)
-  };
+public:
+	Ref<Field> TargetField();
+	Opt<GodotCustomPropertyBind> CustomBind();
 
-  class GodotFunctionAttribute : public GodotAttributeWithParams {
-    ATTRIBUTE_TYPE(GodotFunctionAttribute, Function, NEXT)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_FUNCTION)
+protected:
+	bool _verify_target_class(Ref<Node> p_resolved) const override;
+	Target _get_target() const override;
 
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotVirtual);
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcMode);
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcSync);
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcTransferMode);
-    ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcChannel);
-  };
+private:
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotCustomPropertyBind)
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotCustomPropertyGet)
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotCustomPropertySet)
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotVariantType)
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyHint)
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlags)
+	ATTRIBUTE_REGISTER_PARAMETERS(PropertyGetAccessSpecifier)
+	ATTRIBUTE_REGISTER_PARAMETERS(PropertySetAccessSpecifier)
+};
 
-  class GodotSignalAttribute : public GodotAttributeWithParams {
-    ATTRIBUTE_TYPE(GodotSignalAttribute, Function, NEXT)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_SIGNAL)
-  };
+class GodotFunctionAttribute : public GodotAttributeWithParams {
+	ATTRIBUTE_TYPE(GodotFunctionAttribute, Function, NEXT)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_FUNCTION)
 
-  class GodotPropertyCategoryAttribute : public GodotAttributeWithParams {
-    ATTRIBUTE_TYPE(GodotPropertyCategoryAttribute, Node, NONE)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_CATEGORY)
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotVirtual);
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcMode);
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcSync);
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcTransferMode);
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcChannel);
+};
 
-    ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
+class GodotSignalAttribute : public GodotAttributeWithParams {
+	ATTRIBUTE_TYPE(GodotSignalAttribute, Function, NEXT)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_SIGNAL)
+};
 
-    LAZY(GodotPropertyCategoryAttribute, String, literal_content);
-  };
+class GodotPropertyCategoryAttribute : public GodotAttributeWithParams {
+	ATTRIBUTE_TYPE(GodotPropertyCategoryAttribute, Node, NONE)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_CATEGORY)
 
-  class GodotPropertyGroupAttribute : public GodotAttributeWithParams {
-    ATTRIBUTE_TYPE(GodotPropertyGroupAttribute, Node, NONE)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_GROUP)
+	ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
 
-    ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
+	LAZY(GodotPropertyCategoryAttribute, String, literal_content);
+};
 
-    LAZY(GodotPropertyGroupAttribute, String, literal_content);
-  };
+class GodotPropertyGroupAttribute : public GodotAttributeWithParams {
+	ATTRIBUTE_TYPE(GodotPropertyGroupAttribute, Node, NONE)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_GROUP)
 
-  class GodotPropertySubgroupAttribute : public GodotAttributeWithParams {
-    ATTRIBUTE_TYPE(GodotPropertySubgroupAttribute, Node, NONE)
-    ATTRIBUTE_DEFAULT_MACRO(GODOT_SUBGROUP)
+	ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
 
-    ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
+	LAZY(GodotPropertyGroupAttribute, String, literal_content);
+};
 
-    LAZY(GodotPropertySubgroupAttribute, String, literal_content);
-  };
+class GodotPropertySubgroupAttribute : public GodotAttributeWithParams {
+	ATTRIBUTE_TYPE(GodotPropertySubgroupAttribute, Node, NONE)
+	ATTRIBUTE_DEFAULT_MACRO(GODOT_SUBGROUP)
 
-}
+	ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
+
+	LAZY(GodotPropertySubgroupAttribute, String, literal_content);
+};
+
+} //namespace GodotObjectCompiler

@@ -36,41 +36,123 @@
 #include "library_godot/attributes/godot_attributes.h"
 
 #include "library/core/string_utilities.h"
+#include "library/tree/predicates.h"
 #include "library_godot/parsers/godot_attribute_argument_parser.h"
 
 namespace GodotObjectCompiler {
 
-  Ref<IAttributeArgumentParser> GodotAttributeWithParams::get_argument_parser() {
-    return make_ref<GodotAttributeArgumentParser>(this->as<Attribute>());
-  }
-
-  Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() const { return find_child<Arguments>(); }
-
-  String get_string_literal_content(const Ref<const Attribute>& p_attribute) {
-    const Ref<Literal> literal = p_attribute->find_chain<Literal, Arguments, StringLiteralArgument>();
-    if (!literal) {
-      ERR("Failed to find literal");
-      return "";
-    }
-
-    if (!string_enclosed_by(literal->content, "\"") || literal->content.size() < 2) {
-      ERR("Expected string literal");
-      return "";
-    }
-
-    return literal->content.substr(1, literal->content.size() - 2);
-  }
-
-  String GodotPropertyCategoryAttribute::_literal_content_lazy_get() const {
-    return get_string_literal_content(const_as<Attribute>());
-  }
-
-  String GodotPropertyGroupAttribute::_literal_content_lazy_get() const {
-    return get_string_literal_content(const_as<Attribute>());
-  }
-
-  String GodotPropertySubgroupAttribute::_literal_content_lazy_get() const {
-    return get_string_literal_content(const_as<Attribute>());
-  }
-
+Ref<IAttributeArgumentParser> GodotAttributeWithParams::get_argument_parser() {
+	return make_ref<GodotAttributeArgumentParser>(this->as<Attribute>());
 }
+
+Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() const {
+	return find_child<Arguments>();
+}
+
+String get_string_literal_content(const Ref<const Attribute> &p_attribute) {
+	const Ref<Literal> literal = p_attribute->find_chain<Literal, Arguments, StringLiteralArgument>();
+	if (!literal) {
+		ERR("Failed to find literal");
+		return "";
+	}
+
+	if (!string_enclosed_by(literal->content, "\"") || literal->content.size() < 2) {
+		ERR("Expected string literal");
+		return "";
+	}
+
+	return literal->content.substr(1, literal->content.size() - 2);
+}
+
+String GodotPropertyCategoryAttribute::_literal_content_lazy_get() const {
+	return get_string_literal_content(const_as<Attribute>());
+}
+
+String GodotPropertyGroupAttribute::_literal_content_lazy_get() const {
+	return get_string_literal_content(const_as<Attribute>());
+}
+
+String GodotPropertySubgroupAttribute::_literal_content_lazy_get() const {
+	return get_string_literal_content(const_as<Attribute>());
+}
+
+Ref<Field> GodotPropertyAttribute::TargetField() {
+	Ref<GodotCustomPropertyBindArgument> bind = arguments()->find_child<GodotCustomPropertyBindArgument>();
+	if (!bind) {
+		return get_next_sibling<Field>();
+	}
+
+	Ref<Identifier> bind_identifier = bind->find_child<Identifier>();
+	if (!bind_identifier || bind_identifier->name == GodotCustomPropertyBindParameterType::AutoBind) {
+		return get_next_sibling<Field>();
+	}
+	return nullptr;
+}
+
+Opt<GodotCustomPropertyBind> GodotPropertyAttribute::CustomBind() {
+	Ref<Identifier> bind_identifier = arguments()->find_chain<Identifier, GodotCustomPropertyBindArgument>();
+	if (!bind_identifier || bind_identifier->name == GodotCustomPropertyBindParameterType::AutoBind) {
+		return std::nullopt;
+	}
+
+	Ref<Literal> name_literal = arguments()->find_chain<Literal, GodotCustomPropertyBindArgument, Arguments, Argument>();
+	if (!name_literal) {
+		return std::nullopt;
+	}
+
+	Ref<Literal> get_literal = arguments()->find_chain<Literal, GodotCustomPropertyGetArgument, Arguments, Argument>();
+	if (!get_literal) {
+		return std::nullopt;
+	}
+
+	Ref<Literal> set_literal = arguments()->find_chain<Literal, GodotCustomPropertySetArgument, Arguments, Argument>();
+	if (!set_literal) {
+		return std::nullopt;
+	}
+
+	Ref<Class> containing_class = find_ancestor<Class>();
+	if (!containing_class) {
+		return std::nullopt;
+	}
+
+	String property_name, getter_name, setter_name;
+	if (!name_literal->unwrap_string_literal(property_name)) {
+		return std::nullopt;
+	}
+
+	if (!get_literal->unwrap_string_literal(getter_name)) {
+		return std::nullopt;
+	}
+
+	if (!set_literal->unwrap_string_literal(setter_name)) {
+		return std::nullopt;
+	}
+
+	Ref<Function> getter = containing_class->body()->find_child<Function>(0, NamedContextPredicates::name<Function>(getter_name.c_str()));
+	Ref<Function> setter = containing_class->body()->find_child<Function>(0, NamedContextPredicates::name<Function>(setter_name.c_str()));
+	return { {
+			property_name,
+			getter_name,
+			setter_name,
+			getter,
+			setter,
+	} };
+}
+
+bool GodotPropertyAttribute::_verify_target_class(Ref<Node> p_resolved) const {
+	Ref<Identifier> bind_identifier = arguments()->find_chain<Identifier, Arguments, GodotCustomPropertyBindArgument>();
+	if (!bind_identifier || bind_identifier->name == GodotCustomPropertyBindParameterType::AutoBind) {
+		return p_resolved->is<Field>();
+	}
+	return true;
+}
+
+Attribute::Target GodotPropertyAttribute::_get_target() const {
+	Ref<Identifier> bind_identifier = arguments()->find_chain<Identifier, Arguments, GodotCustomPropertyBindArgument>();
+	if (!bind_identifier || bind_identifier->name == GodotCustomPropertyBindParameterType::AutoBind) {
+		return NEXT;
+	}
+	return NONE;
+}
+
+} //namespace GodotObjectCompiler

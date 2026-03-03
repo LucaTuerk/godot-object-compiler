@@ -138,6 +138,14 @@ bool property_bound(const char *p_property_name, const char *p_variant_type, con
 	return true;
 }
 
+bool custom_property_bound(const char *p_property_name, const char *p_variant_type, const String &p_generated_source) {
+	if (get_line_that_contains(p_generated_source, { "ADD_PROPERTY", p_variant_type, p_property_name }).empty()) {
+		fmt_print_err("Property binding not found for %s with variant type %s", p_property_name, p_variant_type);
+		return false;
+	}
+	return true;
+}
+
 bool signal_bound(const char *p_signal_name, const char *p_variant_type,
 		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source) {
 	UNUSED(p_generated_header);
