@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 
+namespace Tests {
 GODOT_CLASS();
 
 class A : public Node {
@@ -209,7 +210,7 @@ class A : public Node {
 
 	GODOT_PROPERTY(Name("node_property"), Get("get_node_property"), Set("set_node_property"));
 	Node *get_node_property() const;
-	void set_node_property(Node * p_value);
+	void set_node_property(Node *p_value);
 
 	GODOT_PROPERTY(Name("resource_property"), Get("get_resource_property"), Set("set_resource_property"));
 	Ref<Resource> get_resource_property() const;
@@ -223,5 +224,6 @@ class A : public Node {
 	Enum get_enum_property() const;
 	void set_enum_property(const Enum &p_value);
 };
+} //namespace Tests
 
 GODOT_GENERATED_GLOBAL();

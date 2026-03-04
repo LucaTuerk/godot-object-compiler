@@ -245,7 +245,7 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 
 	    Ref<Function> get_impl = build<Function>().with_children({
 	      get_type->clone(),
-	      build<Identifier>(p_target_class->name()  + "::" + getter_name),
+	      build<Identifier>(p_target_class->qualified_name()  + "::" + getter_name),
 	      build<Parameters>(),
 	      build<Const>(),
 	      build<Body>().with_child(
@@ -265,7 +265,7 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 
 	    Ref<Function> set_impl = build<Function>().with_children({
 	      build<Type>().with_child<Identifier>("void"),
-	      build<Identifier>(p_target_class->name()  + "::" + setter_name),
+	      build<Identifier>(p_target_class->qualified_name()  + "::" + setter_name),
 	      build<Parameters>()
 	          .with_child(
 	            build<Parameter>()

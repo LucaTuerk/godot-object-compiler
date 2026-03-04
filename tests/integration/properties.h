@@ -43,6 +43,7 @@ using namespace GodotObjectCompiler;
 GOC_INTEGRATION_TEST(GeneratePropertyBinds) {
 	GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/properties.h");
 
+	GOC_ASSERT_QUALIFIED_NAME("Tests::Properties", generated_source)
 	GOC_ASSERT_PROP_BOUND("aabb_property", "AABB");
 	GOC_ASSERT_PROP_BOUND("array_property", "ARRAY");
 	GOC_ASSERT_PROP_BOUND("typed_array_property", "ARRAY");

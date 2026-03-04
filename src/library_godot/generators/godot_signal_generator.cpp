@@ -76,7 +76,7 @@ namespace GodotObjectCompiler {
 
     p_generated_sources->build_child<Function>().with_children({
       build<Type>().with_child<Identifier>("void"),
-      build<Identifier>(p_target_class->name() + "::" + target_function->name()),
+      build<Identifier>(p_target_class->qualified_name() + "::" + target_function->name()),
       build_ref<Parameters>(&func_parameters),
       build<Body>().with_children({
         build<Function>().with_children({
