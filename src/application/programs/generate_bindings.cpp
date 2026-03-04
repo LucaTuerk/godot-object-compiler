@@ -357,12 +357,14 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
         Output::Define("GOC_FILE_ID", {}, file_id(input_file)),
       	Output::SystemInclude("godot_cpp/core/binder_common.hpp"),
       	Output::SystemInclude("godot_cpp/core/gdvirtual.gen.inc"),
+      	Output::NewLine()
       })->get_output(&generated_writer);
 
       Output::Lines({
         Output::Include(input_file),
         Output::SystemInclude("godot_cpp/classes/multiplayer_api.hpp"),
-        Output::SystemInclude("godot_cpp/classes/multiplayer_peer.hpp")
+        Output::SystemInclude("godot_cpp/classes/multiplayer_peer.hpp"),
+      	Output::NewLine()
       })->get_output(&source_writer);
 		// clang-format on
 
