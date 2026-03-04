@@ -4,6 +4,7 @@
 #include "godot_function.h"
 #include "invalid_properties.h"
 #include "macros.h"
+#include "nested_namespaces.h"
 #include "properties.h"
 #include "signals.h"
 #include "virtual_functions.h"

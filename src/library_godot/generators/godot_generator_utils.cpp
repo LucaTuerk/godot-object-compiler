@@ -177,7 +177,7 @@ Ref<Body> GodotGeneratorUtils::get_bind_methods_body(
 	bool bind_methods_defined = p_target_class->has_function_named("_bind_methods");
 	const String bind_methods_name = bind_methods_defined ? "_generated_bind_methods" : "_bind_methods";
 	const String qualified_bind_methods_name =
-			format("%s::%s", p_target_class->name().c_str(), bind_methods_name.c_str());
+			format("%s::%s", p_target_class->qualified_name().c_str(), bind_methods_name.c_str());
 
 	Ref<Function> bind_methods =
 			p_generated_sources->find_child(0, NamedContextPredicates::name<Function>(qualified_bind_methods_name.c_str()));
@@ -214,7 +214,7 @@ Ref<Body> GodotGeneratorUtils::get_notification_body(
 
 	bool notification_defined = p_target_class->has_function_named("_notification");
 	String notification_name = notification_defined ? "_generated_notification" : "_notification";
-	String qualified_notification_name = format("%s::%s", p_target_class->name().c_str(), notification_name.c_str());
+	String qualified_notification_name = format("%s::%s", p_target_class->qualified_name().c_str(), notification_name.c_str());
 
 	Ref<Function> notification =
 			p_generated_sources->find_child(0, NamedContextPredicates::name<Function>(qualified_notification_name.c_str()));
@@ -262,7 +262,7 @@ Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
 	bool get_property_list_defined = p_target_class->has_function_named("_get_property_list");
 	const String property_list_name = get_property_list_defined ? "_generated_get_property_list" : "_get_property_list";
 	const String qualified_property_list_name =
-			format("%s::%s", p_target_class->name().c_str(), property_list_name.c_str());
+			format("%s::%s", p_target_class->qualified_name().c_str(), property_list_name.c_str());
 
 	Ref<Function> get_property_list = p_generated_sources->find_child(
 			0, NamedContextPredicates::name<Function>(qualified_property_list_name.c_str()));

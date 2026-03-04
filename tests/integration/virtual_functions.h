@@ -43,6 +43,7 @@ using namespace GodotObjectCompiler;
 GOC_INTEGRATION_TEST(GenerateVirtualFunctionBinds) {
 	GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/virtual_functions.h");
 
+	GOC_ASSERT_QUALIFIED_NAME("Tests::VirtualFunctions", generated_source);
 	GOC_ASSERT_FUNC_BOUND("aabb_function");
 	GOC_ASSERT_VIRTUAL_BOUND("aabb_function", "AABB");
 	GOC_ASSERT_FUNC_BOUND("array_function");

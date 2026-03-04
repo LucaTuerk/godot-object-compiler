@@ -75,6 +75,9 @@ bool virtual_function_bound(const char *p_function_name, const char *p_type,
 	GOC_TEST_ASSERT(property_bound(prop, variant_type, generated_header, generated_source), \
 			format("Property \"%s\" not bound.", prop));
 
+#define GOC_ASSERT_QUALIFIED_NAME(name, generated_source) \
+	GOC_TEST_ASSERT(string_contains(generated_source, name), "Qualified name \"%s\" does not appear in the source", name);
+
 #define GOC_ASSERT_CUSTOM_PROP_BOUND(prop, variant_type) \
 	GOC_TEST_ASSERT(custom_property_bound(prop, variant_type, generated_source), \
 			format("Property \"%s\" not bound.", prop));

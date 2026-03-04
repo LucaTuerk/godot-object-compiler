@@ -43,6 +43,7 @@ using namespace GodotObjectCompiler;
 GOC_INTEGRATION_TEST(GenerateSignalBinds) {
 	GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/signals.h");
 
+	GOC_ASSERT_QUALIFIED_NAME("Tests::Signals", generated_source);
 	GOC_ASSERT_SIGNAL_BOUND("aabb_signal", "AABB");
 	GOC_ASSERT_SIGNAL_BOUND("array_signal", "ARRAY");
 	GOC_ASSERT_SIGNAL_BOUND("typed_array_signal", "ARRAY");
