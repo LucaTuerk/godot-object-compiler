@@ -103,4 +103,4 @@ namespace GodotObjectCompiler {
 
   Ref<TemplateArguments> Type::_template_arguments_lazy_get() const { return find_child<TemplateArguments>(); }
 
-}
+  } //namespace GodotObjectCompiler

@@ -209,11 +209,13 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 		bind_getter = custom_bind->getter->get_previous_sibling<GodotFunctionAttribute>() == nullptr;
 		bind_setter = custom_bind->setter->get_previous_sibling<GodotFunctionAttribute>() == nullptr;
 	}
+	property_type = qualify(property_type, p_target_class);
 
 	GEN_ERROR_COND(property_name.empty(), p_attribute, "Could not get property name.");
 	GEN_ERROR_COND(!property_type, p_attribute, "Could not get property type.");
 
 	const String type_name = property_type->type_name();
+	GEN_ERROR_COND(type_name.empty(), p_attribute, "Invalid empty type name.");
 
 	Ref<Type> ref_inner;
 	Ref<Enum> enum_object;

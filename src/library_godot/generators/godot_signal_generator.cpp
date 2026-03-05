@@ -39,22 +39,22 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
-      Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-      Ref<Context> p_generated_global) {
-    UNUSED(p_generated_global);
+Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
+		Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
+		Ref<Context> p_generated_global) {
+	UNUSED(p_generated_global);
 
-    using namespace GodotGeneratorUtils;
-    const Ref<Body> bind_methods = get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
-    GEN_ERROR_COND(!bind_methods, p_target_class, "Failed to get or generate bind methods body.");
+	using namespace GodotGeneratorUtils;
+	const Ref<Body> bind_methods = get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+	GEN_ERROR_COND(!bind_methods, p_target_class, "Failed to get or generate bind methods body.");
 
-    Ref<Function> target_function = p_attribute->TargetFunction();
-    GEN_ERROR_COND(!target_function, p_target_class, "Failed to get signal target function");
+	Ref<Function> target_function = p_attribute->TargetFunction();
+	GEN_ERROR_COND(!target_function, p_target_class, "Failed to get signal target function");
 
-    const bool is_void = target_function->type()->name() == "void";
-    GEN_ERROR_COND(!is_void, target_function, "Signal target function does not return void.");
+	const bool is_void = target_function->type()->name() == "void";
+	GEN_ERROR_COND(!is_void, target_function, "Signal target function does not return void.");
 
-    // clang-format off
+	// clang-format off
     Ref<Arguments> arguments;
     bind_methods->build_child<Function>().with_children({
         build<Identifier>("ADD_SIGNAL"),
@@ -87,37 +87,38 @@ namespace GodotObjectCompiler {
         }).with_child(Output::Semicolon()),
       })
     });
-    // clang-format on
+	// clang-format on
 
-    Size i = 1;
-    for (const Ref<Parameter>& parameter : target_function->parameters()->find_children<Parameter>()) {
-      Ref<Type> type = parameter->find_child<Type>();
-      GEN_ERROR_COND(!type, target_function, "Failed to get function argument type.");
+	Size i = 1;
+	for (const Ref<Parameter> &parameter : target_function->parameters()->find_children<Parameter>()) {
+		Ref<Type> type = parameter->find_child<Type>();
+		GEN_ERROR_COND(!type, target_function, "Failed to get function argument type.");
+		type = qualify(type, p_target_class);
 
-      Ref<Identifier> identifier = parameter->find_child<Identifier>();
-      String name = identifier ? "p_" + identifier->name : format("p_param_%d", i);
+		Ref<Identifier> identifier = parameter->find_child<Identifier>();
+		String name = identifier ? "p_" + identifier->name : format("p_param_%d", i);
 
-      arguments->build_child<Argument>().with_child(build_property_info_defaults(type, name, DEFAULTS_SIGNAL_ARGUMENT));
+		arguments->build_child<Argument>().with_child(build_property_info_defaults(type, name, DEFAULTS_SIGNAL_ARGUMENT));
 
-      func_parameters->build_child<Parameter>().with_children({
-          type->clone(),
-          build<Identifier>(name),
-      });
+		func_parameters->build_child<Parameter>().with_children({
+				type->clone(),
+				build<Identifier>(name),
+		});
 
-      emit_arguments->build_child<Argument>().with_children({
-          build<Identifier>(name),
-      });
+		emit_arguments->build_child<Argument>().with_children({
+				build<Identifier>(name),
+		});
 
-      i += 1;
-    }
+		i += 1;
+	}
 
-    const Ref<Body> signal_names_body = get_signal_names_body(p_target_class, p_generated_body);
-    GEN_ERROR_COND(!signal_names_body, p_attribute, "Failed to get signal names body.");
-    signal_names_body->add_child(
-        Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
-            target_function->name().c_str(), target_function->name().c_str())));
+	const Ref<Body> signal_names_body = get_signal_names_body(p_target_class, p_generated_body);
+	GEN_ERROR_COND(!signal_names_body, p_attribute, "Failed to get signal names body.");
+	signal_names_body->add_child(
+			Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
+					target_function->name().c_str(), target_function->name().c_str())));
 
-    return GeneratorError::OK;
-  }
-
+	return GeneratorError::OK;
 }
+
+} //namespace GodotObjectCompiler

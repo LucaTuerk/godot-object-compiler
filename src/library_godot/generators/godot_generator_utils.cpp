@@ -86,6 +86,42 @@ String GodotGeneratorUtils::get_type_static() {
 	return "GodotGeneratorUtils";
 }
 
+String GodotGeneratorUtils::type_name_remove_usings(String p_typename) {
+	for (const String &_using : ExecutionContext::instance()->get_usings()) {
+		if (string_prefix(p_typename, ("%s::", _using.c_str()))) {
+			return p_typename.substr(_using.size() + 2);
+		}
+	}
+	return p_typename;
+}
+
+Ref<Type> GodotGeneratorUtils::qualify(const Ref<Type> &p_type, const Ref<Namespace> &p_from_namespace) {
+	Ref<Type> result = p_type->clone<Type>();
+	Ref<TemplateArguments> template_arguments = result->find_child<TemplateArguments>();
+	if (template_arguments) {
+		Ref<TemplateArguments> replacement_arguments = node_new<TemplateArguments>();
+		for (const Ref<Node> &argument : *template_arguments) {
+			if (Ref<Type> type = argument->as<Type>(); type) {
+				replacement_arguments->add_child(qualify(type, p_from_namespace));
+			} else {
+				replacement_arguments->add_child(argument);
+			}
+		}
+		result->replace_child(template_arguments, replacement_arguments);
+	}
+
+	Ref<Identifier> identifier = result->find_child<Identifier>();
+
+	Ref<Node> type_data = ExecutionContext::instance()->get_type_db()->get_type_data(p_type, p_from_namespace);
+	Ref<NamedContext> named = type_data ? type_data->as<NamedContext>() : nullptr;
+	if (named) {
+		result->replace_child(identifier, node_new<Identifier>(named->qualified_name()));
+	} else {
+		result->replace_child(identifier, node_new<Identifier>(p_type->name()));
+	}
+	return result;
+}
+
 Ref<Type> GodotGeneratorUtils::const_ref(const String &p_type_name) {
 	return build<Type>().with_children({ build<Const>(), build<Identifier>(p_type_name), build<Reference>() });
 }
@@ -754,16 +790,16 @@ bool GodotGeneratorUtils::type_is_variant_type(
 	UNUSED(p_from_namespace);
 
 	ensure_type_dicts_initialized();
-	return _type_to_variant_type.find(p_target_type->type_name_unmodified()) != _type_to_variant_type.end();
+	String type_name = type_name_remove_usings(p_target_type->type_name_unmodified());
+	return _type_to_variant_type.find(type_name) != _type_to_variant_type.end();
 }
 
 bool GodotGeneratorUtils::type_is_primitive_type(const Ref<Type> &p_target_type) {
 	String variant_type;
 	if (get_variant_type_from_type(p_target_type, variant_type)) {
-
 		if (variant_type == AssumedParameterValues::VariantTypeInt() ||
-			variant_type == AssumedParameterValues::VariantTypeFloat() ||
-			variant_type == AssumedParameterValues::VariantTypeBool()) {
+				variant_type == AssumedParameterValues::VariantTypeFloat() ||
+				variant_type == AssumedParameterValues::VariantTypeBool()) {
 			return true;
 		}
 	}
@@ -772,12 +808,12 @@ bool GodotGeneratorUtils::type_is_primitive_type(const Ref<Type> &p_target_type)
 
 bool GodotGeneratorUtils::get_variant_type_from_type(const Ref<Type> &p_target_type, String &p_variant_type) {
 	ensure_type_dicts_initialized();
-	if (auto itr = _type_to_variant_type.find(p_target_type->type_name_unmodified());
+	String type_name = type_name_remove_usings(p_target_type->type_name_unmodified());
+	if (auto itr = _type_to_variant_type.find(type_name);
 			itr != _type_to_variant_type.end()) {
 		p_variant_type = itr->second;
 		return true;
 	}
-
 	p_variant_type = "";
 	return false;
 }
