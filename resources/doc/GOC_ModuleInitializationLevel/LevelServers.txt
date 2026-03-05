@@ -1,1 +1,1 @@
-No documentation available
+Register this class in the MODULE_INITIALIZATION_LEVEL_SERVERS step.

@@ -40,7 +40,7 @@ html_theme_options = {
     # if we have a html_logo below, this shows /only/ the logo with no title text
     "logo_only": True,
     # Collapse navigation (False makes it tree-like)
-    "collapse_navigation": True,
+    "collapse_navigation": False,
     # Remove version and language picker beneath the title
     "version_selector": False,
     "language_selector": False,

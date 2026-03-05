@@ -1,1 +1,2 @@
-No documentation available
+Do not register this class. Custom registration code needs to be added for this class to be available
+in engine.

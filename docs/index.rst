@@ -39,4 +39,3 @@ generated code.
     :maxdepth: 3
 
     cli/index
-

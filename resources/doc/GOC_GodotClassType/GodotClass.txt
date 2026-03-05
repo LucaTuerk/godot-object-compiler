@@ -1,1 +1,1 @@
-No documentation available
+Register this class using the GDREGISTER_CLASS macro. This is the default value.

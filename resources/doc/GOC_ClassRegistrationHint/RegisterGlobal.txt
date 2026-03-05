@@ -1,2 +1,0 @@
-The GOC generator create registration and deregistration code
-to make this class available globally in the Godot editor.
