@@ -1,1 +1,1 @@
-No documentation available
+Register this class using the GDREGISTER_VIRTUAL_CLASS macro.
