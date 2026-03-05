@@ -17,6 +17,8 @@
 #include "purged local file path"
 #include <godot_cpp/classes/multiplayer_api.hpp>
 #include <godot_cpp/classes/multiplayer_peer.hpp>
+
+
 void ExampleClass::_bind_methods () 
 {
   BIND_ENUM_CONSTANT (REGULAR_VALUE_A) ;
@@ -26,7 +28,7 @@ void ExampleClass::_bind_methods ()
   BIND_BITFIELD_FLAG (FLAG_VALUE_A) ;
   BIND_BITFIELD_FLAG (FLAG_VALUE_B) ;
   BIND_BITFIELD_FLAG (FLAG_VALUE_C) ;
-  ADD_SIGNAL (MethodInfo ("something_happened", PropertyInfo (Variant::INT, "p_p_param", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT))) ;
+  ADD_SIGNAL (MethodInfo ("something_happened", PropertyInfo (Variant::INT, "p_param", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT))) ;
   ClassDB::bind_method (D_METHOD ("function", "p_node"), &ExampleClass::function) ;
   GDVIRTUAL_BIND (_virtual_function, "p_node") ;
   ClassDB::bind_method (D_METHOD ("virtual_function", "p_node"), &ExampleClass::_virtual_function) ;
@@ -72,30 +74,30 @@ void ExampleClass::_get_property_list (List<PropertyInfo> * p_list) const
   p_list->push_back (PropertyInfo (Variant::INT, "enum_property", PROPERTY_HINT_ENUM, "Regular Value A:0,Regular Value B:1,Regular Value C:2", PROPERTY_USAGE_DEFAULT)) ;
   p_list->push_back (PropertyInfo (Variant::INT, "flags_property", PROPERTY_HINT_FLAGS, "Flag None:0,Flag Value A:1,Flag Value B:2,Flag Value C:4", PROPERTY_USAGE_DEFAULT)) ;
 }
-void ExampleClass::something_happened (int p_p_param) 
+void ExampleClass::something_happened (int p_param) 
 {
-  emit_signal ("something_happened", p_p_param) ;
+  emit_signal ("something_happened", p_param) ;
 }
-void ExampleClass::_virtual_function (Node * p_node) 
+void ExampleClass::_virtual_function (godot::Node * p_node) 
 {
   if(! GDVIRTUAL_CALL (_virtual_function, p_node))
   {
     return virtual_function (p_node) ;
   }
 }
-Ref <Resource> ExampleClass::get_resource () const 
+godot::Ref <godot::Resource> ExampleClass::get_resource () const 
 {
   return resource;
 }
-void ExampleClass::set_resource (const Ref <Resource> & p_resource) 
+void ExampleClass::set_resource (const godot::Ref <godot::Resource> & p_resource) 
 {
   resource = p_resource;
 }
-TypedDictionary <int, Resource> ExampleClass::get_resources () const 
+godot::TypedDictionary <int, godot::Resource> ExampleClass::get_resources () const 
 {
   return resources;
 }
-void ExampleClass::set_resources (const TypedDictionary <int, Resource> & p_resources) 
+void ExampleClass::set_resources (const godot::TypedDictionary <int, godot::Resource> & p_resources) 
 {
   resources = p_resources;
 }

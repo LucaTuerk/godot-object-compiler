@@ -93,10 +93,10 @@ Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
 	for (const Ref<Parameter> &parameter : target_function->parameters()->find_children<Parameter>()) {
 		Ref<Type> type = parameter->find_child<Type>();
 		GEN_ERROR_COND(!type, target_function, "Failed to get function argument type.");
-		type = qualify(type, p_target_class);
+		type = type->qualified();
 
 		Ref<Identifier> identifier = parameter->find_child<Identifier>();
-		String name = identifier ? "p_" + identifier->name : format("p_param_%d", i);
+		String name = identifier ? identifier->name : format("p_param_%d", i);
 
 		arguments->build_child<Argument>().with_child(build_property_info_defaults(type, name, DEFAULTS_SIGNAL_ARGUMENT));
 

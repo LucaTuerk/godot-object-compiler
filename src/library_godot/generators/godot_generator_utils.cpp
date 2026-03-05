@@ -88,38 +88,11 @@ String GodotGeneratorUtils::get_type_static() {
 
 String GodotGeneratorUtils::type_name_remove_usings(String p_typename) {
 	for (const String &_using : ExecutionContext::instance()->get_usings()) {
-		if (string_prefix(p_typename, ("%s::", _using.c_str()))) {
+		if (string_prefix(p_typename, format("%s::", _using.c_str()))) {
 			return p_typename.substr(_using.size() + 2);
 		}
 	}
 	return p_typename;
-}
-
-Ref<Type> GodotGeneratorUtils::qualify(const Ref<Type> &p_type, const Ref<Namespace> &p_from_namespace) {
-	Ref<Type> result = p_type->clone<Type>();
-	Ref<TemplateArguments> template_arguments = result->find_child<TemplateArguments>();
-	if (template_arguments) {
-		Ref<TemplateArguments> replacement_arguments = node_new<TemplateArguments>();
-		for (const Ref<Node> &argument : *template_arguments) {
-			if (Ref<Type> type = argument->as<Type>(); type) {
-				replacement_arguments->add_child(qualify(type, p_from_namespace));
-			} else {
-				replacement_arguments->add_child(argument);
-			}
-		}
-		result->replace_child(template_arguments, replacement_arguments);
-	}
-
-	Ref<Identifier> identifier = result->find_child<Identifier>();
-
-	Ref<Node> type_data = ExecutionContext::instance()->get_type_db()->get_type_data(p_type, p_from_namespace);
-	Ref<NamedContext> named = type_data ? type_data->as<NamedContext>() : nullptr;
-	if (named) {
-		result->replace_child(identifier, node_new<Identifier>(named->qualified_name()));
-	} else {
-		result->replace_child(identifier, node_new<Identifier>(p_type->name()));
-	}
-	return result;
 }
 
 Ref<Type> GodotGeneratorUtils::const_ref(const String &p_type_name) {

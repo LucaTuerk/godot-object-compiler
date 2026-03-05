@@ -36,7 +36,6 @@
 #include "godot_function_generator.h"
 
 #include "godot_generator_utils.h"
-#include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library_godot/assumptions.h"
 
@@ -156,7 +155,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 
 	Ref<Type> function_type = p_target_function->type();
 	GEN_ERROR_COND(!function_type, p_attribute, "Failed to get function type.");
-	function_type = GodotGeneratorUtils::qualify(function_type, p_target_class);
+	function_type = function_type->qualified();
 
 	GEN_ERROR_COND(!p_target_function->parameters(), p_target_function, "Failed to get target function parameters.")
 
@@ -237,7 +236,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
       for (const Ref<Parameter>& parameter : p_target_function->parameters()->find_children<Parameter>()) {
       	Ref<Type> parameter_type = parameter->type();
       	GEN_ERROR_COND(!parameter_type, p_attribute, "Failed to get paramter type.");
-      	parameter_type = GodotGeneratorUtils::qualify(parameter_type, p_target_class);
+      	parameter_type = parameter_type->qualified();
 
         func_parameters->build_child<Parameter>().with_children({
           parameter_type->clone(),
@@ -283,7 +282,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 	for (const Ref<Parameter> &parameter : p_target_function->parameters()->find_children<Parameter>()) {
 		Ref<Type> parameter_type = parameter->type();
 		GEN_ERROR_COND(!parameter_type, p_target_function, "Failed to get parameter type.");
-		parameter_type = GodotGeneratorUtils::qualify(parameter_type, p_target_class);
+		parameter_type = parameter_type->qualified();
 
 		arguments->build_child<Argument>().with_child<Identifier>(parameter_type->type_name_unmodified_ptr());
 		bind_arguments->build_child<Argument>().with_child(Output::StringLiteral(parameter->name()));

@@ -58,8 +58,6 @@ String get_type_static();
 
 String type_name_remove_usings(String p_typename);
 
-Ref<Type> qualify(const Ref<Type> &p_type, const Ref<Namespace> &p_from_namespace);
-
 Ref<Type> const_ref(const String &p_type_name);
 
 Ref<Function> bind_method(const String &p_class_name, const String &p_method_name,
