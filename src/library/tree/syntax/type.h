@@ -57,7 +57,11 @@ public:
 	LAZY(Type, String, type_name_unmodified_ptr);
 	LAZY(Type, bool, is_template_type);
 	LAZY(Type, Size, template_argument_count);
+	LAZY(Type, Ref<Type>, qualified);
 	LAZY(Type, Ref<TemplateArguments>, template_arguments);
+
+private:
+	bool is_qualified;
 };
 
 class PlaceholderType : public Node {

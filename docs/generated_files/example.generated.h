@@ -20,6 +20,10 @@
 #undef GOC_FILE_ID
 #define GOC_FILE_ID() 13677053894255092273 
  
+
+#include <godot_cpp/core/binder_common.hpp>
+#include <godot_cpp/core/gdvirtual.gen.inc>
+
 #define GOC_GENERATED_11_13677053894255092273() GDCLASS (ExampleClass, Node) ;\
 public:\
 static void _bind_methods () ;\
@@ -46,9 +50,9 @@ struct SignalNames \
 Callable function_callable{this, "function"};\
 Callable virtual_function_callable{this, "virtual_function"};\
 Callable rpc_function_callable{this, "rpc_function"};\
-Ref <Resource> get_resource () const ;\
-void set_resource (const Ref <Resource> & p_resource) ;\
-TypedDictionary <int, Resource> get_resources () const ;\
+godot::Ref <godot::Resource> get_resource () const ;\
+void set_resource (const godot::Ref <godot::Resource> & p_resource) ;\
+godot::TypedDictionary <int, godot::Resource> get_resources () const ;\
 float get_range () const ;\
 void set_range (const float & p_range) ;\
 int get_enum_property () const ;\
@@ -58,8 +62,8 @@ void set_flags_property (int p_flags_property) ;\
 protected:\
 private:\
 void _virtual_function (Node * p_node) ;\
-GDVIRTUAL1 (_virtual_function, Node *) ;\
-void set_resources (const TypedDictionary <int, Resource> & p_resources) ; 
+GDVIRTUAL1 (_virtual_function, godot::Node *) ;\
+void set_resources (const godot::TypedDictionary <int, godot::Resource> & p_resources) ; 
  
 
 #define GOC_GENERATED_59_13677053894255092273() VARIANT_ENUM_CAST (ExampleClass::Regular) ;\

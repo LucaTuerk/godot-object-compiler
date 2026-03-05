@@ -86,6 +86,15 @@ String GodotGeneratorUtils::get_type_static() {
 	return "GodotGeneratorUtils";
 }
 
+String GodotGeneratorUtils::type_name_remove_usings(String p_typename) {
+	for (const String &_using : ExecutionContext::instance()->get_usings()) {
+		if (string_prefix(p_typename, format("%s::", _using.c_str()))) {
+			return p_typename.substr(_using.size() + 2);
+		}
+	}
+	return p_typename;
+}
+
 Ref<Type> GodotGeneratorUtils::const_ref(const String &p_type_name) {
 	return build<Type>().with_children({ build<Const>(), build<Identifier>(p_type_name), build<Reference>() });
 }
@@ -754,16 +763,16 @@ bool GodotGeneratorUtils::type_is_variant_type(
 	UNUSED(p_from_namespace);
 
 	ensure_type_dicts_initialized();
-	return _type_to_variant_type.find(p_target_type->type_name_unmodified()) != _type_to_variant_type.end();
+	String type_name = type_name_remove_usings(p_target_type->type_name_unmodified());
+	return _type_to_variant_type.find(type_name) != _type_to_variant_type.end();
 }
 
 bool GodotGeneratorUtils::type_is_primitive_type(const Ref<Type> &p_target_type) {
 	String variant_type;
 	if (get_variant_type_from_type(p_target_type, variant_type)) {
-
 		if (variant_type == AssumedParameterValues::VariantTypeInt() ||
-			variant_type == AssumedParameterValues::VariantTypeFloat() ||
-			variant_type == AssumedParameterValues::VariantTypeBool()) {
+				variant_type == AssumedParameterValues::VariantTypeFloat() ||
+				variant_type == AssumedParameterValues::VariantTypeBool()) {
 			return true;
 		}
 	}
@@ -772,12 +781,12 @@ bool GodotGeneratorUtils::type_is_primitive_type(const Ref<Type> &p_target_type)
 
 bool GodotGeneratorUtils::get_variant_type_from_type(const Ref<Type> &p_target_type, String &p_variant_type) {
 	ensure_type_dicts_initialized();
-	if (auto itr = _type_to_variant_type.find(p_target_type->type_name_unmodified());
+	String type_name = type_name_remove_usings(p_target_type->type_name_unmodified());
+	if (auto itr = _type_to_variant_type.find(type_name);
 			itr != _type_to_variant_type.end()) {
 		p_variant_type = itr->second;
 		return true;
 	}
-
 	p_variant_type = "";
 	return false;
 }

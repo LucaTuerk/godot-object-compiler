@@ -137,8 +137,8 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate_default_attribute_argume
 	} else {
 		GEN_ERROR(p_attribute, "Failed to get target field or custom bind for GodotProperty attribute.");
 	}
-
 	GEN_ERROR_COND(!property_type, p_attribute, "Could not get property type.");
+	property_type = property_type->qualified();
 
 	const String property_type_name = property_type->type_name();
 	GEN_ERROR_COND(property_type_name.empty(), p_attribute, "Invalid type name for target property.");
@@ -209,11 +209,13 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 		bind_getter = custom_bind->getter->get_previous_sibling<GodotFunctionAttribute>() == nullptr;
 		bind_setter = custom_bind->setter->get_previous_sibling<GodotFunctionAttribute>() == nullptr;
 	}
+	property_type = property_type->qualified();
 
 	GEN_ERROR_COND(property_name.empty(), p_attribute, "Could not get property name.");
 	GEN_ERROR_COND(!property_type, p_attribute, "Could not get property type.");
 
 	const String type_name = property_type->type_name();
+	GEN_ERROR_COND(type_name.empty(), p_attribute, "Invalid empty type name.");
 
 	Ref<Type> ref_inner;
 	Ref<Enum> enum_object;

@@ -318,7 +318,7 @@ Ref<Attribute> TypeDB::get_type_attribute(const String &p_qualified_name, const 
 }
 
 Ref<Node> TypeDB::get_type_data(const Ref<Type> &type, const Ref<Namespace> &from_namespace) {
-	return get_type_data(type->qualified_name(), type->template_argument_count(), from_namespace);
+	return get_type_data(type->name(), type->template_argument_count(), from_namespace);
 }
 
 String TypeDB::mangle_name(const String &qualified_name, Size template_parameter_count) {
