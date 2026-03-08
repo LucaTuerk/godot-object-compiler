@@ -185,11 +185,10 @@ Ref<T> TypeDB::get_type_attribute(const Ref<Type> &type, const Ref<Namespace> &f
 
 template <typename T>
 AssumptionState TypeDB::validate_t(Assumption<AssumeType<T>> &type_assumption) {
-	AssumeType<T>& value = UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(type_assumption);
+	AssumeType<T> &value = UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(type_assumption);
 	Ref<T> result = get_type_data<T>(
-		value.name,
-		value.template_parameter_count
-	);
+			value.name,
+			value.template_parameter_count);
 
 	if (!result) {
 		return STATE_INVALID;

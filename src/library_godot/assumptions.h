@@ -173,6 +173,6 @@ inline Assumption<AssumeType<Class>> PropertyInfo{
 
 bool validate_assumptions();
 
-} //namespace AssumedGodotTypesz
+} //namespace AssumedGodotTypes
 
 } //namespace GodotObjectCompiler

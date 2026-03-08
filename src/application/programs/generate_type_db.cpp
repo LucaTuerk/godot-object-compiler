@@ -101,7 +101,7 @@ Ref<ProgramError> GenerateTypeDB::run(ApplicationContext &p_context) {
 						}
 					} else {
 						PRINT_VERBOSE("TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
-						node->header = string_replace(file, format("%s/", include_path.c_str()), "");
+						node->header = header_path(include_path, file);
 						ExecutionContext::instance()->get_type_db()->save_type_data(node, file);
 					}
 				}

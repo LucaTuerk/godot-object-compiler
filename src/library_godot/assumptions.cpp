@@ -63,6 +63,7 @@ bool validate_assumptions() {
 	success &= GDVIRTUAL_CALL.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= GDVIRTUAL_BIND.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= BIND_ENUM_CONSTANT.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= BIND_BITFIELD_FLAG.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= VARIANT_ENUM_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= VARIANT_BITFIELD_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= MultiplayerAPIRPCMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;

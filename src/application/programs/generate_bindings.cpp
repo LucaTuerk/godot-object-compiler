@@ -244,8 +244,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			result.uninitialize = unregister_body;
 			result.startup = startup;
 			result.shutdown = shutdown;
-			result.header_includes = header_includes;
-			result.source_includes = source_includes;
+			result.generated_global = global_generated;
 
 			for (const Ref<Type>& type : target_class->find_children<Type>(true)) {
 				String header;

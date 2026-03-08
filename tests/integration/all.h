@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "enums.h"
 #include "functions.h"
 #include "godot_function.h"
 #include "invalid_properties.h"
