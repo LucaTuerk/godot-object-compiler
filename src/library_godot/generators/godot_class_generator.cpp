@@ -134,7 +134,7 @@ Ref<GeneratorError> GodotClassGenerator::do_generate(Ref<Class> p_target_class, 
 
     // clang-format off
     Ref<Function> gd_class = build<Function>().with_children({
-      build<Identifier>(AssumedGodotTypes::GDCLASS().type->qualified_name()),
+      build<Identifier>(AssumedGodotTypes::GDCLASS().type->name()),
       build<Arguments>().with_children({
         build<Argument>().with_child(Output::Text(p_target_class->name())),
         build<Argument>().with_child(Output::Text(bases[0])),

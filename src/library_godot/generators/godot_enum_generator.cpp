@@ -67,15 +67,15 @@ Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, R
     GEN_ERROR_COND(!enum_options_identifier, p_attribute, "Invalid enum options argument. No identifier found");
 
     String cast_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
-        ? AssumedGodotTypes::VARIANT_ENUM_CAST().type->qualified_name()
+        ? AssumedGodotTypes::VARIANT_ENUM_CAST().type->name()
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
-        ? AssumedGodotTypes::VARIANT_BITFIELD_CAST().type->qualified_name()
+        ? AssumedGodotTypes::VARIANT_BITFIELD_CAST().type->name()
         : "";
 
     String bind_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
-        ? AssumedGodotTypes::BIND_ENUM_CONSTANT().type->qualified_name()
+        ? AssumedGodotTypes::BIND_ENUM_CONSTANT().type->name()
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
-        ? AssumedGodotTypes::BIND_BITFIELD_FLAG().type->qualified_name()
+        ? AssumedGodotTypes::BIND_BITFIELD_FLAG().type->name()
         : "";
 
     GEN_ERROR_COND(cast_macro.empty() || bind_macro.empty(), p_attribute, "Unknown enum options name");

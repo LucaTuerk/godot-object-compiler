@@ -229,7 +229,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 
     Ref<Arguments> bind_arguments;
     Ref<Function> gdvirtual_bind = build<Function>().with_children({
-      build<Identifier>(AssumedGodotTypes::GDVIRTUAL_BIND().type->qualified_name()),
+      build<Identifier>(AssumedGodotTypes::GDVIRTUAL_BIND().type->name()),
         build_ref<Arguments>(&bind_arguments).with_child(
           build<Argument>().with_child<Identifier>(virtual_name)
         )
