@@ -36,7 +36,6 @@
 #include "godot_enum_generator.h"
 
 #include "godot_generator_utils.h"
-#include "library/tree/predicates.h"
 #include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler {
@@ -55,30 +54,30 @@ Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, R
   	Ref<Context> p_generated_sources = r_result.generated_sources;
   	Ref<Context> p_generated_global = r_result.generated_global;
 
-    Ref<Node> target_node = p_attribute->resolve_target();
+	const Ref<Node> target_node = p_attribute->resolve_target();
     GEN_ERROR_COND(!target_node, p_target_class, "Could not find target for Enum marco.");
 
-    Ref<Enum> target_enum = target_node->as<Enum>();
+	const Ref<Enum> target_enum = target_node->as<Enum>();
     GEN_ERROR_COND(
         !target_enum, p_target_class, "Resolved target for enum macro is not an enum, but " + target_node->get_type());
 
-    Ref<Identifier> enum_options_identifier =
+	const Ref<Identifier> enum_options_identifier =
         p_attribute->find_chain<Identifier, Arguments, EnumGeneratorOptionsArgument>();
     GEN_ERROR_COND(!enum_options_identifier, p_attribute, "Invalid enum options argument. No identifier found");
 
-    String cast_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
-        ? AssumedGodotTypes::VARIANT_ENUM_CAST().type->name()
+	const Ref<Define> cast_define = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
+        ? AssumedGodotTypes::VARIANT_ENUM_CAST().type
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
-        ? AssumedGodotTypes::VARIANT_BITFIELD_CAST().type->name()
-        : "";
+        ? AssumedGodotTypes::VARIANT_BITFIELD_CAST().type
+        : nullptr;
 
-    String bind_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
-        ? AssumedGodotTypes::BIND_ENUM_CONSTANT().type->name()
+	const Ref<Define> bind_define = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
+        ? AssumedGodotTypes::BIND_ENUM_CONSTANT().type
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
-        ? AssumedGodotTypes::BIND_BITFIELD_FLAG().type->name()
-        : "";
+        ? AssumedGodotTypes::BIND_BITFIELD_FLAG().type
+        : nullptr;
 
-    GEN_ERROR_COND(cast_macro.empty() || bind_macro.empty(), p_attribute, "Unknown enum options name");
+    GEN_ERROR_COND(cast_define == nullptr || bind_define == nullptr, p_attribute, "Unknown enum options name");
 
     if (p_target_class) {
       const Ref<Body> bind_methods_body =
@@ -87,7 +86,7 @@ Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, R
       for (const String& name : target_enum->value_names()) {
         // clang-format off
         bind_methods_body->build_child<Function>().with_children({
-          build<Identifier>(bind_macro),
+          build<Identifier>(bind_define->name()),
           build<Arguments>().with_child(
             build<Argument>().with_child(
               Output::Text(name)
@@ -100,7 +99,7 @@ Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, R
 
     // clang-format off
     p_generated_global->build_child<Function>().with_children({
-      build<Identifier>(cast_macro),
+      build<Identifier>(cast_define->name()),
       build<Arguments>().with_child(
         build<Argument>().with_child(
           Output::Text(target_enum->qualified_name())
@@ -109,6 +108,8 @@ Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, R
     }).with_child(Output::Semicolon());
     // clang-format on
 
+  	r_result.header_includes.insert(cast_define->header);
+  	r_result.source_includes.insert(bind_define->header);
     return GeneratorError::OK;
   }
 

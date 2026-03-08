@@ -124,7 +124,7 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> p_target_clas
 		Ref<GeneratorError> error = generate_rpc(p_target_class, target_function, rpc_mode_argument,
 				p_attribute->arguments()->find_child<GodotRpcTransferModeArgument>(),
 				p_attribute->arguments()->find_child<GodotRpcSyncArgument>(),
-				p_attribute->arguments()->find_child<GodotRpcChannelArgument>(), p_generated_body, p_generated_sources);
+				p_attribute->arguments()->find_child<GodotRpcChannelArgument>(), r_result);
 
 		if (error != GeneratorError::OK) {
 			return error;
@@ -322,8 +322,9 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(const Ref<Class> &p_target_class,
 		const Ref<Function> &p_target_function, const Ref<GodotRpcModeArgument> &p_rpc_mode,
 		const Ref<GodotRpcTransferModeArgument> &p_transport_mode, const Ref<GodotRpcSyncArgument> &p_sync,
-		const Ref<GodotRpcChannelArgument> &p_channel, const Ref<Context> &p_generated_body,
-		const Ref<Context> &p_generated_sources) {
+		const Ref<GodotRpcChannelArgument> &p_channel, ClassGeneratorResult &r_result) {
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
 	PANIC_COND(!p_target_class, "Target class not found");
 	PANIC_COND(!p_target_function, "Target function not found");
 	GEN_ERROR_COND(!p_rpc_mode, p_target_function, "Target rpc mode not found");
@@ -341,9 +342,9 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(const Ref<Class> &p_tar
 	// clang-format off
     condition_body->add_child(
       build<Body>().with_children({
-        Output::Text("Dictionary opts;"),
-        Output::FmtText("opts[\"rpc_mode\"] = MultiplayerAPI::%s;", p_rpc_mode->godot_rpc_mode().c_str()),
-        Output::FmtText("opts[\"transfer_mode\"] = MultiplayerPeer::%s;", p_transport_mode->transfer_mode().c_str()),
+        Output::FmtText("%s opts;", AssumedGodotTypes::Dictionary().type->qualified_name().c_str()),
+        Output::FmtText("opts[\"rpc_mode\"] = %s::%s;", AssumedGodotTypes::MultiplayerAPI().type->qualified_name().c_str(), p_rpc_mode->godot_rpc_mode().c_str()),
+        Output::FmtText("opts[\"transfer_mode\"] = %s::%s;", AssumedGodotTypes::MultiplayerPeer().type->qualified_name().c_str(), p_transport_mode->transfer_mode().c_str()),
         Output::FmtText("opts[\"call_local\"] = %s;", (p_sync->rpc_sync() == AssumedParameterValues::CallLocal() ? "true" : "false")),
         Output::FmtText("opts[\"channel\"] = %d;", p_channel->channel()),
         Output::FmtText("rpc_config(\"%s\", opts);", p_target_function->name().c_str()),
@@ -351,6 +352,9 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(const Ref<Class> &p_tar
     );
 	// clang-format on
 
+	r_result.source_includes.insert(AssumedGodotTypes::Dictionary().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::MultiplayerAPI().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::MultiplayerPeer().type->header);
 	return GeneratorError::OK;
 }
 

@@ -159,6 +159,7 @@ Ref<GeneratorError> GodotClassGenerator::do_generate(Ref<Class> p_target_class, 
     get_function_names_body(p_target_class, p_generated_body);
     get_signal_names_body(p_target_class, p_generated_body);
 
+  	r_result.header_includes.insert(AssumedGodotTypes::GDCLASS().type->header);
     return GeneratorError::OK;
   }
 

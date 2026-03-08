@@ -214,8 +214,8 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		String in_generated_path = path_concat(p_context.paths_generated, relative_path);
 		String in_generated_base = path_base(in_generated_path);
 		String in_generated_stem = path_stem(in_generated_path);
-		String source_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.cpp");
-		String header_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
+		String gen_source_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.cpp");
+		String gen_header_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
 
 		if (!directory_exits(in_generated_base)) {
 			create_dir_recursive(in_generated_base);
@@ -246,7 +246,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			result.shutdown = shutdown;
 			result.generated_global = global_generated;
 
-			for (const Ref<Type>& type : target_class->find_children<Type>(true)) {
+			for (const Ref<Type> &type : target_class->find_children<Type>(true)) {
 				String header;
 				if (GodotGeneratorUtils::get_type_header(type, target_class, header)) {
 					source_includes.insert(header);
@@ -334,20 +334,17 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			continue;
 		}
 
-		FileWriter source_writer = FileWriter::generated(source_path, input_file);
-		FileWriter header_writer = FileWriter::generated(header_path, input_file);
+		FileWriter source_writer = FileWriter::generated(gen_source_path, input_file);
+		FileWriter header_writer = FileWriter::generated(gen_header_path, input_file);
 
 		Output::Lines({ Output::PragmaOnce(),
 							  Output::Text("#undef GOC_FILE_ID"),
 							  Output::Define("GOC_FILE_ID", {}, file_id(input_file)),
-							  Output::SystemInclude("godot_cpp/core/binder_common.hpp"),
-							  Output::SystemInclude("godot_cpp/core/gdvirtual.gen.inc"),
+							  Output::Include("godot_object_compiler/macros.h"),
 							  Output::NewLine() })
 				->get_output(&header_writer);
 
-		Output::Lines({ Output::Include(input_file),
-							  Output::SystemInclude("godot_cpp/classes/multiplayer_api.hpp"),
-							  Output::SystemInclude("godot_cpp/classes/multiplayer_peer.hpp"),
+		Output::Lines({ Output::Include(header_path(*p_context.paths_root, input_file)),
 							  Output::NewLine() })
 				->get_output(&source_writer);
 

@@ -151,6 +151,14 @@ inline Assumption<AssumeType<Define>> VARIANT_BITFIELD_CAST{
 inline Assumption<AssumeType<Enum>> MultiplayerPeerTransferMode{ { "MultiplayerPeer::TransferMode" },
 	"Assume that an enum of name \"MultiplayerPeer::TransferMode\" exists in the TypeDB", ExecutionContext::instance()->get_type_db() };
 
+inline Assumption<AssumeType<Class>> MultiplayerAPI{
+	{ "MultiplayerAPI" }, "Assume that an class of name \"MultiplayerAPI\" exists in the TypeDB", ExecutionContext::instance()->get_type_db()
+};
+
+inline Assumption<AssumeType<Class>> MultiplayerPeer{
+	{ "MultiplayerPeer" }, "Assume that an class of name \"MultiplayerPeer\" exists in the TypeDB", ExecutionContext::instance()->get_type_db()
+};
+
 inline Assumption<AssumeType<Enum>> MultiplayerAPIRPCMode{
 	{ "MultiplayerAPI::RPCMode" }, "Assume that an enum of name \"MultiplayerAPI::RPCMode\" exists in the TypeDB", ExecutionContext::instance()->get_type_db()
 };

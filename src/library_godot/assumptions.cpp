@@ -66,6 +66,8 @@ bool validate_assumptions() {
 	success &= BIND_BITFIELD_FLAG.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= VARIANT_ENUM_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= VARIANT_BITFIELD_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= MultiplayerAPI.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= MultiplayerPeer.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= MultiplayerAPIRPCMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= MultiplayerPeerTransferMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= StringName.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
