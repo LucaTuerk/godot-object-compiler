@@ -36,6 +36,7 @@
 #include "godot_class_type.h"
 
 #include "library/core/string_utilities.h"
+#include "library/tree/syntax/define.h"
 #include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler {
@@ -61,11 +62,11 @@ namespace GodotObjectCompiler {
 
   Vector<String> GodotClassTypeParameterType::_value_names_lazy_get() {
     Vector<String> godot_macros = {
-        AssumedGodotTypes::GDREGISTER_CLASS().qualified_name,
-        AssumedGodotTypes::GDREGISTER_VIRTUAL_CLASS().qualified_name,
-        AssumedGodotTypes::GDREGISTER_ABSTRACT_CLASS().qualified_name,
-        AssumedGodotTypes::GDREGISTER_INTERNAL_CLASS().qualified_name,
-        AssumedGodotTypes::GDREGISTER_RUNTIME_CLASS().qualified_name,
+        AssumedGodotTypes::GDREGISTER_CLASS.unwrap().type->name(),
+        AssumedGodotTypes::GDREGISTER_VIRTUAL_CLASS.unwrap().type->name(),
+        AssumedGodotTypes::GDREGISTER_ABSTRACT_CLASS.unwrap().type->name(),
+        AssumedGodotTypes::GDREGISTER_INTERNAL_CLASS.unwrap().type->name(),
+        AssumedGodotTypes::GDREGISTER_RUNTIME_CLASS.unwrap().type->name(),
     };
 
     Vector<String> value_names = {"RegisterCustom"};

@@ -35,7 +35,6 @@
 
 #pragma once
 #include "library/core/core.h"
-#include "library/core/string_utilities.h"
 #include "library/tree/syntax/namespace.h"
 #include "library/tree/syntax/type.h"
 #include "library/type_db.h"
@@ -57,6 +56,8 @@ namespace GodotGeneratorUtils {
 String get_type_static();
 
 String type_name_remove_usings(String p_typename);
+
+bool get_type_header(Ref<Type> p_type, Ref<Namespace> p_from_namespace, String& r_header);
 
 Ref<Type> const_ref(const String &p_type_name);
 
@@ -84,6 +85,8 @@ Ref<Body> get_property_names_body(const Ref<Class> &p_target_class, const Ref<Co
 
 Ref<Body> get_signal_names_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body);
 
+Ref<Context> get_include_section(const Ref<Context>& p_target);
+
 Ref<Body> get_if_body(const Ref<Context> &p_target, const String &condition);
 
 Ref<GeneratorError> unzip_generated_body(const Ref<Context> &p_generated_body, Ref<Context> *r_public_members,
@@ -106,38 +109,6 @@ bool class_is_ref_counted_type(const Ref<Class> &p_target_class);
 bool class_is_godot_object_type(const Ref<Class> &p_target_class);
 
 bool class_is_variant_type(Ref<Class> p_target_class);
-
-template <typename T>
-bool type_is_assumed_template_type(
-		const Ref<Type> &p_target_type, AssumeType<T> p_assumed_type, Vector<Ref<Type>> &p_inner_types);
-
-template <typename T>
-bool type_is_assumed_template_type(
-		const Ref<Type> &p_target_type, AssumeType<T> p_assumed_type, Vector<Ref<Type>> &p_inner_types) {
-	p_inner_types = {};
-
-	String name = type_name_remove_usings(p_target_type->type_name_untemplated());
-	if (name != p_assumed_type.qualified_name) {
-		return false;
-	}
-
-	if (p_target_type->template_argument_count() != p_assumed_type.template_parameter_count) {
-		return false;
-	}
-
-	Ref<TemplateArguments> template_arguments = p_target_type->template_arguments();
-	auto types = template_arguments->find_children<Type>();
-
-	if (types.size() != p_assumed_type.template_parameter_count) {
-		return false;
-	}
-
-	for (const Ref<Type> &inner_type : types) {
-		p_inner_types.push_back(inner_type->clone()->as<Type>());
-	}
-
-	return true;
-}
 
 enum DefaultsUsage {
 	DEFAULTS_PROPERTY_BINDING,
@@ -192,6 +163,38 @@ Ref<Node> build_property_info(const Ref<GodotVariantTypeArgument> &p_variant_typ
 
 Ref<Node> build_property_info_defaults(
 		const Ref<Type> &p_type, const String &p_property_name, DefaultsUsage p_usage = DEFAULTS_PROPERTY_BINDING);
+
+template <typename T>
+bool type_is_assumed_template_type(
+		const Ref<Type> &p_target_type, AssumeType<T> p_assumed_type, Vector<Ref<Type>> &p_inner_types);
+
+template <typename T>
+bool type_is_assumed_template_type(
+		const Ref<Type> &p_target_type, AssumeType<T> p_assumed_type, Vector<Ref<Type>> &p_inner_types) {
+	p_inner_types = {};
+
+	String name = type_name_remove_usings(p_target_type->type_name_untemplated());
+	if (name != p_assumed_type.type->name()) {
+		return false;
+	}
+
+	if (p_target_type->template_argument_count() != p_assumed_type.type->template_parameter_count()) {
+		return false;
+	}
+
+	Ref<TemplateArguments> template_arguments = p_target_type->template_arguments();
+	auto types = template_arguments->find_children<Type>();
+
+	if (types.size() != p_assumed_type.type->template_parameter_count()) {
+		return false;
+	}
+
+	for (const Ref<Type> &inner_type : types) {
+		p_inner_types.push_back(inner_type->clone()->as<Type>());
+	}
+
+	return true;
+}
 
 }; //namespace GodotGeneratorUtils
 

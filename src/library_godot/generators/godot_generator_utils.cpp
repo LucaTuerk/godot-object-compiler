@@ -34,7 +34,6 @@
 /**************************************************************************/
 
 #include "library_godot/generators/godot_generator_utils.h"
-
 #include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
 #include "library/generator/generator.h"
@@ -93,6 +92,14 @@ String GodotGeneratorUtils::type_name_remove_usings(String p_typename) {
 		}
 	}
 	return p_typename;
+}
+bool GodotGeneratorUtils::get_type_header(Ref<Type> p_type, Ref<Namespace> p_from_namespace, String &r_header) {
+	if (Ref<NamedContext> type_data = ExecutionContext::instance()->get_type_db()->get_type_data<NamedContext>(p_type, p_from_namespace); type_data) {
+		r_header = type_data->header;
+		return !r_header.empty();
+	}
+	r_header = "";
+	return false;
 }
 
 Ref<Type> GodotGeneratorUtils::const_ref(const String &p_type_name) {
@@ -285,7 +292,10 @@ Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
       build<Parameters>().with_children({
         build<Parameter>().with_children({
          build<Type>().with_children({
-            build<Identifier>("List<PropertyInfo>"),
+            build<Identifier>(format("%s<%s>",
+            	AssumedGodotTypes::List().type->qualified_name().c_str(),
+            	AssumedGodotTypes::PropertyInfo().type->qualified_name().c_str()
+            	)),
            build<Pointer>()
             }),
         build<Identifier>("p_list")
@@ -300,8 +310,11 @@ Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
         build<Identifier>(property_list_name),
         build<Parameters>().with_children({
           build<Parameter>().with_children({
-           build<Type>().with_children({
-              build<Identifier>("List<PropertyInfo>"),
+          	build<Type>().with_children({
+			   build<Identifier>(format("%s<%s>",
+				   AssumedGodotTypes::List().type->qualified_name().c_str(),
+				   AssumedGodotTypes::PropertyInfo().type->qualified_name().c_str()
+				   )),
              build<Pointer>()
               }),
           build<Identifier>("p_list")
@@ -421,6 +434,15 @@ Ref<Body> GodotGeneratorUtils::get_signal_names_body(
 	return signal_names_body;
 }
 
+Ref<Context> GodotGeneratorUtils::get_include_section(const Ref<Context> &p_target) {
+	Ref<Context> include_section = p_target->find_descendant(BFS, NodePredicates::tag<Context>("includes"));
+	if (!include_section) {
+		include_section = Output::Lines({});
+		p_target->add_child(include_section);
+	}
+	return include_section;
+}
+
 Ref<Body> GodotGeneratorUtils::get_if_body(const Ref<Context> &p_target, const String &condition) {
 	Ref<Body> if_body = p_target->find_descendant(BFS, NodePredicates::tag<Body>(condition.c_str()));
 	if (!if_body) {
@@ -521,19 +543,19 @@ bool GodotGeneratorUtils::class_has_base_class(
 }
 
 bool GodotGeneratorUtils::class_is_node_type(const Ref<Class> &p_target_class) {
-	return class_has_base_class(p_target_class, AssumedGodotTypes::Node().qualified_name);
+	return class_has_base_class(p_target_class, AssumedGodotTypes::Node().type->qualified_name());
 }
 
 bool GodotGeneratorUtils::class_is_resource_type(const Ref<Class> &p_target_class) {
-	return class_has_base_class(p_target_class, AssumedGodotTypes::Resource().qualified_name);
+	return class_has_base_class(p_target_class, AssumedGodotTypes::Resource().type->qualified_name());
 }
 
 bool GodotGeneratorUtils::class_is_ref_counted_type(const Ref<Class> &p_target_class) {
-	return class_has_base_class(p_target_class, AssumedGodotTypes::RefCounted().qualified_name);
+	return class_has_base_class(p_target_class, AssumedGodotTypes::RefCounted().type->qualified_name());
 }
 
 bool GodotGeneratorUtils::class_is_godot_object_type(const Ref<Class> &p_target_class) {
-	return class_has_base_class(p_target_class, AssumedGodotTypes::Object().qualified_name);
+	return class_has_base_class(p_target_class, AssumedGodotTypes::Object().type->qualified_name());
 }
 
 bool GodotGeneratorUtils::get_defaults_for_type(const Ref<Type> &p_target_type,
@@ -730,8 +752,8 @@ bool GodotGeneratorUtils::type_is_godot_collection_type(
 		const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace) {
 	UNUSED(p_from_namespace);
 	Vector<Ref<Type>> inner_types;
-	return p_target_type->type_name_unmodified() == AssumedGodotTypes::Array().qualified_name ||
-			p_target_type->type_name_unmodified() == AssumedGodotTypes::Dictionary().qualified_name ||
+	return p_target_type->type_name_unmodified() == AssumedGodotTypes::Array().type->qualified_name() ||
+			p_target_type->type_name_unmodified() == AssumedGodotTypes::Dictionary().type->qualified_name() ||
 			type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedArray(), inner_types) ||
 			type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedDictionary(), inner_types);
 }

@@ -186,4 +186,12 @@ namespace GodotObjectCompiler {
     return result;
   }
 
-}
+  Size Class::_template_parameter_count_lazy_get() const {
+	Ref<TemplateParameters> template_parameters = find_child<TemplateParameters>();
+  	if (!template_parameters) {
+  		return 0;
+  	}
+  	return template_parameters->get_child_count();
+  }
+
+  } //namespace GodotObjectCompiler

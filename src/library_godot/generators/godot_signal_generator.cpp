@@ -40,8 +40,11 @@
 namespace GodotObjectCompiler {
 
 Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
-		Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-		Ref<Context> p_generated_global) {
+		Ref<GodotSignalAttribute> p_attribute, ClassGeneratorResult &r_result) {
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
+	Ref<Context> p_generated_global = r_result.generated_global;
+
 	UNUSED(p_generated_global);
 
 	using namespace GodotGeneratorUtils;

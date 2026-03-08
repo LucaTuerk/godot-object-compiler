@@ -50,8 +50,11 @@ namespace GodotObjectCompiler {
     return GeneratorError::OK;
   }
 
-  Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, Ref<GodotEnumAttribute> p_attribute,
-      Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) {
+Ref<GeneratorError> GodotEnumGenerator::do_generate(Ref<Class> p_target_class, Ref<GodotEnumAttribute> p_attribute, ClassGeneratorResult &r_result) {
+  	Ref<Context> p_generated_body = r_result.generated_body;
+  	Ref<Context> p_generated_sources = r_result.generated_sources;
+  	Ref<Context> p_generated_global = r_result.generated_global;
+
     Ref<Node> target_node = p_attribute->resolve_target();
     GEN_ERROR_COND(!target_node, p_target_class, "Could not find target for Enum marco.");
 
@@ -64,15 +67,15 @@ namespace GodotObjectCompiler {
     GEN_ERROR_COND(!enum_options_identifier, p_attribute, "Invalid enum options argument. No identifier found");
 
     String cast_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
-        ? AssumedGodotTypes::VARIANT_ENUM_CAST().qualified_name
+        ? AssumedGodotTypes::VARIANT_ENUM_CAST().type->qualified_name()
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
-        ? AssumedGodotTypes::VARIANT_BITFIELD_CAST().qualified_name
+        ? AssumedGodotTypes::VARIANT_BITFIELD_CAST().type->qualified_name()
         : "";
 
     String bind_macro = enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
-        ? AssumedGodotTypes::BIND_ENUM_CONSTANT().qualified_name
+        ? AssumedGodotTypes::BIND_ENUM_CONSTANT().type->qualified_name()
         : enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumFlags
-        ? AssumedGodotTypes::BIND_BITFIELD_FLAG().qualified_name
+        ? AssumedGodotTypes::BIND_BITFIELD_FLAG().type->qualified_name()
         : "";
 
     GEN_ERROR_COND(cast_macro.empty() || bind_macro.empty(), p_attribute, "Unknown enum options name");

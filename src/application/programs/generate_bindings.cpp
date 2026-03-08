@@ -121,7 +121,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
           build<Parameters>()
         .with_child(
             build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().qualified_name),
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
               build<Identifier>("p_level")
             })
           )
@@ -132,7 +132,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
           build<Parameters>()
         .with_child(
             build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().qualified_name),
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
               build<Identifier>("p_level")
             })
           )
@@ -151,7 +151,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
         build<Identifier>(register_method_name),
           build<Parameters>().with_child(
             build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().qualified_name),
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
               build<Identifier>("p_level")
             })
           ),
@@ -162,7 +162,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
         build<Identifier>(unregister_method_name),
           build<Parameters>().with_child(
             build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().qualified_name),
+              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
               build<Identifier>("p_level")
             })
           ),
@@ -180,8 +180,8 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		}
 
 		if (string_suffix(input_file, ".cpp")) {
-			String h_file = input_file.substr(0, input_file.size()-3) + "h";
-			String hpp_file = input_file.substr(0, input_file.size()-3)  + "hpp";
+			String h_file = input_file.substr(0, input_file.size() - 3) + "h";
+			String hpp_file = input_file.substr(0, input_file.size() - 3) + "hpp";
 			bool h_exists = file_exists(h_file);
 			bool hpp_exists = file_exists(hpp_file);
 			if (!h_exists && !hpp_exists) {
@@ -215,7 +215,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		String in_generated_base = path_base(in_generated_path);
 		String in_generated_stem = path_stem(in_generated_path);
 		String source_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.cpp");
-		String generated_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
+		String header_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
 
 		if (!directory_exits(in_generated_base)) {
 			create_dir_recursive(in_generated_base);
@@ -227,43 +227,32 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 		Vector<Pair<Ref<GeneratedBodyAttribute>, Ref<Context>>> generated_bodies;
 
-		struct Results {
-			String file_path;
-			Ref<Class> target_class;
-			Size generated_body_line;
-			Size generated_global_line;
-
-			Ref<Context> generated_body;
-			Ref<Context> generated_source;
-			Ref<Context> generated_global;
-
-			Ref<Context> initialize;
-			Ref<Context> uninitialize;
-			Ref<Context> startup;
-			Ref<Context> shutdown;
-		};
-
 		Ref<Context> initialize = node_new<Context>();
 		Ref<Context> uninitialize = node_new<Context>();
 		Ref<Context> startup = node_new<Context>();
 		Ref<Context> shutdown = node_new<Context>();
 		Ref<Context> global_generated = node_new<Context>();
+		HashSet<String> header_includes;
+		HashSet<String> source_includes;
 
-		Vector<Results> generate_results;
+		Vector<ClassGeneratorResult> generate_results;
 
 		for (const Ref<Class> &target_class : classes) {
 			PRINT_VERBOSE("Processing class \"%s\"", target_class->qualified_name().c_str());
-			Results results;
-			results.file_path = input_file;
-			results.target_class = target_class;
+			ClassGeneratorResult result{ input_file, target_class, header_includes, source_includes };
+			result.initialize = register_body;
+			result.uninitialize = unregister_body;
+			result.startup = startup;
+			result.shutdown = shutdown;
+			result.header_includes = header_includes;
+			result.source_includes = source_includes;
 
-			results.generated_global = global_generated;
-			results.generated_body = node_new<Context>();
-			results.generated_source = node_new<Context>();
-			results.initialize = register_body;
-			results.uninitialize = unregister_body;
-			results.startup = startup;
-			results.shutdown = shutdown;
+			for (const Ref<Type>& type : target_class->find_children<Type>(true)) {
+				String header;
+				if (GodotGeneratorUtils::get_type_header(type, target_class, header)) {
+					source_includes.insert(header);
+				}
+			}
 
 			auto generated_body_attribute = target_class->body()->find_child<GeneratedBodyAttribute>();
 			if (!generated_body_attribute) {
@@ -271,8 +260,8 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 				continue;
 			}
 
-			results.generated_body_line = generated_body_attribute->line;
-			results.generated_source->add_child(Output::NewLine());
+			result.generated_body_line = generated_body_attribute->line;
+			result.generated_sources->add_child(Output::NewLine());
 
 			Ref<Node> previous = target_class->get_previous_sibling();
 			if (!previous) {
@@ -295,21 +284,21 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			ClassGenerator::merge_default_attribute_arguments(class_attribute, class_default_values);
 
 			Ref<GeneratorError> class_gen_error = class_generator.generate(
-					target_class, class_attribute, results.generated_body, results.generated_source, results.generated_global);
+					target_class, class_attribute, result);
 
 			PROG_ERR_COND(class_gen_error != GeneratorError::OK, "Failed to generate class.");
 
 			Ref<GeneratorError> init_gen_error = class_generator.generate_initialization(
-					target_class, class_attribute, results.initialize, results.uninitialize);
+					target_class, class_attribute, result.initialize, result.uninitialize);
 
 			PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class initialization code.")
 
-			if (results.initialize->get_child_count() > 0 || results.uninitialize->get_child_count() > 0) {
+			if (result.initialize->get_child_count() > 0 || result.uninitialize->get_child_count() > 0) {
 				register_class_includes->add_child(Output::Include(input_file));
 			}
 
 			Ref<GeneratorError> start_gen_error =
-					class_generator.generate_startup(target_class, class_attribute, results.startup, results.shutdown);
+					class_generator.generate_startup(target_class, class_attribute, result.startup, result.shutdown);
 
 			PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class startup code.")
 
@@ -331,15 +320,14 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 
 							ClassGenerator::merge_default_attribute_arguments(attribute, default_values);
 
-							Ref<GeneratorError> attr_error = generator->generate(target_class, attribute, results.generated_body,
-									results.generated_source, results.generated_global);
+							Ref<GeneratorError> attr_error = generator->generate(target_class, attribute, result);
 
 							PROG_ERR_COND(attr_error, "Failed to generate attribute code.");
 						}
 					}
 				}
 			}
-			generate_results.push_back(results);
+			generate_results.push_back(result);
 		}
 
 		if (!ExecutionContext::instance()->file_modified(input_file)) {
@@ -348,42 +336,48 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		}
 
 		FileWriter source_writer = FileWriter::generated(source_path, input_file);
-		FileWriter generated_writer = FileWriter::generated(generated_path, input_file);
+		FileWriter header_writer = FileWriter::generated(header_path, input_file);
 
-		// clang-format off
-      Output::Lines({
-        Output::PragmaOnce(),
-        Output::Text("#undef GOC_FILE_ID"),
-        Output::Define("GOC_FILE_ID", {}, file_id(input_file)),
-      	Output::SystemInclude("godot_cpp/core/binder_common.hpp"),
-      	Output::SystemInclude("godot_cpp/core/gdvirtual.gen.inc"),
-      	Output::NewLine()
-      })->get_output(&generated_writer);
+		Output::Lines({ Output::PragmaOnce(),
+							  Output::Text("#undef GOC_FILE_ID"),
+							  Output::Define("GOC_FILE_ID", {}, file_id(input_file)),
+							  Output::SystemInclude("godot_cpp/core/binder_common.hpp"),
+							  Output::SystemInclude("godot_cpp/core/gdvirtual.gen.inc"),
+							  Output::NewLine() })
+				->get_output(&header_writer);
 
-      Output::Lines({
-        Output::Include(input_file),
-        Output::SystemInclude("godot_cpp/classes/multiplayer_api.hpp"),
-        Output::SystemInclude("godot_cpp/classes/multiplayer_peer.hpp"),
-      	Output::NewLine()
-      })->get_output(&source_writer);
-		// clang-format on
+		Output::Lines({ Output::Include(input_file),
+							  Output::SystemInclude("godot_cpp/classes/multiplayer_api.hpp"),
+							  Output::SystemInclude("godot_cpp/classes/multiplayer_peer.hpp"),
+							  Output::NewLine() })
+				->get_output(&source_writer);
 
-		for (Results &result : generate_results) {
-			Ref<Output::OutputNode> source_output = transformator.transform(result.generated_source);
+		for (const String &include : header_includes) {
+			Output::Include(include)->get_output(&header_writer);
+			header_writer.write("\n");
+		}
+
+		for (const String &include : source_includes) {
+			Output::Include(include)->get_output(&source_writer);
+			source_writer.write("\n");
+		}
+
+		for (ClassGeneratorResult &result : generate_results) {
+			Ref<Output::OutputNode> source_output = transformator.transform(result.generated_sources);
 
 			Ref<Output::OutputNode> body_output = Output::Define(
 					generated_macro_name(result.file_path, result.generated_body_line), {}, { result.generated_body });
 
 			source_output->get_output(&source_writer);
-			body_output->get_output(&generated_writer);
+			body_output->get_output(&header_writer);
 		}
 
 		Ref<Output::OutputNode> global_output = Output::Define(
 				generated_macro_name(input_file, generated_global_attribute ? generated_global_attribute->line : 0), {},
 				{ global_generated });
 
-		generated_writer.write("\n");
-		global_output->get_output(&generated_writer);
+		header_writer.write("\n");
+		global_output->get_output(&header_writer);
 	}
 
 	Ref<Output::OutputNode> register_header_output = transformator.transform(register_types_header);

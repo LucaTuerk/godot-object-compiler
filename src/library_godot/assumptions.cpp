@@ -67,6 +67,10 @@ bool validate_assumptions() {
 	success &= VARIANT_BITFIELD_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= MultiplayerAPIRPCMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= MultiplayerPeerTransferMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= StringName.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= Callable.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= List.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= PropertyInfo.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 
 	return success;
 }

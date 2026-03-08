@@ -64,8 +64,7 @@ namespace GodotObjectCompiler {
   }
 
   Vector<String> GodotPropertyUsageFlagsParameterType::_value_names_lazy_get() {
-    const Ref<Enum> prop_use_enum = ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(
-        AssumedGodotTypes::PropertyUsageFlagsEnum().qualified_name);
+    const Ref<Enum> prop_use_enum = AssumedGodotTypes::PropertyUsageFlagsEnum.unwrap().type;
     if (!prop_use_enum) {
       return {};
     }

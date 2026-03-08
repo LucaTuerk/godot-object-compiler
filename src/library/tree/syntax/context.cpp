@@ -226,6 +226,7 @@ namespace GodotObjectCompiler {
     COPY_LAZY(name);
     COPY_LAZY(qualified_name);
     COPY_LAZY(namespaces_names);
+  	target->header = header;
     return true;
   }
 
@@ -234,6 +235,7 @@ namespace GodotObjectCompiler {
     _name_lazy = p_reader->read<String, String>("_name");
     _qualified_name_lazy = p_reader->read<String, String>("_qualified_name");
     _namespaces_names_lazy = string_split(p_reader->read<String, String>("_namespaces_names"), ",");
+  	header = p_reader->read<String,String>("header");
   }
 
   void NamedContext::write_to(IStructuredWriter* p_writer) {
@@ -241,6 +243,7 @@ namespace GodotObjectCompiler {
     p_writer->write<String, String>("_name", name());
     p_writer->write<String, String>("_qualified_name", qualified_name());
     p_writer->write<String, String>("_namespaces_names", string_vector_combine(namespaces_names(), ","));
+  	p_writer->write<String, String>("header", header);
   }
 
   Vector<String> NamedContext::_namespaces_names_lazy_get() const {

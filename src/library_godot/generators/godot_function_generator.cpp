@@ -62,8 +62,11 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate_default_attribute_argume
 }
 
 Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> p_target_class,
-		Ref<GodotFunctionAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-		Ref<Context> p_generated_global) {
+		Ref<GodotFunctionAttribute> p_attribute, ClassGeneratorResult &r_result) {
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
+	Ref<Context> p_generated_global = r_result.generated_global;
+
 	UNUSED(p_attribute);
 	UNUSED(p_generated_global);
 
@@ -108,7 +111,7 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> p_target_clas
 				p_target_class->name(), target_function->name(), parameter_names, default_values));
 	} else if (virtual_argument->is_script_virtual()) {
 		Ref<GeneratorError> error = generate_virtual(
-				p_target_class, target_function, p_attribute, p_generated_body, p_generated_sources, bind_methods_body);
+				p_target_class, target_function, p_attribute, bind_methods_body, r_result);
 		if (error != GeneratorError::OK) {
 			return error;
 		}
@@ -129,22 +132,32 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> p_target_clas
 	}
 
 	generated_public_members->add_child(Output::FmtText(
-			"Callable %s_callable{this, \"%s\"};", target_function->name().c_str(), target_function->name().c_str()));
+			"%s %s_callable{this, \"%s\"};",
+			AssumedGodotTypes::Callable().type->qualified_name().c_str(),
+			target_function->name().c_str(),
+			target_function->name().c_str()));
 
 	const Ref<Body> function_names_body =
 			GodotGeneratorUtils::get_function_names_body(p_target_class, p_generated_body);
 	GEN_ERROR_COND(!function_names_body, p_attribute, "Failed to get function names body.");
 	function_names_body->add_child(
-			Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
-					target_function->name().c_str(), target_function->name().c_str())));
+			Output::Text(format("static const %s& %s() {static const %s sn = \"%s\"; return sn; }",
+					AssumedGodotTypes::StringName().type->qualified_name().c_str(),
+					target_function->name().c_str(),
+					AssumedGodotTypes::StringName().type->qualified_name().c_str(),
+					target_function->name().c_str())));
 
+	r_result.header_includes.insert(AssumedGodotTypes::StringName().type->header);
+	r_result.header_includes.insert(AssumedGodotTypes::Callable().type->header);
 	return GeneratorError::OK;
 }
 
 Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p_target_class,
 		const Ref<Function> &p_target_function, const Ref<GodotFunctionAttribute> &p_attribute,
-		const Ref<Context> &p_generated_body, const Ref<Context> &p_generated_sources,
-		const Ref<Context> &p_bind_methods_body) {
+		const Ref<Context> &p_bind_methods_body, ClassGeneratorResult &r_result) {
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
+	Ref<Context> p_generated_global = r_result.generated_global;
 	UNUSED(p_attribute);
 
 	Ref<GodotVirtualArgument> virtual_argument = p_attribute->arguments()->find_child<GodotVirtualArgument>();
@@ -201,11 +214,10 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 	String virtual_name = format("_%s", p_target_function->name().c_str());
 	String virtual_caller_name = virtual_name;
 
-
 	// clang-format off
     Ref<Arguments> arguments;
     Ref<Function> gdvirtual = build<Function>().with_children({
-      build<Identifier>(GDVIRTUAL().qualified_name),
+      build<Identifier>(GDVIRTUAL().type->qualified_name()),
       build_ref<Arguments>(&arguments),
     }).with_child(Output::Semicolon());
 
@@ -217,7 +229,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 
     Ref<Arguments> bind_arguments;
     Ref<Function> gdvirtual_bind = build<Function>().with_children({
-      build<Identifier>(AssumedGodotTypes::GDVIRTUAL_BIND().qualified_name),
+      build<Identifier>(AssumedGodotTypes::GDVIRTUAL_BIND().type->qualified_name()),
         build_ref<Arguments>(&bind_arguments).with_child(
           build<Argument>().with_child<Identifier>(virtual_name)
         )
@@ -253,7 +265,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
     Ref<Arguments> call_arguments;
     Ref<Function> condition = build<Function>().with_children({
       Output::Text("!"),
-      build<Identifier>(AssumedGodotTypes::GDVIRTUAL_CALL().qualified_name),
+      build<Identifier>(AssumedGodotTypes::GDVIRTUAL_CALL().type->name()),
       build_ref<Arguments>(&virtual_call_arguments).with_child(
         build<Argument>().with_child<Identifier>(virtual_name)
       )
@@ -299,6 +311,10 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 	p_bind_methods_body->add_children({ gdvirtual_bind,
 			GodotGeneratorUtils::bind_method_as(
 					p_target_class->name(), p_target_function->name(), virtual_caller_name, parameter_names, default_values) });
+
+	r_result.header_includes.insert(GDVIRTUAL().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::GDVIRTUAL_BIND().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::GDVIRTUAL_CALL().type->header);
 
 	return GeneratorError::OK;
 }

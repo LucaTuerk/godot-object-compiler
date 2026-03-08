@@ -48,6 +48,26 @@ public:
 	virtual Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) = 0;
 };
 
+struct ClassGeneratorResult {
+	String file_path;
+	Ref<Class> target_class;
+	Size generated_body_line;
+	Size generated_global_line;
+
+	Ref<Context> generated_body;
+	Ref<Context> generated_sources;
+	Ref<Context> generated_global;
+	Ref<Context> initialize;
+	Ref<Context> uninitialize;
+	Ref<Context> startup;
+	Ref<Context> shutdown;
+
+	HashSet<String> &header_includes;
+	HashSet<String> &source_includes;
+
+	ClassGeneratorResult(String p_file_path, Ref<Class> p_target_class, HashSet<String> &p_header_includes, HashSet<String> &p_source_includes);
+};
+
 class ClassGenerator {
 public:
 	virtual ~ClassGenerator() = default;
@@ -61,8 +81,7 @@ public:
 			const Ref<Class> &p_target_class, const Ref<Attribute> &p_attribute, const Ref<Context> &r_default_values);
 
 	Ref<GeneratorError> generate(const Ref<Class> &p_target_class, const Ref<Attribute> &p_attribute,
-			const Ref<Context> &r_generated_body, const Ref<Context> &r_generated_sources,
-			const Ref<Context> &r_generated_global);
+			ClassGeneratorResult &r_result);
 
 protected:
 	virtual bool _handles(Ref<Class> p_target_class, Ref<Attribute> p_attribute) = 0;
@@ -70,10 +89,24 @@ protected:
 	virtual Ref<GeneratorError> _generate_default_attribute_arguments(
 			Ref<Class> p_target_class, Ref<Attribute> p_attribute, Ref<Context> r_default_values) = 0;
 
-	virtual Ref<GeneratorError> _generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute,
-			Ref<Context> r_generated_body, Ref<Context> r_generated_sources, Ref<Context> r_generated_global) = 0;
+	virtual Ref<GeneratorError> _generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute, ClassGeneratorResult &r_result) = 0;
 };
 
+inline ClassGeneratorResult::ClassGeneratorResult(String p_file_path, Ref<Class> p_target_class, HashSet<String> &p_header_includes, HashSet<String> &p_source_includes) : header_includes(p_header_includes), source_includes(p_source_includes) {
+	file_path = std::move(p_file_path);
+	target_class = p_target_class;
+
+	generated_body_line = 0;
+	generated_global_line = 0;
+
+	generated_body = node_new<Context>();
+	generated_sources = node_new<Context>();
+	generated_global = node_new<Context>();
+	initialize = node_new<Context>();
+	uninitialize = node_new<Context>();
+	startup = node_new<Context>();
+	shutdown = node_new<Context>();
+}
 inline bool ClassGenerator::handles(const Ref<Class> &p_target_class, const Ref<Attribute> &p_attribute) {
 	return _handles(p_target_class, p_attribute);
 }
@@ -104,9 +137,8 @@ inline Ref<GeneratorError> ClassGenerator::generate_default_attribute_arguments(
 }
 
 inline Ref<GeneratorError> ClassGenerator::generate(const Ref<Class> &p_target_class,
-		const Ref<Attribute> &p_attribute, const Ref<Context> &r_generated_body, const Ref<Context> &r_generated_sources,
-		const Ref<Context> &r_generated_global) {
-	return _generate(p_target_class, p_attribute, r_generated_body, r_generated_sources, r_generated_global);
+		const Ref<Attribute> &p_attribute, ClassGeneratorResult &r_result) {
+	return _generate(p_target_class, p_attribute, r_result);
 }
 
 template <typename AttrT>
@@ -116,8 +148,7 @@ protected:
 	Ref<GeneratorError> _generate_default_attribute_arguments(
 			Ref<Class> p_target_class, Ref<Attribute> p_attribute, Ref<Context> r_default_values) override;
 
-	Ref<GeneratorError> _generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute, Ref<Context> r_generated_body,
-			Ref<Context> r_generated_sources, Ref<Context> r_generated_global) override;
+	Ref<GeneratorError> _generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute, ClassGeneratorResult &r_result) override;
 
 public:
 	~IClassGenerator() override = default;
@@ -125,8 +156,7 @@ public:
 	virtual Ref<GeneratorError> do_generate_default_attribute_arguments(
 			Ref<Class> p_target_class, Ref<AttrT> p_attribute, Ref<Context> p_default_values);
 
-	virtual Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<AttrT> p_attribute,
-			Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) = 0;
+	virtual Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<AttrT> p_attribute, ClassGeneratorResult &r_result) = 0;
 };
 
 template <typename AttrT>
@@ -142,10 +172,9 @@ Ref<GeneratorError> IClassGenerator<AttrT>::_generate_default_attribute_argument
 }
 
 template <typename AttrT>
-Ref<GeneratorError> IClassGenerator<AttrT>::_generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute,
-		Ref<Context> r_generated_body, Ref<Context> r_generated_sources, Ref<Context> r_generated_global) {
+Ref<GeneratorError> IClassGenerator<AttrT>::_generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute, ClassGeneratorResult &r_result) {
 	return do_generate(
-			p_target_class, p_attribute->template as<AttrT>(), r_generated_body, r_generated_sources, r_generated_global);
+			p_target_class, p_attribute->template as<AttrT>(), r_result);
 }
 
 template <typename AttrT>
