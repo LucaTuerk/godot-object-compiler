@@ -63,7 +63,7 @@ namespace GodotObjectCompiler {
   }
 
   Vector<String> GodotPropertyHintParameterType::_value_names_lazy_get() {
-    Ref<Enum> prop_hint_enum = AssumedGodotTypes::PropertyHintEnum.unwrap().type;
+    Ref<Enum> prop_hint_enum = AssumedGodotTypes::PropertyHintEnum().type;
     if (!prop_hint_enum) {
       return {};
     }

@@ -70,7 +70,7 @@ bool GodotVariantTypeParameterType::get_variant_type_for_value_name(
 }
 
 Vector<String> GodotVariantTypeParameterType::_value_names_lazy_get() {
-	Ref<Enum> variant_type_enum = AssumedGodotTypes::VariantTypeEnum.unwrap().type;
+	Ref<Enum> variant_type_enum = AssumedGodotTypes::VariantTypeEnum().type;
 	if (!variant_type_enum) {
 		return {};
 	}

@@ -52,6 +52,7 @@ namespace GodotObjectCompiler {
 
 Ref<ProgramError> GenerateTypeDB::run(ApplicationContext &p_context) {
 	TreeSitterParser parser;
+	parser.set_parse_attributes(false);
 
 	PROG_ERR_COND(!p_context.paths_include.has_value(), "No include path specified. Cannot generate the TypeDB.");
 

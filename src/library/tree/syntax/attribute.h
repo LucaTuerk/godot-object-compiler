@@ -82,4 +82,17 @@ protected:
 	virtual bool _verify_target(const Ref<Node> &p_resolved) const;
 };
 
+class UnparsedAttributeArguments : public Node {
+	NODE_TYPE(UnparsedAttributeArguments);
+
+public:
+	explicit UnparsedAttributeArguments(const String &content) : content(content) {}
+	String content;
+
+	String to_string() const override;
+	bool copy_to(const Ref<Node> &p_other) const override;
+	void write_to(IStructuredWriter *p_writer) override;
+	void read_from(IStructuredReader *p_reader) override;
+};
+
 } //namespace GodotObjectCompiler
