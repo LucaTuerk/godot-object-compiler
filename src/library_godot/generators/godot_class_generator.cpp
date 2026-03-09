@@ -85,15 +85,6 @@ namespace GodotObjectCompiler {
     return GeneratorError::OK;
   }
 
-  Ref<GeneratorError> GodotClassGenerator::generate_startup(Ref<Class> p_target_class,
-      Ref<GodotClassAttribute> p_class_attribute, Ref<Context> p_startup_content, Ref<Context> p_shutdown_content) {
-    UNUSED(p_target_class);
-    UNUSED(p_class_attribute);
-    UNUSED(p_startup_content);
-    UNUSED(p_shutdown_content);
-    return GeneratorError::OK;
-  }
-
   Ref<GeneratorError> GodotClassGenerator::do_generate_default_attribute_arguments(
       Ref<Class> p_target_class, Ref<GodotClassAttribute> p_attribute, Ref<Context> p_default_values) {
     UNUSED(p_target_class);

@@ -42,6 +42,10 @@ namespace GodotObjectCompiler {
 
 namespace AssumedGodotTypes {
 
+inline Assumption<AssumeType<Class>> ClassDB{
+	{ "ClassDB" }, "Assume that a class named \"ClassDB\" exists in the TypeDB.", ExecutionContext::instance()->get_type_db()
+};
+
 inline Assumption<AssumeType<Class>> Object{
 	{ "Object" }, "Assume that a class named \"Object\" exists in the TypeDB.", ExecutionContext::instance()->get_type_db()
 };
@@ -82,6 +86,10 @@ inline Assumption<AssumeType<Enum>> PropertyHintEnum{
 
 inline Assumption<AssumeType<Enum>> PropertyUsageFlagsEnum{
 	{ "PropertyUsageFlags" }, "Assume that an enum type of name \"ModuleInitializationLevel\" exists in the TypeDB.", ExecutionContext::instance()->get_type_db()
+};
+
+inline Assumption<AssumeType<Define>> ADD_PROPERTY{
+	{ "ADD_PROPERTY" }, "Assume that a define of name \"ADD_PROPERTY\" exists in the TypeDB.", ExecutionContext::instance()->get_type_db()
 };
 
 inline Assumption<AssumeType<Class>> Variant{

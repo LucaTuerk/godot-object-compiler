@@ -118,7 +118,7 @@ Ref<Function> GodotGeneratorUtils::bind_method_as(const String &p_class_name, co
     Ref<Arguments> d_method_args;
 
     Ref<Function> result =  build<Function>().with_children({
-    build<Identifier>("ClassDB::bind_method"),
+    build<Identifier>(format("%s::bind_method", AssumedGodotTypes::ClassDB().type->qualified_name().c_str())),
     build_ref<Arguments>(&bind_args).with_children({
       build<Function>().with_children({
         build<Identifier>("D_METHOD"),
@@ -154,7 +154,7 @@ Ref<Function> GodotGeneratorUtils::bind_static_method(const String &p_class_name
     Ref<Arguments> d_method_args;
 
     Ref<Function> result =  build<Function>().with_children({
-    build<Identifier>("ClassDB::bind_static_method"),
+    build<Identifier>(format("%s::bind_static_method", AssumedGodotTypes::ClassDB().type->qualified_name().c_str())),
     build_ref<Arguments>(&bind_args).with_children({
       build<Argument>().with_child(Output::StringLiteral(p_class_name)),
       build<Function>().with_children({
@@ -834,7 +834,7 @@ Ref<GodotPropertyUsageFlagsArgument> GodotGeneratorUtils::build_property_usage_f
 
 Ref<Node> GodotGeneratorUtils::build_property_info(const Ref<GodotVariantTypeArgument> &p_variant_type,
 		const Ref<GodotPropertyHintArgument> &p_hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>> &p_usages,
-		const String &p_property_name, bool p_no_editor) {
+		const String &p_property_name, ClassGeneratorResult &r_result, bool p_no_editor) {
 	Ref<Arguments> arguments;
 	Ref<Output::ListNode> flags;
 	// clang-format off
@@ -851,11 +851,11 @@ Ref<Node> GodotGeneratorUtils::build_property_info(const Ref<GodotVariantTypeArg
     }
 
     Ref<Node> result = build<Function>().with_children({
-      build<Identifier>("PropertyInfo"),
+      build<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
       build_ref<Arguments>(&arguments).with_children({
-        build<Argument>().with_child<Literal>("Variant::" + p_variant_type->godot_variant_type()),
+        build<Argument>().with_child<Literal>(format("%s::%s", AssumedGodotTypes::Variant().type->qualified_name().c_str(),p_variant_type->godot_variant_type().c_str())),
         build<Argument>().with_child(Literal::StringLiteral(p_property_name)),
-          build<Argument>().with_child<Literal>(p_hint->godot_property_hint()),
+          build<Argument>().with_child<Literal>(format("%s::%s", AssumedGodotTypes::PropertyHintEnum().type->qualified_name().c_str(),p_hint->godot_property_hint().c_str())),
         build<Argument>().with_child<Literal>(p_hint->hint_string()),
         property_usage
       })});
@@ -865,26 +865,34 @@ Ref<Node> GodotGeneratorUtils::build_property_info(const Ref<GodotVariantTypeArg
 		arguments->remove_child(flags);
 	} else {
 		for (const Ref<GodotPropertyUsageFlagsArgument> &usage : p_usages) {
-			flags->add_child(build<Literal>(usage->godot_property_usage_flag()));
+			flags->add_child(build<Literal>(format("%s::%s", AssumedGodotTypes::PropertyUsageFlagsEnum().type->qualified_name().c_str(), usage->godot_property_usage_flag().c_str())));
 		}
 	}
+
+	r_result.source_includes.insert(AssumedGodotTypes::Variant().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::PropertyInfo().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::PropertyHintEnum().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::PropertyUsageFlagsEnum().type->header);
 	return result;
 }
 
 Ref<Node> GodotGeneratorUtils::build_property_info(
-		const Ref<GodotVariantTypeArgument> &p_variant_type, const String &p_property_name) {
+		const Ref<GodotVariantTypeArgument> &p_variant_type, const String &p_property_name, ClassGeneratorResult &r_result) {
+
+	r_result.source_includes.insert(AssumedGodotTypes::Variant().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::PropertyInfo().type->header);
 	// clang-format off
     return build<Function>().with_children({
-      build<Identifier>("PropertyInfo"),
+      build<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
       build<Arguments>().with_children({
-        build<Argument>().with_child<Literal>("Variant::" + p_variant_type->godot_variant_type()),
+        build<Argument>().with_child<Literal>(format("%s::%s",AssumedGodotTypes::Variant().type->qualified_name().c_str(), p_variant_type->godot_variant_type().c_str())),
         build<Argument>().with_child(Literal::StringLiteral(p_property_name)),
       })});
 	// clang-format on
 }
 
 Ref<Node> GodotGeneratorUtils::build_property_info_defaults(
-		const Ref<Type> &p_type, const String &p_property_name, DefaultsUsage p_usage) {
+		const Ref<Type> &p_type, const String &p_property_name, ClassGeneratorResult &r_result, DefaultsUsage p_usage) {
 	Ref<GodotVariantTypeArgument> variant_type;
 	Ref<GodotPropertyHintArgument> property_hint;
 	Ref<GodotPropertyUsageFlagsArgument> usage_flags;
@@ -893,7 +901,7 @@ Ref<Node> GodotGeneratorUtils::build_property_info_defaults(
 		return nullptr;
 	}
 
-	return build_property_info(variant_type, property_hint, { usage_flags }, p_property_name);
+	return build_property_info(variant_type, property_hint, { usage_flags }, p_property_name, r_result);
 }
 
 Ref<GodotPropertyHintArgument> GodotGeneratorUtils::build_property_hint_argument(

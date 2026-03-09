@@ -339,11 +339,11 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 
     Vector<Ref<GodotPropertyUsageFlagsArgument>> usage_flags = p_attribute->arguments()->find_children<GodotPropertyUsageFlagsArgument>();
 
-    Ref<Node> property_info = build_property_info(variant_type, property_hint, usage_flags, property_name);
-    Ref<Node> property_info_no_editor = build_property_info(variant_type, property_hint, usage_flags, property_name,true);
+    Ref<Node> property_info = build_property_info(variant_type, property_hint, usage_flags, property_name, r_result);
+    Ref<Node> property_info_no_editor = build_property_info(variant_type, property_hint, usage_flags, property_name,r_result,true);
 
     Ref<Function> add_property = build<Function>().with_children({
-      build<Identifier>("ADD_PROPERTY"),
+      build<Identifier>(AssumedGodotTypes::ADD_PROPERTY().type->name()),
       build<Arguments>().with_children({
         build<Argument>().with_children({
           property_info_no_editor
@@ -375,6 +375,7 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 					)));
 
 	r_result.header_includes.insert(AssumedGodotTypes::StringName().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::ADD_PROPERTY().type->header);
 	return GeneratorError::OK;
 }
 

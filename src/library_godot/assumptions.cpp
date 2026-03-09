@@ -40,6 +40,7 @@ namespace AssumedGodotTypes {
 bool validate_assumptions() {
 	bool success = true;
 
+	success &= ClassDB.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= Object.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= RefCounted.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= Resource.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
@@ -48,6 +49,7 @@ bool validate_assumptions() {
 	success &= ModuleInitializationLevel.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= PropertyHintEnum.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= PropertyUsageFlagsEnum.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= ADD_PROPERTY.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= Variant.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= VariantTypeEnum.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= Array.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;

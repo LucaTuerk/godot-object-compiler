@@ -59,8 +59,6 @@ struct ClassGeneratorResult {
 	Ref<Context> generated_global;
 	Ref<Context> initialize;
 	Ref<Context> uninitialize;
-	Ref<Context> startup;
-	Ref<Context> shutdown;
 
 	HashSet<String> &header_includes;
 	HashSet<String> &source_includes;
@@ -104,8 +102,6 @@ inline ClassGeneratorResult::ClassGeneratorResult(String p_file_path, Ref<Class>
 	generated_global = node_new<Context>();
 	initialize = node_new<Context>();
 	uninitialize = node_new<Context>();
-	startup = node_new<Context>();
-	shutdown = node_new<Context>();
 }
 inline bool ClassGenerator::handles(const Ref<Class> &p_target_class, const Ref<Attribute> &p_attribute) {
 	return _handles(p_target_class, p_attribute);

@@ -98,11 +98,11 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 	switch (p_context.project_target) {
 		case TARGET_GDEXTENSION:
 			register_types_header->add_children({
-					Output::SystemInclude("godot_cpp/godot.hpp"),
+					Output::Include("godot_cpp/godot.hpp"),
 					Output::Text("using namespace godot;"),
 			});
-			register_types_source->add_children({ Output::SystemInclude("gdextension_interface.h"),
-					Output::SystemInclude("godot_cpp/core/class_db.hpp"), Output::SystemInclude("godot_cpp/core/defs.hpp") });
+			register_types_source->add_children({ Output::Include("gdextension_interface.h"),
+					Output::Include("godot_cpp/core/class_db.hpp"), Output::Include("godot_cpp/core/defs.hpp") });
 			break;
 		case TARGET_MODULE:
 			// This should not be reachable as project target can currently not be changed.
@@ -242,8 +242,6 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			ClassGeneratorResult result{ input_file, target_class, header_includes, source_includes };
 			result.initialize = register_body;
 			result.uninitialize = unregister_body;
-			result.startup = startup;
-			result.shutdown = shutdown;
 			result.generated_global = global_generated;
 
 			for (const Ref<Type> &type : target_class->find_children<Type>(true)) {
@@ -293,13 +291,8 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class initialization code.")
 
 			if (result.initialize->get_child_count() > 0 || result.uninitialize->get_child_count() > 0) {
-				register_class_includes->add_child(Output::Include(input_file));
+				register_class_includes->add_child(Output::Include(target_class->header));
 			}
-
-			Ref<GeneratorError> start_gen_error =
-					class_generator.generate_startup(target_class, class_attribute, result.startup, result.shutdown);
-
-			PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class startup code.")
 
 			if (!ExecutionContext::instance()->file_modified(input_file)) {
 				PRINT_VERBOSE("Input file \"%s\" was not modified since last read. Skipping.", input_file.c_str());
@@ -337,14 +330,15 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		FileWriter source_writer = FileWriter::generated(gen_source_path, input_file);
 		FileWriter header_writer = FileWriter::generated(gen_header_path, input_file);
 
+		auto target_header = header_path(*p_context.paths_root, input_file);
 		Output::Lines({ Output::PragmaOnce(),
 							  Output::Text("#undef GOC_FILE_ID"),
-							  Output::Define("GOC_FILE_ID", {}, file_id(input_file)),
+							  Output::Define("GOC_FILE_ID", {}, file_id(target_header)),
 							  Output::Include("godot_object_compiler/macros.h"),
 							  Output::NewLine() })
 				->get_output(&header_writer);
 
-		Output::Lines({ Output::Include(header_path(*p_context.paths_root, input_file)),
+		Output::Lines({ Output::Include(target_header),
 							  Output::NewLine() })
 				->get_output(&source_writer);
 

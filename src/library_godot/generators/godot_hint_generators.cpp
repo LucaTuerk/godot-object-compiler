@@ -69,7 +69,8 @@ namespace GodotObjectCompiler {
             build_variant_type_argument(VariantTypeNil()),
             build_property_hint_argument(HintNone()),
             {build_property_usage_flags_argument(UsageCategory())},
-            p_attribute->literal_content()
+            p_attribute->literal_content(),
+            r_result
         ))
       })
     }).with_child(Output::Semicolon());
@@ -106,7 +107,8 @@ namespace GodotObjectCompiler {
             build_variant_type_argument(VariantTypeNil()),
             build_property_hint_argument(HintNone()),
             {build_property_usage_flags_argument(UsageGroup())},
-            p_attribute->literal_content()
+            p_attribute->literal_content(),
+			r_result
         ))
       })
     }).with_child(Output::Semicolon());
@@ -144,7 +146,8 @@ namespace GodotObjectCompiler {
             build_variant_type_argument(VariantTypeNil()),
             build_property_hint_argument(HintNone()),
             {build_property_usage_flags_argument(UsageSubgroup())},
-            p_attribute->literal_content()
+            p_attribute->literal_content(),
+			r_result
         ))
       })
     }).with_child(Output::Semicolon());
