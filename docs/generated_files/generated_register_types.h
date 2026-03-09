@@ -17,11 +17,10 @@
 #pragma once
 
 
-#include "purged local file path"
+#include "godot_cpp/godot.hpp"
 using namespace godot;
 
 void generated_register_module (godot::ModuleInitializationLevel p_level) ;
 void generated_unregister_module (godot::ModuleInitializationLevel p_level) ;
 // clang-format on
 // NOLINTEND
-

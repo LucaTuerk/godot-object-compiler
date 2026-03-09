@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* example.generated.h                                                    */
+/*                                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -18,38 +18,42 @@
 
 
 #undef GOC_FILE_ID
-#define GOC_FILE_ID() 13677053894255092273 
+#define GOC_FILE_ID() 107580388863103421 
  
 
-#include <godot_cpp/core/binder_common.hpp>
-#include <godot_cpp/core/gdvirtual.gen.inc>
+#include "godot_object_compiler/macros.h"
 
-#define GOC_GENERATED_11_13677053894255092273() GDCLASS (ExampleClass, Node) ;\
+#include "godot_cpp/classes/wrapped.hpp"
+#include "godot_cpp/core/binder_common.hpp"
+#include "godot_cpp/core/gdvirtual.gen.inc"
+#include "godot_cpp/variant/callable.hpp"
+#include "godot_cpp/variant/string_name.hpp"
+#define GOC_GENERATED_11_107580388863103421() GDCLASS (ExampleClass, Node) ;\
 public:\
 static void _bind_methods () ;\
 void _notification (int p_notification) ;\
-void _get_property_list (List<PropertyInfo> * p_list) const ;\
+void _get_property_list (godot::List<godot::PropertyInfo> * p_list) const ;\
 struct PropertyNames \
 {\
-  static const StringName& resource() {static const StringName sn = "resource"; return sn; }\
-  static const StringName& resources() {static const StringName sn = "resources"; return sn; }\
-  static const StringName& range() {static const StringName sn = "range"; return sn; }\
-  static const StringName& enum_property() {static const StringName sn = "enum_property"; return sn; }\
-  static const StringName& flags_property() {static const StringName sn = "flags_property"; return sn; }\
+  static const godot::StringName& resource() {static const godot::StringName sn = "resource"; return sn; }\
+  static const godot::StringName& resources() {static const godot::StringName sn = "resources"; return sn; }\
+  static const godot::StringName& range() {static const godot::StringName sn = "range"; return sn; }\
+  static const godot::StringName& enum_property() {static const godot::StringName sn = "enum_property"; return sn; }\
+  static const godot::StringName& flags_property() {static const godot::StringName sn = "flags_property"; return sn; }\
 } ;\
 struct FunctionNames \
 {\
-  static const StringName& function() {static const StringName sn = "function"; return sn; }\
-  static const StringName& virtual_function() {static const StringName sn = "virtual_function"; return sn; }\
-  static const StringName& rpc_function() {static const StringName sn = "rpc_function"; return sn; }\
+  static const godot::StringName& function() {static const godot::StringName sn = "function"; return sn; }\
+  static const godot::StringName& virtual_function() {static const godot::StringName sn = "virtual_function"; return sn; }\
+  static const godot::StringName& rpc_function() {static const godot::StringName sn = "rpc_function"; return sn; }\
 } ;\
 struct SignalNames \
 {\
   static const StringName& something_happened() {static const StringName sn = "something_happened"; return sn; }\
 } ;\
-Callable function_callable{this, "function"};\
-Callable virtual_function_callable{this, "virtual_function"};\
-Callable rpc_function_callable{this, "rpc_function"};\
+godot::Callable function_callable{this, "function"};\
+godot::Callable virtual_function_callable{this, "virtual_function"};\
+godot::Callable rpc_function_callable{this, "rpc_function"};\
 godot::Ref <godot::Resource> get_resource () const ;\
 void set_resource (const godot::Ref <godot::Resource> & p_resource) ;\
 godot::TypedDictionary <int, godot::Resource> get_resources () const ;\
@@ -66,11 +70,9 @@ GDVIRTUAL1 (_virtual_function, godot::Node *) ;\
 void set_resources (const godot::TypedDictionary <int, godot::Resource> & p_resources) ; 
  
 
-#define GOC_GENERATED_59_13677053894255092273() VARIANT_ENUM_CAST (ExampleClass::Regular) ;\
+#define GOC_GENERATED_59_107580388863103421() VARIANT_ENUM_CAST (ExampleClass::Regular) ;\
 VARIANT_BITFIELD_CAST (ExampleClass::Flags) ; 
  
 
 // clang-format on
 // NOLINTEND
-
-
