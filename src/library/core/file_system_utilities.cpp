@@ -275,10 +275,8 @@ bool could_be_file_path(const String &p_path) {
 String header_path(const String &p_include_path, const String &p_file_path) {
 	const String include_absolute = path_absolute(p_include_path);
 	const String file_absolute = path_absolute(p_file_path);
-
-	return string_replace(
-			string_replace(file_absolute, format("%s%c", include_absolute.c_str(), path_seperator()), ""),
-			format("%c", path_seperator()), "/");
+	const String relative = path_relative(file_absolute, include_absolute);
+	return string_replace(relative, "\\", "/");
 }
 
 bool copy_file(const String &p_source, const String &p_destination) {
