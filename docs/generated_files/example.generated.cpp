@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* example.generated.cpp                                                  */
+/*                                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -14,10 +14,22 @@
 
 // NOLINTBEGIN
 // clang-format off
-#include "purged local file path"
-#include <godot_cpp/classes/multiplayer_api.hpp>
-#include <godot_cpp/classes/multiplayer_peer.hpp>
+#include "example.h"
 
+#include "example.h"
+#include "godot_cpp/classes/global_constants.hpp"
+#include "godot_cpp/classes/multiplayer_api.hpp"
+#include "godot_cpp/classes/multiplayer_peer.hpp"
+#include "godot_cpp/classes/node.hpp"
+#include "godot_cpp/classes/ref.hpp"
+#include "godot_cpp/classes/resource.hpp"
+#include "godot_cpp/classes/wrapped.hpp"
+#include "godot_cpp/core/class_db.hpp"
+#include "godot_cpp/core/object.hpp"
+#include "godot_cpp/core/property_info.hpp"
+#include "godot_cpp/variant/dictionary.hpp"
+#include "godot_cpp/variant/typed_dictionary.hpp"
+#include "godot_cpp/variant/variant.hpp"
 
 void ExampleClass::_bind_methods () 
 {
@@ -28,26 +40,26 @@ void ExampleClass::_bind_methods ()
   BIND_BITFIELD_FLAG (FLAG_VALUE_A) ;
   BIND_BITFIELD_FLAG (FLAG_VALUE_B) ;
   BIND_BITFIELD_FLAG (FLAG_VALUE_C) ;
-  ADD_SIGNAL (MethodInfo ("something_happened", PropertyInfo (Variant::INT, "p_param", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT))) ;
-  ClassDB::bind_method (D_METHOD ("function", "p_node"), &ExampleClass::function) ;
+  ADD_SIGNAL (MethodInfo ("something_happened", godot::PropertyInfo (godot::Variant::INT, "p_param", godot::PropertyHint::PROPERTY_HINT_NONE, "", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT))) ;
+  godot::ClassDB::bind_method (D_METHOD ("function", "p_node"), &ExampleClass::function) ;
   GDVIRTUAL_BIND (_virtual_function, "p_node") ;
-  ClassDB::bind_method (D_METHOD ("virtual_function", "p_node"), &ExampleClass::_virtual_function) ;
-  ClassDB::bind_method (D_METHOD ("rpc_function", "p_param"), &ExampleClass::rpc_function) ;
-  ClassDB::bind_method (D_METHOD ("get_resource"), &ExampleClass::get_resource) ;
-  ClassDB::bind_method (D_METHOD ("set_resource", "resource"), &ExampleClass::set_resource) ;
-  ADD_PROPERTY (PropertyInfo (Variant::OBJECT, "resource", PROPERTY_HINT_RESOURCE_TYPE, "Resource", (PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_resource", "get_resource") ;
-  ClassDB::bind_method (D_METHOD ("get_resources"), &ExampleClass::get_resources) ;
-  ClassDB::bind_method (D_METHOD ("set_resources", "resources"), &ExampleClass::set_resources) ;
-  ADD_PROPERTY (PropertyInfo (Variant::DICTIONARY, "resources", PROPERTY_HINT_DICTIONARY_TYPE, vformat("%s/%s:%s;%s/%s:%s", Variant::INT,PROPERTY_HINT_NONE,"",Variant::OBJECT,PROPERTY_HINT_RESOURCE_TYPE,"Resource"), (PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_resources", "get_resources") ;
-  ClassDB::bind_method (D_METHOD ("get_range"), &ExampleClass::get_range) ;
-  ClassDB::bind_method (D_METHOD ("set_range", "range"), &ExampleClass::set_range) ;
-  ADD_PROPERTY (PropertyInfo (Variant::FLOAT, "range", PROPERTY_HINT_RANGE, "0,1,0.1", (PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_range", "get_range") ;
-  ClassDB::bind_method (D_METHOD ("get_enum_property"), &ExampleClass::get_enum_property) ;
-  ClassDB::bind_method (D_METHOD ("set_enum_property", "enum_property"), &ExampleClass::set_enum_property) ;
-  ADD_PROPERTY (PropertyInfo (Variant::INT, "enum_property", PROPERTY_HINT_ENUM, "Regular Value A:0,Regular Value B:1,Regular Value C:2", (PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_enum_property", "get_enum_property") ;
-  ClassDB::bind_method (D_METHOD ("get_flags_property"), &ExampleClass::get_flags_property) ;
-  ClassDB::bind_method (D_METHOD ("set_flags_property", "flags_property"), &ExampleClass::set_flags_property) ;
-  ADD_PROPERTY (PropertyInfo (Variant::INT, "flags_property", PROPERTY_HINT_FLAGS, "Flag None:0,Flag Value A:1,Flag Value B:2,Flag Value C:4", (PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_flags_property", "get_flags_property") ;
+  godot::ClassDB::bind_method (D_METHOD ("virtual_function", "p_node"), &ExampleClass::_virtual_function) ;
+  godot::ClassDB::bind_method (D_METHOD ("rpc_function", "p_param"), &ExampleClass::rpc_function) ;
+  godot::ClassDB::bind_method (D_METHOD ("get_resource"), &ExampleClass::get_resource) ;
+  godot::ClassDB::bind_method (D_METHOD ("set_resource", "resource"), &ExampleClass::set_resource) ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::OBJECT, "resource", godot::PropertyHint::PROPERTY_HINT_RESOURCE_TYPE, "Resource", (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_resource", "get_resource") ;
+  godot::ClassDB::bind_method (D_METHOD ("get_resources"), &ExampleClass::get_resources) ;
+  godot::ClassDB::bind_method (D_METHOD ("set_resources", "resources"), &ExampleClass::set_resources) ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::DICTIONARY, "resources", godot::PropertyHint::PROPERTY_HINT_DICTIONARY_TYPE, vformat("%s/%s:%s;%s/%s:%s", Variant::INT,PROPERTY_HINT_NONE,"",Variant::OBJECT,PROPERTY_HINT_RESOURCE_TYPE,"Resource"), (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_resources", "get_resources") ;
+  godot::ClassDB::bind_method (D_METHOD ("get_range"), &ExampleClass::get_range) ;
+  godot::ClassDB::bind_method (D_METHOD ("set_range", "range"), &ExampleClass::set_range) ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::FLOAT, "range", godot::PropertyHint::PROPERTY_HINT_RANGE, "0,1,0.1", (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_range", "get_range") ;
+  godot::ClassDB::bind_method (D_METHOD ("get_enum_property"), &ExampleClass::get_enum_property) ;
+  godot::ClassDB::bind_method (D_METHOD ("set_enum_property", "enum_property"), &ExampleClass::set_enum_property) ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::INT, "enum_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Regular Value A:0,Regular Value B:1,Regular Value C:2", (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_enum_property", "get_enum_property") ;
+  godot::ClassDB::bind_method (D_METHOD ("get_flags_property"), &ExampleClass::get_flags_property) ;
+  godot::ClassDB::bind_method (D_METHOD ("set_flags_property", "flags_property"), &ExampleClass::set_flags_property) ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::INT, "flags_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Flag None:0,Flag Value A:1,Flag Value B:2,Flag Value C:4", (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_flags_property", "get_flags_property") ;
 }
 void ExampleClass::_notification (int p_notification) 
 {
@@ -55,24 +67,24 @@ void ExampleClass::_notification (int p_notification)
   {
     
     {
-        Dictionary opts;
-        opts["rpc_mode"] = MultiplayerAPI::RPC_MODE_AUTHORITY;
-        opts["transfer_mode"] = MultiplayerPeer::TRANSFER_MODE_UNRELIABLE_ORDERED;
+        godot::Dictionary opts;
+        opts["rpc_mode"] = godot::MultiplayerAPI::RPC_MODE_AUTHORITY;
+        opts["transfer_mode"] = godot::MultiplayerPeer::TRANSFER_MODE_UNRELIABLE_ORDERED;
         opts["call_local"] = true;
         opts["channel"] = 1;
         rpc_config("rpc_function", opts);
     }
   }
 }
-void ExampleClass::_get_property_list (List<PropertyInfo> * p_list) const 
+void ExampleClass::_get_property_list (godot::List<godot::PropertyInfo> * p_list) const 
 {
-  p_list->push_back (PropertyInfo (Variant::NIL, "Properties", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_CATEGORY)) ;
-  p_list->push_back (PropertyInfo (Variant::OBJECT, "resource", PROPERTY_HINT_RESOURCE_TYPE, "Resource", PROPERTY_USAGE_DEFAULT)) ;
-  p_list->push_back (PropertyInfo (Variant::DICTIONARY, "resources", PROPERTY_HINT_DICTIONARY_TYPE, vformat("%s/%s:%s;%s/%s:%s", Variant::INT,PROPERTY_HINT_NONE,"",Variant::OBJECT,PROPERTY_HINT_RESOURCE_TYPE,"Resource"), PROPERTY_USAGE_DEFAULT)) ;
-  p_list->push_back (PropertyInfo (Variant::FLOAT, "range", PROPERTY_HINT_RANGE, "0,1,0.1", PROPERTY_USAGE_DEFAULT)) ;
-  p_list->push_back (PropertyInfo (Variant::NIL, "Enum Properties", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP)) ;
-  p_list->push_back (PropertyInfo (Variant::INT, "enum_property", PROPERTY_HINT_ENUM, "Regular Value A:0,Regular Value B:1,Regular Value C:2", PROPERTY_USAGE_DEFAULT)) ;
-  p_list->push_back (PropertyInfo (Variant::INT, "flags_property", PROPERTY_HINT_FLAGS, "Flag None:0,Flag Value A:1,Flag Value B:2,Flag Value C:4", PROPERTY_USAGE_DEFAULT)) ;
+  p_list->push_back (godot::PropertyInfo (godot::Variant::NIL, "Properties", godot::PropertyHint::PROPERTY_HINT_NONE, "", godot::PropertyUsageFlags::PROPERTY_USAGE_CATEGORY)) ;
+  p_list->push_back (godot::PropertyInfo (godot::Variant::OBJECT, "resource", godot::PropertyHint::PROPERTY_HINT_RESOURCE_TYPE, "Resource", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
+  p_list->push_back (godot::PropertyInfo (godot::Variant::DICTIONARY, "resources", godot::PropertyHint::PROPERTY_HINT_DICTIONARY_TYPE, vformat("%s/%s:%s;%s/%s:%s", Variant::INT,PROPERTY_HINT_NONE,"",Variant::OBJECT,PROPERTY_HINT_RESOURCE_TYPE,"Resource"), godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
+  p_list->push_back (godot::PropertyInfo (godot::Variant::FLOAT, "range", godot::PropertyHint::PROPERTY_HINT_RANGE, "0,1,0.1", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
+  p_list->push_back (godot::PropertyInfo (godot::Variant::NIL, "Enum Properties", godot::PropertyHint::PROPERTY_HINT_NONE, "", godot::PropertyUsageFlags::PROPERTY_USAGE_GROUP)) ;
+  p_list->push_back (godot::PropertyInfo (godot::Variant::INT, "enum_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Regular Value A:0,Regular Value B:1,Regular Value C:2", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
+  p_list->push_back (godot::PropertyInfo (godot::Variant::INT, "flags_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Flag None:0,Flag Value A:1,Flag Value B:2,Flag Value C:4", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
 }
 void ExampleClass::something_happened (int p_param) 
 {
@@ -127,5 +139,3 @@ void ExampleClass::set_flags_property (int p_flags_property)
 }
 // clang-format on
 // NOLINTEND
-
-

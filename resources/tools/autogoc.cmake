@@ -16,6 +16,7 @@ function(target_autogoc TARGET ROOT_DIR)
         list(APPEND GOC_GENERATED_FILES ${GOC_GENERATED_DIR}/${GENERATED_H})
         list(APPEND GOC_GENERATED_FILES ${GOC_GENERATED_DIR}/${GENERATED_CPP})
     endforeach ()
+    list(REMOVE_DUPLICATES GOC_GENERATED_FILES)
 
     if (TARGET godot-cpp)
         get_target_property(GodotCPP_INCLUDE_DIRECTORIES godot-cpp INCLUDE_DIRECTORIES)

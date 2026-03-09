@@ -233,6 +233,7 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 	// clang-format on
 
 	auto files = directory_files_recursive("resources");
+	std::sort(files.begin(), files.end());
 	// Compile Resources
 	for (const String &file : files) {
 		String content = read_file(file);
@@ -285,29 +286,6 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 	p_context.paths_include->push_back(*p_context.paths_root);
 	p_context.paths_generated = path_absolute("docs/generated_files");
 	PROG_ERR_PASS_ON(generate_example.run(p_context));
-
-	for (const String &file : {
-		path_concat(p_context.paths_generated, "example.generated.cpp"),
-		path_concat(p_context.paths_generated, "example.generated.h"),
-		path_concat(p_context.paths_generated, "generated_register_types.h"),
-		path_concat(p_context.paths_generated, "generated_register_types.cpp"),
-	}) {
-		PROG_ERR_COND(!file_exists(file), "Expected generated file \"%s\" does not exist", file.c_str());
-
-		String content = read_file(file);
-		StreamWriter writer;
-
-		for (const String& line: string_split(content, "\n")) {
-			if (string_prefix(line, "#include") && string_contains(line, "\"")) {
-				writer.write("#include \"purged local file path\"");
-			} else {
-				writer.write(line);
-			}
-			writer.write("\n");
-		}
-
-		write_file(file, writer.get_string());
-	}
 
 	return ProgramError::OK;
 }
