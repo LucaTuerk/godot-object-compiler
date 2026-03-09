@@ -50,6 +50,8 @@ public:
 
 struct ClassGeneratorResult {
 	String file_path;
+	String header_path;
+	String generated_header_include_path;
 	Ref<Class> target_class;
 	Size generated_body_line;
 	Size generated_global_line;

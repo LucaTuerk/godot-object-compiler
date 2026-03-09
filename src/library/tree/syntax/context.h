@@ -244,30 +244,32 @@ Ref<T> Node::find_previous_sibling() {
 
 template <class T>
 Ref<T> Context::find_ancestor(StemExplorationType p_type, Predicate<T> p_predicate) const {
-	Ref<Node> current = get_parent();
+	Node* current = const_cast<Context *>(this);
+	do {
+		switch (p_type) {
+			{
+				case DIRECT_PARENTS:
+					current = current->get_parent().get();
+			}
+			break;
+			case BY_SIBLINGS_PREV: {
+				Node* prev = current->get_previous_sibling().get();
+				current = prev ? prev : current->get_parent().get();
+			} break;
+			case BY_SIBLINGS_NEXT: {
+				Node* next = current->get_next_sibling().get();
+				current = next ? next : current->get_parent().get();
+			} break;
+		}
+		if (!current) {
+			return nullptr;
+		}
 
-	while (current) {
 		Ref<T> current_t = current->as<T>();
 		if (current_t && p_predicate(current_t)) {
 			return current_t;
 		}
-
-		switch (p_type) {
-			{
-				case DIRECT_PARENTS:
-					current = current->get_parent();
-			}
-			break;
-			case BY_SIBLINGS_PREV: {
-				Ref<Node> prev = current->get_previous_sibling();
-				current = prev ? prev : current->get_parent();
-			} break;
-			case BY_SIBLINGS_NEXT: {
-				Ref<Node> next = current->get_next_sibling();
-				current = next ? next : current->get_parent();
-			} break;
-		}
-	}
+	} while (current);
 
 	return nullptr;
 }

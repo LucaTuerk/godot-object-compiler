@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "virtual_functions.generated.h"
+
 namespace Tests {
 GODOT_CLASS();
 

@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "invalid_properties/uninitialized_enum.generated.h"
+
 GODOT_CLASS();
 
 class Invalid : Node {

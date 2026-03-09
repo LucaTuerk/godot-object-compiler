@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* uninitialized_float.h                                                  */
+/* valid_non_generated.h                                                  */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,15 +34,6 @@
 /**************************************************************************/
 #pragma once
 
-#include "invalid_properties/uninitialized_float.generated.h"
-
-GODOT_CLASS();
-
-class Invalid : Node {
-  GODOT_GENERATED_BODY();
-
-  GODOT_PROPERTY();
-  float unitialized_float;
+class ValidNonGenerated : public Object {
+	GDCLASS(Valid, Object);
 };
-
-GODOT_GENERATED_GLOBAL();

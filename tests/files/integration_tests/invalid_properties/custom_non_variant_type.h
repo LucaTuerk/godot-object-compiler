@@ -35,8 +35,9 @@
 
 #pragma once
 
-GODOT_CLASS();
+#include "invalid_properties/custom_non_variant_type.generated.h"
 
+GODOT_CLASS();
 class Invalid : Node {
 	GODOT_GENERATED_BODY();
 

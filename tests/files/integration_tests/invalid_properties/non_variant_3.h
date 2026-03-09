@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "invalid_properties/non_variant_3.generated.h"
+
 GODOT_CLASS();
 
 class Invalid : Node {

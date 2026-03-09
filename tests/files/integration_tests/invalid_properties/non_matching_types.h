@@ -35,6 +35,8 @@
 
 #pragma once
 
+#include "invalid_properties/non_matching_types.generated.h"
+
 GODOT_CLASS();
 
 class Invalid : Node {

@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "properties.generated.h"
+
 namespace Tests {
 GODOT_CLASS();
 class Properties : public Node {

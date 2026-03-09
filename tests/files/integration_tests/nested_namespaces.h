@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "nested_namespaces.generated.h"
+
 namespace Tests {
 namespace A {
 
