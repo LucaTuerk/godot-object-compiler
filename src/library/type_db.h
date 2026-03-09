@@ -57,14 +57,18 @@ public:
 
 template <typename T>
 struct AssumeType {
-	String qualified_name;
-
-	Size template_parameter_count;
+	Ref<T> type;
 
 	AssumeType() = default;
 
 	AssumeType(const String &type_name, const Size &template_arg_count = 0) :
-			qualified_name(type_name), template_parameter_count(template_arg_count) {}
+			name(type_name), template_parameter_count(template_arg_count) {}
+
+private:
+	String name;
+	Size template_parameter_count;
+
+	friend class TypeDB;
 };
 
 class TypeDB : public IAssumptionValidator<AssumeType<Enum>>,
@@ -181,10 +185,16 @@ Ref<T> TypeDB::get_type_attribute(const Ref<Type> &type, const Ref<Namespace> &f
 
 template <typename T>
 AssumptionState TypeDB::validate_t(Assumption<AssumeType<T>> &type_assumption) {
-	Ref<T> result = get_type_data<T>(type_assumption().qualified_name, type_assumption().template_parameter_count);
+	AssumeType<T> &value = UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(type_assumption);
+	Ref<T> result = get_type_data<T>(
+			value.name,
+			value.template_parameter_count);
+
 	if (!result) {
 		return STATE_INVALID;
 	}
+
+	value.type = result;
 	return STATE_VALID;
 }
 

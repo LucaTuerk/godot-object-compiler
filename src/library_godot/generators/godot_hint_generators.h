@@ -46,8 +46,7 @@ namespace GodotObjectCompiler {
     Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class,
         Ref<GodotPropertyCategoryAttribute> p_attribute, Ref<Context> p_default_values) override;
 
-    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute,
-        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
+    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute, ClassGeneratorResult &r_result) override;
   };
 
   class GodotGroupGenerator : public IClassGenerator<GodotPropertyGroupAttribute> {
@@ -58,8 +57,7 @@ namespace GodotObjectCompiler {
     Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class,
         Ref<GodotPropertyGroupAttribute> p_attribute, Ref<Context> p_default_values) override;
 
-    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
-        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
+    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute, ClassGeneratorResult &r_result) override;
   };
 
   class GodotSubgroupGenerator : public IClassGenerator<GodotPropertySubgroupAttribute> {
@@ -70,8 +68,7 @@ namespace GodotObjectCompiler {
     Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class,
         Ref<GodotPropertySubgroupAttribute> p_attribute, Ref<Context> p_default_values) override;
 
-    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
-        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
+    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute, ClassGeneratorResult &r_result) override;
   };
 
   REGISTER_CLASS_GENERATOR(GodotCategoryGenerator);

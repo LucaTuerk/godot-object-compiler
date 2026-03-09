@@ -47,7 +47,6 @@ namespace GodotObjectCompiler {
 
   class IParser {
    public:
-
     virtual ~IParser() = default;
     virtual Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) = 0;
   };
@@ -66,8 +65,11 @@ namespace GodotObjectCompiler {
 
     static String strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters);
 
-   private:
+	void set_parse_attributes(bool p_parse_attributes);
 
+private:
+
+  	bool parse_attributes = true;
     bool input_is_path = false;
     static inline HashSet<String> _registered_handlers;
     static inline Vector<Ref<INodeHandler>> _handlers;

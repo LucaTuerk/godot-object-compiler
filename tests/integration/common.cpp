@@ -218,3 +218,18 @@ Size find_line_that_contains(const String &p_content, const Vector<String> &p_se
 
 	return INVALID_SIZE;
 }
+bool enum_bound(const char *p_enum_name, bool p_is_flags, std::initializer_list<const char *> &&p_check_values,
+		const String &p_generated_source, const String &p_generated_header) {
+	String cast_check_for = p_is_flags ? "VARIANT_BITFIELD_CAST" : "VARIANT_ENUM_CAST";
+	String bind_check_for = p_is_flags ? "BIND_BITFIELD_FLAG" : "BIND_ENUM_CONSTANT";
+
+	if (find_line_that_contains(p_generated_header, { cast_check_for, p_enum_name }) == INVALID_SIZE) {
+		return false;
+	}
+	for (const char *value : p_check_values) {
+		if (find_line_that_contains(p_generated_source, { bind_check_for, value }) == INVALID_SIZE) {
+			return false;
+		}
+	}
+	return true;
+}

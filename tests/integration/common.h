@@ -46,6 +46,9 @@ GodotObjectCompiler::Size find_line_that_contains(const GodotObjectCompiler::Str
 		const GodotObjectCompiler::Vector<GodotObjectCompiler::String> &p_search,
 		GodotObjectCompiler::Size p_start_line = 0);
 
+bool enum_bound(const char *p_enum_name, bool p_is_flags, std::initializer_list<const char *> &&p_check_values,
+		const GodotObjectCompiler::String &p_generated_source, const GodotObjectCompiler::String &p_generated_header);
+
 bool property_bound(const char *p_property_name, const char *p_variant_type,
 		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source);
 
@@ -77,6 +80,12 @@ bool virtual_function_bound(const char *p_function_name, const char *p_type,
 
 #define GOC_ASSERT_QUALIFIED_NAME(name, generated_source) \
 	GOC_TEST_ASSERT(string_contains(generated_source, name), "Qualified name \"%s\" does not appear in the source", name);
+
+#define GOC_ASSERT_ENUM_BOUND(name, ...) \
+	GOC_TEST_ASSERT(enum_bound(name, false, { __VA_ARGS__ }, generated_source, generated_header), "Enum \"%s\" not bound.", name);
+
+#define GOC_ASSERT_FLAGS_BOUND(name, ...) \
+	GOC_TEST_ASSERT(enum_bound(name, true, { __VA_ARGS__ }, generated_source, generated_header), "Flags \"%s\" not bound.", name);
 
 #define GOC_ASSERT_CUSTOM_PROP_BOUND(prop, variant_type) \
 	GOC_TEST_ASSERT(custom_property_bound(prop, variant_type, generated_source), \

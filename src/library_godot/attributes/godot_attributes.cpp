@@ -77,7 +77,12 @@ String GodotPropertySubgroupAttribute::_literal_content_lazy_get() const {
 }
 
 Ref<Field> GodotPropertyAttribute::TargetField() {
-	Ref<GodotCustomPropertyBindArgument> bind = arguments()->find_child<GodotCustomPropertyBindArgument>();
+	Ref<Arguments> args = arguments();
+	if (!args) {
+		return nullptr;
+	}
+
+	Ref<GodotCustomPropertyBindArgument> bind = args->find_child<GodotCustomPropertyBindArgument>();
 	if (!bind) {
 		return get_next_sibling<Field>();
 	}
@@ -90,22 +95,27 @@ Ref<Field> GodotPropertyAttribute::TargetField() {
 }
 
 Opt<GodotCustomPropertyBind> GodotPropertyAttribute::CustomBind() {
-	Ref<Identifier> bind_identifier = arguments()->find_chain<Identifier, GodotCustomPropertyBindArgument>();
+	Ref<Arguments> args = arguments();
+	if (!args) {
+		return std::nullopt;
+	}
+
+	Ref<Identifier> bind_identifier = args->find_chain<Identifier, GodotCustomPropertyBindArgument>();
 	if (!bind_identifier || bind_identifier->name == GodotCustomPropertyBindParameterType::AutoBind) {
 		return std::nullopt;
 	}
 
-	Ref<Literal> name_literal = arguments()->find_chain<Literal, GodotCustomPropertyBindArgument, Arguments, Argument>();
+	Ref<Literal> name_literal = args->find_chain<Literal, GodotCustomPropertyBindArgument, Arguments, Argument>();
 	if (!name_literal) {
 		return std::nullopt;
 	}
 
-	Ref<Literal> get_literal = arguments()->find_chain<Literal, GodotCustomPropertyGetArgument, Arguments, Argument>();
+	Ref<Literal> get_literal = args->find_chain<Literal, GodotCustomPropertyGetArgument, Arguments, Argument>();
 	if (!get_literal) {
 		return std::nullopt;
 	}
 
-	Ref<Literal> set_literal = arguments()->find_chain<Literal, GodotCustomPropertySetArgument, Arguments, Argument>();
+	Ref<Literal> set_literal = args->find_chain<Literal, GodotCustomPropertySetArgument, Arguments, Argument>();
 	if (!set_literal) {
 		return std::nullopt;
 	}
@@ -140,7 +150,12 @@ Opt<GodotCustomPropertyBind> GodotPropertyAttribute::CustomBind() {
 }
 
 bool GodotPropertyAttribute::_verify_target_class(Ref<Node> p_resolved) const {
-	Ref<Identifier> bind_identifier = arguments()->find_chain<Identifier, Arguments, GodotCustomPropertyBindArgument>();
+	Ref<Arguments> args = arguments();
+	if (!args) {
+		return false;
+	}
+
+	Ref<Identifier> bind_identifier = args->find_chain<Identifier, Arguments, GodotCustomPropertyBindArgument>();
 	if (!bind_identifier || bind_identifier->name == GodotCustomPropertyBindParameterType::AutoBind) {
 		return p_resolved->is<Field>();
 	}
@@ -148,7 +163,12 @@ bool GodotPropertyAttribute::_verify_target_class(Ref<Node> p_resolved) const {
 }
 
 Attribute::Target GodotPropertyAttribute::_get_target() const {
-	Ref<Identifier> bind_identifier = arguments()->find_chain<Identifier, Arguments, GodotCustomPropertyBindArgument>();
+	Ref<Arguments> args = arguments();
+	if (!args) {
+		return NONE;
+	}
+
+	Ref<Identifier> bind_identifier = args->find_chain<Identifier, Arguments, GodotCustomPropertyBindArgument>();
 	if (!bind_identifier || bind_identifier->name == GodotCustomPropertyBindParameterType::AutoBind) {
 		return NEXT;
 	}

@@ -79,6 +79,14 @@ namespace GodotObjectCompiler {
     attribute->end = current_src->end_byte;
     attribute->line = current_src->start_point.row + 1;
 
+  	if (!current_src->context->parse_attributes) {
+  		auto itr = current_src->context->stripped_parameters.find(current_src->start_byte);
+  		if (itr != current_src->context->stripped_parameters.end()) {
+  			attribute->build_child<UnparsedAttributeArguments>(itr->second);
+  		}
+  		return ParserStep::StepOver();
+  	}
+
     Ref<IAttributeArgumentParser> argument_parser = attribute->get_argument_parser();
     if (argument_parser) {
       auto itr = current_src->context->stripped_parameters.find(current_src->start_byte);

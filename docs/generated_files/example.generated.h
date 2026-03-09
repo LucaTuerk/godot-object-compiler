@@ -73,3 +73,4 @@ VARIANT_BITFIELD_CAST (ExampleClass::Flags) ;
 // clang-format on
 // NOLINTEND
 
+

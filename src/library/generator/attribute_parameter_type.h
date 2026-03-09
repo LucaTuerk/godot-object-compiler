@@ -78,7 +78,7 @@ public:
 };
 
 inline AssumptionState IAttributeParameterType::validate_assumption(Assumption<String> &p_assumption) {
-	if (Vector<String> values = get_value_names(); !vector_contains(values, p_assumption())) {
+	if (Vector<String> values = get_value_names(); !vector_contains(values, UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(p_assumption))) {
 		return STATE_INVALID;
 	}
 

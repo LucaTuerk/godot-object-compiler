@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* attribute.h                                                            */
+/* enums.h                                                                */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,66 +33,22 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "context.h"
-#include "library/parser/attribute_argument_parser.h"
 
-#define ATTRIBUTE_TYPE(node_type, target_type, target) \
-	NODE_TYPE(node_type); \
-protected: \
-	virtual bool _verify_target_class(Ref<Node> p_resolved) const override { \
-		return p_resolved->is<target_type>(); \
-	} \
-\
-	virtual Target _get_target() const override { \
-		return target; \
-	} \
-\
-public: \
-	Ref<target_type> Target##target_type() { \
-		Ref<Node> node_target = resolve_target(); \
-		if (!node_target) { \
-			return nullptr; \
-		} \
-		return node_target->as<target_type>(); \
-	} \
-\
-private:
+GODOT_CLASS();
+class Enums : public Object {
+	GODOT_GENERATED_BODY();
 
-namespace GodotObjectCompiler {
-
-class Attribute : public NamedContext {
-public:
-	enum Target {
-		NEXT, // attribute applies to next sibling in the context
-		CONTAINING, // attribute applies to a containing ancestral context
-		NONE, // no target
+	GODOT_ENUM();
+	enum RegularEnum {
+		REGULAR_VALUE_1,
+		REGULAR_VALUE_2,
 	};
 
-	Ref<Node> resolve_target() const;
-	bool verify_target(const Ref<Node> &p_resolved) const;
-	virtual Ref<IAttributeArgumentParser> get_argument_parser();
-
-	Size start{};
-	Size end{};
-	Size line{};
-
-protected:
-	virtual Target _get_target() const = 0;
-	virtual bool _verify_target_class(Ref<Node> p_resolved) const = 0;
-	virtual bool _verify_target(const Ref<Node> &p_resolved) const;
+	GODOT_ENUM(EnumFlags);
+	enum FlagsEnum {
+		FLAG_0 = 0,
+		FLAG_1 = 1
+	};
 };
 
-class UnparsedAttributeArguments : public Node {
-	NODE_TYPE(UnparsedAttributeArguments);
-
-public:
-	explicit UnparsedAttributeArguments(const String &content) : content(content) {}
-	String content;
-
-	String to_string() const override;
-	bool copy_to(const Ref<Node> &p_other) const override;
-	void write_to(IStructuredWriter *p_writer) override;
-	void read_from(IStructuredReader *p_reader) override;
-};
-
-} //namespace GodotObjectCompiler
+GODOT_GENERATED_GLOBAL();

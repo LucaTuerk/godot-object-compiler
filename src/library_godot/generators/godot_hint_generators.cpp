@@ -49,10 +49,12 @@ namespace GodotObjectCompiler {
   }
 
   Ref<GeneratorError> GodotCategoryGenerator::do_generate(Ref<Class> p_target_class,
-      Ref<GodotPropertyCategoryAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-      Ref<Context> p_generated_global) {
+		  Ref<GodotPropertyCategoryAttribute> p_attribute, ClassGeneratorResult &r_result) {
     using namespace GodotGeneratorUtils;
-    using namespace AssumedParameterValues;
+  	using namespace AssumedParameterValues;
+  	Ref<Context> p_generated_body = r_result.generated_body;
+  	Ref<Context> p_generated_sources = r_result.generated_sources;
+  	Ref<Context> p_generated_global = r_result.generated_global;
     UNUSED(p_generated_global);
 
     Ref<Body> get_property_list_body =
@@ -67,7 +69,8 @@ namespace GodotObjectCompiler {
             build_variant_type_argument(VariantTypeNil()),
             build_property_hint_argument(HintNone()),
             {build_property_usage_flags_argument(UsageCategory())},
-            p_attribute->literal_content()
+            p_attribute->literal_content(),
+            r_result
         ))
       })
     }).with_child(Output::Semicolon());
@@ -84,8 +87,10 @@ namespace GodotObjectCompiler {
   }
 
   Ref<GeneratorError> GodotGroupGenerator::do_generate(Ref<Class> p_target_class,
-      Ref<GodotPropertyGroupAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-      Ref<Context> p_generated_global) {
+  Ref<GodotPropertyGroupAttribute> p_attribute, ClassGeneratorResult &r_result) {
+  	Ref<Context> p_generated_body = r_result.generated_body;
+  	Ref<Context> p_generated_sources = r_result.generated_sources;
+  	Ref<Context> p_generated_global = r_result.generated_global;
     using namespace GodotGeneratorUtils;
     using namespace AssumedParameterValues;
     UNUSED(p_generated_global);
@@ -102,7 +107,8 @@ namespace GodotObjectCompiler {
             build_variant_type_argument(VariantTypeNil()),
             build_property_hint_argument(HintNone()),
             {build_property_usage_flags_argument(UsageGroup())},
-            p_attribute->literal_content()
+            p_attribute->literal_content(),
+			r_result
         ))
       })
     }).with_child(Output::Semicolon());
@@ -119,8 +125,10 @@ namespace GodotObjectCompiler {
   }
 
   Ref<GeneratorError> GodotSubgroupGenerator::do_generate(Ref<Class> p_target_class,
-      Ref<GodotPropertySubgroupAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-      Ref<Context> p_generated_global) {
+  Ref<GodotPropertySubgroupAttribute> p_attribute, ClassGeneratorResult &r_result) {
+  	Ref<Context> p_generated_body = r_result.generated_body;
+  	Ref<Context> p_generated_sources = r_result.generated_sources;
+  	Ref<Context> p_generated_global = r_result.generated_global;
     using namespace GodotGeneratorUtils;
     using namespace AssumedParameterValues;
     UNUSED(p_generated_global);
@@ -138,7 +146,8 @@ namespace GodotObjectCompiler {
             build_variant_type_argument(VariantTypeNil()),
             build_property_hint_argument(HintNone()),
             {build_property_usage_flags_argument(UsageSubgroup())},
-            p_attribute->literal_content()
+            p_attribute->literal_content(),
+			r_result
         ))
       })
     }).with_child(Output::Semicolon());

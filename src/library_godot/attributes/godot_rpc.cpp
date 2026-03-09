@@ -63,9 +63,7 @@ namespace GodotObjectCompiler {
   Vector<IAttributeParameterType::Argument> GodotRpcTransferModeParameterType::get_arguments() { return {}; }
 
   Vector<String> GodotRpcModeParameterType::_value_names_lazy_get() {
-    Ref<Enum> rpc_mode = ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(
-        AssumedGodotTypes::MultiplayerAPIRPCMode().qualified_name);
-
+    Ref<Enum> rpc_mode = AssumedGodotTypes::MultiplayerAPIRPCMode.unwrap().type;
     PANIC_COND(!rpc_mode, "Could not find RPCMode enum.");
 
     Vector<String> result;
@@ -78,9 +76,7 @@ namespace GodotObjectCompiler {
   }
 
   Vector<String> GodotRpcTransferModeParameterType::_value_names_lazy_get() {
-    const Ref<Enum> transfer_mode = ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(
-        AssumedGodotTypes::MultiplayerPeerTransferMode().qualified_name);
-
+    const Ref<Enum> transfer_mode = AssumedGodotTypes::MultiplayerPeerTransferMode.unwrap().type;
     PANIC_COND(!transfer_mode, "Could not find RPCMode enum.");
 
     Vector<String> result;

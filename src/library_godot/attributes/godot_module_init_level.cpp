@@ -64,9 +64,8 @@ namespace GodotObjectCompiler {
   Vector<String> GodotModuleInitializationLevelParameterType::_value_names_lazy_get() {
     using namespace AssumedGodotTypes;
 
-    Ref<Enum> init_level_enum =
-        ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(ModuleInitializationLevel().qualified_name);
-    if (!init_level_enum) {
+    Ref<Enum> init_level_enum = ModuleInitializationLevel().type;
+  	if (!init_level_enum) {
       return {};
     }
 

@@ -47,20 +47,17 @@ namespace GodotObjectCompiler {
     Ref<GeneratorError> do_generate_default_attribute_arguments(
         Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute, Ref<Context> p_default_values) override;
 
-    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
-        Ref<Context> p_generated_body, Ref<Context> p_generated_sources, Ref<Context> p_generated_global) override;
+    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute, ClassGeneratorResult &r_result) override;
 
    private:
 
-    static Ref<GeneratorError> generate_virtual(const Ref<Class>& p_target_class,
-        const Ref<Function>& p_target_function, const Ref<GodotFunctionAttribute>& p_attribute,
-        const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources,
-        const Ref<Context>& p_bind_methods_body);
+    static Ref<GeneratorError> generate_virtual(const Ref<Class> &p_target_class,
+			   const Ref<Function> &p_target_function, const Ref<GodotFunctionAttribute> &p_attribute,
+			   const Ref<Context> &p_bind_methods_body, ClassGeneratorResult &r_result);
 
-    static Ref<GeneratorError> generate_rpc(const Ref<Class>& p_target_class, const Ref<Function>& p_target_function,
-        const Ref<GodotRpcModeArgument>& p_rpc_mode, const Ref<GodotRpcTransferModeArgument>& p_transport_mode,
-        const Ref<GodotRpcSyncArgument>& p_sync, const Ref<GodotRpcChannelArgument>& p_channel,
-        const Ref<Context>& p_generated_body, const Ref<Context>& p_generated_sources);
+    static Ref<GeneratorError> generate_rpc(const Ref<Class> &p_target_class, const Ref<Function> &p_target_function,
+			const Ref<GodotRpcModeArgument> &p_rpc_mode, const Ref<GodotRpcTransferModeArgument> &p_transport_mode,
+			const Ref<GodotRpcSyncArgument> &p_sync, const Ref<GodotRpcChannelArgument> &p_channel, ClassGeneratorResult &r_result);
   };
 
   REGISTER_CLASS_GENERATOR(GodotFunctionGenerator)

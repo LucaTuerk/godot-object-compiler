@@ -177,6 +177,8 @@ public:
 
 	void write_to(IStructuredWriter *p_writer) override;
 
+	String header;
+
 private:
 	LAZY(NamedContext, Ref<Body>, body);
 	LAZY(NamedContext, String, name);

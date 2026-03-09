@@ -58,6 +58,8 @@ namespace GodotObjectCompiler {
     Ref<TreeSitterNode> src_root;
     Ref<TreeSitterNode> current_src;
     Dictionary<Size, String> stripped_parameters;
+	bool parse_attributes = true;
+
 
     [[nodiscard]] bool is_valid() const;
 

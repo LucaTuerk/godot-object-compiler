@@ -38,110 +38,133 @@
 
 namespace GodotObjectCompiler {
 
-  enum AssumptionState { STATE_INDETERMINATE, STATE_VALID, STATE_INVALID };
+enum AssumptionState { STATE_INDETERMINATE,
+	STATE_VALID,
+	STATE_INVALID };
 
-  template <typename T>
-  class Assumption;
+template <typename T>
+class Assumption;
 
-  template <typename T>
-  class IAssumptionValidator {
-   public:
+template <typename T>
+class IAssumptionValidator {
+public:
+	virtual ~IAssumptionValidator() = default;
 
-    virtual ~IAssumptionValidator() = default;
+	virtual AssumptionState validate_assumption(Assumption<T> &p_assumption) = 0;
+};
 
-    virtual AssumptionState validate_assumption(Assumption<T>& p_assumption) = 0;
-  };
+class IAssumptionSet {
+public:
+	virtual ~IAssumptionSet() = default;
 
-  class IAssumptionSet {
-   public:
+	virtual void validate_assumptions() = 0;
+};
 
-    virtual ~IAssumptionSet() = default;
+template <typename T>
+class Assumption {
+public:
+	using Validator = std::function<AssumptionState(Assumption &assumption)>;
 
-    virtual void validate_assumptions() = 0;
-  };
+	Assumption(const T &value, const String &unvalidated_message, IAssumptionValidator<T> *p_validator = nullptr);
+	~Assumption();
 
-  template <typename T>
-  class Assumption {
-   public:
+	const T &operator()() const;
+	const T &unwrap();
 
-    using Validator = std::function<AssumptionState(Assumption& assumption)>;
+	AssumptionState validate(Validator p_validator);
+	AssumptionState validate(IAssumptionValidator<T> *p_validator);
 
-    Assumption(const T& value, const String& unvalidated_message);
-    ~Assumption();
+	[[nodiscard]] bool is_ok() const;
+	[[nodiscard]] bool is_valid() const;
+	[[nodiscard]] bool is_invalid() const;
 
-    const T& operator()() const;
-    AssumptionState validate(Validator p_validator);
-    AssumptionState validate(IAssumptionValidator<T>* p_validator);
+private:
+	bool was_validated;
+	AssumptionState state = STATE_INDETERMINATE;
+	mutable Size value_access_count = 0;
+	String message;
+	T value;
+	IAssumptionValidator<T> *validator = nullptr;
 
-    [[nodiscard]] bool is_ok() const;
-    [[nodiscard]] bool is_valid() const;
-    [[nodiscard]] bool is_invalid() const;
+	friend class UNSAFE_VALUE_EXTRACTOR;
+};
 
-   public:
+class UNSAFE_VALUE_EXTRACTOR {
+public:
+	template <typename T>
+	static T& GET_VERY_UNSAFELY(Assumption<T>& p_assumption);
 
-    AssumptionState state = STATE_INDETERMINATE;
-    T value;
-    mutable Size value_access_count = 0;
-    bool was_validated;
-    String message;
-  };
+};
 
-  template <typename T>
-  Assumption<T>::Assumption(const T& value, const String& unvalidated_message) : was_validated(false) {
-    this->value = value;
-    message = unvalidated_message;
-  }
-
-  template <typename T>
-  Assumption<T>::~Assumption() {
-    if (value_access_count == 0) {
-      return;
-    }
-
-    if (state == STATE_INDETERMINATE) {
-      fmt_print_err("Assumption was left in a indeterminate state: " + message);
-    }
-
-    if (state == STATE_INVALID) {
-      fmt_print_err(
-          format("Assumption did not hold and was accessed %d times: %s", value_access_count, message.c_str()));
-    }
-  }
-
-  template <typename T>
-  const T& Assumption<T>::operator()() const {
-    if (state == STATE_INVALID) {
-      PANIC("Trying to access an invalid Assumption: %s", message.c_str());
-    }
-    value_access_count++;
-    return value;
-  }
-
-  template <typename T>
-  AssumptionState Assumption<T>::validate(Validator p_validator) {
-    state = p_validator(value);
-    return state;
-  }
-
-  template <typename T>
-  AssumptionState Assumption<T>::validate(IAssumptionValidator<T>* p_validator) {
-    state = p_validator->validate_assumption(*this);
-    return state;
-  }
-
-  template <typename T>
-  bool Assumption<T>::is_ok() const {
-    return state == STATE_VALID || state == STATE_INDETERMINATE;
-  }
-
-  template <typename T>
-  bool Assumption<T>::is_valid() const {
-    return state == STATE_VALID;
-  }
-
-  template <typename T>
-  bool Assumption<T>::is_invalid() const {
-    return state == STATE_INVALID;
-  }
-
+template <typename T>
+Assumption<T>::Assumption(const T &value, const String &unvalidated_message, IAssumptionValidator<T> *p_validator) : was_validated(false), validator(p_validator) {
+	this->value = value;
+	message = unvalidated_message;
 }
+
+template <typename T>
+Assumption<T>::~Assumption() {
+	if (value_access_count == 0) {
+		return;
+	}
+
+	if (state == STATE_INDETERMINATE) {
+		fmt_print_err("Assumption was left in a indeterminate state: " + message);
+	}
+
+	if (state == STATE_INVALID) {
+		fmt_print_err(
+				format("Assumption did not hold and was accessed %d times: %s", value_access_count, message.c_str()));
+	}
+}
+
+template <typename T>
+const T &Assumption<T>::operator()() const {
+	if (state != STATE_VALID) {
+		PANIC("Trying to access an unvalidated Assumption: %s", message.c_str());
+	}
+	value_access_count++;
+	return value;
+}
+
+template <typename T>
+const T &Assumption<T>::unwrap() {
+	if (state == STATE_INDETERMINATE && validator != nullptr) {
+		state = validator->validate_assumption(*this);
+	}
+
+	return operator()();
+}
+
+template <typename T>
+AssumptionState Assumption<T>::validate(Validator p_validator) {
+	state = p_validator(value);
+	return state;
+}
+
+template <typename T>
+AssumptionState Assumption<T>::validate(IAssumptionValidator<T> *p_validator) {
+	state = p_validator->validate_assumption(*this);
+	return state;
+}
+
+template <typename T>
+bool Assumption<T>::is_ok() const {
+	return state == STATE_VALID || state == STATE_INDETERMINATE;
+}
+
+template <typename T>
+bool Assumption<T>::is_valid() const {
+	return state == STATE_VALID;
+}
+
+template <typename T>
+bool Assumption<T>::is_invalid() const {
+	return state == STATE_INVALID;
+}
+
+template <typename T>
+T &UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(Assumption<T> &p_assumption) {
+	return p_assumption.value;
+}
+} //namespace GodotObjectCompiler

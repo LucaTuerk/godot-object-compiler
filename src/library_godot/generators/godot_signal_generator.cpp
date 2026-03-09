@@ -40,8 +40,11 @@
 namespace GodotObjectCompiler {
 
 Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
-		Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-		Ref<Context> p_generated_global) {
+		Ref<GodotSignalAttribute> p_attribute, ClassGeneratorResult &r_result) {
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
+	Ref<Context> p_generated_global = r_result.generated_global;
+
 	UNUSED(p_generated_global);
 
 	using namespace GodotGeneratorUtils;
@@ -98,7 +101,7 @@ Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
 		Ref<Identifier> identifier = parameter->find_child<Identifier>();
 		String name = identifier ? identifier->name : format("p_param_%d", i);
 
-		arguments->build_child<Argument>().with_child(build_property_info_defaults(type, name, DEFAULTS_SIGNAL_ARGUMENT));
+		arguments->build_child<Argument>().with_child(build_property_info_defaults(type, name, r_result, DEFAULTS_SIGNAL_ARGUMENT));
 
 		func_parameters->build_child<Parameter>().with_children({
 				type->clone(),

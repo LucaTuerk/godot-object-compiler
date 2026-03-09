@@ -38,6 +38,7 @@
 #include "godot_generator_utils.h"
 #include "library/tree/output/output.h"
 #include "library/tree/syntax/class.h"
+#include "library_godot/assumptions.h"
 #include "library_godot/attributes/godot_attributes.h"
 #include "library_godot/generated_assumptions/parameter_types.h"
 
@@ -166,8 +167,10 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate_default_attribute_argume
 }
 
 Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_class,
-		Ref<GodotPropertyAttribute> p_attribute, Ref<Context> p_generated_body, Ref<Context> p_generated_sources,
-		Ref<Context> p_generated_global) {
+		Ref<GodotPropertyAttribute> p_attribute, ClassGeneratorResult &r_result) {
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
+	Ref<Context> p_generated_global = r_result.generated_global;
 	UNUSED(p_generated_global);
 
 	using namespace GodotGeneratorUtils;
@@ -336,11 +339,11 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 
     Vector<Ref<GodotPropertyUsageFlagsArgument>> usage_flags = p_attribute->arguments()->find_children<GodotPropertyUsageFlagsArgument>();
 
-    Ref<Node> property_info = build_property_info(variant_type, property_hint, usage_flags, property_name);
-    Ref<Node> property_info_no_editor = build_property_info(variant_type, property_hint, usage_flags, property_name,true);
+    Ref<Node> property_info = build_property_info(variant_type, property_hint, usage_flags, property_name, r_result);
+    Ref<Node> property_info_no_editor = build_property_info(variant_type, property_hint, usage_flags, property_name,r_result,true);
 
     Ref<Function> add_property = build<Function>().with_children({
-      build<Identifier>("ADD_PROPERTY"),
+      build<Identifier>(AssumedGodotTypes::ADD_PROPERTY().type->name()),
       build<Arguments>().with_children({
         build<Argument>().with_children({
           property_info_no_editor
@@ -364,9 +367,15 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 	GEN_ERROR_COND(!property_names_body, p_attribute, "Failed to get property names body.");
 
 	property_names_body->add_child(
-			Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
-					property_name.c_str(), property_name.c_str())));
+			Output::Text(format("static const %s& %s() {static const %s sn = \"%s\"; return sn; }",
+					AssumedGodotTypes::StringName().type->qualified_name().c_str(),
+					property_name.c_str(),
+					AssumedGodotTypes::StringName().type->qualified_name().c_str(),
+					property_name.c_str()
+					)));
 
+	r_result.header_includes.insert(AssumedGodotTypes::StringName().type->header);
+	r_result.source_includes.insert(AssumedGodotTypes::ADD_PROPERTY().type->header);
 	return GeneratorError::OK;
 }
 

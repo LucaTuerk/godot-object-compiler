@@ -49,6 +49,7 @@
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/identifier.h"
 #include "library/tree/syntax/namespace.h"
+#include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler {
 
@@ -142,10 +143,12 @@ String GenerateResources::rst_table(const Table &table) {
 }
 
 Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
-	UNUSED(p_context);
-
 	GenerateTypeDB generate_type_db;
 	PROG_ERR_PASS_ON(generate_type_db.run(p_context));
+	PROG_ERR_COND(!(AssumedGodotTypes::validate_assumptions() && AssumedParameterValues::validate_assumptions()),
+			"Failed to validate some assumptions on available Godot types and macros, probably because the TypeDB "
+			"generator has not found the relevant files.\n"
+			"Ensure godot-cpp include path are known to goc via the -I= flag or in the .goc_project file.");
 
 	Permissions::instance()->add_write_path("resources");
 	Permissions::instance()->add_write_path("docs");

@@ -439,9 +439,9 @@ AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Define>> &p_as
 }
 
 AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<EnumValue>> &p_assumption) {
-	Vector<String> namespaces = string_split(p_assumption().qualified_name, "::");
+	Vector<String> namespaces = string_split(p_assumption().name, "::");
 	if (namespaces.size() == 1) {
-		PRINT_ERROR("EnumValue assumption required fully qualified name. Got: \"%s\"", p_assumption().qualified_name.c_str());
+		PRINT_ERROR("EnumValue assumption required fully qualified name. Got: \"%s\"", p_assumption().name.c_str());
 		return STATE_INVALID;
 	}
 
