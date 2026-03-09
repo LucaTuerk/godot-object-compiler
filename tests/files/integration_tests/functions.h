@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "functions.generated.h"
+
 namespace Tests {
 GODOT_CLASS();
 

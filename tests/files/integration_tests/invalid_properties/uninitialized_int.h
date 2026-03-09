@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "invalid_properties/uninitialized_int.generated.h"
+
 GODOT_CLASS();
 
 class Invalid : Node {

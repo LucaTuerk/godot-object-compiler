@@ -34,8 +34,9 @@
 /**************************************************************************/
 #pragma once
 
-GODOT_CLASS(GodotClass, LevelScene);
+#include "macros.generated.h"
 
+GODOT_CLASS(GodotClass, LevelScene);
 class A {
   GODOT_GENERATED_BODY();
 

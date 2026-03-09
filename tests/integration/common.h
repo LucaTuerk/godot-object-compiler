@@ -67,7 +67,7 @@ bool virtual_function_bound(const char *p_function_name, const char *p_type,
 #define GOC_INTEGRATION_TEST_GEN_FILE(file) \
 	String generated_header, generated_source, register_header, register_source; \
 	bool success = generate_files(file, generated_header, generated_source, register_header, register_source); \
-	GOC_TEST_ASSERT(success, "Failed to generate files.")
+	GOC_TEST_ASSERT(success, "Failed to generate files from \"%s\"", file)
 
 #define GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file) \
 	String generated_header, generated_source, register_header, register_source; \

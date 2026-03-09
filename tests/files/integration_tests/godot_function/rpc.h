@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_function/rpc.generated.h"
+
 GODOT_CLASS();
 
 class Rpc : public Node {

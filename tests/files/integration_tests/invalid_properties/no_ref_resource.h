@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "invalid_properties/no_ref_resource.generated.h"
+
 GODOT_CLASS();
 
 class Invalid : Node {

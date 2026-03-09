@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* uninitialized_float.h                                                  */
+/* invalid_include_order.h                                                */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,15 +34,11 @@
 /**************************************************************************/
 #pragma once
 
-#include "invalid_properties/uninitialized_float.generated.h"
+#include "godot_class/invalid_include_order.generated.h"
+#include <vector>
 
 GODOT_CLASS();
-
-class Invalid : Node {
-  GODOT_GENERATED_BODY();
-
-  GODOT_PROPERTY();
-  float unitialized_float;
+class InvalidIncludeOrder : public Object {
+	GODOT_GENERATED_BODY();
 };
-
 GODOT_GENERATED_GLOBAL();

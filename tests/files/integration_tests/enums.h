@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "enums.generated.h"
+
 GODOT_CLASS();
 class Enums : public Object {
 	GODOT_GENERATED_BODY();

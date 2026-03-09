@@ -34,6 +34,9 @@
 /**************************************************************************/
 #pragma once
 
+#include "invalid_properties/uninitialized_bool.generated.h"
+
+
 GODOT_CLASS();
 
 class Invalid : Node {

@@ -35,6 +35,8 @@
 
 #pragma once
 
+#include "invalid_properties/no_name.generated.h"
+
 GODOT_CLASS();
 
 class Invalid : Node {

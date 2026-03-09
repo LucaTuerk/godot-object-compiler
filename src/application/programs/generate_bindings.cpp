@@ -217,13 +217,15 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		String in_generated_stem = path_stem(in_generated_path);
 		String gen_source_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.cpp");
 		String gen_header_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
+		String gen_header_include_path = header_path(p_context.paths_generated, gen_header_path);
 
 		if (!directory_exits(in_generated_base)) {
 			create_dir_recursive(in_generated_base);
 		}
 
-		Ref<GeneratedGlobalAttribute> generated_global_attribute =
-				global_namespace->find_descendant<GodotGeneratedGlobalAttribute>();
+		Vector<Ref<GeneratedGlobalAttribute>> generated_global_attributes = global_namespace->body()->find_children<GeneratedGlobalAttribute>();
+		PROG_ERR_COND(generated_global_attributes.size() > 1, "Multiple GODOT_GENERATED_GLOBAL attributes found in file, only on is required and allowed.");
+		Ref<GeneratedGlobalAttribute> generated_global_attribute = generated_global_attributes.empty() ? nullptr : generated_global_attributes[0];
 
 		Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 		Vector<Pair<Ref<GeneratedBodyAttribute>, Ref<Context>>> generated_bodies;
@@ -240,10 +242,11 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 
 		for (const Ref<Class> &target_class : classes) {
 			PRINT_VERBOSE("Processing class \"%s\"", target_class->qualified_name().c_str());
-			ClassGeneratorResult result{ input_file, target_class, header_includes, source_includes, register_includes};
+			ClassGeneratorResult result{ input_file, target_class, header_includes, source_includes, register_includes };
 			result.initialize = register_body;
 			result.uninitialize = unregister_body;
 			result.generated_global = global_generated;
+			result.generated_header_include_path = gen_header_include_path;
 
 			for (const Ref<Type> &type : target_class->find_children<Type>(true)) {
 				String header;
@@ -251,15 +254,6 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 					source_includes.insert(header);
 				}
 			}
-
-			auto generated_body_attribute = target_class->body()->find_child<GeneratedBodyAttribute>();
-			if (!generated_body_attribute) {
-				PRINT_VERBOSE("No GeneratedBodyAttribute found. Skipping class.");
-				continue;
-			}
-
-			result.generated_body_line = generated_body_attribute->line;
-			result.generated_sources->add_child(Output::NewLine());
 
 			Ref<Node> previous = target_class->get_previous_sibling();
 			if (!previous) {
@@ -272,6 +266,14 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 				PRINT_VERBOSE("Class does not have a GodotClassAttribute applied. Skipping class.");
 				continue;
 			}
+
+			auto generated_body_attribute = target_class->body()->find_child<GeneratedBodyAttribute>();
+			PROG_ERR_COND(!generated_body_attribute || generated_body_attribute->get_index() != 0, "Generated class requires a GODOT_GENERATED_BODY attribute as first entry in the class body.");
+
+			result.generated_body_line = generated_body_attribute->line;
+			result.generated_sources->add_child(Output::NewLine());
+
+			PROG_ERR_COND(!generated_global_attribute, "File must contain a GODOT_GENERATED_GLOBAL attribute in the global namespace.");
 
 			GodotClassGenerator class_generator;
 			Ref<Context> class_default_values = node_new<Context>();
@@ -371,7 +373,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		global_output->get_output(&header_writer);
 	}
 
-	for (const String& register_include : register_includes) {
+	for (const String &register_include : register_includes) {
 		register_class_includes->add_child(Output::Include(register_include));
 	}
 

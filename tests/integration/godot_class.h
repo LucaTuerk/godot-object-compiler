@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* uninitialized_float.h                                                  */
+/* godot_class.h                                                          */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,16 +33,20 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "common.h"
+#include "library/core/file_system_utilities.h"
+#include "library/core/string_utilities.h"
+#include "test_registry.h"
 
-#include "invalid_properties/uninitialized_float.generated.h"
+using namespace GodotObjectCompiler;
 
-GODOT_CLASS();
-
-class Invalid : Node {
-  GODOT_GENERATED_BODY();
-
-  GODOT_PROPERTY();
-  float unitialized_float;
+GOC_INTEGRATION_TEST(GenerateClasses) {
+	for (const String &path : directory_files("tests/files/integration_tests/godot_class")) {
+		if (string_contains(path, "invalid")) {
+			GOC_INTEGRATION_TEST_GEN_INVALID_FILE(path.c_str());
+		} else {
+			GOC_INTEGRATION_TEST_GEN_FILE(path.c_str());
+		}
+	}
+	return TEST_RESULT_SUCCESS;
 };
-
-GODOT_GENERATED_GLOBAL();

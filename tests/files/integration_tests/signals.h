@@ -34,6 +34,8 @@
 /**************************************************************************/
 #pragma once
 
+#include "signals.generated.h"
+
 namespace Tests {
 GODOT_CLASS();
 
