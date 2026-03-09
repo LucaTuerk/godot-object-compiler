@@ -123,9 +123,6 @@ Ref<GeneratorError> GodotClassGenerator::do_generate(Ref<Class> p_target_class, 
 		GEN_ERROR(p_target_class, "Target class does not inherit from a godot object class or the class was not found.");
 	}
 
-	Ref<Node> first_child = p_target_class->body()->get_child(0);
-	GEN_ERROR_COND(first_child == nullptr || !first_child->is<GodotGeneratedBodyAttribute>(), p_attribute, "Expected GODOT_GENERATED_BODY attribute as first entry in class body.");
-
 	Ref<Include> last_include = p_target_class->find_ancestor<Include>(BY_SIBLINGS_PREV);
 	GEN_ERROR_COND(!last_include, p_attribute, "No includes found. Requires generated header \"%s\"", r_result.generated_header_include_path.c_str());
 	GEN_ERROR_COND(last_include->include_path != r_result.generated_header_include_path, last_include, "Generated header \"%s\" must be the last include.", r_result.generated_header_include_path.c_str());
