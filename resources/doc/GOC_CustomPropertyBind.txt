@@ -1,2 +1,0 @@
-This argument specified if the property generator generates the getters, setters and bindings based
-on the field the attribute is applied to or a custom binding is applied.

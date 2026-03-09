@@ -40,40 +40,19 @@
 
 namespace GodotObjectCompiler {
 
-String GodotCustomPropertyBindParameterType::get_return_type() {
-	return "GOC_CustomPropertyBind";
+String GodotCustomPropertyGetSetParameterType::get_return_type() {
+	return "GOC_CustomPropertyGetSet";
 }
 
-Vector<String> GodotCustomPropertyBindParameterType::get_value_names() {
-	return { AutoBind, Name };
+Vector<String> GodotCustomPropertyGetSetParameterType::get_value_names() {
+	return { AutoGetSet, GetSet };
 }
 
-Vector<IAttributeParameterType::Argument> GodotCustomPropertyBindParameterType::get_arguments() {
-	return { { ARG_STRING, "const char*", "p_name", false } };
-}
-
-String GodotCustomPropertyGetParameterType::get_return_type() {
-	return "GOC_CustomPropertyGet";
-}
-
-Vector<String> GodotCustomPropertyGetParameterType::get_value_names() {
-	return { AutoGet, Get };
-}
-
-Vector<IAttributeParameterType::Argument> GodotCustomPropertyGetParameterType::get_arguments() {
-	return { { ARG_STRING, "const char*", "p_getter_name", false } };
-}
-
-String GodotCustomPropertySetParameterType::get_return_type() {
-	return "GOC_CustomPropertySet";
-}
-
-Vector<String> GodotCustomPropertySetParameterType::get_value_names() {
-	return { AutoSet, Set };
-}
-
-Vector<IAttributeParameterType::Argument> GodotCustomPropertySetParameterType::get_arguments() {
-	return { { ARG_STRING, "const char*", "p_setter_name", false } };
+Vector<IAttributeParameterType::Argument> GodotCustomPropertyGetSetParameterType::get_arguments() {
+	return {
+		{ ARG_STRING, "const char*", "p_getter_name", false },
+		{ ARG_STRING, "const char*", "p_setter_name", false }
+	};
 }
 
 } //namespace GodotObjectCompiler

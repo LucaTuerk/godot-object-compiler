@@ -106,9 +106,9 @@ Ref<Type> GodotGeneratorUtils::const_ref(const String &p_type_name) {
 	return build<Type>().with_children({ build<Const>(), build<Identifier>(p_type_name), build<Reference>() });
 }
 
-Ref<Function> GodotGeneratorUtils::bind_method(const String &p_class_name, const String &p_method_name,
-		const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
-	return bind_method_as(p_class_name, p_method_name, p_method_name, p_parameter_names, p_default_values);
+Ref<Function> GodotGeneratorUtils::bind_method(const String &p_class_name, const String &p_bind_name,
+		const String &p_method_name, const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
+	return bind_method_as(p_class_name, p_bind_name, p_method_name, p_parameter_names, p_default_values);
 }
 
 Ref<Function> GodotGeneratorUtils::bind_method_as(const String &p_class_name, const String &p_bind_name,
@@ -147,8 +147,8 @@ Ref<Function> GodotGeneratorUtils::bind_method_as(const String &p_class_name, co
 	// clang-format on
 }
 
-Ref<Function> GodotGeneratorUtils::bind_static_method(const String &p_class_name, const String &p_method_name,
-		const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
+Ref<Function> GodotGeneratorUtils::bind_static_method(const String &p_class_name, const String &p_bind_name,
+		const String &p_method_name, const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
 	// clang-format off
     Ref<Arguments> bind_args;
     Ref<Arguments> d_method_args;
@@ -160,7 +160,7 @@ Ref<Function> GodotGeneratorUtils::bind_static_method(const String &p_class_name
       build<Function>().with_children({
         build<Identifier>("D_METHOD"),
         build_ref<Arguments>(&d_method_args).with_children({
-            build<Argument>().with_child(Output::StringLiteral(p_method_name))
+            build<Argument>().with_child(Output::StringLiteral(p_bind_name))
           })
         }),
     build<Argument>().with_children({

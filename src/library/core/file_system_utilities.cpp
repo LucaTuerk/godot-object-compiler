@@ -272,6 +272,7 @@ bool could_be_file_path(const String &p_path) {
 	// TODO
 	return !p_path.empty();
 }
+
 String header_path(const String &p_include_path, const String &p_file_path) {
 	const String include_absolute = path_absolute(p_include_path);
 	const String file_absolute = path_absolute(p_file_path);

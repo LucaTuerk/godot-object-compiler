@@ -11,20 +11,26 @@ Usage
 
 .. include:: descriptions/GODOT_PROPERTY.rst
 
-You can also bind custom or computed properties by providing the property as well as getter and setter names
+Binding custom or computed properties is done by providing the property as well as getter and setter names
 within the attribute arguments.
 
 .. code-block:: C++
 
-    GODOT_PROPERTY(Name("property"), Get("get_property"), Set("set_property"));
+    GODOT_PROPERTY("property", GetSet("get_property", "set_property"));
     int get_property() const;
     void set_property(const int& p_value);
 
+You can also define the name of the property as a string literal when using auto generated getters and setters
+if your property name should differ from the backing fields name.
+
+.. code-block:: C++
+
+    GODOT_PROPERTY("exposed_name");
+    int internal_name = 0;
+
 Available Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-.. include:: parameters/GOC_CustomPropertyBind.rst
-.. include:: parameters/GOC_CustomPropertyGet.rst
-.. include:: parameters/GOC_CustomPropertySet.rst
+.. include:: parameters/GOC_CustomPropertyGetSet.rst
 .. include:: parameters/GOC_PropertyGetAccessSpecifier.rst
 .. include:: parameters/GOC_PropertySetAccessSpecifier.rst
 .. include:: parameters/GOC_VariantType.rst

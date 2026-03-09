@@ -97,9 +97,8 @@ protected:
 	Target _get_target() const override;
 
 private:
-	ATTRIBUTE_REGISTER_PARAMETERS(GodotCustomPropertyBind)
-	ATTRIBUTE_REGISTER_PARAMETERS(GodotCustomPropertyGet)
-	ATTRIBUTE_REGISTER_PARAMETERS(GodotCustomPropertySet)
+	ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
+	ATTRIBUTE_REGISTER_PARAMETERS(GodotCustomPropertyGetSet)
 	ATTRIBUTE_REGISTER_PARAMETERS(GodotVariantType)
 	ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyHint)
 	ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlags)
@@ -111,6 +110,7 @@ class GodotFunctionAttribute : public GodotAttributeWithParams {
 	ATTRIBUTE_TYPE(GodotFunctionAttribute, Function, NEXT)
 	ATTRIBUTE_DEFAULT_MACRO(GODOT_FUNCTION)
 
+	ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
 	ATTRIBUTE_REGISTER_PARAMETERS(GodotVirtual);
 	ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcMode);
 	ATTRIBUTE_REGISTER_PARAMETERS(GodotRpcSync);
@@ -121,6 +121,8 @@ class GodotFunctionAttribute : public GodotAttributeWithParams {
 class GodotSignalAttribute : public GodotAttributeWithParams {
 	ATTRIBUTE_TYPE(GodotSignalAttribute, Function, NEXT)
 	ATTRIBUTE_DEFAULT_MACRO(GODOT_SIGNAL)
+
+	ATTRIBUTE_REGISTER_PARAMETERS(StringLiteral)
 };
 
 class GodotPropertyCategoryAttribute : public GodotAttributeWithParams {
