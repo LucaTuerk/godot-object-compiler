@@ -57,12 +57,12 @@ String GenerateBindings::file_id(const String &p_file_name) {
 	return hash_string(hasher(p_file_name));
 }
 
-String GenerateBindings::generated_macro_name(const String &p_file, Size p_line) {
+String GenerateBindings::generated_macro_name(const String &p_header, Size p_line) {
 	StreamWriter stream;
 	stream.write("GOC_GENERATED_");
 	stream.write_generic(p_line);
 	stream.write("_");
-	stream.write(file_id(p_file));
+	stream.write(file_id(p_header));
 	return stream.get_string();
 }
 
@@ -143,7 +143,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
     Ref<Body> unregister_body;
 
     register_types_source->add_children({
-      Output::Include(path_concat_ext(p_context.paths_generated, register_file_name, "h")),
+      Output::Include(format("%s.h", register_file_name.c_str())),
       register_class_includes,
       Output::NewLine(),
       build<Function>().with_children({
@@ -172,6 +172,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 	// clang-format on
 
 	HashSet<String> processed;
+	HashSet<String> register_includes;
 
 	for (String input_file : *p_context.files_input) {
 		if (!path_is_descendant(*p_context.paths_root, input_file)) {
@@ -239,7 +240,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 
 		for (const Ref<Class> &target_class : classes) {
 			PRINT_VERBOSE("Processing class \"%s\"", target_class->qualified_name().c_str());
-			ClassGeneratorResult result{ input_file, target_class, header_includes, source_includes };
+			ClassGeneratorResult result{ input_file, target_class, header_includes, source_includes, register_includes};
 			result.initialize = register_body;
 			result.uninitialize = unregister_body;
 			result.generated_global = global_generated;
@@ -291,7 +292,7 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class initialization code.")
 
 			if (result.initialize->get_child_count() > 0 || result.uninitialize->get_child_count() > 0) {
-				register_class_includes->add_child(Output::Include(target_class->header));
+				result.register_includes.insert(header_path(*p_context.paths_root, input_file));
 			}
 
 			if (!ExecutionContext::instance()->file_modified(input_file)) {
@@ -356,18 +357,22 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			Ref<Output::OutputNode> source_output = transformator.transform(result.generated_sources);
 
 			Ref<Output::OutputNode> body_output = Output::Define(
-					generated_macro_name(result.file_path, result.generated_body_line), {}, { result.generated_body });
+					generated_macro_name(target_header, result.generated_body_line), {}, { result.generated_body });
 
 			source_output->get_output(&source_writer);
 			body_output->get_output(&header_writer);
 		}
 
 		Ref<Output::OutputNode> global_output = Output::Define(
-				generated_macro_name(input_file, generated_global_attribute ? generated_global_attribute->line : 0), {},
+				generated_macro_name(target_header, generated_global_attribute ? generated_global_attribute->line : 0), {},
 				{ global_generated });
 
 		header_writer.write("\n");
 		global_output->get_output(&header_writer);
+	}
+
+	for (const String& register_include : register_includes) {
+		register_class_includes->add_child(Output::Include(register_include));
 	}
 
 	Ref<Output::OutputNode> register_header_output = transformator.transform(register_types_header);

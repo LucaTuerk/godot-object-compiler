@@ -62,8 +62,9 @@ struct ClassGeneratorResult {
 
 	HashSet<String> &header_includes;
 	HashSet<String> &source_includes;
+	HashSet<String> &register_includes;
 
-	ClassGeneratorResult(String p_file_path, Ref<Class> p_target_class, HashSet<String> &p_header_includes, HashSet<String> &p_source_includes);
+	ClassGeneratorResult(String p_file_path, Ref<Class> p_target_class, HashSet<String> &p_header_includes, HashSet<String> &p_source_includes, HashSet<String> &p_register_includes);
 };
 
 class ClassGenerator {
@@ -90,7 +91,8 @@ protected:
 	virtual Ref<GeneratorError> _generate(Ref<Class> p_target_class, Ref<Attribute> p_attribute, ClassGeneratorResult &r_result) = 0;
 };
 
-inline ClassGeneratorResult::ClassGeneratorResult(String p_file_path, Ref<Class> p_target_class, HashSet<String> &p_header_includes, HashSet<String> &p_source_includes) : header_includes(p_header_includes), source_includes(p_source_includes) {
+inline ClassGeneratorResult::ClassGeneratorResult(String p_file_path, Ref<Class> p_target_class, HashSet<String> &p_header_includes, HashSet<String> &p_source_includes, HashSet<String> &p_register_includes) :
+	header_includes(p_header_includes), source_includes(p_source_includes), register_includes(p_register_includes) {
 	file_path = std::move(p_file_path);
 	target_class = p_target_class;
 
