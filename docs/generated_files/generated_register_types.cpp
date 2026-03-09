@@ -14,20 +14,16 @@
 
 // NOLINTBEGIN
 // clang-format off
-#include <gdextension_interface.h>
-#include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/core/defs.hpp>
+#include "purged local file path"
+#include "purged local file path"
 #include "purged local file path"
 #include "purged local file path"
 
-void generated_register_module (ModuleInitializationLevel p_level) 
+void generated_register_module (godot::ModuleInitializationLevel p_level) 
 {
-  if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) 
-  {
-    GDREGISTER_CLASS (ExampleClass) ;
-  }
+  
 }
-void generated_unregister_module (ModuleInitializationLevel p_level) 
+void generated_unregister_module (godot::ModuleInitializationLevel p_level) 
 {
   
 }
