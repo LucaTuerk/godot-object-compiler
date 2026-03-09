@@ -42,7 +42,7 @@ GODOT_CLASS();
 class Invalid : Node {
 	GODOT_GENERATED_BODY();
 
-	GODOT_PROPERTY(Name("property"), Get("get_property"), Set("set_property"));
+	GODOT_PROPERTY("property", GetSet("get_property", "set_property"));
 
 	void set_property(const int& p_value);
 	float get_property() const;

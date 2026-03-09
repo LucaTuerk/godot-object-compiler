@@ -11,6 +11,13 @@ Usage
 
 .. include:: descriptions/GODOT_FUNCTION.rst
 
+You can also bind the function with a different name by providing a string literal argument in the attribute.
+
+.. code-block:: C++
+
+    GODOT_FUNCTION("exposed_name");
+    void internal_name(int p_param);
+
 Available Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 

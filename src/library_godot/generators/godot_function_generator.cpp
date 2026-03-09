@@ -47,6 +47,7 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate_default_attribute_argume
 	UNUSED(p_attribute);
 	// clang-format off
     p_default_values->add_children({
+    	build<StringLiteralArgument>().with_child<Literal>(""),
       build<GodotVirtualArgument>().with_child<Identifier>(AssumedParameterValues::NoVirtual()).with_child<Arguments>(),
       build<GodotRpcModeArgument>().with_child<Identifier>(AssumedParameterValues::Disabled()).with_child<Arguments>(),
       build<GodotRpcSyncArgument>().with_child<Identifier>(AssumedParameterValues::CallRemote()).with_child<Arguments>(),
@@ -75,6 +76,14 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> p_target_clas
 
 	const Ref<Function> target_function = target_node->as<Function>();
 	GEN_ERROR_COND(target_function == nullptr, p_target_class, "Resolved not for function macro is not a function.");
+
+	const Ref<Literal> name_literal = p_attribute->arguments()->find_chain<Literal, StringLiteralArgument>();
+	GEN_ERROR_COND(name_literal == nullptr, p_attribute, "Failed to find name literal.");
+
+	String function_name = target_function->name();
+	if (String unwrapped; name_literal->unwrap_string_literal(unwrapped)) {
+		function_name = unwrapped;
+	}
 
 	const Ref<GodotRpcModeArgument> rpc_mode_argument = p_attribute->arguments()->find_child<GodotRpcModeArgument>();
 	GEN_ERROR_COND(rpc_mode_argument == nullptr, p_attribute, "Failed to find rpc mode argument.");
@@ -108,20 +117,20 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> p_target_clas
 
 	if (target_function->is_static()) {
 		bind_methods_body->add_child(GodotGeneratorUtils::bind_static_method(
-				p_target_class->name(), target_function->name(), parameter_names, default_values));
+				p_target_class->name(), function_name, target_function->name(), parameter_names, default_values));
 	} else if (virtual_argument->is_script_virtual()) {
 		Ref<GeneratorError> error = generate_virtual(
-				p_target_class, target_function, p_attribute, bind_methods_body, r_result);
+				p_target_class, function_name, target_function, p_attribute, bind_methods_body, r_result);
 		if (error != GeneratorError::OK) {
 			return error;
 		}
 	} else {
 		bind_methods_body->add_child(GodotGeneratorUtils::bind_method(
-				p_target_class->name(), target_function->name(), parameter_names, default_values));
+				p_target_class->name(), function_name, target_function->name(), parameter_names, default_values));
 	}
 
 	if (rpc_mode_argument->rpc_mode() != AssumedParameterValues::Disabled()) {
-		Ref<GeneratorError> error = generate_rpc(p_target_class, target_function, rpc_mode_argument,
+		Ref<GeneratorError> error = generate_rpc(p_target_class, function_name, rpc_mode_argument,
 				p_attribute->arguments()->find_child<GodotRpcTransferModeArgument>(),
 				p_attribute->arguments()->find_child<GodotRpcSyncArgument>(),
 				p_attribute->arguments()->find_child<GodotRpcChannelArgument>(), r_result);
@@ -153,8 +162,8 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(Ref<Class> p_target_clas
 }
 
 Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p_target_class,
-		const Ref<Function> &p_target_function, const Ref<GodotFunctionAttribute> &p_attribute,
-		const Ref<Context> &p_bind_methods_body, ClassGeneratorResult &r_result) {
+		const String &p_bind_name, const Ref<Function> &p_target_function,
+		const Ref<GodotFunctionAttribute> &p_attribute, const Ref<Context> &p_bind_methods_body, ClassGeneratorResult &r_result) {
 	Ref<Context> p_generated_body = r_result.generated_body;
 	Ref<Context> p_generated_sources = r_result.generated_sources;
 	Ref<Context> p_generated_global = r_result.generated_global;
@@ -211,7 +220,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 	GDVIRTUAL.validate(ExecutionContext::instance()->get_type_db());
 	GEN_ERROR_COND(GDVIRTUAL.is_invalid(), p_target_function, "Invalid macro " + macro + ". Was not found.");
 
-	String virtual_name = format("_%s", p_target_function->name().c_str());
+	String virtual_name = format("_%s", p_bind_name.c_str());
 	String virtual_caller_name = virtual_name;
 
 	// clang-format off
@@ -310,7 +319,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 	generated_private_members->add_children({ virtual_caller, gdvirtual });
 	p_bind_methods_body->add_children({ gdvirtual_bind,
 			GodotGeneratorUtils::bind_method_as(
-					p_target_class->name(), p_target_function->name(), virtual_caller_name, parameter_names, default_values) });
+					p_target_class->name(), p_bind_name, virtual_caller_name, parameter_names, default_values) });
 
 	r_result.header_includes.insert(GDVIRTUAL().type->header);
 	r_result.source_includes.insert(AssumedGodotTypes::GDVIRTUAL_BIND().type->header);
@@ -320,17 +329,16 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 }
 
 Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(const Ref<Class> &p_target_class,
-		const Ref<Function> &p_target_function, const Ref<GodotRpcModeArgument> &p_rpc_mode,
+		const String &p_function_name, const Ref<GodotRpcModeArgument> &p_rpc_mode,
 		const Ref<GodotRpcTransferModeArgument> &p_transport_mode, const Ref<GodotRpcSyncArgument> &p_sync,
 		const Ref<GodotRpcChannelArgument> &p_channel, ClassGeneratorResult &r_result) {
 	Ref<Context> p_generated_body = r_result.generated_body;
 	Ref<Context> p_generated_sources = r_result.generated_sources;
 	PANIC_COND(!p_target_class, "Target class not found");
-	PANIC_COND(!p_target_function, "Target function not found");
-	GEN_ERROR_COND(!p_rpc_mode, p_target_function, "Target rpc mode not found");
-	GEN_ERROR_COND(!p_transport_mode, p_target_function, "Target rpc transport mode not found");
-	GEN_ERROR_COND(!p_sync, p_target_function, "Target rpc sync not found");
-	GEN_ERROR_COND(!p_channel, p_target_function, "Target rpc channel not found");
+	GEN_ERROR_COND(!p_rpc_mode, p_target_class, "Target rpc mode not found");
+	GEN_ERROR_COND(!p_transport_mode, p_target_class, "Target rpc transport mode not found");
+	GEN_ERROR_COND(!p_sync, p_target_class, "Target rpc sync not found");
+	GEN_ERROR_COND(!p_channel, p_target_class, "Target rpc channel not found");
 	GEN_ERROR_COND(!p_generated_body, p_target_class, "Generated body not found.");
 	GEN_ERROR_COND(!p_generated_sources, p_target_class, "Generated sources not found.");
 
@@ -347,7 +355,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(const Ref<Class> &p_tar
         Output::FmtText("opts[\"transfer_mode\"] = %s::%s;", AssumedGodotTypes::MultiplayerPeer().type->qualified_name().c_str(), p_transport_mode->transfer_mode().c_str()),
         Output::FmtText("opts[\"call_local\"] = %s;", (p_sync->rpc_sync() == AssumedParameterValues::CallLocal() ? "true" : "false")),
         Output::FmtText("opts[\"channel\"] = %d;", p_channel->channel()),
-        Output::FmtText("rpc_config(\"%s\", opts);", p_target_function->name().c_str()),
+        Output::FmtText("rpc_config(\"%s\", opts);", p_function_name.c_str()),
       })
     );
 	// clang-format on

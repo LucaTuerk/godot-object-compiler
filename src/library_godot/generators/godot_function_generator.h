@@ -52,10 +52,10 @@ namespace GodotObjectCompiler {
    private:
 
     static Ref<GeneratorError> generate_virtual(const Ref<Class> &p_target_class,
-			   const Ref<Function> &p_target_function, const Ref<GodotFunctionAttribute> &p_attribute,
-			   const Ref<Context> &p_bind_methods_body, ClassGeneratorResult &r_result);
+			   const String &p_bind_name, const Ref<Function> &p_target_function,
+			   const Ref<GodotFunctionAttribute> &p_attribute, const Ref<Context> &p_bind_methods_body, ClassGeneratorResult &r_result);
 
-    static Ref<GeneratorError> generate_rpc(const Ref<Class> &p_target_class, const Ref<Function> &p_target_function,
+    static Ref<GeneratorError> generate_rpc(const Ref<Class> &p_target_class, const String &p_function_name,
 			const Ref<GodotRpcModeArgument> &p_rpc_mode, const Ref<GodotRpcTransferModeArgument> &p_transport_mode,
 			const Ref<GodotRpcSyncArgument> &p_sync, const Ref<GodotRpcChannelArgument> &p_channel, ClassGeneratorResult &r_result);
   };

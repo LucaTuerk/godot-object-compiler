@@ -152,16 +152,12 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate_default_attribute_argume
 		GEN_ERROR(p_attribute, "Unknown property type. Failed to determine default property info.");
 	}
 
-	Ref<GodotCustomPropertyBindArgument> custom_bind_argument = build<GodotCustomPropertyBindArgument>().with_children({ make_ref<Identifier>(GodotCustomPropertyBindParameterType::AutoBind),
+	Ref<StringLiteralArgument> string_literal_argument = build<StringLiteralArgument>().with_child(make_ref<Literal>(""));
+
+	Ref<GodotCustomPropertyGetSetArgument> custom_bind_argument = build<GodotCustomPropertyGetSetArgument>().with_children({ make_ref<Identifier>(GodotCustomPropertyGetSetParameterType::AutoGetSet),
 			make_ref<Arguments>() });
 
-	Ref<GodotCustomPropertyGetArgument> custom_get_argument = build<GodotCustomPropertyGetArgument>().with_children({ make_ref<Identifier>(GodotCustomPropertyGetParameterType::AutoGet),
-			make_ref<Arguments>() });
-
-	Ref<GodotCustomPropertySetArgument> custom_set_argument = build<GodotCustomPropertySetArgument>().with_children({ make_ref<Identifier>(GodotCustomPropertySetParameterType::AutoSet),
-			make_ref<Arguments>() });
-
-	p_default_values->add_children({ custom_bind_argument, custom_get_argument, custom_set_argument, variant_type, property_hint, property_usage_flags, property_get_access_specifier,
+	p_default_values->add_children({ custom_bind_argument, string_literal_argument, custom_bind_argument, variant_type, property_hint, property_usage_flags, property_get_access_specifier,
 			property_set_access_specifier });
 	return GeneratorError::OK;
 }
@@ -190,6 +186,7 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 
 	Ref<Type> property_type;
 	String property_name;
+	String backing_field_name;
 	bool generate_getters_and_setters = false;
 	bool bind_getter = true;
 	bool bind_setter = true;
@@ -199,6 +196,13 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 	if (const Ref<Field> target_field = p_attribute->TargetField(); target_field) {
 		GEN_ERROR_PASS_ON(check_for_field_property_errors(target_field, p_attribute, p_target_class));
 		property_name = target_field->name();
+		backing_field_name = target_field->name();
+
+		Ref<Literal> name_literal = p_attribute->arguments()->find_chain<Literal, StringLiteralArgument>();
+		if (String unwrapped; name_literal && name_literal->unwrap_string_literal(unwrapped)) {
+			property_name = unwrapped;
+		}
+
 		property_type = target_field->type();
 		generate_getters_and_setters = true;
 		getter_name = format("get_%s", property_name.c_str());
@@ -226,10 +230,10 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 	bool is_enum_type = type_is_enum_type(property_type, enum_object, p_target_class);
 
 	if (bind_getter) {
-		bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, {}));
+		bind_methods_body->add_child(bind_method(p_target_class->name(), getter_name, getter_name, {}));
 	}
 	if (bind_setter) {
-		bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, { property_name }));
+		bind_methods_body->add_child(bind_method(p_target_class->name(), setter_name, setter_name, { property_name }));
 	}
 
 	if (generate_getters_and_setters) {
@@ -254,7 +258,7 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 	      build<Parameters>(),
 	      build<Const>(),
 	      build<Body>().with_child(
-	          Output::Return(property_name)
+	          Output::Return(backing_field_name)
 	        )
 	    });
 
@@ -281,8 +285,8 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 	          ),
 	      build<Body>().with_child(
 	        (is_enum_type ?
-	          Output::Assign(property_name, Output::Text(format("static_cast<%s>(p_%s)", enum_object->qualified_name().c_str(),property_name.c_str()))):
-	          Output::Assign(property_name, Output::Text(format("p_%s", property_name.c_str()))))),
+	          Output::Assign(backing_field_name, Output::Text(format("static_cast<%s>(p_%s)", enum_object->qualified_name().c_str(),property_name.c_str()))):
+	          Output::Assign(backing_field_name, Output::Text(format("p_%s", property_name.c_str()))))),
 	    });
 
 
@@ -371,8 +375,7 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(Ref<Class> p_target_clas
 					AssumedGodotTypes::StringName().type->qualified_name().c_str(),
 					property_name.c_str(),
 					AssumedGodotTypes::StringName().type->qualified_name().c_str(),
-					property_name.c_str()
-					)));
+					property_name.c_str())));
 
 	r_result.header_includes.insert(AssumedGodotTypes::StringName().type->header);
 	r_result.source_includes.insert(AssumedGodotTypes::ADD_PROPERTY().type->header);

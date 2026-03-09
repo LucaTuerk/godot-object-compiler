@@ -46,16 +46,16 @@ struct GodotCustomPropertyBind {
 	Ref<Function> setter;
 };
 
-class GodotCustomPropertyBindArgument : public Argument {
-	NODE_TYPE(GodotCustomPropertyBindArgument);
+class GodotCustomPropertyGetSetArgument : public Argument {
+	NODE_TYPE(GodotCustomPropertyGetSetArgument);
 };
 
-class GodotCustomPropertyBindParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotCustomPropertyBindParameterType, GodotCustomPropertyBindArgument)
+class GodotCustomPropertyGetSetParameterType : public IAttributeParameterType {
+	PARAM_TYPE(GodotCustomPropertyGetSetParameterType, GodotCustomPropertyGetSetArgument)
 
    public:
-	static inline const char* AutoBind = "AutoBind";
-	static inline const char* Name = "Name";
+	static inline const char* AutoGetSet = "AutoGetSet";
+	static inline const char* GetSet = "GetSet";
 
 
 	String get_return_type() override;
@@ -65,45 +65,4 @@ class GodotCustomPropertyBindParameterType : public IAttributeParameterType {
 	Vector<Argument> get_arguments() override;
 
 };
-
-class GodotCustomPropertyGetArgument : public Argument {
-	NODE_TYPE(GodotCustomPropertyGetArgument);
-};
-
-class GodotCustomPropertyGetParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotCustomPropertyGetParameterType, GodotCustomPropertyGetArgument)
-
-   public:
-	static inline const char* AutoGet = "AutoGet";
-	static inline const char* Get = "Get";
-
-
-	String get_return_type() override;
-
-	Vector<String> get_value_names() override;
-
-	Vector<Argument> get_arguments() override;
-
-};
-
-class GodotCustomPropertySetArgument : public Argument {
-	NODE_TYPE(GodotCustomPropertySetArgument);
-};
-
-class GodotCustomPropertySetParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotCustomPropertySetParameterType, GodotCustomPropertySetArgument)
-
-   public:
-	static inline const char* AutoSet = "AutoSet";
-	static inline const char* Set = "Set";
-
-
-	String get_return_type() override;
-
-	Vector<String> get_value_names() override;
-
-	Vector<Argument> get_arguments() override;
-
-};
-
 } //namespace GodotObjectCompiler

@@ -1,2 +1,0 @@
-The generator binds a custom property named this with the getters and setters provided by GOC_CustomPropertyGet and
-GOC_CustomPropertySet arguments.

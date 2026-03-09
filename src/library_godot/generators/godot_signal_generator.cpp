@@ -39,6 +39,17 @@
 
 namespace GodotObjectCompiler {
 
+Ref<GeneratorError> GodotSignalGenerator::do_generate_default_attribute_arguments(Ref<Class> p_target_class, Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_default_values) {
+	UNUSED(p_target_class);
+	UNUSED(p_attribute);
+	// clang-format off
+	p_default_values->add_children({
+		build<StringLiteralArgument>().with_child<Literal>("")
+	});
+	// clang-format on
+	return GeneratorError::OK;
+}
+
 Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
 		Ref<GodotSignalAttribute> p_attribute, ClassGeneratorResult &r_result) {
 	Ref<Context> p_generated_body = r_result.generated_body;
@@ -57,6 +68,13 @@ Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
 	const bool is_void = target_function->type()->name() == "void";
 	GEN_ERROR_COND(!is_void, target_function, "Signal target function does not return void.");
 
+	String signal_name = target_function->name();
+	Ref<Literal> name_literal = p_attribute->arguments()->find_chain<Literal, StringLiteralArgument>();
+
+	if (String unwrapped; name_literal->unwrap_string_literal(unwrapped)) {
+		signal_name = unwrapped;
+	}
+
 	// clang-format off
     Ref<Arguments> arguments;
     bind_methods->build_child<Function>().with_children({
@@ -67,7 +85,7 @@ Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
         build<Identifier>("MethodInfo"),
         build_ref<Arguments>(&arguments).with_children({
             build<Argument>().with_child(
-              Output::StringLiteral(target_function->name())
+              Output::StringLiteral(signal_name)
             ),
           })
         })
@@ -85,7 +103,7 @@ Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
         build<Function>().with_children({
           build<Identifier>("emit_signal"),
           build_ref<Arguments>(&emit_arguments).with_children({
-            build<Argument>().with_child(Output::StringLiteral(target_function->name())),
+            build<Argument>().with_child(Output::StringLiteral(signal_name)),
           })
         }).with_child(Output::Semicolon()),
       })
@@ -119,7 +137,7 @@ Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
 	GEN_ERROR_COND(!signal_names_body, p_attribute, "Failed to get signal names body.");
 	signal_names_body->add_child(
 			Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
-					target_function->name().c_str(), target_function->name().c_str())));
+					signal_name.c_str(), signal_name.c_str())));
 
 	return GeneratorError::OK;
 }

@@ -1,0 +1,2 @@
+The parameter is used to provide the getters and setters used with the property attribute it is
+defined in.
