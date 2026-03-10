@@ -181,9 +181,9 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 
 	GEN_ERROR_COND(!p_target_function->parameters(), p_target_function, "Failed to get target function parameters.")
 
-	Ref<Context> generated_private_members;
+	Ref<Context> generated_public_members, generated_protected_members, generated_private_members;
 	GEN_ERROR_COND(GodotGeneratorUtils::unzip_generated_body(
-						   p_generated_body, nullptr, nullptr, &generated_private_members) != GeneratorError::OK,
+						   p_generated_body, &generated_public_members, &generated_protected_members, &generated_private_members) != GeneratorError::OK,
 			p_target_class, "Failed to find generated body groups");
 
 	Vector<String> parameter_names = vector_transform<Ref<Parameter>, String>(
@@ -315,8 +315,25 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(const Ref<Class> &p
 		virtual_call_arguments->build_child<Argument>().with_child<Identifier>("return_value");
 	}
 
+	Ref<AccessSpecifier::Type> type = p_target_function->access_specifier_type();
+	GEN_ERROR_COND(type == nullptr, p_target_function, "Failed to get target function access specifier.");
+
+	Ref<Context> generated_target = nullptr;
+	switch (*type) {
+		case AccessSpecifier::PUBLIC:
+			generated_target = generated_public_members;
+			break;
+		case AccessSpecifier::PRIVATE:
+			generated_target = generated_private_members;
+			break;
+		case AccessSpecifier::PROTECTED:
+			generated_target = generated_protected_members;
+			break;
+	}
+	GEN_ERROR_COND(generated_target == nullptr, p_target_function, "Failed to get generated target access specfier context.");
+
 	p_generated_sources->add_child(func_implementation);
-	generated_private_members->add_children({ virtual_caller, gdvirtual });
+	generated_target->add_children({ virtual_caller, gdvirtual });
 	p_bind_methods_body->add_children({ gdvirtual_bind,
 			GodotGeneratorUtils::bind_method_as(
 					p_target_class->name(), p_bind_name, virtual_caller_name, parameter_names, default_values) });
