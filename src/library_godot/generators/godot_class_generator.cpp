@@ -37,6 +37,7 @@
 
 #include "godot_generator_utils.h"
 #include "library/tree/output/output.h"
+#include "library/tree/predicates.h"
 #include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler {
@@ -70,17 +71,26 @@ Ref<GeneratorError> GodotClassGenerator::generate_initialization(Ref<Class> p_ta
 
 	if (String godot_registration_macro;
 			class_type_type->get_macro_for_value_name(class_type_name, godot_registration_macro)) {
+		Ref<Body> if_body;
 		const Ref<Context> if_clause =
-				Output::Spaces({ Output::Text(format("if (p_level == %s) ", godot_init_level.c_str())) });
+				Output::Spaces({ Output::Text(format("if (p_level == %s) ", godot_init_level.c_str())), build_ref<Body>(&if_body)});
+		if_clause->set_tag(p_target_class->first_base_qualifed_name());
 
-		const Ref<Body> condition_body =
-				get_if_body(p_initialize_content, format("p_level == %s", godot_init_level.c_str()));
 		// clang-format off
-      condition_body->add_child(build<Function>().with_children({
-        build<Identifier>(godot_registration_macro),
-        build<Arguments>().with_child(build<Argument>().with_child(Output::Text(p_target_class->qualified_name()))),
-      }).with_child(Output::Semicolon()));
+		if_body->add_child(build<Function>().with_children({
+		build<Identifier>(godot_registration_macro),
+		build<Arguments>().with_child(build<Argument>().with_child(Output::Text(p_target_class->qualified_name()))),
+		}).with_child(Output::Semicolon()));
 		// clang-format on
+
+		Ref<Node> first_inheritor = p_initialize_content->find_child(0,
+				NodePredicates::tag<Node>(p_target_class->qualified_name().c_str()));
+
+		if (first_inheritor != nullptr) {
+			p_initialize_content->add_child_before(if_clause, first_inheritor);
+		} else {
+			p_initialize_content->add_child(if_clause);
+		}
 	}
 	return GeneratorError::OK;
 }

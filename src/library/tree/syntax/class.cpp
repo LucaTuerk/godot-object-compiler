@@ -76,6 +76,14 @@ namespace GodotObjectCompiler {
     return result;
   }
 
+  String Class::_first_base_qualifed_name_lazy_get() const {
+  	Vector<Ref<Class>> bases = base_classes();
+  	if (bases.empty()) {
+  		return "";
+  	}
+  	return bases[0]->qualified_name();
+  }
+
   Vector<Ref<Attribute>> Class::_attributes_lazy_get() const {
     Vector<Ref<Attribute>> attributes;
     if (!body()) {
