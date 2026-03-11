@@ -94,6 +94,8 @@ public:
 
 	void add_child(Ref<Node> p_child);
 
+	void add_child_before(Ref<Node> p_child, Ref<Node> p_existing);
+
 	void add_children(std::initializer_list<Ref<Node>> &&p_children);
 
 	void remove_child(const Ref<Node> &p_child);
