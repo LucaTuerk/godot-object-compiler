@@ -41,7 +41,8 @@
 
 namespace GodotObjectCompiler {
 
-String string_replace(const String &p_target, const String &p_search_str, const String &p_replace_with) {
+String
+string_replace(const String &p_target, const String &p_search_str, const String &p_replace_with) {
 	std::stringstream strstr;
 
 	const Size length = p_search_str.length();
@@ -59,7 +60,8 @@ String string_replace(const String &p_target, const String &p_search_str, const 
 	return strstr.str();
 }
 
-String extract_lines(const String &p_content, Size p_start_line, Size p_end_line, Size p_highlight_line) {
+String
+extract_lines(const String &p_content, Size p_start_line, Size p_end_line, Size p_highlight_line) {
 	std::stringstream content_stream(p_content);
 	std::stringstream target_stream;
 
@@ -68,7 +70,8 @@ String extract_lines(const String &p_content, Size p_start_line, Size p_end_line
 	while (std::getline(content_stream, line)) {
 		current++;
 		if (current >= p_start_line && current <= p_end_line) {
-			target_stream << current << (current == p_highlight_line ? "\t|>\t" : "\t|\t") << line << '\n';
+			target_stream << current << (current == p_highlight_line ? "\t|>\t" : "\t|\t") << line
+						  << '\n';
 		}
 
 		if (current >= p_end_line) {
@@ -85,14 +88,16 @@ String string_trim(const String &p_content) {
 
 String string_trim_left(const String &p_content) {
 	String ret = p_content;
-	auto itr = std::find_if(ret.begin(), ret.end(), [](unsigned char c) { return !is_whitespace(c); });
+	auto itr =
+			std::find_if(ret.begin(), ret.end(), [](unsigned char c) { return !is_whitespace(c); });
 	ret.erase(ret.begin(), itr);
 	return ret;
 }
 
 String string_trim_right(const String &p_content) {
 	String ret = p_content;
-	auto itr = std::find_if(ret.rbegin(), ret.rend(), [](unsigned char c) { return !is_whitespace(c); });
+	auto itr =
+			std::find_if(ret.rbegin(), ret.rend(), [](unsigned char c) { return !is_whitespace(c); });
 	ret.erase(itr.base(), ret.end());
 	return ret;
 }
@@ -144,7 +149,8 @@ String string_shrink_inner_space(const String &p_content) {
 
 int string_to_int(const String &p_content) {
 	int result;
-	PANIC_COND(!string_to_int(p_content, result), "Failed to convert \"%s\" to int.", p_content.c_str());
+	PANIC_COND(
+			!string_to_int(p_content, result), "Failed to convert \"%s\" to int.", p_content.c_str());
 	return result;
 }
 
@@ -193,7 +199,9 @@ String macro_case_to_pascal_case(const String &p_content) {
 		end = p_content.find('_', start);
 
 		for (Size i = start; i < std::min(end, p_content.length()); ++i) {
-			strstr << ((i == start) ? static_cast<char>(std::toupper(p_content[i])) : static_cast<char>(std::tolower(p_content[i])));
+			strstr
+					<< ((i == start) ? static_cast<char>(std::toupper(p_content[i]))
+									 : static_cast<char>(std::tolower(p_content[i])));
 		}
 
 		start = end + 1;
@@ -235,7 +243,8 @@ String cpp_enum_case_to_exposed_enum_case(const String &p_content) {
 	return writer.get_string();
 }
 
-Vector<String> string_split(const String &p_content, const String &p_delimiter, bool p_leave_empty) {
+Vector<String>
+string_split(const String &p_content, const String &p_delimiter, bool p_leave_empty) {
 	Vector<String> result;
 
 	Size start = 0;
@@ -248,7 +257,10 @@ Vector<String> string_split(const String &p_content, const String &p_delimiter, 
 		start = end + p_delimiter.length();
 	} while (end < length);
 
-	if (p_leave_empty && (result.empty() || std::all_of(result.begin(), result.end(), [](const String &string) { return string.empty(); }))) {
+	if (p_leave_empty &&
+			(result.empty() || std::all_of(result.begin(), result.end(), [](const String &string) {
+				return string.empty();
+			}))) {
 		return {};
 	} else if (result.empty()) {
 		result.emplace_back(p_content);
@@ -316,7 +328,9 @@ bool string_only_contains(const String &p_content, char p_char) {
 		return false;
 	}
 
-	return std::all_of(p_content.begin(), p_content.end(), [p_char](char c) { return c == p_char; });
+	return std::all_of(p_content.begin(), p_content.end(), [p_char](char c) {
+		return c == p_char;
+	});
 	;
 }
 
@@ -364,4 +378,4 @@ Vector<String> read_lines(const String &p_path) {
 	return result;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

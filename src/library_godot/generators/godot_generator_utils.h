@@ -58,39 +58,55 @@ String get_type_static();
 
 String type_name_remove_usings(String p_typename);
 
-bool get_type_header(Ref<Type> p_type, Ref<Namespace> p_from_namespace, String& r_header);
+bool get_type_header(Ref<Type> p_type, Ref<Namespace> p_from_namespace, String &r_header);
 
 Ref<Type> const_ref(const String &p_type_name);
 
-Ref<Function> bind_method(const String &p_class_name, const String &p_bind_name,
-		const String &p_method_name, const Vector<String> &p_parameter_names, const Vector<String> &p_default_values = {});
+Ref<Function> add_signal(
+		const Ref<Class> &p_target_class, const String &p_signal_name,
+		const Ref<Parameters> &p_parameters, ClassGeneratorResult &r_result);
 
-Ref<Function> bind_method_as(const String &p_class_name, const String &p_bind_name, const String &p_method_name,
+Ref<Function> emit_signal(const String &p_signal_name, const Ref<Arguments> &p_arguments);
+
+Ref<Function> bind_method(
+		const String &p_class_name, const String &p_bind_name, const String &p_method_name,
 		const Vector<String> &p_parameter_names, const Vector<String> &p_default_values = {});
 
-Ref<Function> bind_static_method(const String &p_class_name, const String &p_bind_name,
-		const String &p_method_name, const Vector<String> &p_parameter_names, const Vector<String> &p_default_values = {});
+Ref<Function> bind_method_as(
+		const String &p_class_name, const String &p_bind_name, const String &p_method_name,
+		const Vector<String> &p_parameter_names, const Vector<String> &p_default_values = {});
 
-Ref<Body> get_bind_methods_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
+Ref<Function> bind_static_method(
+		const String &p_class_name, const String &p_bind_name, const String &p_method_name,
+		const Vector<String> &p_parameter_names, const Vector<String> &p_default_values = {});
+
+Ref<Body> get_bind_methods_body(
+		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
 		const Ref<Context> &p_generated_sources);
 
-Ref<Body> get_notification_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
+Ref<Body> get_notification_body(
+		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
 		const Ref<Context> &p_generated_sources);
 
-Ref<Body> get_get_property_list_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
+Ref<Body> get_get_property_list_body(
+		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
 		const Ref<Context> &p_generated_sources);
 
-Ref<Body> get_function_names_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body);
+Ref<Body>
+get_function_names_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body);
 
-Ref<Body> get_property_names_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body);
+Ref<Body>
+get_property_names_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body);
 
-Ref<Body> get_signal_names_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body);
+Ref<Body>
+get_signal_names_body(const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body);
 
-Ref<Context> get_include_section(const Ref<Context>& p_target);
+Ref<Context> get_include_section(const Ref<Context> &p_target);
 
 Ref<Body> get_if_body(const Ref<Context> &p_target, const String &condition);
 
-Ref<GeneratorError> unzip_generated_body(const Ref<Context> &p_generated_body, Ref<Context> *r_public_members,
+Ref<GeneratorError> unzip_generated_body(
+		const Ref<Context> &p_generated_body, Ref<Context> *r_public_members,
 		Ref<Context> *r_protected_members, Ref<Context> *r_private_members);
 
 bool check_is_valid_named_argument(const Ref<Node> &p_node, String &p_name);
@@ -116,32 +132,43 @@ enum DefaultsUsage {
 	DEFAULTS_SIGNAL_ARGUMENT,
 };
 
-bool get_defaults_for_type(const Ref<Type> &p_target_type, Ref<GodotVariantTypeArgument> &p_variant_type,
-		Ref<GodotPropertyHintArgument> &p_property_hint, Ref<GodotPropertyUsageFlagsArgument> &p_property_usage_flags,
-		const Ref<Namespace> &p_from_namespace = nullptr, DefaultsUsage p_defaults_usage = DEFAULTS_PROPERTY_BINDING);
+bool get_defaults_for_type(
+		const Ref<Type> &p_target_type, Ref<GodotVariantTypeArgument> &p_variant_type,
+		Ref<GodotPropertyHintArgument> &p_property_hint,
+		Ref<GodotPropertyUsageFlagsArgument> &p_property_usage_flags,
+		const Ref<Namespace> &p_from_namespace = nullptr,
+		DefaultsUsage p_defaults_usage = DEFAULTS_PROPERTY_BINDING);
 
 bool type_is_godot_ref_type(
-		const Ref<Type> &p_target_type, Ref<Type> &p_inner_type, const Ref<Namespace> &p_from_namespace = nullptr);
+		const Ref<Type> &p_target_type, Ref<Type> &p_inner_type,
+		const Ref<Namespace> &p_from_namespace = nullptr);
 
 bool type_is_godot_typed_array_type(
-		const Ref<Type> &p_target_type, Ref<Type> &p_inner_type, const Ref<Namespace> &p_from_namespace = nullptr);
+		const Ref<Type> &p_target_type, Ref<Type> &p_inner_type,
+		const Ref<Namespace> &p_from_namespace = nullptr);
 
-bool type_is_godot_typed_dictionary_type(const Ref<Type> &p_target_type, Ref<Type> &p_key_type,
-		Ref<Type> &p_value_type, const Ref<Namespace> &p_from_namespace = nullptr);
+bool type_is_godot_typed_dictionary_type(
+		const Ref<Type> &p_target_type, Ref<Type> &p_key_type, Ref<Type> &p_value_type,
+		const Ref<Namespace> &p_from_namespace = nullptr);
 
-bool type_is_ref_counted_type(const Ref<Type> &p_inner_type, const Ref<Namespace> &p_from_namespace = nullptr);
+bool type_is_ref_counted_type(
+		const Ref<Type> &p_inner_type, const Ref<Namespace> &p_from_namespace = nullptr);
 
-bool type_is_object_type(const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace = nullptr);
+bool type_is_object_type(
+		const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace = nullptr);
 
 bool type_is_godot_collection_type(
 		const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace = nullptr);
 
-bool type_is_node_type(const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace = nullptr);
+bool type_is_node_type(
+		const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace = nullptr);
 
 bool type_is_enum_type(
-		const Ref<Type> &p_target_type, Ref<Enum> &p_enum_object, const Ref<Namespace> &p_from_namespace = nullptr);
+		const Ref<Type> &p_target_type, Ref<Enum> &p_enum_object,
+		const Ref<Namespace> &p_from_namespace = nullptr);
 
-bool type_is_variant_type(const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace = nullptr);
+bool type_is_variant_type(
+		const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace = nullptr);
 
 bool type_is_primitive_type(const Ref<Type> &p_target_type);
 
@@ -156,14 +183,19 @@ Ref<GodotPropertyHintArgument> build_property_hint_argument(
 
 Ref<GodotPropertyUsageFlagsArgument> build_property_usage_flags_argument(const String &p_usage);
 
-Ref<Node> build_property_info(const Ref<GodotVariantTypeArgument> &p_variant_type,
-		const Ref<GodotPropertyHintArgument> &p_hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>> &p_usages,
-		const String &p_property_name, ClassGeneratorResult &r_result, bool p_no_editor = false);
+Ref<Node> build_property_info(
+		const Ref<GodotVariantTypeArgument> &p_variant_type,
+		const Ref<GodotPropertyHintArgument> &p_hint,
+		const Vector<Ref<GodotPropertyUsageFlagsArgument>> &p_usages, const String &p_property_name,
+		ClassGeneratorResult &r_result, bool p_no_editor = false);
 
-Ref<Node> build_property_info(const Ref<GodotVariantTypeArgument> &p_variant_type, const String &p_property_name, ClassGeneratorResult &r_result);
+Ref<Node> build_property_info(
+		const Ref<GodotVariantTypeArgument> &p_variant_type, const String &p_property_name,
+		ClassGeneratorResult &r_result);
 
 Ref<Node> build_property_info_defaults(
-		const Ref<Type> &p_type, const String &p_property_name, ClassGeneratorResult &r_result, DefaultsUsage p_usage = DEFAULTS_PROPERTY_BINDING);
+		const Ref<Type> &p_type, const String &p_property_name, ClassGeneratorResult &r_result,
+		const Ref<Namespace> &p_from_namespace, DefaultsUsage p_usage = DEFAULTS_PROPERTY_BINDING);
 
 template <typename T>
 bool type_is_assumed_template_type(
@@ -179,7 +211,8 @@ bool type_is_assumed_template_type(
 		return false;
 	}
 
-	if (p_target_type->template_argument_count() != p_assumed_type.type->template_parameter_count()) {
+	if (p_target_type->template_argument_count() !=
+			p_assumed_type.type->template_parameter_count()) {
 		return false;
 	}
 
@@ -197,6 +230,6 @@ bool type_is_assumed_template_type(
 	return true;
 }
 
-}; //namespace GodotGeneratorUtils
+}; // namespace GodotGeneratorUtils
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

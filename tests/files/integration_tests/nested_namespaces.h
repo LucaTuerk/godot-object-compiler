@@ -52,8 +52,8 @@ class classAB : public Object {
 	GODOT_PROPERTY();
 	int propAB = 0;
 };
-} //namespace B
-} //namespace A
+} // namespace B
+} // namespace A
 
 namespace C {
 
@@ -71,8 +71,8 @@ class classCD : public Object {
 	GODOT_PROPERTY();
 	int propCD = 0;
 };
-} //namespace D
-} //namespace C
+} // namespace D
+} // namespace C
 
 namespace E {
 
@@ -99,8 +99,8 @@ class classEFG : public Object {
 	int propEFG = 0;
 };
 
-} //namespace G
-} //namespace F
-} //namespace E
-} //namespace Tests
+} // namespace G
+} // namespace F
+} // namespace E
+} // namespace Tests
 GODOT_GENERATED_GLOBAL();

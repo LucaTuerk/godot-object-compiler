@@ -55,4 +55,4 @@ Vector<IAttributeParameterType::Argument> GodotCustomPropertyGetSetParameterType
 	};
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

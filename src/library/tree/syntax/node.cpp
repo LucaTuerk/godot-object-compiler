@@ -43,148 +43,164 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<Node> Node::clone() const {
-    if (Ref<Node> new_node = create(); copy_to(new_node)) {
-      new_node->_tag = _tag;
-      return new_node;
-    } else {
-      return nullptr;
-    }
-  }
-
-  void Node::write_to(IStructuredWriter* p_writer) {
-    Ref<Context> parent = get_parent();
-    p_writer->write("_class", get_type());
-    p_writer->write("_id", get_id());
-    p_writer->write("_parent", parent ? parent->get_id() : INVALID_ID);
-  }
-
-  void Node::read_from(IStructuredReader* p_reader) {
-    UID before = _id;
-    UID new_id = p_reader->read<String, UID>("_id");
-    if (before != new_id) {
-      _id = ExecutionContext::instance()->get_node_db()->request_id_change(before, new_id);
-    }
-  }
-
-  bool Node::has_parent() const { return _parent.lock() != nullptr; }
-
-  bool Node::has_next_sibling() const { return has_parent() && _index != get_parent()->get_child_count() - 1; }
-
-  bool Node::has_previous_sibling() const { return has_parent() && _index > 0; }
-
-  void Node::set_tag(const String& p_tag) { _tag = p_tag; }
-
-  String Node::get_tag() const { return _tag; }
-
-  String Node::pretty_print() const {
-    Size dummy;
-    return print_pretty_and_get_child_line(nullptr, dummy);
-  }
-
-  String Node::print_pretty_and_get_child_line(const Ref<Node>& p_child, Size& p_line) const {
-    String result;
-    String line_prefix;
-
-    Index depth = get_depth();
-    for (Index i = 0; i < depth; i++) {
-      if (i == depth - 1) {
-        // clang-format off
-        result      += "    |- ";
-        line_prefix += "       ";
-        // clang-format on
-      } else {
-        // clang-format off
-        line_prefix += "   ";
-        result      += "   ";
-        // clang-format on
-      }
-    }
-
-    bool first = true;
-    for (const String& line : string_split(to_string(), "\n")) {
-      if (!line.empty()) {
-        if (first) {
-          result += line + "\n";
-        } else {
-          result += line_prefix;
-          result += line;
-          result += "\n";
-        }
-      }
-      first = false;
-    }
-
-    if (const auto context = std::dynamic_pointer_cast<const Context>(shared_from_this())) {
-      for (Index i = 0; i < context->get_child_count(); i++) {
-        auto child = context->get_child(i);
-
-        if (child == p_child && p_child != nullptr) {
-          p_line = 1;
-          std::stringstream strstr(result);
-          String line_str;
-          while (std::getline(strstr, line_str)) {
-            p_line++;
-          }
-        }
-
-        result += child->pretty_print();
-      }
-    }
-
-    return result;
-  }
-
-  UID Node::get_id() const { return _id; }
-
-  Index Node::get_index() const { return _index; }
-
-  Index Node::get_depth() const {
-    Ref<const Node> current = shared_from_this();
-    Size i = 0;
-
-    do {
-      current = current->get_parent();
-      if (i++ > 16) {
-        return 16;
-      }
-    } while (current);
-
-    return i;
-  }
-
-  Ref<Context> Node::get_parent() const { return _parent.lock(); }
-
-  Ref<Node> Node::get_root() {
-    if (!_root) {
-      Ref<Node> current = shared_from_this();
-      while (current) {
-        _root = current;
-        current = current->get_parent();
-      }
-    }
-
-    return _root ? _root : shared_from_this();
-  }
-
-  void Node::reparent(const Ref<Context>& p_new_parent) {
-    if (Ref<Context> parent = get_parent()) {
-      parent->remove_child(shared_from_this());
-    }
-    p_new_parent->add_child(shared_from_this());
-  }
-
-  Ref<Node> Node::get_sibling(int p_offset) const {
-    const Ref<Context> parent = get_parent();
-    if (parent == nullptr) {
-      return nullptr;
-    }
-
-    return parent->get_child_strict(static_cast<SignedIndex>(_index) + p_offset);
-  }
-
-  Ref<Node> Node::get_next_sibling() const { return get_sibling(+1); }
-
-  Ref<Node> Node::get_previous_sibling() const { return get_sibling(-1); }
-
+Ref<Node> Node::clone() const {
+	if (Ref<Node> new_node = create(); copy_to(new_node)) {
+		new_node->_tag = _tag;
+		return new_node;
+	} else {
+		return nullptr;
+	}
 }
+
+void Node::write_to(IStructuredWriter *p_writer) {
+	Ref<Context> parent = get_parent();
+	p_writer->write("_class", get_type());
+	p_writer->write("_id", get_id());
+	p_writer->write("_parent", parent ? parent->get_id() : INVALID_ID);
+}
+
+void Node::read_from(IStructuredReader *p_reader) {
+	UID before = _id;
+	UID new_id = p_reader->read<String, UID>("_id");
+	if (before != new_id) {
+		_id = ExecutionContext::instance()->get_node_db()->request_id_change(before, new_id);
+	}
+}
+
+bool Node::has_parent() const {
+	return _parent.lock() != nullptr;
+}
+
+bool Node::has_next_sibling() const {
+	return has_parent() && _index != get_parent()->get_child_count() - 1;
+}
+
+bool Node::has_previous_sibling() const {
+	return has_parent() && _index > 0;
+}
+
+void Node::set_tag(const String &p_tag) {
+	_tag = p_tag;
+}
+
+String Node::get_tag() const {
+	return _tag;
+}
+
+String Node::pretty_print() const {
+	Size dummy;
+	return print_pretty_and_get_child_line(nullptr, dummy);
+}
+
+String Node::print_pretty_and_get_child_line(const Ref<Node> &p_child, Size &p_line) const {
+	String result;
+	String line_prefix;
+
+	Index depth = get_depth();
+	for (Index i = 0; i < depth; i++) {
+		if (i == depth - 1) {
+			result += "    |- ";
+			line_prefix += "       ";
+		} else {
+			line_prefix += "   ";
+			result += "   ";
+		}
+	}
+
+	bool first = true;
+	for (const String &line : string_split(to_string(), "\n")) {
+		if (!line.empty()) {
+			if (first) {
+				result += line + "\n";
+			} else {
+				result += line_prefix;
+				result += line;
+				result += "\n";
+			}
+		}
+		first = false;
+	}
+
+	if (const auto context = std::dynamic_pointer_cast<const Context>(shared_from_this())) {
+		for (Index i = 0; i < context->get_child_count(); i++) {
+			auto child = context->get_child(i);
+
+			if (child == p_child && p_child != nullptr) {
+				p_line = 1;
+				std::stringstream strstr(result);
+				String line_str;
+				while (std::getline(strstr, line_str)) {
+					p_line++;
+				}
+			}
+
+			result += child->pretty_print();
+		}
+	}
+
+	return result;
+}
+
+UID Node::get_id() const {
+	return _id;
+}
+
+Index Node::get_index() const {
+	return _index;
+}
+
+Index Node::get_depth() const {
+	Ref<const Node> current = shared_from_this();
+	Size i = 0;
+
+	do {
+		current = current->get_parent();
+		if (i++ > 16) {
+			return 16;
+		}
+	} while (current);
+
+	return i;
+}
+
+Ref<Context> Node::get_parent() const {
+	return _parent.lock();
+}
+
+Ref<Node> Node::get_root() {
+	if (!_root) {
+		Ref<Node> current = shared_from_this();
+		while (current) {
+			_root = current;
+			current = current->get_parent();
+		}
+	}
+
+	return _root ? _root : shared_from_this();
+}
+
+void Node::reparent(const Ref<Context> &p_new_parent) {
+	if (Ref<Context> parent = get_parent()) {
+		parent->remove_child(shared_from_this());
+	}
+	p_new_parent->add_child(shared_from_this());
+}
+
+Ref<Node> Node::get_sibling(int p_offset) const {
+	const Ref<Context> parent = get_parent();
+	if (parent == nullptr) {
+		return nullptr;
+	}
+
+	return parent->get_child_strict(static_cast<SignedIndex>(_index) + p_offset);
+}
+
+Ref<Node> Node::get_next_sibling() const {
+	return get_sibling(+1);
+}
+
+Ref<Node> Node::get_previous_sibling() const {
+	return get_sibling(-1);
+}
+
+} // namespace GodotObjectCompiler

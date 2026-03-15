@@ -38,20 +38,19 @@
 
 namespace GodotObjectCompiler {
 
-  class StringLiteralArgument : public Argument {
-    NODE_TYPE(StringLiteralArgument);
+class StringLiteralArgument : public Argument {
+	NODE_TYPE(StringLiteralArgument);
 
-    LAZY(StringLiteralArgument, String, content);
-  };
+	LAZY(StringLiteralArgument, String, content);
+};
 
-  class StringLiteralParameterType : public IAttributeParameterType {
-    PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
-   public:
+class StringLiteralParameterType : public IAttributeParameterType {
+	PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
+public:
+	String get_return_type() override;
+	Vector<String> get_value_names() override;
+	Vector<Argument> get_arguments() override;
+	bool is_builtin() override;
+};
 
-    String get_return_type() override;
-    Vector<String> get_value_names() override;
-    Vector<Argument> get_arguments() override;
-    bool is_builtin() override;
-  };
-
-}
+} // namespace GodotObjectCompiler

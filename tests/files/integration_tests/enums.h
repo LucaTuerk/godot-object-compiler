@@ -47,10 +47,8 @@ class Enums : public Object {
 	};
 
 	GODOT_ENUM(EnumFlags);
-	enum FlagsEnum {
-		FLAG_0 = 0,
-		FLAG_1 = 1
-	};
+	enum FlagsEnum { FLAG_0 = 0,
+		FLAG_1 = 1 };
 };
 
 GODOT_GENERATED_GLOBAL();

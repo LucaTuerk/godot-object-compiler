@@ -39,10 +39,10 @@
 GODOT_CLASS();
 
 class Invalid : Node {
-  GODOT_GENERATED_BODY();
+	GODOT_GENERATED_BODY();
 
-  GODOT_PROPERTY();
-  std::string no_variant;
+	GODOT_PROPERTY();
+	std::string no_variant;
 };
 
 GODOT_GENERATED_GLOBAL();

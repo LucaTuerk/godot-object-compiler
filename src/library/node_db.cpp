@@ -41,7 +41,9 @@ namespace GodotObjectCompiler {
 
 UID NodeDB::request_id_change(UID p_from, UID p_to) {
 	if (p_from == INVALID_ID) {
-		print_err("Trying to change a node id from invalid id. This is not possible.");
+		print_err(
+				"Trying to change a node id from invalid id. This is not "
+				"possible.");
 		return p_from;
 	}
 
@@ -50,7 +52,9 @@ UID NodeDB::request_id_change(UID p_from, UID p_to) {
 	}
 
 	if (_nodes.find(p_from) == _nodes.end()) {
-		print_err("Trying to change a node id, but no node is registered for this id.");
+		print_err(
+				"Trying to change a node id, but no node is registered for "
+				"this id.");
 		return p_from;
 	}
 
@@ -97,4 +101,4 @@ bool NodeDB::_has_uid(UID p_uid) {
 	return _uids.find(p_uid) != _uids.end();
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

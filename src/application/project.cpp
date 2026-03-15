@@ -55,7 +55,8 @@ void Project::read_from(IStructuredReader *p_reader) {
 
 void Project::write_to(IStructuredWriter *p_writer) {
 	p_writer->write_to_section("Godot");
-	p_writer->write<String, String>("IncludePaths", string_vector_combine(godot_include_paths, ","));
+	p_writer->write<String, String>(
+			"IncludePaths", string_vector_combine(godot_include_paths, ","));
 
 	p_writer->write_to_section("Paths");
 	p_writer->write<String, String>("RootPath", paths_root);
@@ -80,4 +81,4 @@ bool Project::write_to_file(const String &p_path) {
 	write_to(&config);
 	return config.write_to_file(p_path);
 }
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

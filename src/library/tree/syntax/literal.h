@@ -50,9 +50,9 @@ public:
 	void write_to(IStructuredWriter *p_writer) override;
 	void read_from(IStructuredReader *p_reader) override;
 
-	bool unwrap_string_literal(String& p_content) const;
+	bool unwrap_string_literal(String &p_content) const;
 
 	String content;
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

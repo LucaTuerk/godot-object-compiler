@@ -56,11 +56,12 @@ Ref<ParserError> TreeSitterParser::parse(const String &p_input, Ref<Context> r_t
 	HashSet<UID> handled;
 
 	if (input_is_path && !file_exists(p_input)) {
-		return node_new<ParserError>(ERROR, format("Input file \"%s\" not found.", p_input.c_str()));
+		return node_new<ParserError>(
+				ERROR, format("Input file \"%s\" not found.", p_input.c_str()));
 	}
 
-	String original_input =
-			input_is_path ? Parser::Helpers::remove_macros(read_file(p_input)) : Parser::Helpers::remove_macros(p_input);
+	String original_input = input_is_path ? Parser::Helpers::remove_macros(read_file(p_input))
+										  : Parser::Helpers::remove_macros(p_input);
 	String local_input = strip_known_macro_contents(original_input, stripped_parameters);
 	ParserContext context = ParserContext(local_input);
 	context.original_buffer = original_input;
@@ -86,12 +87,14 @@ Ref<ParserError> TreeSitterParser::parse(const String &p_input, Ref<Context> r_t
 	auto global_namespace = r_target->as<Namespace>();
 	if (!global_namespace || !global_namespace->qualified_name().empty()) {
 		return node_new<ParserError>(
-				ERROR, "TreeSitterParser: Invalid target node, expected to be the global namespace.");
+				ERROR, "TreeSitterParser: Invalid target node, "
+					   "expected to be the global namespace.");
 	}
 
 	auto recall = [&]() {
 		if (auto itr = before_node.find(context.current_src->get_id()); itr != before_node.end()) {
-			if (Ref<Context> before = ExecutionContext::instance()->get_node_db()->get<Context>(itr->second)) {
+			if (Ref<Context> before =
+							ExecutionContext::instance()->get_node_db()->get<Context>(itr->second)) {
 				context.current_target = before;
 			}
 		}
@@ -104,7 +107,8 @@ Ref<ParserError> TreeSitterParser::parse(const String &p_input, Ref<Context> r_t
 		bool do_continue = true;
 
 		do {
-			ParserStep step = context.current_src->is_handled() ? ParserStep::StepOver() : ParserStep::Undecided();
+			ParserStep step = context.current_src->is_handled() ? ParserStep::StepOver()
+																: ParserStep::Undecided();
 
 			if (!context.current_src->is_handled()) {
 				for (const Ref<INodeHandler> &node_handler : _handlers) {
@@ -112,8 +116,11 @@ Ref<ParserError> TreeSitterParser::parse(const String &p_input, Ref<Context> r_t
 						Ref<Context> before = context.current_target;
 						step = node_handler->handle(context.current_src, context.current_target);
 
-						PANIC_COND(!context.current_target->has_parent(),
-								"Invalid orphan parser target after call to NodeHandler %s", node_handler->get_type().c_str())
+						PANIC_COND(
+								!context.current_target->has_parent(),
+								"Invalid orphan parser target after call to "
+								"NodeHandler %s",
+								node_handler->get_type().c_str())
 
 						if (before != context.current_target) {
 							before_node[context.current_src->get_id()] = before->get_id();
@@ -140,7 +147,8 @@ Ref<ParserError> TreeSitterParser::parse(const String &p_input, Ref<Context> r_t
 			} else if (step.is_step_over()) {
 				do_continue = context.current_src->has_next_sibling();
 				if (do_continue) {
-					context.current_src = context.current_src->get_next_sibling()->as<TreeSitterNode>();
+					context.current_src =
+							context.current_src->get_next_sibling()->as<TreeSitterNode>();
 				}
 			} else if (step.is_step_out()) {
 				do_continue = context.current_src->has_parent();
@@ -170,7 +178,8 @@ Ref<ParserError> TreeSitterParser::parse(const String &p_input, Ref<Context> r_t
 
 // TreeSitter does not handle macro parameters well
 // but it works if the parameters are empty, so strip them before processing
-String TreeSitterParser::strip_known_macro_contents(const String &p_input, Dictionary<Size, String> &r_parameters) {
+String TreeSitterParser::strip_known_macro_contents(
+		const String &p_input, Dictionary<Size, String> &r_parameters) {
 	String local_input = p_input;
 	Vector<String> macros = ExecutionContext::instance()->get_attribute_db()->get_all_macros();
 
@@ -262,4 +271,4 @@ void TreeSitterParser::set_parse_attributes(bool p_parse_attributes) {
 	parse_attributes = p_parse_attributes;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

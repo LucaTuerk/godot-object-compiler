@@ -180,6 +180,6 @@ class Properties : public Node {
 	GODOT_PROPERTY();
 	Enum enum_property = ENUM_VALUE;
 };
-} //namespace Tests
+} // namespace Tests
 
 GODOT_GENERATED_GLOBAL();

@@ -37,8 +37,8 @@
 
 namespace GodotObjectCompiler {
 
-  class Operator : public Context {
-    NODE_TYPE(Operator);
-  };
+class Operator : public Context {
+	NODE_TYPE(Operator);
+};
 
-}
+} // namespace GodotObjectCompiler

@@ -69,7 +69,8 @@ class GeneratorError : public Error {
 public:
 	explicit GeneratorError(ErrorLevel level, const String &message) : Error(level, message) {}
 
-	explicit GeneratorError(ErrorLevel level, const String &generator_name, const String &message, Ref<Node> node);
+	explicit GeneratorError(
+			ErrorLevel level, const String &generator_name, const String &message, Ref<Node> node);
 
 	static inline const Ref<GeneratorError> OK = nullptr;
 };
@@ -82,10 +83,11 @@ public:
 
 	explicit ParserError(ErrorLevel level, const Ref<TreeSitterNode> &node, const String &message);
 
-	explicit ParserError(ErrorLevel level, const String &parser_name, const String &message, const String &file_path,
+	explicit ParserError(
+			ErrorLevel level, const String &parser_name, const String &message, const String &file_path,
 			const String &file_content, Size line, Size column);
 
 	static inline const Ref<ParserError> OK = nullptr;
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -38,60 +38,60 @@
 
 namespace GodotObjectCompiler {
 
-  class Virtual : public Node {
-    NODE_TYPE(Virtual);
-  };
+class Virtual : public Node {
+	NODE_TYPE(Virtual);
+};
 
-  class Static : public Node {
-    NODE_TYPE(Static);
-  };
+class Static : public Node {
+	NODE_TYPE(Static);
+};
 
-  class Inline : public Node {
-    NODE_TYPE(Inline);
-  };
+class Inline : public Node {
+	NODE_TYPE(Inline);
+};
 
-  class Override : public Node {
-    NODE_TYPE(Override);
-  };
+class Override : public Node {
+	NODE_TYPE(Override);
+};
 
-  class TypeQualifier : public Node {
-    NODE_TYPE(TypeQualifier);
-  };
+class TypeQualifier : public Node {
+	NODE_TYPE(TypeQualifier);
+};
 
-  class SigndednessModifier : public Node {
-    NODE_TYPE(SigndednessModifier);
-  };
+class SigndednessModifier : public Node {
+	NODE_TYPE(SigndednessModifier);
+};
 
-  class Const : public TypeQualifier {
-    NODE_TYPE(Const);
-  };
+class Const : public TypeQualifier {
+	NODE_TYPE(Const);
+};
 
-  class Mutable : public TypeQualifier {
-    NODE_TYPE(Mutable);
-  };
+class Mutable : public TypeQualifier {
+	NODE_TYPE(Mutable);
+};
 
-  class Volatile : public TypeQualifier {
-    NODE_TYPE(Volatile);
-  };
+class Volatile : public TypeQualifier {
+	NODE_TYPE(Volatile);
+};
 
-  class ConstExpression : public TypeQualifier {
-    NODE_TYPE(ConstExpression);
-  };
+class ConstExpression : public TypeQualifier {
+	NODE_TYPE(ConstExpression);
+};
 
-  class Unsigned : public SigndednessModifier {
-    NODE_TYPE(Unsigned);
-  };
+class Unsigned : public SigndednessModifier {
+	NODE_TYPE(Unsigned);
+};
 
-  class Signed : public SigndednessModifier {
-    NODE_TYPE(Signed);
-  };
+class Signed : public SigndednessModifier {
+	NODE_TYPE(Signed);
+};
 
-  class Short : public SigndednessModifier {
-    NODE_TYPE(Short);
-  };
+class Short : public SigndednessModifier {
+	NODE_TYPE(Short);
+};
 
-  class Long : public SigndednessModifier {
-    NODE_TYPE(Long);
-  };
+class Long : public SigndednessModifier {
+	NODE_TYPE(Long);
+};
 
-}
+} // namespace GodotObjectCompiler

@@ -38,13 +38,12 @@
 
 namespace GodotObjectCompiler {
 
-  class PrintTransformed : public IProgram {
-    PROGRAM(PrintTransformed, "print/transformed")
+class PrintTransformed : public IProgram {
+	PROGRAM(PrintTransformed, "print/transformed")
 
-   public:
+public:
+	bool validate_arguments(ApplicationContext &p_context) override;
+	Ref<ProgramError> run(ApplicationContext &p_context) override;
+};
 
-    bool validate_arguments(ApplicationContext& p_context) override;
-    Ref<ProgramError> run(ApplicationContext& p_context) override;
-  };
-
-}
+} // namespace GodotObjectCompiler

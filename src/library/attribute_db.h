@@ -71,9 +71,11 @@ private:
 public:
 	using CreationFunc = Ref<Attribute> (*)();
 
-	bool register_attribute(const String &p_class_name, const String &p_macro, CreationFunc p_creator);
+	bool
+	register_attribute(const String &p_class_name, const String &p_macro, CreationFunc p_creator);
 
-	bool register_attribute_parameter(const String &p_class_name, const Ref<IAttributeParameterType> &p_parameter);
+	bool register_attribute_parameter(
+			const String &p_class_name, const Ref<IAttributeParameterType> &p_parameter);
 
 	bool is_known_macro(const String &p_macro);
 
@@ -119,29 +121,33 @@ Ref<ParamT> AttributeDB::get_parameter_type() {
 
 	const Vector<Ref<IAttributeParameterType>> &params = itr->second;
 
-	auto params_itr = std::find_if(
-			params.begin(), params.end(), [](auto val) { return val->get_type() == ParamT::get_type_static(); });
+	auto params_itr = std::find_if(params.begin(), params.end(), [](auto val) {
+		return val->get_type() == ParamT::get_type_static();
+	});
 	if (params_itr == params.end()) {
-		PANIC("Unknown parameter type %s for attribute type %s", ParamT::get_type_static().c_str(),
+		PANIC(
+				"Unknown parameter type %s for attribute type %s", ParamT::get_type_static().c_str(),
 				attribute_type_name.c_str());
 	}
 
 	Ref<ParamT> param = std::dynamic_pointer_cast<ParamT>(*params_itr);
 	if (!param) {
-		PANIC("Failed to convert parameter to requested type %s", ParamT::get_type_static().c_str());
+		PANIC(
+				"Failed to convert parameter to requested type %s", ParamT::get_type_static().c_str());
 	}
 
 	return param;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
 #define ATTRIBUTE_DEFAULT_MACRO(macro) \
 	static Ref<Attribute> attribute_create_static() { \
 		return create_static()->as<Attribute>(); \
 	} \
-	static inline bool attribute_registered = ExecutionContext::instance()->get_attribute_db()->register_attribute( \
-			get_type_static(), #macro, &attribute_create_static);
+	static inline bool attribute_registered = \
+			ExecutionContext::instance()->get_attribute_db()->register_attribute( \
+					get_type_static(), #macro, &attribute_create_static);
 
 #define ATTRIBUTE_REGISTER_PARAMETERS(type) \
 	static inline bool type##_parameter_registered = \

@@ -77,8 +77,10 @@ public:
 	AssumptionState validate_assumption(Assumption<std::string> &p_assumption) override;
 };
 
-inline AssumptionState IAttributeParameterType::validate_assumption(Assumption<String> &p_assumption) {
-	if (Vector<String> values = get_value_names(); !vector_contains(values, UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(p_assumption))) {
+inline AssumptionState
+IAttributeParameterType::validate_assumption(Assumption<String> &p_assumption) {
+	if (Vector<String> values = get_value_names();
+			!vector_contains(values, UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(p_assumption))) {
 		return STATE_INVALID;
 	}
 
@@ -103,4 +105,4 @@ public: \
 \
 private:
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

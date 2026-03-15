@@ -45,7 +45,7 @@ class Invalid : Node {
 	GODOT_PROPERTY(GetSet("get_property", "set_property"));
 
 	int get_property() const;
-	void set_property(const int& p_value);
+	void set_property(const int &p_value);
 };
 
 GODOT_GENERATED_GLOBAL();

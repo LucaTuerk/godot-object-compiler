@@ -44,7 +44,7 @@ class Invalid : Node {
 
 	GODOT_PROPERTY("property", GetSet("get_properly", "set_property"));
 
-	void set_property(const int& p_value);
+	void set_property(const int &p_value);
 	int get_property() const;
 };
 

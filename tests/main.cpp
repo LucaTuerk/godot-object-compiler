@@ -87,10 +87,12 @@ int main(int argc, char *argv[]) {
 		}
 		TestRegistry::instance()->set_integration_tests_include_paths(include_paths);
 
-		for (const auto &[test_name, test_functor] : TestRegistry::instance()->get_integration_tests()) {
+		for (const auto &[test_name, test_functor] :
+				TestRegistry::instance()->get_integration_tests()) {
 			PRINT_INFO("Running test case \"%s\"", test_name.c_str());
 
-			const Vector<String> args = TestRegistry::instance()->get_test_application_arguments({ "generate", "type_db" });
+			const Vector<String> args =
+					TestRegistry::instance()->get_test_application_arguments({ "generate", "type_db" });
 			Application::run(args); // we need the type db to run integration tests;
 
 			all_count++;
@@ -113,8 +115,9 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	PRINT_INFO("Summary: %d failed, %d succeeded, %d ignored, %d tests run", failed_count, success_count, ignore_count,
-			all_count);
+	PRINT_INFO(
+			"Summary: %d failed, %d succeeded, %d ignored, %d tests run", failed_count, success_count,
+			ignore_count, all_count);
 
 	if (failed_count != 0) {
 		return 1;

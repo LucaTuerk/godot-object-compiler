@@ -43,10 +43,18 @@ class GodotSignalGenerator : public IClassGenerator<GodotSignalAttribute> {
 	GENERATOR(GodotSignalGenerator)
 
 public:
-	Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class, Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_default_values) override;
-	Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotSignalAttribute> p_attribute, ClassGeneratorResult &r_result) override;
+	static Ref<GeneratorError> bind_signal(
+			Ref<Class> p_target_class, const Ref<Node> &p_current_node, const String &p_signal_name,
+			const Ref<Parameters> &p_parameters, ClassGeneratorResult &r_result);
+
+	Ref<GeneratorError> do_generate_default_attribute_arguments(
+			Ref<Class> p_target_class, Ref<GodotSignalAttribute> p_attribute,
+			Ref<Context> p_default_values) override;
+	Ref<GeneratorError> do_generate(
+			Ref<Class> p_target_class, Ref<GodotSignalAttribute> p_attribute,
+			ClassGeneratorResult &r_result) override;
 };
 
 REGISTER_CLASS_GENERATOR(GodotSignalGenerator)
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

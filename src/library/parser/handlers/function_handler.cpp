@@ -45,66 +45,72 @@
 
 namespace GodotObjectCompiler {
 
-  bool FieldHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
-    return p_current_src->type_in(
-        {"field_declaration", "declaration", "function_definition", "expression_statement", "call_expression"});
-  }
-
-  ParserStep FieldHandler::handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
-    if (p_current_src->type == "call_expression") {
-      r_current_target->build_child<Literal>(p_current_src->content());
-      return ParserStep::StepOver();
-    } else if (p_current_src->type_in({"expression_statement", "declaration"})) {
-      Ref<TreeSitterNode> identifier = p_current_src->find_descendant<TreeSitterNode>(BFS, type_is("identifier"));
-      if (identifier && ExecutionContext::instance()->get_attribute_db()->is_known_macro(identifier->content())) {
-        return handle_known_attribute(p_current_src, r_current_target, identifier->content());
-      }
-    } else if (p_current_src->find_descendant(BFS, type_is("function_declarator")) != nullptr) {
-      r_current_target = r_current_target->build_child<Function>();
-    } else if (p_current_src->find_descendant(
-                   BFS, type_in({"class_specifier", "struct_specifier", "enum_specifier"})) != nullptr) {
-    } else {
-      r_current_target = r_current_target->build_child<Field>();
-    }
-    return ParserStep::StepInto();
-  }
-
-  ParserStep FieldHandler::handle_known_attribute(
-      const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target, const String& macro) {
-    Ref<Attribute> attribute = ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
-    HANDLER_ERROR_COND(!attribute, "Failed to create attribute for known macro %s", macro.c_str());
-
-    current_target->add_child(attribute);
-    attribute->start = current_src->start_byte;
-    attribute->end = current_src->end_byte;
-    attribute->line = current_src->start_point.row + 1;
-
-  	if (!current_src->context->parse_attributes) {
-  		auto itr = current_src->context->stripped_parameters.find(current_src->start_byte);
-  		if (itr != current_src->context->stripped_parameters.end()) {
-  			attribute->build_child<UnparsedAttributeArguments>(itr->second);
-  		}
-  		return ParserStep::StepOver();
-  	}
-
-    Ref<IAttributeArgumentParser> argument_parser = attribute->get_argument_parser();
-    if (argument_parser) {
-      auto itr = current_src->context->stripped_parameters.find(current_src->start_byte);
-      if (itr != current_src->context->stripped_parameters.end()) {
-        Ref<ParserError> error =
-            argument_parser->parse_attribute_arguments(itr->second, attribute->create_child<Arguments>());
-
-        if (error != ParserError::OK) {
-          attribute->remove_all_children();
-          attribute->add_child(node_new<ParserError>(error->error_level, "TreeSitterParser",
-              format("Failed to parse attribute arguments.\n%s", error->message.c_str()),
-              current_src->context->file_path, current_src->context->original_buffer, attribute->line,
-              current_src->start_point.column + 1));
-          error->set_handled();
-        }
-      }
-    }
-    return ParserStep::StepOver();
-  }
-
+bool FieldHandler::handles_node(const Ref<TreeSitterNode> &p_current_src) {
+	return p_current_src->type_in(
+			{ "field_declaration", "declaration", "function_definition", "expression_statement",
+					"call_expression" });
 }
+
+ParserStep
+FieldHandler::handle(const Ref<TreeSitterNode> &p_current_src, Ref<Context> &r_current_target) {
+	if (p_current_src->type == "call_expression") {
+		r_current_target->build_child<Literal>(p_current_src->content());
+		return ParserStep::StepOver();
+	} else if (p_current_src->type_in({ "expression_statement", "declaration" })) {
+		Ref<TreeSitterNode> identifier =
+				p_current_src->find_descendant<TreeSitterNode>(BFS, type_is("identifier"));
+		if (identifier && ExecutionContext::instance()->get_attribute_db()->is_known_macro(identifier->content())) {
+			return handle_known_attribute(p_current_src, r_current_target, identifier->content());
+		}
+	} else if (p_current_src->find_descendant(BFS, type_is("function_declarator")) != nullptr) {
+		r_current_target = r_current_target->build_child<Function>();
+	} else if (p_current_src->find_descendant(
+					   BFS, type_in({ "class_specifier", "struct_specifier", "enum_specifier" })) != nullptr) {
+	} else {
+		r_current_target = r_current_target->build_child<Field>();
+	}
+	return ParserStep::StepInto();
+}
+
+ParserStep FieldHandler::handle_known_attribute(
+		const Ref<TreeSitterNode> &current_src, Ref<Context> &current_target, const String &macro) {
+	Ref<Attribute> attribute =
+			ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
+	HANDLER_ERROR_COND(!attribute, "Failed to create attribute for known macro %s", macro.c_str());
+
+	current_target->add_child(attribute);
+	attribute->start = current_src->start_byte;
+	attribute->end = current_src->end_byte;
+	attribute->line = current_src->start_point.row + 1;
+
+	if (!current_src->context->parse_attributes) {
+		auto itr = current_src->context->stripped_parameters.find(current_src->start_byte);
+		if (itr != current_src->context->stripped_parameters.end()) {
+			attribute->build_child<UnparsedAttributeArguments>(itr->second);
+		}
+		return ParserStep::StepOver();
+	}
+
+	Ref<IAttributeArgumentParser> argument_parser = attribute->get_argument_parser();
+	if (argument_parser) {
+		auto itr = current_src->context->stripped_parameters.find(current_src->start_byte);
+		if (itr != current_src->context->stripped_parameters.end()) {
+			Ref<ParserError> error = argument_parser->parse_attribute_arguments(
+					itr->second, attribute->create_child<Arguments>());
+
+			if (error != ParserError::OK) {
+				attribute->remove_all_children();
+				attribute->add_child(
+						node_new<ParserError>(
+								error->error_level, "TreeSitterParser",
+								format("Failed to parse attribute arguments.\n%s", error->message.c_str()),
+								current_src->context->file_path, current_src->context->original_buffer,
+								attribute->line, current_src->start_point.column + 1));
+				error->set_handled();
+			}
+		}
+	}
+	return ParserStep::StepOver();
+}
+
+} // namespace GodotObjectCompiler

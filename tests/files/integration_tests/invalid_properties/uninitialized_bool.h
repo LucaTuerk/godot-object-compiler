@@ -36,14 +36,13 @@
 
 #include "invalid_properties/uninitialized_bool.generated.h"
 
-
 GODOT_CLASS();
 
 class Invalid : Node {
-  GODOT_GENERATED_BODY();
+	GODOT_GENERATED_BODY();
 
-  GODOT_PROPERTY();
-  bool unitialized_bool;
+	GODOT_PROPERTY();
+	bool unitialized_bool;
 };
 
 GODOT_GENERATED_GLOBAL();

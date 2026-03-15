@@ -65,7 +65,9 @@ class Assumption {
 public:
 	using Validator = std::function<AssumptionState(Assumption &assumption)>;
 
-	Assumption(const T &value, const String &unvalidated_message, IAssumptionValidator<T> *p_validator = nullptr);
+	Assumption(
+			const T &value, const String &unvalidated_message,
+			IAssumptionValidator<T> *p_validator = nullptr);
 	~Assumption();
 
 	const T &operator()() const;
@@ -92,12 +94,13 @@ private:
 class UNSAFE_VALUE_EXTRACTOR {
 public:
 	template <typename T>
-	static T& GET_VERY_UNSAFELY(Assumption<T>& p_assumption);
-
+	static T &GET_VERY_UNSAFELY(Assumption<T> &p_assumption);
 };
 
 template <typename T>
-Assumption<T>::Assumption(const T &value, const String &unvalidated_message, IAssumptionValidator<T> *p_validator) : was_validated(false), validator(p_validator) {
+Assumption<T>::Assumption(
+		const T &value, const String &unvalidated_message, IAssumptionValidator<T> *p_validator) : was_validated(false),
+																								   validator(p_validator) {
 	this->value = value;
 	message = unvalidated_message;
 }
@@ -113,8 +116,9 @@ Assumption<T>::~Assumption() {
 	}
 
 	if (state == STATE_INVALID) {
-		fmt_print_err(
-				format("Assumption did not hold and was accessed %d times: %s", value_access_count, message.c_str()));
+		fmt_print_err(format(
+				"Assumption did not hold and was accessed %d times: %s", value_access_count,
+				message.c_str()));
 	}
 }
 
@@ -167,4 +171,4 @@ template <typename T>
 T &UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(Assumption<T> &p_assumption) {
 	return p_assumption.value;
 }
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

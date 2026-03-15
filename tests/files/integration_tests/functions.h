@@ -174,6 +174,6 @@ class Functions : Node {
 	GODOT_FUNCTION();
 	Ref<Resource> resource_function();
 };
-} //namespace Tests
+} // namespace Tests
 
 GODOT_GENERATED_GLOBAL();

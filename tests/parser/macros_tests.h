@@ -44,7 +44,8 @@ using namespace GodotObjectCompiler;
 GOC_TEST(ParseMacros) {
 	GOC_TEST_PARSE_FILE("tests/files/macro_tests/macros_no_args.h");
 
-	const Ref<GodotClassAttribute> class_attribute = global_namespace->find_descendant<GodotClassAttribute>();
+	const Ref<GodotClassAttribute> class_attribute =
+			global_namespace->find_descendant<GodotClassAttribute>();
 	GOC_TEST_ASSERT(class_attribute, "Failed to find class attribute");
 
 	const Ref<GodotGeneratedBodyAttribute> generate_body_attribute =
@@ -71,10 +72,12 @@ GOC_TEST(ParseMacros) {
 			global_namespace->find_descendant<GodotFunctionAttribute>();
 	GOC_TEST_ASSERT(godot_function_attribute, "Failed to find function attribute");
 
-	const Ref<GodotSignalAttribute> godot_signal_attribute = global_namespace->find_descendant<GodotSignalAttribute>();
+	const Ref<GodotSignalAttribute> godot_signal_attribute =
+			global_namespace->find_descendant<GodotSignalAttribute>();
 	GOC_TEST_ASSERT(godot_signal_attribute, "Failed to find signal attribute");
 
-	const Ref<GodotEnumAttribute> godot_enum_attribute = global_namespace->find_descendant<GodotEnumAttribute>();
+	const Ref<GodotEnumAttribute> godot_enum_attribute =
+			global_namespace->find_descendant<GodotEnumAttribute>();
 	GOC_TEST_ASSERT(godot_enum_attribute, "Failed to find enum attribute");
 
 	const Ref<GodotGeneratedGlobalAttribute> godot_generated_global_attribute =

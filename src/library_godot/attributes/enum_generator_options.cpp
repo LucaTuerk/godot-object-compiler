@@ -37,12 +37,16 @@
 
 namespace GodotObjectCompiler {
 
-  String EnumGeneratorOptionsParameterType::get_return_type() { return "GOC_EnumGeneratorOptions"; }
-
-  Vector<String> EnumGeneratorOptionsParameterType::get_value_names() {
-    return {EnumGeneratorOptionsArgument::EnumDefault, EnumGeneratorOptionsArgument::EnumFlags};
-  }
-
-  Vector<IAttributeParameterType::Argument> EnumGeneratorOptionsParameterType::get_arguments() { return {}; }
-
+String EnumGeneratorOptionsParameterType::get_return_type() {
+	return "GOC_EnumGeneratorOptions";
 }
+
+Vector<String> EnumGeneratorOptionsParameterType::get_value_names() {
+	return { EnumGeneratorOptionsArgument::EnumDefault, EnumGeneratorOptionsArgument::EnumFlags };
+}
+
+Vector<IAttributeParameterType::Argument> EnumGeneratorOptionsParameterType::get_arguments() {
+	return {};
+}
+
+} // namespace GodotObjectCompiler

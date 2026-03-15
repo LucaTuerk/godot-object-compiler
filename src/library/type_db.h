@@ -61,8 +61,7 @@ struct AssumeType {
 
 	AssumeType() = default;
 
-	AssumeType(const String &type_name, const Size &template_arg_count = 0) :
-			name(type_name), template_parameter_count(template_arg_count) {}
+	AssumeType(const String &type_name, const Size &template_arg_count = 0) : name(type_name), template_parameter_count(template_arg_count) {}
 
 private:
 	String name;
@@ -86,25 +85,30 @@ public:
 	void save_type_data(const Ref<NamedContext> &p_type, const String &p_generated_from) const;
 
 	void save_type_attribute(
-			const Ref<NamedContext> &p_type, const Ref<Attribute> &p_attribute, const String &p_generated_from) const;
+			const Ref<NamedContext> &p_type, const Ref<Attribute> &p_attribute,
+			const String &p_generated_from) const;
 
-	Ref<Node> get_type_data(const String &qualified_name, Size template_parameter_count = 0,
+	Ref<Node> get_type_data(
+			const String &qualified_name, Size template_parameter_count = 0,
 			const Ref<Namespace> &from_namespace = nullptr);
 
-	Ref<Attribute> get_type_attribute(const String &p_qualified_name, const String &p_attribute_name,
+	Ref<Attribute> get_type_attribute(
+			const String &p_qualified_name, const String &p_attribute_name,
 			Size p_template_parameter_count = 0, const Ref<Namespace> &p_from_namespace = nullptr);
 
 	Ref<Node> get_type_data(const Ref<Type> &type, const Ref<Namespace> &from_namespace = nullptr);
 
 	template <typename T>
-	Ref<T> get_type_data(const String &qualified_name, Size template_parameter_count = 0,
+	Ref<T> get_type_data(
+			const String &qualified_name, Size template_parameter_count = 0,
 			const Ref<Namespace> &from_namespace = nullptr);
 
 	template <typename T>
 	Ref<T> get_type_data(const Ref<Type> &type, const Ref<Namespace> &from_namespace = nullptr);
 
 	template <typename T>
-	Ref<T> get_type_attribute(const Ref<Type> &type, const Ref<Namespace> &from_namespace = nullptr);
+	Ref<T>
+	get_type_attribute(const Ref<Type> &type, const Ref<Namespace> &from_namespace = nullptr);
 
 	template <typename T>
 	AssumptionState validate_t(Assumption<AssumeType<T>> &type_assumption);
@@ -119,8 +123,8 @@ public:
 
 	static String mangle_name(const String &qualified_name, Size template_parameter_count);
 
-	static Vector<String> resolve_possible_namespaces(
-			const String &qualified_name, const Ref<Namespace> &from_namespace);
+	static Vector<String>
+	resolve_possible_namespaces(const String &qualified_name, const Ref<Namespace> &from_namespace);
 
 	TypeDB() = delete;
 
@@ -133,17 +137,22 @@ private:
 	enum class CacheType { READONLY_CACHE,
 		READWRITE_CACHE };
 
-	Ref<Node> _get_type_data(const String &p_qualified_name, Size template_parameter_count,
+	Ref<Node> _get_type_data(
+			const String &p_qualified_name, Size template_parameter_count,
 			const Ref<Namespace> &p_from_namespace, CacheType p_cache_type);
 
-	Ref<Attribute> _get_type_attribute(const String &p_qualified_name, const String &p_attribute_name,
-			Size p_template_parameter_count, const Ref<Namespace> &p_from_namespace, CacheType cache_type);
+	Ref<Attribute> _get_type_attribute(
+			const String &p_qualified_name, const String &p_attribute_name,
+			Size p_template_parameter_count, const Ref<Namespace> &p_from_namespace,
+			CacheType cache_type);
 
 	[[nodiscard]] String _get_cache_file_path(
-			const String &p_qualified_name, CacheType p_cache_type, Size p_template_argument_count = INVALID_SIZE) const;
+			const String &p_qualified_name, CacheType p_cache_type,
+			Size p_template_argument_count = INVALID_SIZE) const;
 
-	[[nodiscard]] String _get_attribute_cache_file_path(const String &p_qualified_name, const String &p_attribute_name,
-			CacheType p_cache_type, Size p_template_argument_count = INVALID_SIZE) const;
+	[[nodiscard]] String _get_attribute_cache_file_path(
+			const String &p_qualified_name, const String &p_attribute_name, CacheType p_cache_type,
+			Size p_template_argument_count = INVALID_SIZE) const;
 
 	Dictionary<String, Ref<Node>> _cache;
 	String _cache_directory;
@@ -154,7 +163,8 @@ private:
 
 template <typename T>
 Ref<T> TypeDB::get_type_data(
-		const String &qualified_name, Size template_parameter_count, const Ref<Namespace> &from_namespace) {
+		const String &qualified_name, Size template_parameter_count,
+		const Ref<Namespace> &from_namespace) {
 	Ref<Node> result = get_type_data(qualified_name, template_parameter_count, from_namespace);
 	if (!result) {
 		return nullptr;
@@ -175,7 +185,8 @@ Ref<T> TypeDB::get_type_data(const Ref<Type> &type, const Ref<Namespace> &from_n
 template <typename T>
 Ref<T> TypeDB::get_type_attribute(const Ref<Type> &type, const Ref<Namespace> &from_namespace) {
 	Ref<Attribute> result = get_type_attribute(
-			type->qualified_name(), T::get_type_static(), type->template_argument_count(), from_namespace);
+			type->qualified_name(), T::get_type_static(), type->template_argument_count(),
+			from_namespace);
 	if (!result) {
 		return nullptr;
 	}
@@ -186,9 +197,7 @@ Ref<T> TypeDB::get_type_attribute(const Ref<Type> &type, const Ref<Namespace> &f
 template <typename T>
 AssumptionState TypeDB::validate_t(Assumption<AssumeType<T>> &type_assumption) {
 	AssumeType<T> &value = UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(type_assumption);
-	Ref<T> result = get_type_data<T>(
-			value.name,
-			value.template_parameter_count);
+	Ref<T> result = get_type_data<T>(value.name, value.template_parameter_count);
 
 	if (!result) {
 		return STATE_INVALID;
@@ -198,4 +207,4 @@ AssumptionState TypeDB::validate_t(Assumption<AssumeType<T>> &type_assumption) {
 	return STATE_VALID;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -39,15 +39,14 @@
 
 namespace GodotObjectCompiler {
 
-  class ApplicationContext;
+class ApplicationContext;
 
-  class GenerateTypeDB : public IProgram {
-    PROGRAM(GenerateTypeDB, "generate/type_db");
-    PROG_NO_ARGS
+class GenerateTypeDB : public IProgram {
+	PROGRAM(GenerateTypeDB, "generate/type_db");
+	PROG_NO_ARGS
 
-   public:
+public:
+	Ref<ProgramError> run(ApplicationContext &p_context) override;
+};
 
-    Ref<ProgramError> run(ApplicationContext& p_context) override;
-  };
-
-}
+} // namespace GodotObjectCompiler

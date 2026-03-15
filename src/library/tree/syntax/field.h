@@ -48,4 +48,4 @@ public:
 	LAZY(Field, bool, is_volatile);
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

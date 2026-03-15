@@ -47,7 +47,8 @@ GOC_TEST(ParserRandStringFuzz) {
 	for (Size i = 0; i < 100; ++i) {
 		Ref<Namespace> global_namespace = node_new<Namespace>();
 		Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-		// GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected results while parsing random string input.")
+		// GOC_TEST_EQ(global_namespace->get_child_count(), 0, "Unexpected
+		// results while parsing random string input.")
 	}
 
 	return TEST_RESULT_SUCCESS;

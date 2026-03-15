@@ -140,7 +140,8 @@ Hash ExecutionContext::get_path_hash(const String &p_absolute_path) {
 	return hasher(p_absolute_path);
 }
 
-void ExecutionContext::register_generated_file(const String &p_generated_path, const String &p_generated_from_path) {
+void ExecutionContext::register_generated_file(
+		const String &p_generated_path, const String &p_generated_from_path) {
 	_generated_from[p_generated_from_path].push_back(p_generated_path);
 }
 
@@ -155,7 +156,8 @@ bool ExecutionContext::load_generated_from_file(const String &p_path) {
 	for (const String &key : config.get_sections()) {
 		config.read_from_section(key);
 		if (config.has_config_value("generated_files")) {
-			Vector<String> generated = string_split(config.read<String, String>("generated_files"), ";");
+			Vector<String> generated =
+					string_split(config.read<String, String>("generated_files"), ";");
 			_generated_from.emplace(key, generated);
 		}
 	}
@@ -205,7 +207,9 @@ void ExecutionContext::clean_generated_files() {
 
 		if (!file_exists(path)) {
 			for (const String &generated_file : generated_files) {
-				PRINT_VERBOSE("Removing orphan \"%s\", generated from \"%s\"", generated_file.c_str(), path.c_str());
+				PRINT_VERBOSE(
+						"Removing orphan \"%s\", generated from \"%s\"", generated_file.c_str(),
+						path.c_str());
 				if (file_exists(generated_file)) {
 					remove_file(generated_file);
 				}
@@ -234,7 +238,8 @@ bool ExecutionContext::clear_generated_files(const String &p_path) {
 
 	for (const String &generated : itr->second) {
 		if (file_exists(generated)) {
-			PRINT_VERBOSE("Removing orphan \"%s\", generated from \"%s\"", generated.c_str(), p_path.c_str());
+			PRINT_VERBOSE(
+					"Removing orphan \"%s\", generated from \"%s\"", generated.c_str(), p_path.c_str());
 			remove_file(generated);
 		}
 	}
@@ -319,4 +324,4 @@ void ExecutionContext::clear_usings() {
 	_usings.clear();
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

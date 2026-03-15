@@ -42,56 +42,64 @@
 
 namespace GodotObjectCompiler {
 
-  bool Member::_is_virtual_lazy_get() const { return find_child<Virtual>() != nullptr; }
-
-  bool Member::_is_override_lazy_get() const { return find_child<Override>() != nullptr; }
-
-  bool Member::_is_static_lazy_get() const { return find_child<Static>() != nullptr; }
-
-  bool Member::_is_const_lazy_get() const { return find_child<Const>() != nullptr; }
-
-  Ref<AccessSpecifier::Type> Member::_access_specifier_type_lazy_get() const {
-    if (!get_parent()) {
-      return nullptr;
-    }
-
-    Ref<Class> _class = find_ancestor<Class>();
-    if (!_class) {
-      return nullptr;
-    }
-    const bool is_in_struct = _class->is<Struct>();
-
-    const Ref<AccessSpecifier> specifier = find_previous_sibling<AccessSpecifier>();
-    if (!specifier) {
-      if (is_in_struct) {
-        return make_ref<AccessSpecifier::Type>(AccessSpecifier::PUBLIC);
-      } else {
-        return make_ref<AccessSpecifier::Type>(AccessSpecifier::PRIVATE);
-      }
-    }
-
-    return make_ref<AccessSpecifier::Type>(specifier->type);
-  }
-
-  bool Member::_is_public_member_lazy_get() const {
-    return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PUBLIC;
-  }
-
-  bool Member::_is_protected_member_lazy_get() const {
-    return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PROTECTED;
-  }
-
-  bool Member::_is_private_member_lazy_get() const {
-    return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PRIVATE;
-  }
-
-  bool Member::copy_to(const Ref<Node>& p_other) const {
-    COPY_GUARD(Member, NamedContext);
-    COPY_LAZY(access_specifier_type);
-    COPY_LAZY(is_private_member);
-    COPY_LAZY(is_protected_member);
-    COPY_LAZY(is_public_member);
-    return true;
-  }
-
+bool Member::_is_virtual_lazy_get() const {
+	return find_child<Virtual>() != nullptr;
 }
+
+bool Member::_is_override_lazy_get() const {
+	return find_child<Override>() != nullptr;
+}
+
+bool Member::_is_static_lazy_get() const {
+	return find_child<Static>() != nullptr;
+}
+
+bool Member::_is_const_lazy_get() const {
+	return find_child<Const>() != nullptr;
+}
+
+Ref<AccessSpecifier::Type> Member::_access_specifier_type_lazy_get() const {
+	if (!get_parent()) {
+		return nullptr;
+	}
+
+	Ref<Class> _class = find_ancestor<Class>();
+	if (!_class) {
+		return nullptr;
+	}
+	const bool is_in_struct = _class->is<Struct>();
+
+	const Ref<AccessSpecifier> specifier = find_previous_sibling<AccessSpecifier>();
+	if (!specifier) {
+		if (is_in_struct) {
+			return make_ref<AccessSpecifier::Type>(AccessSpecifier::PUBLIC);
+		} else {
+			return make_ref<AccessSpecifier::Type>(AccessSpecifier::PRIVATE);
+		}
+	}
+
+	return make_ref<AccessSpecifier::Type>(specifier->type);
+}
+
+bool Member::_is_public_member_lazy_get() const {
+	return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PUBLIC;
+}
+
+bool Member::_is_protected_member_lazy_get() const {
+	return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PROTECTED;
+}
+
+bool Member::_is_private_member_lazy_get() const {
+	return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PRIVATE;
+}
+
+bool Member::copy_to(const Ref<Node> &p_other) const {
+	COPY_GUARD(Member, NamedContext);
+	COPY_LAZY(access_specifier_type);
+	COPY_LAZY(is_private_member);
+	COPY_LAZY(is_protected_member);
+	COPY_LAZY(is_public_member);
+	return true;
+}
+
+} // namespace GodotObjectCompiler

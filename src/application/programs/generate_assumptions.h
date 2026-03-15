@@ -39,14 +39,13 @@
 
 namespace GodotObjectCompiler {
 
-  class GenerateAssumptions : public IProgram {
-    PROGRAM(GenerateAssumptions, "generate/assumptions");
-    PROG_NO_ARGS
+class GenerateAssumptions : public IProgram {
+	PROGRAM(GenerateAssumptions, "generate/assumptions");
+	PROG_NO_ARGS
 
-   public:
+public:
+	Ref<ProgramError> run(ApplicationContext &p_context) override;
+};
 
-    Ref<ProgramError> run(ApplicationContext& p_context) override;
-  };
-
-}
+} // namespace GodotObjectCompiler
 #endif

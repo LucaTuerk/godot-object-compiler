@@ -53,7 +53,6 @@ private:
 
 class FileWriter : public IStringWriter {
 public:
-
 	FileWriter(const FileWriter &other) = delete;
 
 	FileWriter(FileWriter &&other) noexcept
@@ -109,4 +108,4 @@ private:
 	std::fstream _file;
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

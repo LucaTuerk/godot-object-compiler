@@ -22,7 +22,7 @@
 
 void generated_register_module (godot::ModuleInitializationLevel p_level) 
 {
-  if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) 
+  if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE)  
   {
     GDREGISTER_CLASS (ExampleClass) ;
   }

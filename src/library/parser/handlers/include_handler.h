@@ -38,13 +38,13 @@
 
 namespace GodotObjectCompiler {
 
-  class IncludeHandler : public INodeHandler {
-    NODE_HANDLER(IncludeHandler);
+class IncludeHandler : public INodeHandler {
+	NODE_HANDLER(IncludeHandler);
 
-   public:
+public:
+	bool handles_node(const Ref<TreeSitterNode> &p_current_src) override;
+	ParserStep
+	handle(const Ref<TreeSitterNode> &p_current_src, Ref<Context> &r_current_target) override;
+};
 
-    bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
-    ParserStep handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) override;
-  };
-
-}
+} // namespace GodotObjectCompiler

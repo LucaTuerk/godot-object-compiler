@@ -38,13 +38,12 @@
 
 namespace GodotObjectCompiler {
 
-  class PrintParsed : public IProgram {
-    PROJECTLESS_PROGRAM(PrintParsed, "print/parsed")
+class PrintParsed : public IProgram {
+	PROJECTLESS_PROGRAM(PrintParsed, "print/parsed")
 
-   public:
+public:
+	bool validate_arguments(ApplicationContext &p_context) override;
+	Ref<ProgramError> run(ApplicationContext &p_context) override;
+};
 
-    bool validate_arguments(ApplicationContext& p_context) override;
-    Ref<ProgramError> run(ApplicationContext& p_context) override;
-  };
-
-}
+} // namespace GodotObjectCompiler

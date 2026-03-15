@@ -67,12 +67,19 @@ String GenerateBindings::generated_macro_name(const String &p_header, Size p_lin
 }
 
 Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
-	PROG_ERR_COND(!(AssumedGodotTypes::validate_assumptions() && AssumedParameterValues::validate_assumptions()),
-			"Failed to validate some assumptions on available Godot types and macros, probably because the TypeDB "
+	PROG_ERR_COND(
+			!(AssumedGodotTypes::validate_assumptions() &&
+					AssumedParameterValues::validate_assumptions()),
+			"Failed to validate some assumptions on available Godot "
+			"types and macros, probably because the TypeDB "
 			"generator has not found the relevant files.\n"
-			"Ensure godot-cpp include path are known to goc via the -I= flag or in the .goc_project file.");
-	PROG_ERR_COND(!p_context.paths_root.has_value(), "No project root path specified. Cannot generate bindings.");
-	PROG_ERR_COND(!p_context.files_input.has_value(), "No input files specified. Cannot generate bindings.");
+			"Ensure godot-cpp include path are known to goc via the -I= "
+			"flag or in the .goc_project file.");
+	PROG_ERR_COND(
+			!p_context.paths_root.has_value(),
+			"No project root path specified. Cannot generate bindings.");
+	PROG_ERR_COND(
+			!p_context.files_input.has_value(), "No input files specified. Cannot generate bindings.");
 
 	OutputTransformator transformator;
 
@@ -80,7 +87,8 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 	Ref<Context> macro_include_content = node_new<Context>();
 	macro_include_generator.generate(nullptr, macro_include_content);
 
-	FileWriter marco_writer = FileWriter::generated(path_concat(p_context.paths_generated, "godot_object_compiler/macros.h"), "");
+	FileWriter marco_writer = FileWriter::generated(
+			path_concat(p_context.paths_generated, "godot_object_compiler/macros.h"), "");
 	Ref<Output::OutputNode> macro_output = transformator.transform(macro_include_content);
 	macro_output->get_output(&marco_writer);
 
@@ -101,75 +109,65 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 					Output::Include("godot_cpp/godot.hpp"),
 					Output::Text("using namespace godot;"),
 			});
-			register_types_source->add_children({ Output::Include("gdextension_interface.h"),
-					Output::Include("godot_cpp/core/class_db.hpp"), Output::Include("godot_cpp/core/defs.hpp") });
+			register_types_source->add_children(
+					{ Output::Include("gdextension_interface.h"),
+							Output::Include("godot_cpp/core/class_db.hpp"),
+							Output::Include("godot_cpp/core/defs.hpp") });
 			break;
 		case TARGET_MODULE:
-			// This should not be reachable as project target can currently not be changed.
-			// If implemented the above godot-cpp includes need to be changed to godot internal
-			// includes for this case
+			// This should not be reachable as project target can currently not be
+			// changed. If implemented the above godot-cpp includes need to be
+			// changed to godot internal includes for this case
 			PANIC("UNIMPLEMENTED");
 			break;
 	}
 
-	// clang-format off
-    register_types_header->add_children({
-      Output::NewLine(),
-      build<Function>().with_children({
-        build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(register_method_name),
-          build<Parameters>()
-        .with_child(
-            build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
-              build<Identifier>("p_level")
-            })
-          )
-      }).with_child(Output::Semicolon()),
-      build<Function>().with_children({
-        build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(unregister_method_name),
-          build<Parameters>()
-        .with_child(
-            build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
-              build<Identifier>("p_level")
-            })
-          )
-      }).with_child(Output::Semicolon())
-    });
+	register_types_header->add_children(
+			{ Output::NewLine(),
+					build<Function>()
+							.with_children(
+									{ build<Type>().with_child<Identifier>("void"),
+											build<Identifier>(register_method_name),
+											build<Parameters>().with_child(
+													build<Parameter>().with_children(
+															{ build<Type>().with_child<Identifier>(
+																	  AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
+																	build<Identifier>("p_level") })) })
+							.with_child(Output::Semicolon()),
+					build<Function>()
+							.with_children(
+									{ build<Type>().with_child<Identifier>("void"),
+											build<Identifier>(unregister_method_name),
+											build<Parameters>().with_child(
+													build<Parameter>().with_children(
+															{ build<Type>().with_child<Identifier>(
+																	  AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
+																	build<Identifier>("p_level") })) })
+							.with_child(Output::Semicolon()) });
 
-    Ref<Body> register_body;
-    Ref<Body> unregister_body;
+	Ref<Body> register_body;
+	Ref<Body> unregister_body;
 
-    register_types_source->add_children({
-      Output::Include(format("%s.h", register_file_name.c_str())),
-      register_class_includes,
-      Output::NewLine(),
-      build<Function>().with_children({
-        build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(register_method_name),
-          build<Parameters>().with_child(
-            build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
-              build<Identifier>("p_level")
-            })
-          ),
-        build_ref<Body>(&register_body)
-      }),
-      build<Function>().with_children({
-        build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(unregister_method_name),
-          build<Parameters>().with_child(
-            build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>(AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
-              build<Identifier>("p_level")
-            })
-          ),
-        build_ref<Body>(&unregister_body)
-      })
-    });
-	// clang-format on
+	register_types_source->add_children(
+			{ Output::Include(format("%s.h", register_file_name.c_str())), register_class_includes,
+					Output::NewLine(),
+					build<Function>().with_children(
+							{ build<Type>().with_child<Identifier>("void"), build<Identifier>(register_method_name),
+									build<Parameters>().with_child(
+											build<Parameter>().with_children(
+													{ build<Type>().with_child<Identifier>(
+															  AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
+															build<Identifier>("p_level") })),
+									build_ref<Body>(&register_body) }),
+					build<Function>().with_children(
+							{ build<Type>().with_child<Identifier>("void"),
+									build<Identifier>(unregister_method_name),
+									build<Parameters>().with_child(
+											build<Parameter>().with_children(
+													{ build<Type>().with_child<Identifier>(
+															  AssumedGodotTypes::ModuleInitializationLevel().type->qualified_name()),
+															build<Identifier>("p_level") })),
+									build_ref<Body>(&unregister_body) }) });
 
 	HashSet<String> processed;
 	HashSet<String> register_includes;
@@ -186,7 +184,8 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 			bool h_exists = file_exists(h_file);
 			bool hpp_exists = file_exists(hpp_file);
 			if (!h_exists && !hpp_exists) {
-				PRINT_VERBOSE("No header found for input file \"%s\". Skipping", input_file.c_str());
+				PRINT_VERBOSE(
+						"No header found for input file \"%s\". Skipping", input_file.c_str());
 				continue;
 			}
 			if (h_exists) {
@@ -209,23 +208,31 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		TreeSitterParser parser;
 		Ref<Namespace> global_namespace = node_new<Namespace>();
 		Ref<ParserError> error = parser.parse_file(input_file, global_namespace);
-		PROG_ERR_COND(error != ParserError::OK, "Failed to parse input file \"%s\"", input_file.c_str());
+		PROG_ERR_COND(
+				error != ParserError::OK, "Failed to parse input file \"%s\"", input_file.c_str());
 
 		String relative_path = path_relative(input_file, *p_context.paths_root);
 		String in_generated_path = path_concat(p_context.paths_generated, relative_path);
 		String in_generated_base = path_base(in_generated_path);
 		String in_generated_stem = path_stem(in_generated_path);
-		String gen_source_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.cpp");
-		String gen_header_path = path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
+		String gen_source_path =
+				path_concat_ext(in_generated_base, in_generated_stem, "generated.cpp");
+		String gen_header_path =
+				path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
 		String gen_header_include_path = header_path(p_context.paths_generated, gen_header_path);
 
 		if (!directory_exits(in_generated_base)) {
 			create_dir_recursive(in_generated_base);
 		}
 
-		Vector<Ref<GeneratedGlobalAttribute>> generated_global_attributes = global_namespace->body()->find_children<GeneratedGlobalAttribute>();
-		PROG_ERR_COND(generated_global_attributes.size() > 1, "Multiple GODOT_GENERATED_GLOBAL attributes found in file, only on is required and allowed.");
-		Ref<GeneratedGlobalAttribute> generated_global_attribute = generated_global_attributes.empty() ? nullptr : generated_global_attributes[0];
+		Vector<Ref<GeneratedGlobalAttribute>> generated_global_attributes =
+				global_namespace->body()->find_children<GeneratedGlobalAttribute>();
+		PROG_ERR_COND(
+				generated_global_attributes.size() > 1,
+				"Multiple GODOT_GENERATED_GLOBAL attributes found in "
+				"file, only on is required and allowed.");
+		Ref<GeneratedGlobalAttribute> generated_global_attribute =
+				generated_global_attributes.empty() ? nullptr : generated_global_attributes[0];
 
 		Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 		Vector<Pair<Ref<GeneratedBodyAttribute>, Ref<Context>>> generated_bodies;
@@ -242,7 +249,9 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 
 		for (const Ref<Class> &target_class : classes) {
 			PRINT_VERBOSE("Processing class \"%s\"", target_class->qualified_name().c_str());
-			ClassGeneratorResult result{ input_file, target_class, header_includes, source_includes, register_includes };
+			ClassGeneratorResult result{
+				input_file, target_class, header_includes, source_includes, register_includes
+			};
 			result.initialize = register_body;
 			result.uninitialize = unregister_body;
 			result.generated_global = global_generated;
@@ -257,48 +266,68 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 
 			Ref<Node> previous = target_class->get_previous_sibling();
 			if (!previous) {
-				PRINT_VERBOSE("No previous sibling found, class cannot have a GodotClassAttribute applied. Skipping class.");
+				PRINT_VERBOSE(
+						"No previous sibling found, class cannot have a "
+						"GodotClassAttribute applied. Skipping class.");
 				continue;
 			}
 
 			Ref<GodotClassAttribute> class_attribute = previous->as<GodotClassAttribute>();
 			if (!class_attribute) {
-				PRINT_VERBOSE("Class does not have a GodotClassAttribute applied. Skipping class.");
+				PRINT_VERBOSE(
+						"Class does not have a GodotClassAttribute "
+						"applied. Skipping class.");
 				continue;
 			}
 
-			auto generated_body_attribute = target_class->body()->find_child<GeneratedBodyAttribute>();
-			PROG_ERR_COND(!generated_body_attribute || generated_body_attribute->get_index() != 0, "Generated class requires a GODOT_GENERATED_BODY attribute as first entry in the class body.");
+			auto generated_body_attribute =
+					target_class->body()->find_child<GeneratedBodyAttribute>();
+			PROG_ERR_COND(
+					!generated_body_attribute || generated_body_attribute->get_index() != 0,
+					"Generated class requires a GODOT_GENERATED_BODY "
+					"attribute as first entry in the class body.");
 
 			result.generated_body_line = generated_body_attribute->line;
 			result.generated_sources->add_child(Output::NewLine());
 
-			PROG_ERR_COND(!generated_global_attribute, "File must contain a GODOT_GENERATED_GLOBAL attribute in the global namespace.");
+			PROG_ERR_COND(
+					!generated_global_attribute, "File must contain a GODOT_GENERATED_GLOBAL "
+												 "attribute in the global namespace.");
 
 			GodotClassGenerator class_generator;
 			Ref<Context> class_default_values = node_new<Context>();
 			Ref<GeneratorError> class_def_gen_error =
-					class_generator.generate_default_attribute_arguments(target_class, class_attribute, class_default_values);
-			PROG_ERR_COND(class_def_gen_error != GeneratorError::OK, "Failed to generate default attribute arguments.");
+					class_generator.generate_default_attribute_arguments(
+							target_class, class_attribute, class_default_values);
+			PROG_ERR_COND(
+					class_def_gen_error != GeneratorError::OK,
+					"Failed to generate default attribute arguments.");
 
-			ClassGenerator::merge_default_attribute_arguments(class_attribute, class_default_values);
+			ClassGenerator::merge_default_attribute_arguments(
+					class_attribute, class_default_values);
 
-			Ref<GeneratorError> class_gen_error = class_generator.generate(
-					target_class, class_attribute, result);
+			Ref<GeneratorError> class_gen_error =
+					class_generator.generate(target_class, class_attribute, result);
 
 			PROG_ERR_COND(class_gen_error != GeneratorError::OK, "Failed to generate class.");
 
 			Ref<GeneratorError> init_gen_error = class_generator.generate_initialization(
 					target_class, class_attribute, result.initialize, result.uninitialize);
 
-			PROG_ERR_COND(init_gen_error != GeneratorError::OK, "Failed to generate class initialization code.")
+			PROG_ERR_COND(
+					init_gen_error != GeneratorError::OK,
+					"Failed to generate class initialization code.")
 
-			if (result.initialize->get_child_count() > 0 || result.uninitialize->get_child_count() > 0) {
+			if (result.initialize->get_child_count() > 0 ||
+					result.uninitialize->get_child_count() > 0) {
 				result.register_includes.insert(header_path(*p_context.paths_root, input_file));
 			}
 
 			if (!ExecutionContext::instance()->file_modified(input_file)) {
-				PRINT_VERBOSE("Input file \"%s\" was not modified since last read. Skipping.", input_file.c_str());
+				PRINT_VERBOSE(
+						"Input file \"%s\" was not modified since last "
+						"read. Skipping.",
+						input_file.c_str());
 				continue;
 			}
 
@@ -309,13 +338,18 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 						if (generator->handles(target_class, attribute)) {
 							Ref<Context> default_values = node_new<Context>();
 							Ref<GeneratorError> attr_def_error =
-									generator->generate_default_attribute_arguments(target_class, attribute, default_values);
+									generator->generate_default_attribute_arguments(
+											target_class, attribute, default_values);
 
-							PROG_ERR_COND(attr_def_error != GeneratorError::OK, "Failed to generate default attribute arguments.");
+							PROG_ERR_COND(
+									attr_def_error != GeneratorError::OK, "Failed to generate default "
+																		  "attribute arguments.");
 
-							ClassGenerator::merge_default_attribute_arguments(attribute, default_values);
+							ClassGenerator::merge_default_attribute_arguments(
+									attribute, default_values);
 
-							Ref<GeneratorError> attr_error = generator->generate(target_class, attribute, result);
+							Ref<GeneratorError> attr_error =
+									generator->generate(target_class, attribute, result);
 
 							PROG_ERR_COND(attr_error, "Failed to generate attribute code.");
 						}
@@ -326,7 +360,8 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		}
 
 		if (!ExecutionContext::instance()->file_modified(input_file)) {
-			PRINT_VERBOSE("Input file \"%s\" was not modified since last read. Skipping.", input_file.c_str());
+			PRINT_VERBOSE(
+					"Input file \"%s\" was not modified since last read. Skipping.", input_file.c_str());
 			continue;
 		}
 
@@ -334,15 +369,12 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		FileWriter header_writer = FileWriter::generated(gen_header_path, input_file);
 
 		auto target_header = header_path(*p_context.paths_root, input_file);
-		Output::Lines({ Output::PragmaOnce(),
-							  Output::Text("#undef GOC_FILE_ID"),
+		Output::Lines({ Output::PragmaOnce(), Output::Text("#undef GOC_FILE_ID"),
 							  Output::Define("GOC_FILE_ID", {}, file_id(target_header)),
-							  Output::Include("godot_object_compiler/macros.h"),
-							  Output::NewLine() })
+							  Output::Include("godot_object_compiler/macros.h"), Output::NewLine() })
 				->get_output(&header_writer);
 
-		Output::Lines({ Output::Include(target_header),
-							  Output::NewLine() })
+		Output::Lines({ Output::Include(target_header), Output::NewLine() })
 				->get_output(&source_writer);
 
 		for (const String &include : header_includes) {
@@ -356,18 +388,21 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 		}
 
 		for (ClassGeneratorResult &result : generate_results) {
-			Ref<Output::OutputNode> source_output = transformator.transform(result.generated_sources);
+			Ref<Output::OutputNode> source_output =
+					transformator.transform(result.generated_sources);
 
 			Ref<Output::OutputNode> body_output = Output::Define(
-					generated_macro_name(target_header, result.generated_body_line), {}, { result.generated_body });
+					generated_macro_name(target_header, result.generated_body_line), {},
+					{ result.generated_body });
 
 			source_output->get_output(&source_writer);
 			body_output->get_output(&header_writer);
 		}
 
 		Ref<Output::OutputNode> global_output = Output::Define(
-				generated_macro_name(target_header, generated_global_attribute ? generated_global_attribute->line : 0), {},
-				{ global_generated });
+				generated_macro_name(
+						target_header, generated_global_attribute ? generated_global_attribute->line : 0),
+				{}, { global_generated });
 
 		header_writer.write("\n");
 		global_output->get_output(&header_writer);
@@ -380,10 +415,10 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 	Ref<Output::OutputNode> register_header_output = transformator.transform(register_types_header);
 	Ref<Output::OutputNode> register_source_output = transformator.transform(register_types_source);
 
-	FileWriter register_header_writer =
-			FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "h"), "");
-	FileWriter register_source_writer =
-			FileWriter::generated(path_concat_ext(p_context.paths_generated, "generated_register_types", "cpp"), "");
+	FileWriter register_header_writer = FileWriter::generated(
+			path_concat_ext(p_context.paths_generated, "generated_register_types", "h"), "");
+	FileWriter register_source_writer = FileWriter::generated(
+			path_concat_ext(p_context.paths_generated, "generated_register_types", "cpp"), "");
 
 	register_header_output->get_output(&register_header_writer);
 	register_source_output->get_output(&register_source_writer);
@@ -391,4 +426,4 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext &p_context) {
 	return ProgramError::OK;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -96,6 +96,6 @@ bool could_be_dir_path(const String &p_path);
 
 bool could_be_file_path(const String &p_path);
 
-String header_path(const String& p_include_path, const String& p_file_path);
+String header_path(const String &p_include_path, const String &p_file_path);
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

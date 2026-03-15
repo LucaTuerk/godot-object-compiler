@@ -39,15 +39,15 @@
 GODOT_CLASS();
 
 class Invalid : Node {
-  GODOT_GENERATED_BODY();
+	GODOT_GENERATED_BODY();
 
 	GODOT_ENUM();
 	enum UninitEnum {
 		UNINIT_ENUM_VALUE,
 	};
 
-  GODOT_PROPERTY();
-  UninitEnum unitialized_enum;
+	GODOT_PROPERTY();
+	UninitEnum unitialized_enum;
 };
 
 GODOT_GENERATED_GLOBAL();

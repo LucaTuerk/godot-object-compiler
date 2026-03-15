@@ -125,7 +125,7 @@ void fmt_print_ln(const String &format_str, Args &&...args);
 template <typename... Args>
 void fmt_print_err(const String &format_str, Args &&...args);
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
 template <typename... Args>
 GodotObjectCompiler::String GodotObjectCompiler::format(const String &format_str, Args &&...args) {

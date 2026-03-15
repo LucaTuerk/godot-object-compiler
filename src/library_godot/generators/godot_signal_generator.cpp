@@ -39,87 +39,31 @@
 
 namespace GodotObjectCompiler {
 
-Ref<GeneratorError> GodotSignalGenerator::do_generate_default_attribute_arguments(Ref<Class> p_target_class, Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_default_values) {
-	UNUSED(p_target_class);
-	UNUSED(p_attribute);
-	// clang-format off
-	p_default_values->add_children({
-		build<StringLiteralArgument>().with_child<Literal>("")
-	});
-	// clang-format on
-	return GeneratorError::OK;
-}
-
-Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
-		Ref<GodotSignalAttribute> p_attribute, ClassGeneratorResult &r_result) {
+Ref<GeneratorError> GodotSignalGenerator::bind_signal(
+		Ref<Class> p_target_class, const Ref<Node> &p_current_node, const String &p_signal_name,
+		const Ref<Parameters> &p_parameters, ClassGeneratorResult &r_result) {
 	Ref<Context> p_generated_body = r_result.generated_body;
 	Ref<Context> p_generated_sources = r_result.generated_sources;
 	Ref<Context> p_generated_global = r_result.generated_global;
 
-	UNUSED(p_generated_global);
-
 	using namespace GodotGeneratorUtils;
-	const Ref<Body> bind_methods = get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+	const Ref<Body> bind_methods =
+			get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
 	GEN_ERROR_COND(!bind_methods, p_target_class, "Failed to get or generate bind methods body.");
 
-	Ref<Function> target_function = p_attribute->TargetFunction();
-	GEN_ERROR_COND(!target_function, p_target_class, "Failed to get signal target function");
+	Ref<Arguments> arguments;
+	bind_methods->add_child(add_signal(p_target_class, p_signal_name, p_parameters, r_result));
 
-	const bool is_void = target_function->type()->name() == "void";
-	GEN_ERROR_COND(!is_void, target_function, "Signal target function does not return void.");
-
-	String signal_name = target_function->name();
-	Ref<Literal> name_literal = p_attribute->arguments()->find_chain<Literal, StringLiteralArgument>();
-
-	if (String unwrapped; name_literal->unwrap_string_literal(unwrapped)) {
-		signal_name = unwrapped;
-	}
-
-	// clang-format off
-    Ref<Arguments> arguments;
-    bind_methods->build_child<Function>().with_children({
-        build<Identifier>("ADD_SIGNAL"),
-        build<Arguments>().with_child(
-          build<Argument>().with_children( {
-      build<Function>().with_children({
-        build<Identifier>("MethodInfo"),
-        build_ref<Arguments>(&arguments).with_children({
-            build<Argument>().with_child(
-              Output::StringLiteral(signal_name)
-            ),
-          })
-        })
-      }))
-    }).with_child(Output::Semicolon());
-
-    Ref<Parameters> func_parameters;
-    Ref<Arguments> emit_arguments;
-
-    p_generated_sources->build_child<Function>().with_children({
-      build<Type>().with_child<Identifier>("void"),
-      build<Identifier>(p_target_class->qualified_name() + "::" + target_function->name()),
-      build_ref<Parameters>(&func_parameters),
-      build<Body>().with_children({
-        build<Function>().with_children({
-          build<Identifier>("emit_signal"),
-          build_ref<Arguments>(&emit_arguments).with_children({
-            build<Argument>().with_child(Output::StringLiteral(signal_name)),
-          })
-        }).with_child(Output::Semicolon()),
-      })
-    });
-	// clang-format on
+	Ref<Parameters> func_parameters = node_new<Parameters>();
+	Ref<Arguments> emit_arguments = node_new<Arguments>();
 
 	Size i = 1;
-	for (const Ref<Parameter> &parameter : target_function->parameters()->find_children<Parameter>()) {
+	for (const Ref<Parameter> &parameter : p_parameters->find_children<Parameter>()) {
 		Ref<Type> type = parameter->find_child<Type>();
-		GEN_ERROR_COND(!type, target_function, "Failed to get function argument type.");
+		GEN_ERROR_COND(!type, p_current_node, "Failed to get function argument type.");
 		type = type->qualified();
-
 		Ref<Identifier> identifier = parameter->find_child<Identifier>();
 		String name = identifier ? identifier->name : format("p_param_%d", i);
-
-		arguments->build_child<Argument>().with_child(build_property_info_defaults(type, name, r_result, DEFAULTS_SIGNAL_ARGUMENT));
 
 		func_parameters->build_child<Parameter>().with_children({
 				type->clone(),
@@ -133,13 +77,50 @@ Ref<GeneratorError> GodotSignalGenerator::do_generate(Ref<Class> p_target_class,
 		i += 1;
 	}
 
+	p_generated_sources->build_child<Function>().with_children({
+			build<Type>().with_child<Identifier>("void"),
+			build<Identifier>(p_target_class->qualified_name() + "::" + p_signal_name),
+			func_parameters,
+			build<Body>().with_child(emit_signal(p_signal_name, emit_arguments)),
+	});
+
 	const Ref<Body> signal_names_body = get_signal_names_body(p_target_class, p_generated_body);
-	GEN_ERROR_COND(!signal_names_body, p_attribute, "Failed to get signal names body.");
+	GEN_ERROR_COND(!signal_names_body, p_current_node, "Failed to get signal names body.");
+
 	signal_names_body->add_child(
-			Output::Text(format("static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
-					signal_name.c_str(), signal_name.c_str())));
+			Output::Text(format(
+					"static const StringName& %s() {static const "
+					"StringName sn = \"%s\"; return sn; }",
+					p_signal_name.c_str(), p_signal_name.c_str())));
 
 	return GeneratorError::OK;
 }
 
-} //namespace GodotObjectCompiler
+Ref<GeneratorError> GodotSignalGenerator::do_generate_default_attribute_arguments(
+		Ref<Class> p_target_class, Ref<GodotSignalAttribute> p_attribute, Ref<Context> p_default_values) {
+	UNUSED(p_target_class);
+	UNUSED(p_attribute);
+	p_default_values->add_children({ build<StringLiteralArgument>().with_child<Literal>("") });
+	return GeneratorError::OK;
+}
+
+Ref<GeneratorError> GodotSignalGenerator::do_generate(
+		Ref<Class> p_target_class, Ref<GodotSignalAttribute> p_attribute, ClassGeneratorResult &r_result) {
+	Ref<Function> target_function = p_attribute->TargetFunction();
+	GEN_ERROR_COND(!target_function, p_target_class, "Failed to get signal target function");
+
+	const bool is_void = target_function->type()->name() == "void";
+	GEN_ERROR_COND(!is_void, target_function, "Signal target function does not return void.");
+
+	String signal_name = target_function->name();
+	Ref<Literal> name_literal =
+			p_attribute->arguments()->find_chain<Literal, StringLiteralArgument>();
+	if (String unwrapped; name_literal->unwrap_string_literal(unwrapped)) {
+		signal_name = unwrapped;
+	}
+
+	return bind_signal(
+			p_target_class, target_function, signal_name, target_function->parameters(), r_result);
+}
+
+} // namespace GodotObjectCompiler

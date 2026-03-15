@@ -39,7 +39,9 @@
 	{ \
 		Ref<Node> created = ExecutionContext::instance()->get_node_db()->create(#node_type); \
 		GOC_TEST_ASSERT(created, "Failed to create node of type \"%s\"", #node_type); \
-		GOC_TEST_EQ(created->get_type(), String(#node_type), "Failed to create node of type \"%s\"", #node_type); \
+		GOC_TEST_EQ( \
+				created->get_type(), String(#node_type), "Failed to create node of type \"%s\"", \
+				#node_type); \
 	}
 
 using namespace GodotObjectCompiler;
@@ -105,7 +107,8 @@ GOC_TEST(NodeIDTest) {
 		}
 
 		Ref<Node> child = context->create_child<Node>();
-		UID new_uid = ExecutionContext::instance()->get_node_db()->request_id_change(child->get_id(), i);
+		UID new_uid =
+				ExecutionContext::instance()->get_node_db()->request_id_change(child->get_id(), i);
 		GOC_TEST_EQ(new_uid, i, "Could not change id.");
 	}
 

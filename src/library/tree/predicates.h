@@ -47,7 +47,7 @@ Predicate<T> tag(const char *p_tag) {
 	return [p_tag](const Ref<T> &node) { return node->get_tag() == p_tag; };
 }
 
-} //namespace NodePredicates
+} // namespace NodePredicates
 
 namespace NamedContextPredicates {
 
@@ -58,10 +58,12 @@ Predicate<T> name(const char *p_name) {
 
 template <typename T>
 Predicate<T> qualified_name(const char *p_qualified_name) {
-	return [p_qualified_name](const Ref<T> &node) { return node->qualified_name() == p_qualified_name; };
+	return [p_qualified_name](const Ref<T> &node) {
+		return node->qualified_name() == p_qualified_name;
+	};
 }
 
-} //namespace NamedContextPredicates
+} // namespace NamedContextPredicates
 
 namespace ClassPredicates {
 
@@ -73,6 +75,6 @@ Predicate<T> base_class(const char *p_base_class) {
 	};
 }
 
-} //namespace ClassPredicates
+} // namespace ClassPredicates
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

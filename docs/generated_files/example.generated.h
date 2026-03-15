@@ -28,7 +28,7 @@
 #include "godot_cpp/core/gdvirtual.gen.inc"
 #include "godot_cpp/variant/callable.hpp"
 #include "godot_cpp/variant/string_name.hpp"
-#define GOC_GENERATED_11_107580388863103421() GDCLASS (ExampleClass, Node) ;\
+#define GOC_GENERATED_10_107580388863103421() GDCLASS (ExampleClass, Node) ;\
 public:\
 static void _bind_methods () ;\
 void _notification (int p_notification) ;\
@@ -52,6 +52,8 @@ struct SignalNames \
   static const StringName& something_happened() {static const StringName sn = "something_happened"; return sn; }\
 } ;\
 godot::Callable function_callable{this, "function"};\
+void _virtual_function (Node * p_node) ;\
+GDVIRTUAL1 (_virtual_function, godot::Node *) ;\
 godot::Callable virtual_function_callable{this, "virtual_function"};\
 godot::Callable rpc_function_callable{this, "rpc_function"};\
 godot::Ref <godot::Resource> get_resource () const ;\
@@ -65,12 +67,10 @@ int get_flags_property () const ;\
 void set_flags_property (int p_flags_property) ;\
 protected:\
 private:\
-void _virtual_function (Node * p_node) ;\
-GDVIRTUAL1 (_virtual_function, godot::Node *) ;\
 void set_resources (const godot::TypedDictionary <int, godot::Resource> & p_resources) ; 
  
 
-#define GOC_GENERATED_59_107580388863103421() VARIANT_ENUM_CAST (ExampleClass::Regular) ;\
+#define GOC_GENERATED_58_107580388863103421() VARIANT_ENUM_CAST (ExampleClass::Regular) ;\
 VARIANT_BITFIELD_CAST (ExampleClass::Flags) ; 
  
 

@@ -64,13 +64,14 @@ GOC_TEST(ParserNestedNamespace) {
 	Vector<Ref<Namespace>> namespaces = global_namespace->find_children<Namespace>(true);
 	GOC_TEST_EQ(namespaces.size(), 2, "Invalid namespace count in parsed result!");
 
-	Ref<Namespace> namespacesA =
-			global_namespace->find_descendant<Namespace>(BFS, NamedContextPredicates::name<Namespace>("A"));
+	Ref<Namespace> namespacesA = global_namespace->find_descendant<Namespace>(
+			BFS, NamedContextPredicates::name<Namespace>("A"));
 	GOC_TEST_ASSERT(namespacesA, "Failed to find outer namespace of name A");
-	Ref<Namespace> namespacesB =
-			global_namespace->find_descendant<Namespace>(BFS, NamedContextPredicates::name<Namespace>("B"));
+	Ref<Namespace> namespacesB = global_namespace->find_descendant<Namespace>(
+			BFS, NamedContextPredicates::name<Namespace>("B"));
 	GOC_TEST_ASSERT(namespacesB, "Failed to find inner namespace of name B");
-	GOC_TEST_EQ(namespacesB->qualified_name(), "A::B", "Invalid qualified name for inner namespace B")
+	GOC_TEST_EQ(
+			namespacesB->qualified_name(), "A::B", "Invalid qualified name for inner namespace B")
 
 	return TEST_RESULT_SUCCESS;
 };

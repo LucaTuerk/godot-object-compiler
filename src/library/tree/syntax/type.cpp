@@ -129,7 +129,8 @@ Ref<Type> Type::_qualified_lazy_get() const {
 
 	Ref<Namespace> namespace_ = find_ancestor<Namespace>();
 	Ref<Identifier> identifier = result->find_child<Identifier>();
-	Ref<Node> type_data = ExecutionContext::instance()->get_type_db()->get_type_data(result, namespace_);
+	Ref<Node> type_data =
+			ExecutionContext::instance()->get_type_db()->get_type_data(result, namespace_);
 	Ref<NamedContext> named = type_data ? type_data->as<NamedContext>() : nullptr;
 
 	if (named) {
@@ -141,4 +142,4 @@ Ref<Type> Type::_qualified_lazy_get() const {
 	return result;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
