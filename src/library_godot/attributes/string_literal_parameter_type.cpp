@@ -37,21 +37,29 @@
 
 namespace GodotObjectCompiler {
 
-  String StringLiteralParameterType::get_return_type() { return "const char*"; }
-
-  Vector<String> StringLiteralParameterType::get_value_names() { return {}; }
-
-  Vector<IAttributeParameterType::Argument> StringLiteralParameterType::get_arguments() { return {}; }
-
-  bool StringLiteralParameterType::is_builtin() { return true; }
-
-  String StringLiteralArgument::_content_lazy_get() const {
-    const Ref<Literal> literal = find_child<Literal>();
-    if (!literal) {
-      ERR("Failed to find literal.");
-      return "";
-    }
-    return literal->content;
-  }
-
+String StringLiteralParameterType::get_return_type() {
+	return "const char*";
 }
+
+Vector<String> StringLiteralParameterType::get_value_names() {
+	return {};
+}
+
+Vector<IAttributeParameterType::Argument> StringLiteralParameterType::get_arguments() {
+	return {};
+}
+
+bool StringLiteralParameterType::is_builtin() {
+	return true;
+}
+
+String StringLiteralArgument::_content_lazy_get() const {
+	const Ref<Literal> literal = find_child<Literal>();
+	if (!literal) {
+		ERR("Failed to find literal.");
+		return "";
+	}
+	return literal->content;
+}
+
+} // namespace GodotObjectCompiler

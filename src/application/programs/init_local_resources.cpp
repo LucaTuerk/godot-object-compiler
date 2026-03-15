@@ -46,8 +46,8 @@ bool copy_resources_to_folder(
 	for (const String &copy_resources : p_resource_glob_paths) {
 		for (const String &res_path : Resources::instance()->resources_recursive(copy_resources)) {
 			String relative = path_relative(res_path, copy_resources);
-			auto file_path =
-					path_concat(path_concat(p_target_folder, string_replace(copy_resources, "res://", "")), relative);
+			auto file_path = path_concat(
+					path_concat(p_target_folder, string_replace(copy_resources, "res://", "")), relative);
 			if (!file_exists(file_path)) {
 				String folder_path = path_base(file_path);
 				if (!directory_exits(folder_path) && !create_dir_recursive(folder_path)) {
@@ -72,4 +72,4 @@ Ref<ProgramError> InitLocalResources::run(ApplicationContext &p_context) {
 	return ProgramError::OK;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

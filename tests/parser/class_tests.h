@@ -62,13 +62,16 @@ GOC_TEST(ClassSimpleInheritance) {
 	Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 	GOC_TEST_EQ(classes.size(), 3, "Invalid class count.")
 
-	Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
+	Ref<Class> A =
+			global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
 	GOC_TEST_ASSERT(A, "Class named A not found");
 
-	Ref<Class> B = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("B"));
+	Ref<Class> B =
+			global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("B"));
 	GOC_TEST_ASSERT(B, "Class named B not found");
 
-	Ref<Class> C = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("C"));
+	Ref<Class> C =
+			global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("C"));
 	GOC_TEST_ASSERT(C, "Class named C not found");
 
 	Vector<String> A_bases = A->direct_bases_names();
@@ -92,7 +95,8 @@ GOC_TEST(ClassMemberFunctions) {
 	Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 	GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
 
-	Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
+	Ref<Class> A =
+			global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
 	GOC_TEST_ASSERT(A, "Class named A not found");
 
 	Vector<String> public_members = { "a", "b", "c", "d", "e", "f" };
@@ -102,7 +106,8 @@ GOC_TEST(ClassMemberFunctions) {
 	Vector<String> return_types = { "int", "bool", "A *", "int", "bool", "A *" };
 
 	Vector<Pair<Vector<Ref<Function>>, Vector<String>>> functions_names_pairs = {
-		{ A->public_member_functions(), public_members }, { A->protected_member_functions(), protected_members },
+		{ A->public_member_functions(), public_members },
+		{ A->protected_member_functions(), protected_members },
 		{ A->private_member_functions(), private_members }
 	};
 
@@ -139,7 +144,8 @@ GOC_TEST(ClassMemberFields) {
 	Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 	GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
 
-	Ref<Class> A = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
+	Ref<Class> A =
+			global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));
 	GOC_TEST_ASSERT(A, "Class named A not found");
 
 	Vector<String> public_members = { "a", "b", "c" };
@@ -151,8 +157,11 @@ GOC_TEST(ClassMemberFields) {
 		x3(AccessSpecifier::PUBLIC), x3(AccessSpecifier::PROTECTED), x3(AccessSpecifier::PRIVATE)
 	};
 
-	Vector<Pair<Vector<Ref<Field>>, Vector<String>>> fields_names_pairs = { { A->public_member_fields(), public_members },
-		{ A->protected_member_fields(), protected_members }, { A->private_member_fields(), private_members } };
+	Vector<Pair<Vector<Ref<Field>>, Vector<String>>> fields_names_pairs = {
+		{ A->public_member_fields(), public_members },
+		{ A->protected_member_fields(), protected_members },
+		{ A->private_member_fields(), private_members }
+	};
 
 	Size j = 0;
 	for (const auto &[fields, names] : fields_names_pairs) {
@@ -161,7 +170,8 @@ GOC_TEST(ClassMemberFields) {
 			GOC_TEST_ASSERT(field->type(), "Failed to get field type");
 			GOC_TEST_EQ(field->name(), names[i], "Wrong field name.")
 			GOC_TEST_EQ(field->type()->type_name(), types[i], "Wrong field type.")
-			GOC_TEST_EQ(*field->access_specifier_type(), access_specifier[j], "Wrong access specifier.");
+			GOC_TEST_EQ(
+					*field->access_specifier_type(), access_specifier[j], "Wrong access specifier.");
 			i++;
 			j++;
 		}
@@ -173,7 +183,8 @@ GOC_TEST(ClassMemberFields) {
 GOC_TEST(TemplateClass) {
 	GOC_TEST_PARSE_FILE("tests/files/class_tests/template_class.h");
 
-	Ref<Class> template_class = global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("TemplateClass"));
+	Ref<Class> template_class = global_namespace->find_descendant<Class>(
+			BFS, NamedContextPredicates::name<Class>("TemplateClass"));
 	GOC_TEST_ASSERT(template_class, "Class named TemplateClass not found.");
 
 	Ref<TemplateParameters> template_parameters = template_class->find_child<TemplateParameters>();

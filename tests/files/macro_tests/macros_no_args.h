@@ -37,24 +37,24 @@
 GODOT_CLASS();
 
 class A {
-  GODOT_GENERATED_BODY();
+	GODOT_GENERATED_BODY();
 
-  GODOT_CATEGORY();
-  GODOT_GROUP();
-  GODOT_SUBGROUP();
+	GODOT_CATEGORY();
+	GODOT_GROUP();
+	GODOT_SUBGROUP();
 
-  GODOT_PROPERTY();
-  int property;
+	GODOT_PROPERTY();
+	int property;
 
-  GODOT_FUNCTION();
-  int function();
+	GODOT_FUNCTION();
+	int function();
 
-  GODOT_SIGNAL();
-  void signal();
+	GODOT_SIGNAL();
+	void signal();
 
-  GODOT_ENUM();
+	GODOT_ENUM();
 
-  enum Enum { ENUM_VALUE };
+	enum Enum { ENUM_VALUE };
 };
 
 GODOT_GENERATED_GLOBAL();

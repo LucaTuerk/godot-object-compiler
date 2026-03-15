@@ -23,14 +23,7 @@ jobs:
       - name: Run format
         shell: bash
         run: |
-          ls ./src/**/*.{cpp,h} > ./.files.txt
-          ls ./tests/**/*.{cpp,h} > ./.testfiles.txt
-
-          clang-format -i --files=./.files.txt || true
-          clang-format -i --files=./.testfiles.txt || true
-
-          rm ./.files.txt
-          rm ./.testfiles.txt
+          python ./tools/format.py
 
       - name: Verify no changes
-        run: git diff-index --quiet HEAD
+        run: git diff --exit-code

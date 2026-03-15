@@ -38,41 +38,47 @@
 
 namespace GodotObjectCompiler {
 
-  class GodotCategoryGenerator : public IClassGenerator<GodotPropertyCategoryAttribute> {
-    GENERATOR(GodotCategoryGenerator);
+class GodotCategoryGenerator : public IClassGenerator<GodotPropertyCategoryAttribute> {
+	GENERATOR(GodotCategoryGenerator);
 
-   public:
+public:
+	Ref<GeneratorError> do_generate_default_attribute_arguments(
+			Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute,
+			Ref<Context> p_default_values) override;
 
-    Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class,
-        Ref<GodotPropertyCategoryAttribute> p_attribute, Ref<Context> p_default_values) override;
+	Ref<GeneratorError> do_generate(
+			Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute,
+			ClassGeneratorResult &r_result) override;
+};
 
-    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute, ClassGeneratorResult &r_result) override;
-  };
+class GodotGroupGenerator : public IClassGenerator<GodotPropertyGroupAttribute> {
+	GENERATOR(GodotGroupGenerator);
 
-  class GodotGroupGenerator : public IClassGenerator<GodotPropertyGroupAttribute> {
-    GENERATOR(GodotGroupGenerator);
+public:
+	Ref<GeneratorError> do_generate_default_attribute_arguments(
+			Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
+			Ref<Context> p_default_values) override;
 
-   public:
+	Ref<GeneratorError> do_generate(
+			Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
+			ClassGeneratorResult &r_result) override;
+};
 
-    Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class,
-        Ref<GodotPropertyGroupAttribute> p_attribute, Ref<Context> p_default_values) override;
+class GodotSubgroupGenerator : public IClassGenerator<GodotPropertySubgroupAttribute> {
+	GENERATOR(GodotSubgroupGenerator);
 
-    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute, ClassGeneratorResult &r_result) override;
-  };
+public:
+	Ref<GeneratorError> do_generate_default_attribute_arguments(
+			Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
+			Ref<Context> p_default_values) override;
 
-  class GodotSubgroupGenerator : public IClassGenerator<GodotPropertySubgroupAttribute> {
-    GENERATOR(GodotSubgroupGenerator);
+	Ref<GeneratorError> do_generate(
+			Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
+			ClassGeneratorResult &r_result) override;
+};
 
-   public:
+REGISTER_CLASS_GENERATOR(GodotCategoryGenerator);
+REGISTER_CLASS_GENERATOR(GodotGroupGenerator);
+REGISTER_CLASS_GENERATOR(GodotSubgroupGenerator);
 
-    Ref<GeneratorError> do_generate_default_attribute_arguments(Ref<Class> p_target_class,
-        Ref<GodotPropertySubgroupAttribute> p_attribute, Ref<Context> p_default_values) override;
-
-    Ref<GeneratorError> do_generate(Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute, ClassGeneratorResult &r_result) override;
-  };
-
-  REGISTER_CLASS_GENERATOR(GodotCategoryGenerator);
-  REGISTER_CLASS_GENERATOR(GodotGroupGenerator);
-  REGISTER_CLASS_GENERATOR(GodotSubgroupGenerator);
-
-}
+} // namespace GodotObjectCompiler

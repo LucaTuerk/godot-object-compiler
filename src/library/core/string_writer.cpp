@@ -75,7 +75,8 @@ FileWriter::~FileWriter() {
 		_stream.write("\n// clang-format on\n// NOLINTEND\n");
 	}
 
-	if (_do_not_write_same_content && (!file_exists(_path) || read_file(_path) != _stream.get_string())) {
+	if (_do_not_write_same_content &&
+			(!file_exists(_path) || read_file(_path) != _stream.get_string())) {
 		PRINT_VERBOSE("Writing file \"%s\"", _path.c_str());
 		write_file(_path, _stream.get_string());
 	}
@@ -108,7 +109,7 @@ Size FileWriter::current_length() {
 	return _stream.current_length();
 }
 
-FileWriter::FileWriter(const String &path, const String &initial_content) : FileWriter(path, true){
+FileWriter::FileWriter(const String &path, const String &initial_content) : FileWriter(path, true) {
 	_generated = true;
 	_stream.write(initial_content);
 }
@@ -123,10 +124,14 @@ String FileWriter::_generated_header(const String &p_file_name) {
 	Size file_name_max = 70;
 	String file_name_search_string = string_pad_right("FILENAME", ' ', file_name_max);
 	String version_search_string = "GOC_VERSION";
-	content = string_replace(content, file_name_search_string, string_pad_right(p_file_name, ' ', file_name_max));
-	content =
-			string_replace(content, version_search_string, string_pad_right(format("%d.%d", GOC_MAJOR_VERSION, GOC_MINOR_VERSION), ' ', version_search_string.length()));
+	content = string_replace(
+			content, file_name_search_string, string_pad_right(p_file_name, ' ', file_name_max));
+	content = string_replace(
+			content, version_search_string,
+			string_pad_right(
+					format("%d.%d", GOC_MAJOR_VERSION, GOC_MINOR_VERSION), ' ',
+					version_search_string.length()));
 	return content;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

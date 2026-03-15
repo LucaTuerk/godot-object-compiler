@@ -38,20 +38,19 @@
 
 namespace GodotObjectCompiler {
 
-  class Include : public Context {
-    NODE_TYPE(Include);
-  public:
+class Include : public Context {
+	NODE_TYPE(Include);
 
-    Include(String include_path, bool is_system_include)
-        : is_system_include(is_system_include), include_path(std::move(include_path)) {}
+public:
+	Include(String include_path, bool is_system_include) : is_system_include(is_system_include), include_path(std::move(include_path)) {}
 
-    String to_string() const override;
-    void read_from(IStructuredReader* p_reader) override;
-    bool copy_to(const Ref<Node>& p_other) const override;
-    void write_to(IStructuredWriter* p_writer) override;
+	String to_string() const override;
+	void read_from(IStructuredReader *p_reader) override;
+	bool copy_to(const Ref<Node> &p_other) const override;
+	void write_to(IStructuredWriter *p_writer) override;
 
-    bool is_system_include;
-    String include_path;
-  };
+	bool is_system_include;
+	String include_path;
+};
 
-}
+} // namespace GodotObjectCompiler

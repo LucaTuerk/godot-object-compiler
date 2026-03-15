@@ -38,13 +38,12 @@
 
 namespace GodotObjectCompiler {
 
-  class Init : public IProgram {
-    PROJECTLESS_PROGRAM(Init, "init");
-    PROG_NO_ARGS
+class Init : public IProgram {
+	PROJECTLESS_PROGRAM(Init, "init");
+	PROG_NO_ARGS
 
-   public:
+public:
+	Ref<ProgramError> run(ApplicationContext &p_context) override;
+};
 
-    Ref<ProgramError> run(ApplicationContext& p_context) override;
-  };
-
-}
+} // namespace GodotObjectCompiler

@@ -95,4 +95,4 @@ inline Predicate<TreeSitterNode> type_in(std::initializer_list<String> &&p_types
 	};
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

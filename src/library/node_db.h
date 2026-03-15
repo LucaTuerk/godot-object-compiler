@@ -115,4 +115,4 @@ Ref<T> NodeDB::get(UID p_uid) {
 	return nullptr;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

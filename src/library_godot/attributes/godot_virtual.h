@@ -55,4 +55,4 @@ public:
 	Vector<Argument> get_arguments() override;
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

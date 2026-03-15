@@ -1,4 +1,3 @@
-// clang-format off
 #include <godot-cpp/classes/node.h>
 
 #include "godot_object_compiler/macros.h"
@@ -57,4 +56,3 @@ public:
 	Flags flags_property = FLAG_NONE;
 };
 GODOT_GENERATED_GLOBAL();
-// clang-format on

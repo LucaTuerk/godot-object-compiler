@@ -174,6 +174,6 @@ class Signals : Node {
 	GODOT_SIGNAL();
 	void resource_signal(Ref<Resource> p_param);
 };
-} //namespace Tests
+} // namespace Tests
 
 GODOT_GENERATED_GLOBAL();

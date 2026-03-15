@@ -70,7 +70,8 @@ public:
 
 	const Vector<String> &get_remove_macros();
 
-	void register_generated_file(const String &p_generated_path, const String &p_generated_from_path);
+	void
+	register_generated_file(const String &p_generated_path, const String &p_generated_from_path);
 
 	bool load_generated_from_file(const String &p_path);
 
@@ -142,7 +143,7 @@ private:
 	ErrorDetail _error_detail;
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
 #define PRINT_LEVEL(level, ...) \
 	if (ExecutionContext::instance()->get_error_level() >= (level)) { \

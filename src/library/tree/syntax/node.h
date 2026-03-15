@@ -59,7 +59,9 @@ public:
 		return true;
 	}
 
-	virtual Ref<Node> create() const { return ExecutionContext::instance()->get_node_db()->create<Node>(); }
+	virtual Ref<Node> create() const {
+		return ExecutionContext::instance()->get_node_db()->create<Node>();
+	}
 
 	static String get_type_static() { return "Node"; }
 
@@ -96,9 +98,7 @@ public:
 	Ref<Node> get_previous_sibling() const;
 
 	template <typename T>
-	static bool default_node_predicate(Ref<T>) {
-		return true;
-	}
+	static bool default_node_predicate(Ref<T>) { return true; }
 
 	template <class T>
 	Ref<T> find_parent(Predicate<T> p_predicate = default_node_predicate<T>) const;
@@ -132,7 +132,8 @@ private:
 	friend class Context;
 
 	static inline bool node_register_constructor =
-			ExecutionContext::instance()->get_node_db()->register_node_constructor("Node", &GodotObjectCompiler::default_construct<Node>);
+			ExecutionContext::instance()->get_node_db()->register_node_constructor(
+					"Node", &GodotObjectCompiler::default_construct<Node>);
 };
 
 template <typename T, typename... Args>
@@ -140,7 +141,7 @@ Ref<T> node_new(Args &&...args) {
 	return ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
 template <class T>
 bool GodotObjectCompiler::Node::is() const {
@@ -172,7 +173,9 @@ GodotObjectCompiler::Ref<T> GodotObjectCompiler::INodeReader::read_from_file(con
 	return result->template as<T>();
 }
 
-#define NODE_TYPE(type); \
+#define NODE_TYPE(type) \
+	; \
+\
 public: \
 	type() = default; \
 	virtual String get_type() const override { \

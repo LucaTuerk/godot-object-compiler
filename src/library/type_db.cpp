@@ -89,7 +89,8 @@ Ref<Node> ConfigNodeReaderWriter::read_from_file(const String &path) {
 
 		String node_class = config.read<String, String>("_class");
 		UID uid = config.read<String, UID>("_id");
-		if (Ref<Node> existing = ExecutionContext::instance()->get_node_db()->get<Node>(uid); existing != nullptr) {
+		if (Ref<Node> existing = ExecutionContext::instance()->get_node_db()->get<Node>(uid);
+				existing != nullptr) {
 			local.insert({ uid, existing->clone() });
 			was_existing.insert(uid);
 			continue;
@@ -154,26 +155,30 @@ String TypeDB::_get_cache_file_path(
 	switch (p_cache_type) {
 		case CacheType::READONLY_CACHE: {
 			return path_concat(
-					_readonly_cache_directory, mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
+					_readonly_cache_directory,
+					mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
 		} break;
 		case CacheType::READWRITE_CACHE: {
-			return path_concat(_cache_directory, mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
+			return path_concat(
+					_cache_directory, mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
 		} break;
 	}
 
 	PANIC("Unhandled cache type.");
 }
 
-String TypeDB::_get_attribute_cache_file_path(const String &p_qualified_name, const String &p_attribute_name,
-		CacheType p_cache_type, Size p_template_argument_count) const {
+String TypeDB::_get_attribute_cache_file_path(
+		const String &p_qualified_name, const String &p_attribute_name, CacheType p_cache_type,
+		Size p_template_argument_count) const {
 	switch (p_cache_type) {
 		case CacheType::READONLY_CACHE: {
-			const String base =
-					path_concat(_readonly_cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
+			const String base = path_concat(
+					_readonly_cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
 			return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
 		}
 		case CacheType::READWRITE_CACHE: {
-			const String base = path_concat(_cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
+			const String base =
+					path_concat(_cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
 			return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
 		} break;
 	}
@@ -182,8 +187,10 @@ String TypeDB::_get_attribute_cache_file_path(const String &p_qualified_name, co
 
 void TypeDB::save_type_data(const Ref<NamedContext> &p_type, const String &p_generated_from) const {
 	String path;
-	if (Ref<TemplateParameters> parameters = p_type->find_child<TemplateParameters>(); parameters != nullptr) {
-		path = _get_cache_file_path(p_type->qualified_name(), CacheType::READWRITE_CACHE, parameters->get_child_count());
+	if (Ref<TemplateParameters> parameters = p_type->find_child<TemplateParameters>();
+			parameters != nullptr) {
+		path = _get_cache_file_path(
+				p_type->qualified_name(), CacheType::READWRITE_CACHE, parameters->get_child_count());
 	} else {
 		path = _get_cache_file_path(p_type->qualified_name(), CacheType::READWRITE_CACHE);
 	}
@@ -203,20 +210,28 @@ void TypeDB::save_type_data(const Ref<NamedContext> &p_type, const String &p_gen
 }
 
 void TypeDB::save_type_attribute(
-		const Ref<NamedContext> &p_type, const Ref<Attribute> &p_attribute, const String &p_generated_from) const {
+		const Ref<NamedContext> &p_type, const Ref<Attribute> &p_attribute,
+		const String &p_generated_from) const {
 	String path;
-	if (Ref<TemplateParameters> parameters = p_type->find_child<TemplateParameters>(); parameters != nullptr) {
-		path = _get_attribute_cache_file_path(p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE, parameters->get_child_count());
+	if (Ref<TemplateParameters> parameters = p_type->find_child<TemplateParameters>();
+			parameters != nullptr) {
+		path = _get_attribute_cache_file_path(
+				p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE,
+				parameters->get_child_count());
 	} else {
-		path = _get_attribute_cache_file_path(p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE);
+		path = _get_attribute_cache_file_path(
+				p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE);
 	}
 
 	if (string_contains(path, INVALID_NAME)) {
-		PRINT_ERROR("Failed to get cache path for attribute \"%s\" on type \"%s\"", p_attribute->get_type().c_str(), p_attribute->qualified_name().c_str());
+		PRINT_ERROR(
+				"Failed to get cache path for attribute \"%s\" on type \"%s\"",
+				p_attribute->get_type().c_str(), p_attribute->qualified_name().c_str());
 		return;
 	}
 
-	if (const String base = path_base(path); !directory_exits(base) && !create_dir_recursive(base)) {
+	if (const String base = path_base(path);
+			!directory_exits(base) && !create_dir_recursive(base)) {
 		return;
 	}
 
@@ -225,12 +240,14 @@ void TypeDB::save_type_attribute(
 	}
 }
 
-Ref<Node> TypeDB::_get_type_data(const String &p_qualified_name, Size p_template_argument_count,
+Ref<Node> TypeDB::_get_type_data(
+		const String &p_qualified_name, Size p_template_argument_count,
 		const Ref<Namespace> &p_from_namespace, CacheType p_cache_type) {
 	Reader reader;
 
 	for (const String &name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
-		const String &cache_file_path = _get_cache_file_path(name, p_cache_type, p_template_argument_count);
+		const String &cache_file_path =
+				_get_cache_file_path(name, p_cache_type, p_template_argument_count);
 
 		if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
 			return itr->second->clone();
@@ -247,7 +264,8 @@ Ref<Node> TypeDB::_get_type_data(const String &p_qualified_name, Size p_template
 		}
 		for (const String &using_ : ExecutionContext::instance()->get_usings()) {
 			if (String using_path = _get_cache_file_path(
-						format("%s::%s", using_.c_str(), name.c_str()), p_cache_type, p_template_argument_count);
+						format("%s::%s", using_.c_str(), name.c_str()), p_cache_type,
+						p_template_argument_count);
 					file_exists(using_path)) {
 				Ref<Node> root = reader.read_from_file(using_path);
 				if (!root) {
@@ -263,13 +281,14 @@ Ref<Node> TypeDB::_get_type_data(const String &p_qualified_name, Size p_template
 	return nullptr;
 }
 
-Ref<Attribute> TypeDB::_get_type_attribute(const String &p_qualified_name, const String &p_attribute_name,
-		Size p_template_parameter_count, const Ref<Namespace> &p_from_namespace, CacheType cache_type) {
+Ref<Attribute> TypeDB::_get_type_attribute(
+		const String &p_qualified_name, const String &p_attribute_name, Size p_template_parameter_count,
+		const Ref<Namespace> &p_from_namespace, CacheType cache_type) {
 	Reader reader;
 
 	for (const String &name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
-		const String &cache_file_path =
-				_get_attribute_cache_file_path(name, p_attribute_name, cache_type, p_template_parameter_count);
+		const String &cache_file_path = _get_attribute_cache_file_path(
+				name, p_attribute_name, cache_type, p_template_parameter_count);
 
 		if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
 			return itr->second->as<Attribute>();
@@ -283,6 +302,7 @@ Ref<Attribute> TypeDB::_get_type_attribute(const String &p_qualified_name, const
 			_cache[cache_file_path] = root->clone();
 			return root->as<Attribute>();
 		}
+
 		for (const String &using_ : ExecutionContext::instance()->get_usings()) {
 			if (String using_path = _get_attribute_cache_file_path(
 						format("%s::%s", using_.c_str(), name.c_str()), p_attribute_name, cache_type);
@@ -298,21 +318,25 @@ Ref<Attribute> TypeDB::_get_type_attribute(const String &p_qualified_name, const
 
 Ref<Node> TypeDB::get_type_data(
 		const String &qualified_name, Size template_argument_count, const Ref<Namespace> &from_namespace) {
-	Ref<Node> found =
-			_get_type_data(qualified_name, template_argument_count, from_namespace, CacheType::READWRITE_CACHE);
+	Ref<Node> found = _get_type_data(
+			qualified_name, template_argument_count, from_namespace, CacheType::READWRITE_CACHE);
 	if (!found) {
-		found = _get_type_data(qualified_name, template_argument_count, from_namespace, CacheType::READONLY_CACHE);
+		found = _get_type_data(
+				qualified_name, template_argument_count, from_namespace, CacheType::READONLY_CACHE);
 	}
 	return found;
 }
 
-Ref<Attribute> TypeDB::get_type_attribute(const String &p_qualified_name, const String &p_attribute_name,
-		Size p_template_parameter_count, const Ref<Namespace> &p_from_namespace) {
+Ref<Attribute> TypeDB::get_type_attribute(
+		const String &p_qualified_name, const String &p_attribute_name, Size p_template_parameter_count,
+		const Ref<Namespace> &p_from_namespace) {
 	Ref<Attribute> found = _get_type_attribute(
-			p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace, CacheType::READWRITE_CACHE);
+			p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace,
+			CacheType::READWRITE_CACHE);
 	if (!found) {
 		found = _get_type_attribute(
-				p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace, CacheType::READONLY_CACHE);
+				p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace,
+				CacheType::READONLY_CACHE);
 	}
 	return found;
 }
@@ -322,13 +346,17 @@ Ref<Node> TypeDB::get_type_data(const Ref<Type> &type, const Ref<Namespace> &fro
 }
 
 String TypeDB::mangle_name(const String &qualified_name, Size template_parameter_count) {
-	if (qualified_name.empty() || std::any_of(qualified_name.begin(), qualified_name.end() - 1, [](char c) { return std::iscntrl(c); })) {
+	if (qualified_name.empty() ||
+			std::any_of(qualified_name.begin(), qualified_name.end() - 1, [](char c) {
+				return std::iscntrl(c);
+			})) {
 		return INVALID_NAME;
 	}
 
 	Vector<String> parts = string_split(qualified_name, "::");
 
-	auto itr = std::find_if(parts.begin(), parts.end(), [](const String &part) { return !part.empty(); });
+	auto itr =
+			std::find_if(parts.begin(), parts.end(), [](const String &part) { return !part.empty(); });
 	if (itr == parts.end()) {
 		return INVALID_NAME;
 	}
@@ -359,7 +387,8 @@ String TypeDB::mangle_name(const String &qualified_name, Size template_parameter
 	Size closed = 0;
 
 	for (char c : qualified_name) {
-		if (!(is_whitespace(c) || c == '<' || c == '>' || c == '_' || isalnum(c) || c == ',' || c == '&' || c == '*')) {
+		if (!(is_whitespace(c) || c == '<' || c == '>' || c == '_' || isalnum(c) || c == ',' ||
+					c == '&' || c == '*')) {
 			return INVALID_NAME;
 		}
 
@@ -441,7 +470,9 @@ AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<Define>> &p_as
 AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<EnumValue>> &p_assumption) {
 	Vector<String> namespaces = string_split(p_assumption().name, "::");
 	if (namespaces.size() == 1) {
-		PRINT_ERROR("EnumValue assumption required fully qualified name. Got: \"%s\"", p_assumption().name.c_str());
+		PRINT_ERROR(
+				"EnumValue assumption required fully qualified name. Got: \"%s\"",
+				p_assumption().name.c_str());
 		return STATE_INVALID;
 	}
 
@@ -463,4 +494,4 @@ AssumptionState TypeDB::validate_assumption(Assumption<AssumeType<EnumValue>> &p
 	return STATE_VALID;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -42,12 +42,13 @@ namespace GodotObjectCompiler {
 
 bool LiteralHandler::handles_node(const Ref<TreeSitterNode> &p_current_src) {
 	return string_suffix(p_current_src->type, "literal") ||
-		p_current_src->type_in({"null", "true", "false"});
+			p_current_src->type_in({ "null", "true", "false" });
 }
 
-ParserStep LiteralHandler::handle(const Ref<TreeSitterNode> &p_current_src, Ref<Context> &r_current_target) {
+ParserStep
+LiteralHandler::handle(const Ref<TreeSitterNode> &p_current_src, Ref<Context> &r_current_target) {
 	r_current_target->create_child<Literal>(p_current_src->content());
 	return ParserStep::StepOver();
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

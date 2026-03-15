@@ -101,4 +101,4 @@ String GodotVariantTypeArgument::_godot_variant_type_lazy_get() const {
 	return variant_type;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

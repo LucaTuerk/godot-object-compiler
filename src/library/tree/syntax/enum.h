@@ -59,4 +59,4 @@ public:
 	LAZY(EnumValue, Ref<Literal>, literal);
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

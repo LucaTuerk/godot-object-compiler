@@ -42,10 +42,11 @@
 
 using namespace GodotObjectCompiler;
 
-bool generate_files(const String &p_path, String &r_generated_header, String &r_generated_source,
+bool generate_files(
+		const String &p_path, String &r_generated_header, String &r_generated_source,
 		String &r_register_header, String &r_register_source) {
-	const Vector<String> args =
-			TestRegistry::instance()->get_test_application_arguments({ "generate", format("-S=%s", p_path.c_str()) });
+	const Vector<String> args = TestRegistry::instance()->get_test_application_arguments(
+			{ "generate", format("-S=%s", p_path.c_str()) });
 	ApplicationContext context;
 
 	if (Application::setup_context(args, context) != 0) {
@@ -70,14 +71,16 @@ bool generate_files(const String &p_path, String &r_generated_header, String &r_
 	const String base = path_base(p_path);
 	const String relative = path_relative(p_path, TestRegistry::instance()->test_root_folder());
 
-	const String generated_header_path =
-			path_concat(TestRegistry::instance()->test_generated_folder(), string_replace(relative, ".h", ".generated.h"));
-	const String generated_source_path =
-			path_concat(TestRegistry::instance()->test_generated_folder(), string_replace(relative, ".h", ".generated.cpp"));
-	const String register_header_path =
-			path_concat(TestRegistry::instance()->test_generated_folder(), "generated_register_types.h");
-	const String register_source_path =
-			path_concat(TestRegistry::instance()->test_generated_folder(), "generated_register_types.cpp");
+	const String generated_header_path = path_concat(
+			TestRegistry::instance()->test_generated_folder(),
+			string_replace(relative, ".h", ".generated.h"));
+	const String generated_source_path = path_concat(
+			TestRegistry::instance()->test_generated_folder(),
+			string_replace(relative, ".h", ".generated.cpp"));
+	const String register_header_path = path_concat(
+			TestRegistry::instance()->test_generated_folder(), "generated_register_types.h");
+	const String register_source_path = path_concat(
+			TestRegistry::instance()->test_generated_folder(), "generated_register_types.cpp");
 
 	if (!file_exists(generated_header_path)) {
 		print_err("Failed to generate header.");
@@ -106,7 +109,8 @@ bool generate_files(const String &p_path, String &r_generated_header, String &r_
 	return true;
 }
 
-bool property_bound(const char *p_property_name, const char *p_variant_type, const String &p_generated_header,
+bool property_bound(
+		const char *p_property_name, const char *p_variant_type, const String &p_generated_header,
 		const String &p_generated_source) {
 	const String setter_name = format("set_%s", p_property_name);
 	const String getter_name = format("get_%s", p_property_name);
@@ -131,32 +135,52 @@ bool property_bound(const char *p_property_name, const char *p_variant_type, con
 		return false;
 	}
 
-	if (get_line_that_contains(p_generated_source, { "ADD_PROPERTY", p_variant_type, p_property_name }).empty()) {
-		fmt_print_err("Property binding not found for %s with variant type %s", p_property_name, p_variant_type);
+	if (get_line_that_contains(
+				p_generated_source, { "ADD_PROPERTY", p_variant_type, p_property_name })
+					.empty()) {
+		fmt_print_err(
+				"Property binding not found for %s with variant type %s", p_property_name,
+				p_variant_type);
 		return false;
 	}
 	return true;
 }
 
-bool custom_property_bound(const char *p_property_name, const char *p_variant_type, const String &p_generated_source) {
-	if (get_line_that_contains(p_generated_source, { "ADD_PROPERTY", p_variant_type, p_property_name }).empty()) {
-		fmt_print_err("Property binding not found for %s with variant type %s", p_property_name, p_variant_type);
+bool custom_property_bound(
+		const char *p_property_name, const char *p_variant_type, const String &p_generated_source) {
+	if (get_line_that_contains(
+				p_generated_source, { "ADD_PROPERTY", p_variant_type, p_property_name })
+					.empty()) {
+		fmt_print_err(
+				"Property binding not found for %s with variant type %s", p_property_name,
+				p_variant_type);
 		return false;
 	}
 	return true;
 }
 
-bool signal_bound(const char *p_signal_name, const char *p_variant_type,
-		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source) {
+bool signal_bound(
+		const char *p_signal_name, const char *p_variant_type,
+		const GodotObjectCompiler::String &p_generated_header,
+		const GodotObjectCompiler::String &p_generated_source, bool p_no_args) {
 	UNUSED(p_generated_header);
-	if (get_line_that_contains(p_generated_source, { "ADD_SIGNAL", p_signal_name, p_variant_type }).empty()) {
+	String line =
+			get_line_that_contains(p_generated_source, { "ADD_SIGNAL", p_signal_name, p_variant_type });
+	if (line.empty()) {
 		fmt_print_err("Function bind for \"%s\" not found in source", p_signal_name);
 		return false;
 	}
+
+	if (p_no_args && string_contains(line, ",")) {
+		fmt_print_err(
+				"Invalid arguments found for signal bind \"%s\" expecting no args.", p_signal_name);
+		return false;
+	}
 	return true;
 }
 
-bool function_bound(const char *p_function_name, const GodotObjectCompiler::String &p_generated_header,
+bool function_bound(
+		const char *p_function_name, const GodotObjectCompiler::String &p_generated_header,
 		const GodotObjectCompiler::String &p_generated_source) {
 	UNUSED(p_generated_header);
 	if (get_line_that_contains(p_generated_source, { "bind_method", p_function_name }).empty()) {
@@ -166,8 +190,10 @@ bool function_bound(const char *p_function_name, const GodotObjectCompiler::Stri
 	return true;
 }
 
-bool virtual_function_bound(const char *p_function_name, const char *p_type,
-		const GodotObjectCompiler::String &p_generated_header, const GodotObjectCompiler::String &p_generated_source) {
+bool virtual_function_bound(
+		const char *p_function_name, const char *p_type,
+		const GodotObjectCompiler::String &p_generated_header,
+		const GodotObjectCompiler::String &p_generated_source) {
 	String virtual_name = format("_%s", p_function_name);
 	if (get_line_that_contains(p_generated_source, { "GDVIRTUAL_BIND", virtual_name }).empty()) {
 		fmt_print_err("Virtual bind for \"%s\" not found in source", p_function_name);
@@ -202,13 +228,16 @@ String get_line_that_contains(const String &p_content, const Vector<String> &p_s
 	return "";
 }
 
-Size find_line_that_contains(const String &p_content, const Vector<String> &p_search, Size p_start_line) {
+Size find_line_that_contains(
+		const String &p_content, const Vector<String> &p_search, Size p_start_line) {
 	std::stringstream strstsr(p_content);
 	Size i = 0;
 	for (String line; std::getline(strstsr, line);) {
 		if (p_start_line < i) {
-			const bool all_contained = std::all_of(
-					p_search.begin(), p_search.end(), [line](const String &search) { return string_contains(line, search); });
+			const bool all_contained =
+					std::all_of(p_search.begin(), p_search.end(), [line](const String &search) {
+						return string_contains(line, search);
+					});
 			if (all_contained) {
 				return i;
 			}
@@ -218,12 +247,14 @@ Size find_line_that_contains(const String &p_content, const Vector<String> &p_se
 
 	return INVALID_SIZE;
 }
-bool enum_bound(const char *p_enum_name, bool p_is_flags, std::initializer_list<const char *> &&p_check_values,
+bool enum_bound(
+		const char *p_enum_name, bool p_is_flags, std::initializer_list<const char *> &&p_check_values,
 		const String &p_generated_source, const String &p_generated_header) {
 	String cast_check_for = p_is_flags ? "VARIANT_BITFIELD_CAST" : "VARIANT_ENUM_CAST";
 	String bind_check_for = p_is_flags ? "BIND_BITFIELD_FLAG" : "BIND_ENUM_CONSTANT";
 
-	if (find_line_that_contains(p_generated_header, { cast_check_for, p_enum_name }) == INVALID_SIZE) {
+	if (find_line_that_contains(p_generated_header, { cast_check_for, p_enum_name }) ==
+			INVALID_SIZE) {
 		return false;
 	}
 	for (const char *value : p_check_values) {

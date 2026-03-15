@@ -56,8 +56,10 @@ GOC_TEST(StringTrim) {
 GOC_TEST(StringShinkInnerSpace) {
 	using namespace GodotObjectCompiler;
 	GOC_TEST_EQ(
-			string_shrink_inner_space("a     b     c   d   e   f  g"), "a b c d e f g", "Failed to shrink inner space.")
-	GOC_TEST_EQ(string_shrink_inner_space("a   \n  b   \n  c   d   e \t  f \r g"), "a b c d e f g",
+			string_shrink_inner_space("a     b     c   d   e   f  g"), "a b c d e f g",
+			"Failed to shrink inner space.")
+	GOC_TEST_EQ(
+			string_shrink_inner_space("a   \n  b   \n  c   d   e \t  f \r g"), "a b c d e f g",
 			"Failed to shrink inner space.")
 	return TEST_RESULT_SUCCESS;
 };
@@ -85,7 +87,8 @@ GOC_TEST(StringPrefix) {
 
 GOC_TEST(StringVectorCombine) {
 	using namespace GodotObjectCompiler;
-	GOC_TEST_EQ(string_vector_combine({ "a", "b", "c" }, ","), "a,b,c", "Failed to combine string vector.");
+	GOC_TEST_EQ(
+			string_vector_combine({ "a", "b", "c" }, ","), "a,b,c", "Failed to combine string vector.");
 	return TEST_RESULT_SUCCESS;
 };
 
@@ -112,20 +115,30 @@ GOC_TEST(StringSplit) {
 
 GOC_TEST(StringMacroToPascal) {
 	using namespace GodotObjectCompiler;
-	GOC_TEST_EQ(macro_case_to_pascal_case("TEST_VALUE"), "TestValue", "Failed to convert to pascal case.")
-	GOC_TEST_EQ(macro_case_to_pascal_case("TEST_VALUE_123"), "TestValue123", "Failed to convert to pascal case.")
-	GOC_TEST_EQ(macro_case_to_pascal_case("TESTVALUE123"), "Testvalue123", "Failed to convert to pascal case.")
+	GOC_TEST_EQ(
+			macro_case_to_pascal_case("TEST_VALUE"), "TestValue", "Failed to convert to pascal case.")
+	GOC_TEST_EQ(
+			macro_case_to_pascal_case("TEST_VALUE_123"), "TestValue123",
+			"Failed to convert to pascal case.")
+	GOC_TEST_EQ(
+			macro_case_to_pascal_case("TESTVALUE123"), "Testvalue123",
+			"Failed to convert to pascal case.")
 	return TEST_RESULT_SUCCESS;
 };
 
 GOC_TEST(StringEnumToExposedName) {
 	using namespace GodotObjectCompiler;
-	GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TEST_VALUE"), "Test Value", "Failed to convert to exposed enum name.")
-	GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TEST_VALUE_123_Test"), "Test Value 123 Test",
+	GOC_TEST_EQ(
+			cpp_enum_case_to_exposed_enum_case("TEST_VALUE"), "Test Value",
 			"Failed to convert to exposed enum name.")
-	GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TESTVALUE12345"), "Testvalue 12345",
+	GOC_TEST_EQ(
+			cpp_enum_case_to_exposed_enum_case("TEST_VALUE_123_Test"), "Test Value 123 Test",
+			"Failed to convert to exposed enum name.")
+	GOC_TEST_EQ(
+			cpp_enum_case_to_exposed_enum_case("TESTVALUE12345"), "Testvalue 12345",
 			"Failed to convert to  exposed enum name.")
-	GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TESTVALUE123TEST"), "Testvalue 123 Test",
+	GOC_TEST_EQ(
+			cpp_enum_case_to_exposed_enum_case("TESTVALUE123TEST"), "Testvalue 123 Test",
 			"Failed to convert to  exposed enum name.")
 	return TEST_RESULT_SUCCESS;
 };

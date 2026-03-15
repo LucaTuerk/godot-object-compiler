@@ -64,4 +64,4 @@ public:
 	bool validate() const;
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

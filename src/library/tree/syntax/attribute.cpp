@@ -47,7 +47,9 @@ Ref<Node> Attribute::resolve_target() const {
 			return nullptr;
 		} break;
 		case CONTAINING: {
-			return find_parent<Node>([this](const Ref<Node> &p_parent) { return verify_target(p_parent); });
+			return find_parent<Node>([this](const Ref<Node> &p_parent) {
+				return verify_target(p_parent);
+			});
 		} break;
 		case NONE: {
 			return nullptr;
@@ -94,4 +96,4 @@ void UnparsedAttributeArguments::read_from(IStructuredReader *p_reader) {
 	content = p_reader->read<String, String>("_content");
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

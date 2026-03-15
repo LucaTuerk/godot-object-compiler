@@ -165,7 +165,8 @@ Context::ChildIterator Context::remove_child(decltype(_children)::iterator p_itr
 	return p_itr;
 }
 
-Context::ChildIterator Context::reparent_child(decltype(_children)::iterator p_itr, Ref<Context> p_new_parent) {
+Context::ChildIterator
+Context::reparent_child(decltype(_children)::iterator p_itr, Ref<Context> p_new_parent) {
 	if (p_itr != _children.end()) {
 		Ref<Node> child = *p_itr;
 		p_itr = remove_child(p_itr);
@@ -189,7 +190,8 @@ void Context::remove_child(const Ref<Node> &p_child) {
 	remove_child(itr);
 }
 
-void Context::replace_child(const Ref<Node> &p_child, const Ref<Node> &p_new_child, bool p_take_children) {
+void Context::replace_child(
+		const Ref<Node> &p_child, const Ref<Node> &p_new_child, bool p_take_children) {
 	auto itr = std::find(_children.begin(), _children.end(), p_child);
 	if (itr != _children.end()) {
 		*itr = p_new_child;
@@ -198,15 +200,16 @@ void Context::replace_child(const Ref<Node> &p_child, const Ref<Node> &p_new_chi
 		p_new_child->_index = p_child->_index;
 		p_new_child->_parent = this->as<Context>();
 		p_child->_id = ExecutionContext::instance()->get_node_db()->request_id_change(child_uid);
-		p_new_child->_id =
-				ExecutionContext::instance()->get_node_db()->request_id_change(p_new_child->get_id(), child_uid);
+		p_new_child->_id = ExecutionContext::instance()->get_node_db()->request_id_change(
+				p_new_child->get_id(), child_uid);
 		p_child->_parent = {};
 
 		Ref<Context> child_context = p_child->as<Context>();
 		Ref<Context> new_child_context = p_new_child->as<Context>();
 
 		if (p_take_children && child_context && new_child_context) {
-			for (auto itr = child_context->_children.begin(); itr != child_context->_children.end();) {
+			for (auto itr = child_context->_children.begin();
+					itr != child_context->_children.end();) {
 				itr = child_context->reparent_child(itr, new_child_context);
 			}
 		}
@@ -269,7 +272,8 @@ void NamedContext::write_to(IStructuredWriter *p_writer) {
 	Context::write_to(p_writer);
 	p_writer->write<String, String>("_name", name());
 	p_writer->write<String, String>("_qualified_name", qualified_name());
-	p_writer->write<String, String>("_namespaces_names", string_vector_combine(namespaces_names(), ","));
+	p_writer->write<String, String>(
+			"_namespaces_names", string_vector_combine(namespaces_names(), ","));
 	p_writer->write<String, String>("header", header);
 }
 
@@ -306,4 +310,4 @@ String NamedContext::_mangled_name_lazy_get() const {
 	return TypeDB::mangle_name(qualified_name(), template_parameter_count);
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

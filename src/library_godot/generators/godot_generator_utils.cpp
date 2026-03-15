@@ -93,8 +93,12 @@ String GodotGeneratorUtils::type_name_remove_usings(String p_typename) {
 	}
 	return p_typename;
 }
-bool GodotGeneratorUtils::get_type_header(Ref<Type> p_type, Ref<Namespace> p_from_namespace, String &r_header) {
-	if (Ref<NamedContext> type_data = ExecutionContext::instance()->get_type_db()->get_type_data<NamedContext>(p_type, p_from_namespace); type_data) {
+bool GodotGeneratorUtils::get_type_header(
+		Ref<Type> p_type, Ref<Namespace> p_from_namespace, String &r_header) {
+	if (Ref<NamedContext> type_data =
+					ExecutionContext::instance()->get_type_db()->get_type_data<NamedContext>(
+							p_type, p_from_namespace);
+			type_data) {
 		r_header = type_data->header;
 		return !r_header.empty();
 	}
@@ -103,118 +107,182 @@ bool GodotGeneratorUtils::get_type_header(Ref<Type> p_type, Ref<Namespace> p_fro
 }
 
 Ref<Type> GodotGeneratorUtils::const_ref(const String &p_type_name) {
-	return build<Type>().with_children({ build<Const>(), build<Identifier>(p_type_name), build<Reference>() });
+	return build<Type>().with_children(
+			{ build<Const>(), build<Identifier>(p_type_name), build<Reference>() });
 }
 
-Ref<Function> GodotGeneratorUtils::bind_method(const String &p_class_name, const String &p_bind_name,
-		const String &p_method_name, const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
-	return bind_method_as(p_class_name, p_bind_name, p_method_name, p_parameter_names, p_default_values);
+Ref<Function> GodotGeneratorUtils::add_signal(
+		const Ref<Class> &p_target_class, const String &p_signal_name,
+		const Ref<Parameters> &p_parameters, ClassGeneratorResult &r_result) {
+	Ref<Arguments> arguments;
+	Ref<Function> add_signal =
+			build<Function>()
+					.with_children(
+							{ build<Identifier>("ADD_SIGNAL"),
+									build<Arguments>().with_child(
+											build<Argument>().with_children({ build<Function>().with_children(
+													{ build<Identifier>("MethodInfo"),
+															build_ref<Arguments>(&arguments)
+																	.with_children({
+																			build<Argument>()
+																					.with_child(Output::StringLiteral(p_signal_name)),
+																	}) }) })) })
+					.with_child(Output::Semicolon());
+
+	Size i = 1;
+	for (const Ref<Parameter> &parameter : p_parameters->find_children<Parameter>()) {
+		Ref<Type> type = parameter->find_child<Type>();
+		if (!type) {
+			return nullptr;
+		}
+
+		type = type->qualified();
+		Ref<Identifier> identifier = parameter->find_child<Identifier>();
+		String name = identifier ? identifier->name : format("p_param_%d", i);
+
+		Ref<Node> property_info = build_property_info_defaults(
+				type, name, r_result, p_target_class, DEFAULTS_SIGNAL_ARGUMENT);
+		if (!property_info) {
+			return nullptr;
+		}
+		arguments->build_child<Argument>().with_child(property_info);
+		i += 1;
+	}
+	return add_signal;
 }
 
-Ref<Function> GodotGeneratorUtils::bind_method_as(const String &p_class_name, const String &p_bind_name,
-		const String &p_method_name, const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
-	// clang-format off
-    Ref<Arguments> bind_args;
-    Ref<Arguments> d_method_args;
+Ref<Function>
+GodotGeneratorUtils::emit_signal(const String &p_signal_name, const Ref<Arguments> &p_arguments) {
+	Ref<Arguments> arguments;
+	Ref<Function> call =
+			build<Function>()
+					.with_children(
+							{ build<Identifier>("emit_signal"),
+									build_ref<Arguments>(&arguments)
+											.with_children({
+													build<Argument>().with_child(Output::StringLiteral(p_signal_name)),
+											}) })
+					.with_child(Output::Semicolon());
 
-    Ref<Function> result =  build<Function>().with_children({
-    build<Identifier>(format("%s::bind_method", AssumedGodotTypes::ClassDB().type->qualified_name().c_str())),
-    build_ref<Arguments>(&bind_args).with_children({
-      build<Function>().with_children({
-        build<Identifier>("D_METHOD"),
-        build_ref<Arguments>(&d_method_args).with_children({
-            build<Argument>().with_child(Output::StringLiteral(p_bind_name))
-          })
-        }),
-    build<Argument>().with_children({
-        build<Reference>(),
-        build<Identifier>(p_class_name),
-        Output::Text("::"),
-        Output::Text(p_method_name),
-    })})}).with_child(Output::Semicolon());
-
-    for ( const String& parameter_name : p_parameter_names) {
-      d_method_args->build_child<Argument>().with_child(Output::StringLiteral(parameter_name));
-    }
-
-    for (const String& def_val : p_default_values) {
-      bind_args->build_child<Argument>().with_child(
-        Output::Text(format("DEFVAL(%s)", def_val.c_str())
-      ));
-    }
-
-    return result;
-	// clang-format on
+	for (const Ref<Argument> &argument : p_arguments->find_children<Argument>()) {
+		arguments->add_child(argument->clone());
+	}
+	return call;
 }
 
-Ref<Function> GodotGeneratorUtils::bind_static_method(const String &p_class_name, const String &p_bind_name,
-		const String &p_method_name, const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
-	// clang-format off
-    Ref<Arguments> bind_args;
-    Ref<Arguments> d_method_args;
+Ref<Function> GodotGeneratorUtils::bind_method(
+		const String &p_class_name, const String &p_bind_name, const String &p_method_name,
+		const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
+	return bind_method_as(
+			p_class_name, p_bind_name, p_method_name, p_parameter_names, p_default_values);
+}
 
-    Ref<Function> result =  build<Function>().with_children({
-    build<Identifier>(format("%s::bind_static_method", AssumedGodotTypes::ClassDB().type->qualified_name().c_str())),
-    build_ref<Arguments>(&bind_args).with_children({
-      build<Argument>().with_child(Output::StringLiteral(p_class_name)),
-      build<Function>().with_children({
-        build<Identifier>("D_METHOD"),
-        build_ref<Arguments>(&d_method_args).with_children({
-            build<Argument>().with_child(Output::StringLiteral(p_bind_name))
-          })
-        }),
-    build<Argument>().with_children({
-        build<Reference>(),
-        build<Identifier>(p_class_name),
-        Output::Text("::"),
-        Output::Text(p_method_name),
-    })})}).with_child(Output::Semicolon());
+Ref<Function> GodotGeneratorUtils::bind_method_as(
+		const String &p_class_name, const String &p_bind_name, const String &p_method_name,
+		const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
+	Ref<Arguments> bind_args;
+	Ref<Arguments> d_method_args;
 
-    for ( const String& parameter_name : p_parameter_names) {
-      d_method_args->build_child<Argument>().with_child(Output::StringLiteral(parameter_name));
-    }
+	Ref<Function> result =
+			build<Function>()
+					.with_children(
+							{ build<Identifier>(format(
+									  "%s::bind_method", AssumedGodotTypes::ClassDB().type->qualified_name().c_str())),
+									build_ref<Arguments>(&bind_args)
+											.with_children(
+													{ build<Function>().with_children(
+															  { build<Identifier>("D_METHOD"),
+																	  build_ref<Arguments>(&d_method_args)
+																			  .with_children({ build<Argument>().with_child(
+																					  Output::StringLiteral(p_bind_name)) }) }),
+															build<Argument>().with_children({
+																	build<Reference>(),
+																	build<Identifier>(p_class_name),
+																	Output::Text("::"),
+																	Output::Text(p_method_name),
+															}) }) })
+					.with_child(Output::Semicolon());
 
-    for (const String& def_val : p_default_values) {
-      bind_args->build_child<Argument>().with_child(
-        Output::Text(format("DEFVAL(%s)", def_val.c_str())
-      ));
-    }
+	for (const String &parameter_name : p_parameter_names) {
+		d_method_args->build_child<Argument>().with_child(Output::StringLiteral(parameter_name));
+	}
 
-    return result;
-	// clang-format on
+	for (const String &def_val : p_default_values) {
+		bind_args->build_child<Argument>().with_child(
+				Output::Text(format("DEFVAL(%s)", def_val.c_str())));
+	}
+
+	return result;
+}
+
+Ref<Function> GodotGeneratorUtils::bind_static_method(
+		const String &p_class_name, const String &p_bind_name, const String &p_method_name,
+		const Vector<String> &p_parameter_names, const Vector<String> &p_default_values) {
+	Ref<Arguments> bind_args;
+	Ref<Arguments> d_method_args;
+
+	Ref<Function> result =
+			build<Function>()
+					.with_children(
+							{ build<Identifier>(format(
+									  "%s::bind_static_method",
+									  AssumedGodotTypes::ClassDB().type->qualified_name().c_str())),
+									build_ref<Arguments>(&bind_args)
+											.with_children(
+													{ build<Argument>().with_child(Output::StringLiteral(p_class_name)),
+															build<Function>().with_children(
+																	{ build<Identifier>("D_METHOD"),
+																			build_ref<Arguments>(&d_method_args)
+																					.with_children({ build<Argument>().with_child(
+																							Output::StringLiteral(p_bind_name)) }) }),
+															build<Argument>().with_children({
+																	build<Reference>(),
+																	build<Identifier>(p_class_name),
+																	Output::Text("::"),
+																	Output::Text(p_method_name),
+															}) }) })
+					.with_child(Output::Semicolon());
+
+	for (const String &parameter_name : p_parameter_names) {
+		d_method_args->build_child<Argument>().with_child(Output::StringLiteral(parameter_name));
+	}
+
+	for (const String &def_val : p_default_values) {
+		bind_args->build_child<Argument>().with_child(
+				Output::Text(format("DEFVAL(%s)", def_val.c_str())));
+	}
+
+	return result;
 }
 
 Ref<Body> GodotGeneratorUtils::get_bind_methods_body(
-		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body, const Ref<Context> &p_generated_sources) {
+		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
+		const Ref<Context> &p_generated_sources) {
 	Ref<Context> public_members;
 	unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
 	PANIC_COND(!public_members, "Failed to get public members group.");
 
 	bool bind_methods_defined = p_target_class->has_function_named("_bind_methods");
-	const String bind_methods_name = bind_methods_defined ? "_generated_bind_methods" : "_bind_methods";
+	const String bind_methods_name =
+			bind_methods_defined ? "_generated_bind_methods" : "_bind_methods";
 	const String qualified_bind_methods_name =
 			format("%s::%s", p_target_class->qualified_name().c_str(), bind_methods_name.c_str());
 
-	Ref<Function> bind_methods =
-			p_generated_sources->find_child(0, NamedContextPredicates::name<Function>(qualified_bind_methods_name.c_str()));
+	Ref<Function> bind_methods = p_generated_sources->find_child(
+			0, NamedContextPredicates::name<Function>(qualified_bind_methods_name.c_str()));
 	Ref<Body> bind_methods_body;
 
 	if (!bind_methods) {
-		// clang-format off
-      p_generated_sources->build_child<Function>().with_children({
-      build<Type>().with_child<Identifier>("void"),
-      build<Identifier>(qualified_bind_methods_name),
-      build<Parameters>(),
-      build_ref<Body>(&bind_methods_body)}
-      );
+		p_generated_sources->build_child<Function>().with_children(
+				{ build<Type>().with_child<Identifier>("void"),
+						build<Identifier>(qualified_bind_methods_name), build<Parameters>(),
+						build_ref<Body>(&bind_methods_body) });
 
-      public_members->build_child<Function>().with_children({
-        build<Static>(),
-        build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(bind_methods_name),
-        build<Parameters>()
-      }).with_child(Output::Semicolon());
-		// clang-format on
+		public_members->build_child<Function>()
+				.with_children(
+						{ build<Static>(), build<Type>().with_child<Identifier>("void"),
+								build<Identifier>(bind_methods_name), build<Parameters>() })
+				.with_child(Output::Semicolon());
 	} else {
 		bind_methods_body = bind_methods->find_child<Body>();
 		PANIC_COND(!bind_methods_body, "Body not found.");
@@ -223,44 +291,43 @@ Ref<Body> GodotGeneratorUtils::get_bind_methods_body(
 }
 
 Ref<Body> GodotGeneratorUtils::get_notification_body(
-		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body, const Ref<Context> &p_generated_sources) {
+		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
+		const Ref<Context> &p_generated_sources) {
 	Ref<Context> public_members;
 	unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
 	PANIC_COND(!public_members, "Failed to get public members group.");
 
 	bool notification_defined = p_target_class->has_function_named("_notification");
 	String notification_name = notification_defined ? "_generated_notification" : "_notification";
-	String qualified_notification_name = format("%s::%s", p_target_class->qualified_name().c_str(), notification_name.c_str());
+	String qualified_notification_name =
+			format("%s::%s", p_target_class->qualified_name().c_str(), notification_name.c_str());
 
-	Ref<Function> notification =
-			p_generated_sources->find_child(0, NamedContextPredicates::name<Function>(qualified_notification_name.c_str()));
+	Ref<Function> notification = p_generated_sources->find_child(
+			0, NamedContextPredicates::name<Function>(qualified_notification_name.c_str()));
 	Ref<Body> notification_body;
 
 	if (!notification) {
-		// clang-format off
-      p_generated_sources->build_child<Function>().with_children({
-      build<Type>().with_child<Identifier>("void"),
-      build<Identifier>(qualified_notification_name),
-      build<Parameters>().with_child(
-        build<Parameter>().with_children({
-            build<Type>().with_child<Identifier>("int"),
-          build<Identifier>("p_notification"),
-        })
-      ),
-      build_ref<Body>(&notification_body)}
-      );
+		p_generated_sources->build_child<Function>().with_children(
+				{ build<Type>().with_child<Identifier>("void"),
+						build<Identifier>(qualified_notification_name),
+						build<Parameters>().with_child(
+								build<Parameter>().with_children({
+										build<Type>().with_child<Identifier>("int"),
+										build<Identifier>("p_notification"),
+								})),
+						build_ref<Body>(&notification_body) });
 
-      public_members->build_child<Function>().with_children({
-        build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(notification_name),
-        build<Parameters>().with_child(
-          build<Parameter>().with_children({
-              build<Type>().with_child<Identifier>("int"),
-            build<Identifier>("p_notification"),
-          })
-        ),
-      }).with_child(Output::Semicolon());
-		// clang-format on
+		public_members->build_child<Function>()
+				.with_children({
+						build<Type>().with_child<Identifier>("void"),
+						build<Identifier>(notification_name),
+						build<Parameters>().with_child(
+								build<Parameter>().with_children({
+										build<Type>().with_child<Identifier>("int"),
+										build<Identifier>("p_notification"),
+								})),
+				})
+				.with_child(Output::Semicolon());
 	} else {
 		notification_body = notification->find_child<Body>();
 		PANIC_COND(!notification_body, "Body not found.");
@@ -270,13 +337,15 @@ Ref<Body> GodotGeneratorUtils::get_notification_body(
 }
 
 Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
-		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body, const Ref<Context> &p_generated_sources) {
+		const Ref<Class> &p_target_class, const Ref<Context> &p_generated_body,
+		const Ref<Context> &p_generated_sources) {
 	Ref<Context> public_members;
 	unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
 	PANIC_COND(!public_members, "Failed to get public members group.");
 
 	bool get_property_list_defined = p_target_class->has_function_named("_get_property_list");
-	const String property_list_name = get_property_list_defined ? "_generated_get_property_list" : "_get_property_list";
+	const String property_list_name =
+			get_property_list_defined ? "_generated_get_property_list" : "_get_property_list";
 	const String qualified_property_list_name =
 			format("%s::%s", p_target_class->qualified_name().c_str(), property_list_name.c_str());
 
@@ -285,44 +354,32 @@ Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
 	Ref<Body> get_property_list_body;
 
 	if (!get_property_list) {
-		// clang-format off
-      p_generated_sources->build_child<Function>().with_children({
-      build<Type>().with_child<Identifier>("void"),
-      build<Identifier>(qualified_property_list_name),
-      build<Parameters>().with_children({
-        build<Parameter>().with_children({
-         build<Type>().with_children({
-            build<Identifier>(format("%s<%s>",
-            	AssumedGodotTypes::List().type->qualified_name().c_str(),
-            	AssumedGodotTypes::PropertyInfo().type->qualified_name().c_str()
-            	)),
-           build<Pointer>()
-            }),
-        build<Identifier>("p_list")
-          })
-        }),
-        build<Const>(),
-        build_ref<Body>(&get_property_list_body)}
-      );
+		p_generated_sources->build_child<Function>().with_children(
+				{ build<Type>().with_child<Identifier>("void"),
+						build<Identifier>(qualified_property_list_name),
+						build<Parameters>().with_children({ build<Parameter>().with_children(
+								{ build<Type>().with_children(
+										  { build<Identifier>(format(
+													"%s<%s>", AssumedGodotTypes::List().type->qualified_name().c_str(),
+													AssumedGodotTypes::PropertyInfo().type->qualified_name().c_str())),
+												  build<Pointer>() }),
+										build<Identifier>("p_list") }) }),
+						build<Const>(), build_ref<Body>(&get_property_list_body) });
 
-      public_members->build_child<Function>().with_children({
-        build<Type>().with_child<Identifier>("void"),
-        build<Identifier>(property_list_name),
-        build<Parameters>().with_children({
-          build<Parameter>().with_children({
-          	build<Type>().with_children({
-			   build<Identifier>(format("%s<%s>",
-				   AssumedGodotTypes::List().type->qualified_name().c_str(),
-				   AssumedGodotTypes::PropertyInfo().type->qualified_name().c_str()
-				   )),
-             build<Pointer>()
-              }),
-          build<Identifier>("p_list")
-            })
-          }),
-        build<Const>(),
-      }).with_child(Output::Semicolon());
-		// clang-format on
+		public_members->build_child<Function>()
+				.with_children({
+						build<Type>().with_child<Identifier>("void"),
+						build<Identifier>(property_list_name),
+						build<Parameters>().with_children({ build<Parameter>().with_children(
+								{ build<Type>().with_children(
+										  { build<Identifier>(format(
+													"%s<%s>", AssumedGodotTypes::List().type->qualified_name().c_str(),
+													AssumedGodotTypes::PropertyInfo().type->qualified_name().c_str())),
+												  build<Pointer>() }),
+										build<Identifier>("p_list") }) }),
+						build<Const>(),
+				})
+				.with_child(Output::Semicolon());
 	} else {
 		get_property_list_body = get_property_list->find_child<Body>();
 		PANIC_COND(!get_property_list_body, "Body not found.");
@@ -337,27 +394,24 @@ Ref<Body> GodotGeneratorUtils::get_function_names_body(
 	unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
 	PANIC_COND(!public_members, "Failed to get public members group.");
 
-	Ref<Struct> function_names = public_members->find_child(0, NamedContextPredicates::name<Struct>("FunctionNames"));
+	Ref<Struct> function_names =
+			public_members->find_child(0, NamedContextPredicates::name<Struct>("FunctionNames"));
 	Ref<Body> function_names_body;
 
 	if (!function_names) {
-		// clang-format off
-      auto base_names = p_target_class->direct_bases_names();
-      if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
-        public_members->build_child<Struct>().with_children({
-          build<Identifier>("FunctionNames"),
-          build<BaseClasses>().with_child(
-            build<Type>().with_child<Identifier>(base_names[0] + "::FunctionNames")
-          ),
-          build_ref<Body>(&function_names_body)
-        });
-      } else {
-        public_members->build_child<Struct>().with_children({
-          build<Identifier>("FunctionNames"),
-          build_ref<Body>(&function_names_body)
-        });
-      }
-		// clang-format on
+		auto base_names = p_target_class->direct_bases_names();
+		if (base_names.size() == 1 &&
+				ExecutionContext::instance()->get_type_db()->get_type_attribute(
+						base_names[0], GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+			public_members->build_child<Struct>().with_children(
+					{ build<Identifier>("FunctionNames"),
+							build<BaseClasses>().with_child(
+									build<Type>().with_child<Identifier>(base_names[0] + "::FunctionNames")),
+							build_ref<Body>(&function_names_body) });
+		} else {
+			public_members->build_child<Struct>().with_children(
+					{ build<Identifier>("FunctionNames"), build_ref<Body>(&function_names_body) });
+		}
 	} else {
 		function_names_body = function_names->find_child<Body>();
 		PANIC_COND(!function_names_body, "Body not found.");
@@ -372,26 +426,23 @@ Ref<Body> GodotGeneratorUtils::get_property_names_body(
 	unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
 	PANIC_COND(!public_members, "Failed to get public members group.");
 
-	Ref<Struct> property_names = public_members->find_child(0, NamedContextPredicates::name<Struct>("PropertyNames"));
+	Ref<Struct> property_names =
+			public_members->find_child(0, NamedContextPredicates::name<Struct>("PropertyNames"));
 	Ref<Body> property_names_body;
 	if (!property_names) {
-		// clang-format off
-      auto base_names = p_target_class->direct_bases_names();
-      if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
-        public_members->build_child<Struct>().with_children({
-          build<Identifier>("PropertyNames"),
-          build<BaseClasses>().with_child(
-            build<Type>().with_child<Identifier>(base_names[0] + "::PropertyNames")
-          ),
-          build_ref<Body>(&property_names_body)
-        });
-      } else {
-        public_members->build_child<Struct>().with_children({
-          build<Identifier>("PropertyNames"),
-          build_ref<Body>(&property_names_body)
-        });
-      }
-		// clang-format on
+		auto base_names = p_target_class->direct_bases_names();
+		if (base_names.size() == 1 &&
+				ExecutionContext::instance()->get_type_db()->get_type_attribute(
+						base_names[0], GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+			public_members->build_child<Struct>().with_children(
+					{ build<Identifier>("PropertyNames"),
+							build<BaseClasses>().with_child(
+									build<Type>().with_child<Identifier>(base_names[0] + "::PropertyNames")),
+							build_ref<Body>(&property_names_body) });
+		} else {
+			public_members->build_child<Struct>().with_children(
+					{ build<Identifier>("PropertyNames"), build_ref<Body>(&property_names_body) });
+		}
 	} else {
 		property_names_body = property_names->find_child<Body>();
 		PANIC_COND(!property_names_body, "Body not found.");
@@ -406,26 +457,23 @@ Ref<Body> GodotGeneratorUtils::get_signal_names_body(
 	unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
 	PANIC_COND(!public_members, "Failed to get public members group.");
 
-	Ref<Struct> signal_names = public_members->find_child(0, NamedContextPredicates::name<Struct>("SignalNames"));
+	Ref<Struct> signal_names =
+			public_members->find_child(0, NamedContextPredicates::name<Struct>("SignalNames"));
 	Ref<Body> signal_names_body;
 	if (!signal_names) {
-		// clang-format off
-      auto base_names = p_target_class->direct_bases_names();
-      if (base_names.size() == 1 && ExecutionContext::instance()->get_type_db()->get_type_attribute(base_names[0],GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
-        public_members->build_child<Struct>().with_children({
-          build<Identifier>("SignalNames"),
-          build<BaseClasses>().with_child(
-            build<Type>().with_child<Identifier>(base_names[0] + "::SignalNames")
-          ),
-          build_ref<Body>(&signal_names_body)
-        });
-      } else {
-        public_members->build_child<Struct>().with_children({
-          build<Identifier>("SignalNames"),
-          build_ref<Body>(&signal_names_body)
-        });
-      }
-		// clang-format on
+		auto base_names = p_target_class->direct_bases_names();
+		if (base_names.size() == 1 &&
+				ExecutionContext::instance()->get_type_db()->get_type_attribute(
+						base_names[0], GodotClassAttribute::get_type_static(), 0, p_target_class) != nullptr) {
+			public_members->build_child<Struct>().with_children(
+					{ build<Identifier>("SignalNames"),
+							build<BaseClasses>().with_child(
+									build<Type>().with_child<Identifier>(base_names[0] + "::SignalNames")),
+							build_ref<Body>(&signal_names_body) });
+		} else {
+			public_members->build_child<Struct>().with_children(
+					{ build<Identifier>("SignalNames"), build_ref<Body>(&signal_names_body) });
+		}
 	} else {
 		signal_names_body = signal_names->find_child<Body>();
 		PANIC_COND(!signal_names_body, "Body not found.");
@@ -435,7 +483,8 @@ Ref<Body> GodotGeneratorUtils::get_signal_names_body(
 }
 
 Ref<Context> GodotGeneratorUtils::get_include_section(const Ref<Context> &p_target) {
-	Ref<Context> include_section = p_target->find_descendant(BFS, NodePredicates::tag<Context>("includes"));
+	Ref<Context> include_section =
+			p_target->find_descendant(BFS, NodePredicates::tag<Context>("includes"));
 	if (!include_section) {
 		include_section = Output::Lines({});
 		p_target->add_child(include_section);
@@ -444,26 +493,34 @@ Ref<Context> GodotGeneratorUtils::get_include_section(const Ref<Context> &p_targ
 }
 
 Ref<Body> GodotGeneratorUtils::get_if_body(const Ref<Context> &p_target, const String &condition) {
-	Ref<Body> if_body = p_target->find_descendant(BFS, NodePredicates::tag<Body>(condition.c_str()));
+	Ref<Body> if_body =
+			p_target->find_descendant(BFS, NodePredicates::tag<Body>(condition.c_str()));
 	if (!if_body) {
-		p_target->add_child(Output::Spaces(
-				{ Output::FmtText("if (%s)", condition.c_str()), build_ref<Body>(&if_body).with_tag(condition.c_str()) }));
+		p_target->add_child(
+				Output::Spaces(
+						{ Output::FmtText("if (%s)", condition.c_str()),
+								build_ref<Body>(&if_body).with_tag(condition.c_str()) }));
 	}
 	return if_body;
 }
 
-Ref<GeneratorError> GodotGeneratorUtils::unzip_generated_body(const Ref<Context> &p_generated_body,
-		Ref<Context> *r_public_members, Ref<Context> *r_protected_members, Ref<Context> *r_private_members) {
+Ref<GeneratorError> GodotGeneratorUtils::unzip_generated_body(
+		const Ref<Context> &p_generated_body, Ref<Context> *r_public_members,
+		Ref<Context> *r_protected_members, Ref<Context> *r_private_members) {
 	if (r_public_members != nullptr) {
-		*r_public_members = p_generated_body->find_child(0, NodePredicates::tag<Context>("public_members"));
+		*r_public_members =
+				p_generated_body->find_child(0, NodePredicates::tag<Context>("public_members"));
 		GEN_ERROR_COND(!r_public_members, p_generated_body, "Failed to get public members group");
 	}
 	if (r_protected_members != nullptr) {
-		*r_protected_members = p_generated_body->find_child(0, NodePredicates::tag<Context>("protected_members"));
-		GEN_ERROR_COND(!r_protected_members, p_generated_body, "Failed to get protected members group");
+		*r_protected_members =
+				p_generated_body->find_child(0, NodePredicates::tag<Context>("protected_members"));
+		GEN_ERROR_COND(
+				!r_protected_members, p_generated_body, "Failed to get protected members group");
 	}
 	if (r_private_members != nullptr) {
-		*r_private_members = p_generated_body->find_child(0, NodePredicates::tag<Context>("private_members"));
+		*r_private_members =
+				p_generated_body->find_child(0, NodePredicates::tag<Context>("private_members"));
 		GEN_ERROR_COND(!r_private_members, p_generated_body, "Failed to get private members group");
 	}
 
@@ -530,9 +587,11 @@ bool GodotGeneratorUtils::class_has_base_class(
 
 	// TODO: this will not work if the base class name is not fully qualified
 	for (const String &base : p_target_class->direct_bases_names()) {
-		Ref<Class> base_class = ExecutionContext::instance()->get_type_db()->get_type_data<Class>(base);
+		Ref<Class> base_class =
+				ExecutionContext::instance()->get_type_db()->get_type_data<Class>(base);
 		if (!base_class) {
-			fmt_print_err("%s: Base class \"%s\" not found!", p_target_class->name().c_str(), base.c_str());
+			fmt_print_err(
+					"%s: Base class \"%s\" not found!", p_target_class->name().c_str(), base.c_str());
 			return false;
 		}
 
@@ -547,23 +606,27 @@ bool GodotGeneratorUtils::class_is_node_type(const Ref<Class> &p_target_class) {
 }
 
 bool GodotGeneratorUtils::class_is_resource_type(const Ref<Class> &p_target_class) {
-	return class_has_base_class(p_target_class, AssumedGodotTypes::Resource().type->qualified_name());
+	return class_has_base_class(
+			p_target_class, AssumedGodotTypes::Resource().type->qualified_name());
 }
 
 bool GodotGeneratorUtils::class_is_ref_counted_type(const Ref<Class> &p_target_class) {
-	return class_has_base_class(p_target_class, AssumedGodotTypes::RefCounted().type->qualified_name());
+	return class_has_base_class(
+			p_target_class, AssumedGodotTypes::RefCounted().type->qualified_name());
 }
 
 bool GodotGeneratorUtils::class_is_godot_object_type(const Ref<Class> &p_target_class) {
 	return class_has_base_class(p_target_class, AssumedGodotTypes::Object().type->qualified_name());
 }
 
-bool GodotGeneratorUtils::get_defaults_for_type(const Ref<Type> &p_target_type,
-		Ref<GodotVariantTypeArgument> &p_variant_type, Ref<GodotPropertyHintArgument> &p_property_hint,
-		Ref<GodotPropertyUsageFlagsArgument> &p_property_usage_flags, const Ref<Namespace> &p_from_namespace,
-		DefaultsUsage p_defaults_usage) {
+bool GodotGeneratorUtils::get_defaults_for_type(
+		const Ref<Type> &p_target_type, Ref<GodotVariantTypeArgument> &p_variant_type,
+		Ref<GodotPropertyHintArgument> &p_property_hint,
+		Ref<GodotPropertyUsageFlagsArgument> &p_property_usage_flags,
+		const Ref<Namespace> &p_from_namespace, DefaultsUsage p_defaults_usage) {
 	using namespace AssumedParameterValues;
-	if (Ref<Type> ref_inner_type; type_is_godot_ref_type(p_target_type, ref_inner_type, p_from_namespace) &&
+	if (Ref<Type> ref_inner_type;
+			type_is_godot_ref_type(p_target_type, ref_inner_type, p_from_namespace) &&
 			type_is_ref_counted_type(ref_inner_type, p_from_namespace)) {
 		p_variant_type = build_variant_type_argument(VariantTypeObject());
 		p_property_hint = build_property_hint_argument(HintResourceType(), ref_inner_type->name());
@@ -590,7 +653,8 @@ bool GodotGeneratorUtils::get_defaults_for_type(const Ref<Type> &p_target_type,
 		Vector<String> hints;
 		for (const Ref<EnumValue> &value : enum_object->values()) {
 			hints.push_back(format(
-					"%s:%s", cpp_enum_case_to_exposed_enum_case(value->name()).c_str(), value->literal()->content.c_str()));
+					"%s:%s", cpp_enum_case_to_exposed_enum_case(value->name()).c_str(),
+					value->literal()->content.c_str()));
 		}
 
 		Ref<GodotEnumAttribute> attribute =
@@ -607,21 +671,25 @@ bool GodotGeneratorUtils::get_defaults_for_type(const Ref<Type> &p_target_type,
 		}
 
 		if (is_flags) {
-			p_property_hint = build_property_hint_argument(HintFlags(), string_vector_combine(hints, ","));
+			p_property_hint =
+					build_property_hint_argument(HintFlags(), string_vector_combine(hints, ","));
 		} else {
-			p_property_hint = build_property_hint_argument(HintEnum(), string_vector_combine(hints, ","));
+			p_property_hint =
+					build_property_hint_argument(HintEnum(), string_vector_combine(hints, ","));
 		}
 		p_property_usage_flags = build_property_usage_flags_argument(UsageDefault());
 
 		return true;
 	}
 
-	if (Ref<Type> inner_type; type_is_godot_typed_array_type(p_target_type, inner_type, p_from_namespace)) {
+	if (Ref<Type> inner_type;
+			type_is_godot_typed_array_type(p_target_type, inner_type, p_from_namespace)) {
 		Ref<GodotVariantTypeArgument> inner_variant_type;
 		Ref<GodotPropertyHintArgument> inner_property_hint;
 		Ref<GodotPropertyUsageFlagsArgument> _;
 
-		if (!get_defaults_for_type(inner_type, inner_variant_type, inner_property_hint, _, p_from_namespace)) {
+		if (!get_defaults_for_type(
+					inner_type, inner_variant_type, inner_property_hint, _, p_from_namespace)) {
 			return false;
 		}
 
@@ -629,14 +697,19 @@ bool GodotGeneratorUtils::get_defaults_for_type(const Ref<Type> &p_target_type,
 
 		switch (p_defaults_usage) {
 			case DEFAULTS_PROPERTY_BINDING: {
-				p_property_hint = build_property_hint_argument(HintArrayType(),
+				p_property_hint = build_property_hint_argument(
+						HintArrayType(),
 						"vformat(\"%s/%s:%s\", " +
-								format("%s,%s,%s)", ("Variant::" + inner_variant_type->godot_variant_type()).c_str(),
-										inner_property_hint->godot_property_hint().c_str(), inner_property_hint->hint_string().c_str()),
+								format(
+										"%s,%s,%s)",
+										("Variant::" + inner_variant_type->godot_variant_type()).c_str(),
+										inner_property_hint->godot_property_hint().c_str(),
+										inner_property_hint->hint_string().c_str()),
 						false);
 			} break;
 			case DEFAULTS_SIGNAL_ARGUMENT: {
-				p_property_hint = build_property_hint_argument(HintArrayType(), inner_type->name(), true);
+				p_property_hint =
+						build_property_hint_argument(HintArrayType(), inner_type->name(), true);
 			} break;
 		}
 
@@ -644,16 +717,18 @@ bool GodotGeneratorUtils::get_defaults_for_type(const Ref<Type> &p_target_type,
 		return true;
 	}
 
-	if (Ref<Type> key_type, value_type;
-			type_is_godot_typed_dictionary_type(p_target_type, key_type, value_type, p_from_namespace)) {
+	if (Ref<Type> key_type, value_type; type_is_godot_typed_dictionary_type(
+				p_target_type, key_type, value_type, p_from_namespace)) {
 		Ref<GodotVariantTypeArgument> key_variant_type;
 		Ref<GodotPropertyHintArgument> key_property_hint;
 		Ref<GodotVariantTypeArgument> value_variant_type;
 		Ref<GodotPropertyHintArgument> value_property_hint;
 		Ref<GodotPropertyUsageFlagsArgument> _;
 
-		if (!get_defaults_for_type(key_type, key_variant_type, key_property_hint, _, p_from_namespace) ||
-				!get_defaults_for_type(value_type, value_variant_type, value_property_hint, _, p_from_namespace)) {
+		if (!get_defaults_for_type(
+					key_type, key_variant_type, key_property_hint, _, p_from_namespace) ||
+				!get_defaults_for_type(
+						value_type, value_variant_type, value_property_hint, _, p_from_namespace)) {
 			return false;
 		}
 		p_variant_type = build_variant_type_argument(VariantTypeDictionary());
@@ -661,17 +736,23 @@ bool GodotGeneratorUtils::get_defaults_for_type(const Ref<Type> &p_target_type,
 
 		switch (p_defaults_usage) {
 			case DEFAULTS_PROPERTY_BINDING: {
-				p_property_hint = build_property_hint_argument(HintDictionaryType(),
+				p_property_hint = build_property_hint_argument(
+						HintDictionaryType(),
 						"vformat(\"%s/%s:%s;%s/%s:%s\", " +
-								format("%s,%s,%s,%s,%s,%s)", ("Variant::" + key_variant_type->godot_variant_type()).c_str(),
-										key_property_hint->godot_property_hint().c_str(), key_property_hint->hint_string().c_str(),
+								format(
+										"%s,%s,%s,%s,%s,%s)",
+										("Variant::" + key_variant_type->godot_variant_type()).c_str(),
+										key_property_hint->godot_property_hint().c_str(),
+										key_property_hint->hint_string().c_str(),
 										("Variant::" + value_variant_type->godot_variant_type()).c_str(),
-										value_property_hint->godot_property_hint().c_str(), value_property_hint->hint_string().c_str()),
+										value_property_hint->godot_property_hint().c_str(),
+										value_property_hint->hint_string().c_str()),
 						false);
 			} break;
 			case DEFAULTS_SIGNAL_ARGUMENT: {
 				p_property_hint = build_property_hint_argument(
-						HintDictionaryType(), format("%s;%s", key_type->name().c_str(), value_type->name().c_str()), true);
+						HintDictionaryType(),
+						format("%s;%s", key_type->name().c_str(), value_type->name().c_str()), true);
 			} break;
 		}
 
@@ -704,7 +785,8 @@ bool GodotGeneratorUtils::type_is_godot_typed_array_type(
 		const Ref<Type> &p_target_type, Ref<Type> &p_inner_type, const Ref<Namespace> &p_from_namespace) {
 	UNUSED(p_from_namespace);
 	Vector<Ref<Type>> inner_types;
-	if (type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedArray(), inner_types)) {
+	if (type_is_assumed_template_type(
+				p_target_type, AssumedGodotTypes::TypedArray(), inner_types)) {
 		p_inner_type = inner_types[0];
 		return true;
 	}
@@ -712,11 +794,13 @@ bool GodotGeneratorUtils::type_is_godot_typed_array_type(
 	return false;
 }
 
-bool GodotGeneratorUtils::type_is_godot_typed_dictionary_type(const Ref<Type> &p_target_type, Ref<Type> &p_key_type,
-		Ref<Type> &p_value_type, const Ref<Namespace> &p_from_namespace) {
+bool GodotGeneratorUtils::type_is_godot_typed_dictionary_type(
+		const Ref<Type> &p_target_type, Ref<Type> &p_key_type, Ref<Type> &p_value_type,
+		const Ref<Namespace> &p_from_namespace) {
 	UNUSED(p_from_namespace);
 	Vector<Ref<Type>> inner_types;
-	if (type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedDictionary(), inner_types)) {
+	if (type_is_assumed_template_type(
+				p_target_type, AssumedGodotTypes::TypedDictionary(), inner_types)) {
 		p_key_type = inner_types[0];
 		p_value_type = inner_types[1];
 		return true;
@@ -752,13 +836,18 @@ bool GodotGeneratorUtils::type_is_godot_collection_type(
 		const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace) {
 	UNUSED(p_from_namespace);
 	Vector<Ref<Type>> inner_types;
-	return p_target_type->type_name_unmodified() == AssumedGodotTypes::Array().type->qualified_name() ||
-			p_target_type->type_name_unmodified() == AssumedGodotTypes::Dictionary().type->qualified_name() ||
-			type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedArray(), inner_types) ||
-			type_is_assumed_template_type(p_target_type, AssumedGodotTypes::TypedDictionary(), inner_types);
+	return p_target_type->type_name_unmodified() ==
+			AssumedGodotTypes::Array().type->qualified_name() ||
+			p_target_type->type_name_unmodified() ==
+			AssumedGodotTypes::Dictionary().type->qualified_name() ||
+			type_is_assumed_template_type(
+					p_target_type, AssumedGodotTypes::TypedArray(), inner_types) ||
+			type_is_assumed_template_type(
+					p_target_type, AssumedGodotTypes::TypedDictionary(), inner_types);
 }
 
-bool GodotGeneratorUtils::type_is_node_type(const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace) {
+bool GodotGeneratorUtils::type_is_node_type(
+		const Ref<Type> &p_target_type, const Ref<Namespace> &p_from_namespace) {
 	const Ref<Class> _class = ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
 			p_target_type->type_name_unmodified(), 0, p_from_namespace);
 	if (!_class) {
@@ -801,11 +890,11 @@ bool GodotGeneratorUtils::type_is_primitive_type(const Ref<Type> &p_target_type)
 	return false;
 }
 
-bool GodotGeneratorUtils::get_variant_type_from_type(const Ref<Type> &p_target_type, String &p_variant_type) {
+bool GodotGeneratorUtils::get_variant_type_from_type(
+		const Ref<Type> &p_target_type, String &p_variant_type) {
 	ensure_type_dicts_initialized();
 	String type_name = type_name_remove_usings(p_target_type->type_name_unmodified());
-	if (auto itr = _type_to_variant_type.find(type_name);
-			itr != _type_to_variant_type.end()) {
+	if (auto itr = _type_to_variant_type.find(type_name); itr != _type_to_variant_type.end()) {
 		p_variant_type = itr->second;
 		return true;
 	}
@@ -813,7 +902,8 @@ bool GodotGeneratorUtils::get_variant_type_from_type(const Ref<Type> &p_target_t
 	return false;
 }
 
-Ref<GodotVariantTypeArgument> GodotGeneratorUtils::build_variant_type_argument(const Ref<Type> &p_type) {
+Ref<GodotVariantTypeArgument>
+GodotGeneratorUtils::build_variant_type_argument(const Ref<Type> &p_type) {
 	Ref<Type> inner_type;
 	if (type_is_object_type(p_type) || type_is_godot_ref_type(p_type, inner_type)) {
 		return build_variant_type_argument(AssumedParameterValues::VariantTypeObject());
@@ -824,48 +914,58 @@ Ref<GodotVariantTypeArgument> GodotGeneratorUtils::build_variant_type_argument(c
 	return build_variant_type_argument(AssumedParameterValues::VariantTypeNil());
 }
 
-Ref<GodotVariantTypeArgument> GodotGeneratorUtils::build_variant_type_argument(const String &p_variant_type) {
+Ref<GodotVariantTypeArgument>
+GodotGeneratorUtils::build_variant_type_argument(const String &p_variant_type) {
 	return build<GodotVariantTypeArgument>().with_child<Identifier>(p_variant_type);
 }
 
-Ref<GodotPropertyUsageFlagsArgument> GodotGeneratorUtils::build_property_usage_flags_argument(const String &p_usage) {
+Ref<GodotPropertyUsageFlagsArgument>
+GodotGeneratorUtils::build_property_usage_flags_argument(const String &p_usage) {
 	return build<GodotPropertyUsageFlagsArgument>().with_child<Identifier>(p_usage);
 }
 
-Ref<Node> GodotGeneratorUtils::build_property_info(const Ref<GodotVariantTypeArgument> &p_variant_type,
-		const Ref<GodotPropertyHintArgument> &p_hint, const Vector<Ref<GodotPropertyUsageFlagsArgument>> &p_usages,
-		const String &p_property_name, ClassGeneratorResult &r_result, bool p_no_editor) {
+Ref<Node> GodotGeneratorUtils::build_property_info(
+		const Ref<GodotVariantTypeArgument> &p_variant_type,
+		const Ref<GodotPropertyHintArgument> &p_hint,
+		const Vector<Ref<GodotPropertyUsageFlagsArgument>> &p_usages, const String &p_property_name,
+		ClassGeneratorResult &r_result, bool p_no_editor) {
 	Ref<Arguments> arguments;
 	Ref<Output::ListNode> flags;
-	// clang-format off
-    Ref<Node> property_usage;
-    if (p_no_editor) {
-      property_usage = build<Output::ListNode>(" ", false, false).with_children({
-        build<Output::EnclosingNode>("(",")").with_children({
-          build_ref<Output::ListNode>(&flags," | ", false, false)
-        }),
-        Output::Text("& ~PROPERTY_USAGE_EDITOR"),
-      });
-    } else {
-      property_usage = build_ref<Output::ListNode>(&flags," | ", false, false);
-    }
+	Ref<Node> property_usage;
+	if (p_no_editor) {
+		property_usage = build<Output::ListNode>(" ", false, false)
+								 .with_children({
+										 build<Output::EnclosingNode>("(", ")").with_children(
+												 { build_ref<Output::ListNode>(&flags, " | ", false, false) }),
+										 Output::Text("& ~PROPERTY_USAGE_EDITOR"),
+								 });
+	} else {
+		property_usage = build_ref<Output::ListNode>(&flags, " | ", false, false);
+	}
 
-    Ref<Node> result = build<Function>().with_children({
-      build<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
-      build_ref<Arguments>(&arguments).with_children({
-        build<Argument>().with_child<Literal>(format("%s::%s", AssumedGodotTypes::Variant().type->qualified_name().c_str(),p_variant_type->godot_variant_type().c_str())),
-        build<Argument>().with_child(Literal::StringLiteral(p_property_name)),
-          build<Argument>().with_child<Literal>(format("%s::%s", AssumedGodotTypes::PropertyHintEnum().type->qualified_name().c_str(),p_hint->godot_property_hint().c_str())),
-        build<Argument>().with_child<Literal>(p_hint->hint_string()),
-        property_usage
-      })});
-	// clang-format on
+	Ref<Node> result = build<Function>().with_children(
+			{ build<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
+					build_ref<Arguments>(&arguments)
+							.with_children(
+									{ build<Argument>().with_child<Literal>(format(
+											  "%s::%s", AssumedGodotTypes::Variant().type->qualified_name().c_str(),
+											  p_variant_type->godot_variant_type().c_str())),
+											build<Argument>().with_child(Literal::StringLiteral(p_property_name)),
+											build<Argument>().with_child<Literal>(format(
+													"%s::%s",
+													AssumedGodotTypes::PropertyHintEnum().type->qualified_name().c_str(),
+													p_hint->godot_property_hint().c_str())),
+											build<Argument>().with_child<Literal>(p_hint->hint_string()), property_usage }) });
 
 	if (p_usages.size() == 0) {
 		arguments->remove_child(flags);
 	} else {
 		for (const Ref<GodotPropertyUsageFlagsArgument> &usage : p_usages) {
-			flags->add_child(build<Literal>(format("%s::%s", AssumedGodotTypes::PropertyUsageFlagsEnum().type->qualified_name().c_str(), usage->godot_property_usage_flag().c_str())));
+			flags->add_child(
+					build<Literal>(format(
+							"%s::%s",
+							AssumedGodotTypes::PropertyUsageFlagsEnum().type->qualified_name().c_str(),
+							usage->godot_property_usage_flag().c_str())));
 		}
 	}
 
@@ -877,44 +977,45 @@ Ref<Node> GodotGeneratorUtils::build_property_info(const Ref<GodotVariantTypeArg
 }
 
 Ref<Node> GodotGeneratorUtils::build_property_info(
-		const Ref<GodotVariantTypeArgument> &p_variant_type, const String &p_property_name, ClassGeneratorResult &r_result) {
-
+		const Ref<GodotVariantTypeArgument> &p_variant_type, const String &p_property_name,
+		ClassGeneratorResult &r_result) {
 	r_result.source_includes.insert(AssumedGodotTypes::Variant().type->header);
 	r_result.source_includes.insert(AssumedGodotTypes::PropertyInfo().type->header);
-	// clang-format off
-    return build<Function>().with_children({
-      build<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
-      build<Arguments>().with_children({
-        build<Argument>().with_child<Literal>(format("%s::%s",AssumedGodotTypes::Variant().type->qualified_name().c_str(), p_variant_type->godot_variant_type().c_str())),
-        build<Argument>().with_child(Literal::StringLiteral(p_property_name)),
-      })});
-	// clang-format on
+	return build<Function>().with_children(
+			{ build<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
+					build<Arguments>().with_children({
+							build<Argument>().with_child<Literal>(format(
+									"%s::%s", AssumedGodotTypes::Variant().type->qualified_name().c_str(),
+									p_variant_type->godot_variant_type().c_str())),
+							build<Argument>().with_child(Literal::StringLiteral(p_property_name)),
+					}) });
 }
 
 Ref<Node> GodotGeneratorUtils::build_property_info_defaults(
-		const Ref<Type> &p_type, const String &p_property_name, ClassGeneratorResult &r_result, DefaultsUsage p_usage) {
+		const Ref<Type> &p_type, const String &p_property_name, ClassGeneratorResult &r_result,
+		const Ref<Namespace> &p_from_namespace, DefaultsUsage p_usage) {
 	Ref<GodotVariantTypeArgument> variant_type;
 	Ref<GodotPropertyHintArgument> property_hint;
 	Ref<GodotPropertyUsageFlagsArgument> usage_flags;
 
-	if (!get_defaults_for_type(p_type, variant_type, property_hint, usage_flags, nullptr, p_usage)) {
+	if (!get_defaults_for_type(
+				p_type, variant_type, property_hint, usage_flags, p_from_namespace, p_usage)) {
 		return nullptr;
 	}
 
-	return build_property_info(variant_type, property_hint, { usage_flags }, p_property_name, r_result);
+	return build_property_info(
+			variant_type, property_hint, { usage_flags }, p_property_name, r_result);
 }
 
 Ref<GodotPropertyHintArgument> GodotGeneratorUtils::build_property_hint_argument(
 		const String &p_value, const String &p_hint_string, bool p_is_string_literal) {
-	// clang-format off
-    return build<GodotPropertyHintArgument>().with_children({
-      build<Identifier>(p_value),
-      build<Arguments>().with_children({
-          build<Argument>().with_child( p_is_string_literal ? Literal::StringLiteral(p_hint_string) : node_new<Literal>(p_hint_string)),
-      })
-    });
-    // clang-format off
-  }
-
-
+	return build<GodotPropertyHintArgument>().with_children(
+			{ build<Identifier>(p_value),
+					build<Arguments>().with_children({
+							build<Argument>().with_child(
+									p_is_string_literal ? Literal::StringLiteral(p_hint_string)
+														: node_new<Literal>(p_hint_string)),
+					}) });
 }
+
+} // namespace GodotObjectCompiler

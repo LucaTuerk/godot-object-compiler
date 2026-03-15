@@ -40,119 +40,110 @@
 
 namespace GodotObjectCompiler {
 
-  Ref<GeneratorError> GodotCategoryGenerator::do_generate_default_attribute_arguments(
-      Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute, Ref<Context> p_default_values) {
-    UNUSED(p_target_class);
-    UNUSED(p_attribute);
-    p_default_values->build_child<StringLiteralArgument>().with_child<Literal>("\"\"");
-    return GeneratorError::OK;
-  }
-
-  Ref<GeneratorError> GodotCategoryGenerator::do_generate(Ref<Class> p_target_class,
-		  Ref<GodotPropertyCategoryAttribute> p_attribute, ClassGeneratorResult &r_result) {
-    using namespace GodotGeneratorUtils;
-  	using namespace AssumedParameterValues;
-  	Ref<Context> p_generated_body = r_result.generated_body;
-  	Ref<Context> p_generated_sources = r_result.generated_sources;
-  	Ref<Context> p_generated_global = r_result.generated_global;
-    UNUSED(p_generated_global);
-
-    Ref<Body> get_property_list_body =
-        get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
-    GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
-
-    // clang-format off
-    get_property_list_body->build_child<Function>().with_children({
-      build<Identifier>("p_list->push_back"),
-      build<Arguments>().with_children({
-        build<Argument>().with_child(build_property_info(
-            build_variant_type_argument(VariantTypeNil()),
-            build_property_hint_argument(HintNone()),
-            {build_property_usage_flags_argument(UsageCategory())},
-            p_attribute->literal_content(),
-            r_result
-        ))
-      })
-    }).with_child(Output::Semicolon());
-    // clang-format on
-    return GeneratorError::OK;
-  }
-
-  Ref<GeneratorError> GodotGroupGenerator::do_generate_default_attribute_arguments(
-      Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute, Ref<Context> p_default_values) {
-    UNUSED(p_target_class);
-    UNUSED(p_attribute);
-    p_default_values->build_child<StringLiteralArgument>().with_child<Literal>("\"\"");
-    return GeneratorError::OK;
-  }
-
-  Ref<GeneratorError> GodotGroupGenerator::do_generate(Ref<Class> p_target_class,
-  Ref<GodotPropertyGroupAttribute> p_attribute, ClassGeneratorResult &r_result) {
-  	Ref<Context> p_generated_body = r_result.generated_body;
-  	Ref<Context> p_generated_sources = r_result.generated_sources;
-  	Ref<Context> p_generated_global = r_result.generated_global;
-    using namespace GodotGeneratorUtils;
-    using namespace AssumedParameterValues;
-    UNUSED(p_generated_global);
-
-    Ref<Body> get_property_list_body =
-        get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
-    GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
-
-    // clang-format off
-    get_property_list_body->build_child<Function>().with_children({
-      build<Identifier>("p_list->push_back"),
-      build<Arguments>().with_children({
-        build<Argument>().with_child(build_property_info(
-            build_variant_type_argument(VariantTypeNil()),
-            build_property_hint_argument(HintNone()),
-            {build_property_usage_flags_argument(UsageGroup())},
-            p_attribute->literal_content(),
-			r_result
-        ))
-      })
-    }).with_child(Output::Semicolon());
-    // clang-format on
-    return GeneratorError::OK;
-  }
-
-  Ref<GeneratorError> GodotSubgroupGenerator::do_generate_default_attribute_arguments(
-      Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute, Ref<Context> p_default_values) {
-    UNUSED(p_target_class);
-    UNUSED(p_attribute);
-    p_default_values->build_child<StringLiteralArgument>().with_child<Literal>("\"\"");
-    return GeneratorError::OK;
-  }
-
-  Ref<GeneratorError> GodotSubgroupGenerator::do_generate(Ref<Class> p_target_class,
-  Ref<GodotPropertySubgroupAttribute> p_attribute, ClassGeneratorResult &r_result) {
-  	Ref<Context> p_generated_body = r_result.generated_body;
-  	Ref<Context> p_generated_sources = r_result.generated_sources;
-  	Ref<Context> p_generated_global = r_result.generated_global;
-    using namespace GodotGeneratorUtils;
-    using namespace AssumedParameterValues;
-    UNUSED(p_generated_global);
-
-    const Ref<Body> get_property_list_body =
-        get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
-
-    GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
-
-    // clang-format off
-    get_property_list_body->build_child<Function>().with_children({
-      build<Identifier>("p_list->push_back"),
-      build<Arguments>().with_children({
-        build<Argument>().with_child(build_property_info(
-            build_variant_type_argument(VariantTypeNil()),
-            build_property_hint_argument(HintNone()),
-            {build_property_usage_flags_argument(UsageSubgroup())},
-            p_attribute->literal_content(),
-			r_result
-        ))
-      })
-    }).with_child(Output::Semicolon());
-    // clang-format on
-    return GeneratorError::OK;
-  }
-
+Ref<GeneratorError> GodotCategoryGenerator::do_generate_default_attribute_arguments(
+		Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute,
+		Ref<Context> p_default_values) {
+	UNUSED(p_target_class);
+	UNUSED(p_attribute);
+	p_default_values->build_child<StringLiteralArgument>().with_child<Literal>("\"\"");
+	return GeneratorError::OK;
 }
+
+Ref<GeneratorError> GodotCategoryGenerator::do_generate(
+		Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute,
+		ClassGeneratorResult &r_result) {
+	using namespace GodotGeneratorUtils;
+	using namespace AssumedParameterValues;
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
+	Ref<Context> p_generated_global = r_result.generated_global;
+	UNUSED(p_generated_global);
+
+	Ref<Body> get_property_list_body =
+			get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+	GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
+
+	get_property_list_body->build_child<Function>()
+			.with_children(
+					{ build<Identifier>("p_list->push_back"),
+							build<Arguments>().with_children({ build<Argument>().with_child(build_property_info(
+									build_variant_type_argument(VariantTypeNil()),
+									build_property_hint_argument(HintNone()),
+									{ build_property_usage_flags_argument(UsageCategory()) },
+									p_attribute->literal_content(), r_result)) }) })
+			.with_child(Output::Semicolon());
+	return GeneratorError::OK;
+}
+
+Ref<GeneratorError> GodotGroupGenerator::do_generate_default_attribute_arguments(
+		Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
+		Ref<Context> p_default_values) {
+	UNUSED(p_target_class);
+	UNUSED(p_attribute);
+	p_default_values->build_child<StringLiteralArgument>().with_child<Literal>("\"\"");
+	return GeneratorError::OK;
+}
+
+Ref<GeneratorError> GodotGroupGenerator::do_generate(
+		Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
+		ClassGeneratorResult &r_result) {
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
+	Ref<Context> p_generated_global = r_result.generated_global;
+	using namespace GodotGeneratorUtils;
+	using namespace AssumedParameterValues;
+	UNUSED(p_generated_global);
+
+	Ref<Body> get_property_list_body =
+			get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+	GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
+
+	get_property_list_body->build_child<Function>()
+			.with_children(
+					{ build<Identifier>("p_list->push_back"),
+							build<Arguments>().with_children({ build<Argument>().with_child(build_property_info(
+									build_variant_type_argument(VariantTypeNil()),
+									build_property_hint_argument(HintNone()),
+									{ build_property_usage_flags_argument(UsageGroup()) },
+									p_attribute->literal_content(), r_result)) }) })
+			.with_child(Output::Semicolon());
+	return GeneratorError::OK;
+}
+
+Ref<GeneratorError> GodotSubgroupGenerator::do_generate_default_attribute_arguments(
+		Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
+		Ref<Context> p_default_values) {
+	UNUSED(p_target_class);
+	UNUSED(p_attribute);
+	p_default_values->build_child<StringLiteralArgument>().with_child<Literal>("\"\"");
+	return GeneratorError::OK;
+}
+
+Ref<GeneratorError> GodotSubgroupGenerator::do_generate(
+		Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
+		ClassGeneratorResult &r_result) {
+	Ref<Context> p_generated_body = r_result.generated_body;
+	Ref<Context> p_generated_sources = r_result.generated_sources;
+	Ref<Context> p_generated_global = r_result.generated_global;
+	using namespace GodotGeneratorUtils;
+	using namespace AssumedParameterValues;
+	UNUSED(p_generated_global);
+
+	const Ref<Body> get_property_list_body =
+			get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+
+	GEN_ERROR_COND(!get_property_list_body, p_attribute, "Failed to get _get_property_list body");
+
+	get_property_list_body->build_child<Function>()
+			.with_children(
+					{ build<Identifier>("p_list->push_back"),
+							build<Arguments>().with_children({ build<Argument>().with_child(build_property_info(
+									build_variant_type_argument(VariantTypeNil()),
+									build_property_hint_argument(HintNone()),
+									{ build_property_usage_flags_argument(UsageSubgroup()) },
+									p_attribute->literal_content(), r_result)) }) })
+			.with_child(Output::Semicolon());
+	return GeneratorError::OK;
+}
+
+} // namespace GodotObjectCompiler

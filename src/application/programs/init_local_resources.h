@@ -37,13 +37,12 @@
 
 namespace GodotObjectCompiler {
 
-  class InitLocalResources : public IProgram {
-    PROGRAM(InitLocalResources, "init/local_resources");
-    PROG_NO_ARGS
+class InitLocalResources : public IProgram {
+	PROGRAM(InitLocalResources, "init/local_resources");
+	PROG_NO_ARGS
 
-   public:
+public:
+	Ref<ProgramError> run(ApplicationContext &p_context) override;
+};
 
-    Ref<ProgramError> run(ApplicationContext& p_context) override;
-  };
-
-}
+} // namespace GodotObjectCompiler

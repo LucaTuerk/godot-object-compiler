@@ -43,7 +43,7 @@ class Invalid : Node {
 
 	GODOT_PROPERTY("property", GetSet("get_property", "set_property"));
 
-	void set_property(const std::vector<int>& p_value);
+	void set_property(const std::vector<int> &p_value);
 	std::vector<int> get_property() const;
 };
 

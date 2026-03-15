@@ -100,7 +100,8 @@ public:
 
 	void remove_child(const Ref<Node> &p_child);
 
-	void replace_child(const Ref<Node> &p_child, const Ref<Node> &p_new_child, bool take_children = false);
+	void replace_child(
+			const Ref<Node> &p_child, const Ref<Node> &p_new_child, bool take_children = false);
 
 	bool empty() const;
 
@@ -140,11 +141,13 @@ public:
 	Ref<T> find_chain(Predicate<T> p_predicate = default_node_predicate<T>) const;
 
 	template <typename T>
-	Ref<T> find_child(Index p_start_idx = 0, Predicate<T> p_predicate = default_node_predicate<T>) const;
+	Ref<T>
+	find_child(Index p_start_idx = 0, Predicate<T> p_predicate = default_node_predicate<T>) const;
 
 	template <class T>
 	Ref<T> find_ancestor(
-			StemExplorationType p_type = DIRECT_PARENTS, Predicate<T> p_predicate = default_node_predicate<T>) const;
+			StemExplorationType p_type = DIRECT_PARENTS,
+			Predicate<T> p_predicate = default_node_predicate<T>) const;
 
 	template <class T>
 	Ref<T> find_descendant(
@@ -160,7 +163,8 @@ public:
 	Builder<T, Args...> build_child(Args &&...args);
 
 	template <class T>
-	Vector<Ref<T>> find_children(bool p_recursive = false, Predicate<T> p_predicate = default_node_predicate<T>) const;
+	Vector<Ref<T>> find_children(
+			bool p_recursive = false, Predicate<T> p_predicate = default_node_predicate<T>) const;
 
 	void write_to(IStructuredWriter *p_writer) override;
 };
@@ -246,7 +250,7 @@ Ref<T> Node::find_previous_sibling() {
 
 template <class T>
 Ref<T> Context::find_ancestor(StemExplorationType p_type, Predicate<T> p_predicate) const {
-	Node* current = const_cast<Context *>(this);
+	Node *current = const_cast<Context *>(this);
 	do {
 		switch (p_type) {
 			{
@@ -255,11 +259,11 @@ Ref<T> Context::find_ancestor(StemExplorationType p_type, Predicate<T> p_predica
 			}
 			break;
 			case BY_SIBLINGS_PREV: {
-				Node* prev = current->get_previous_sibling().get();
+				Node *prev = current->get_previous_sibling().get();
 				current = prev ? prev : current->get_parent().get();
 			} break;
 			case BY_SIBLINGS_NEXT: {
-				Node* next = current->get_next_sibling().get();
+				Node *next = current->get_next_sibling().get();
 				current = next ? next : current->get_parent().get();
 			} break;
 		}
@@ -350,7 +354,8 @@ Ref<T> Context::find_descendant(BranchExplorationType p_order, Predicate<T> p_pr
 			}
 			for (const Ref<Node> &child : _children) {
 				if (child->is<Context>()) {
-					if (Ref<T> child_res = child->as<Context>()->find_descendant<T>(p_order, p_predicate)) {
+					if (Ref<T> child_res =
+									child->as<Context>()->find_descendant<T>(p_order, p_predicate)) {
 						return child_res;
 					}
 				}
@@ -380,7 +385,8 @@ Ref<T> Context::find_previous_sibling(Predicate<T> p_predicate) const {
 
 template <class T, typename... Args>
 Ref<T> Context::create_child(Args &&...args) {
-	Ref<T> child = ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
+	Ref<T> child =
+			ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
 	add_child(child);
 	return child;
 }
@@ -391,7 +397,8 @@ Builder<T, Args...> Context::build_child(Args &&...args) {
 }
 
 template <class T>
-void find_recursive_helper(Node *node, bool recursive, Vector<Ref<T>> &results, Predicate<T> predicate) {
+void find_recursive_helper(
+		Node *node, bool recursive, Vector<Ref<T>> &results, Predicate<T> predicate) {
 	Ref<T> node_t = node->as<T>();
 	Ref<Context> node_context = node->as<Context>();
 
@@ -478,7 +485,8 @@ Builder<T, Args...> &Builder<T, Args...>::with_child(Ref<Node> p_child) {
 }
 
 template <typename T, typename... Args>
-Builder<T, Args...> &Builder<T, Args...>::with_children(std::initializer_list<Ref<Node>> &&p_children) {
+Builder<T, Args...> &
+Builder<T, Args...>::with_children(std::initializer_list<Ref<Node>> &&p_children) {
 	for (Ref<Node> child : p_children) {
 		_created->add_child(child);
 	}
@@ -503,4 +511,4 @@ Builder<T, Args...> build_ref(Ref<T> *ptr, Args... args) {
 	return builder;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

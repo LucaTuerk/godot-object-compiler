@@ -40,26 +40,30 @@
 
 namespace GodotObjectCompiler {
 
-  String GodotVirtualParameterType::get_return_type() { return "GOC_Virtual"; }
-
-  Vector<String> GodotVirtualParameterType::get_value_names() {
-    return {"NoVirtual", "ScriptVirtual", "ScriptVirtualRequired"};
-  }
-
-  Vector<IAttributeParameterType::Argument> GodotVirtualParameterType::get_arguments() { return {}; }
-
-  bool GodotVirtualArgument::is_script_virtual() const {
-    const Ref<Identifier> identifier = find_child<Identifier>();
-    PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
-
-    return identifier->name != AssumedParameterValues::NoVirtual();
-  }
-
-  bool GodotVirtualArgument::is_required() const {
-    const Ref<Identifier> identifier = find_child<Identifier>();
-    PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
-
-    return identifier->name == AssumedParameterValues::ScriptVirtualRequired();
-  }
-
+String GodotVirtualParameterType::get_return_type() {
+	return "GOC_Virtual";
 }
+
+Vector<String> GodotVirtualParameterType::get_value_names() {
+	return { "NoVirtual", "ScriptVirtual", "ScriptVirtualRequired" };
+}
+
+Vector<IAttributeParameterType::Argument> GodotVirtualParameterType::get_arguments() {
+	return {};
+}
+
+bool GodotVirtualArgument::is_script_virtual() const {
+	const Ref<Identifier> identifier = find_child<Identifier>();
+	PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
+
+	return identifier->name != AssumedParameterValues::NoVirtual();
+}
+
+bool GodotVirtualArgument::is_required() const {
+	const Ref<Identifier> identifier = find_child<Identifier>();
+	PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
+
+	return identifier->name == AssumedParameterValues::ScriptVirtualRequired();
+}
+
+} // namespace GodotObjectCompiler

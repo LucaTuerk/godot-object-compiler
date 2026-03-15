@@ -74,4 +74,4 @@ bool Literal::unwrap_string_literal(String &p_content) const {
 	return true;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

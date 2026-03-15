@@ -50,7 +50,8 @@ class A : public Node {
 	Array get_array_property() const;
 	void set_array_property(const Array &p_value);
 
-	GODOT_PROPERTY("typed_array_property", GetSet("get_typed_array_property", "set_typed_array_property"));
+	GODOT_PROPERTY(
+			"typed_array_property", GetSet("get_typed_array_property", "set_typed_array_property"));
 	TypedArray<Resource> get_typed_array_property() const;
 	void set_typed_array_property(const TypedArray<Resource> &p_value);
 
@@ -70,11 +71,14 @@ class A : public Node {
 	Color get_color_property() const;
 	void set_color_property(const Color &p_value);
 
-	GODOT_PROPERTY("dictionary_property", GetSet("get_dictionary_property", "set_dictionary_property"));
+	GODOT_PROPERTY(
+			"dictionary_property", GetSet("get_dictionary_property", "set_dictionary_property"));
 	Dictionary get_dictionary_property() const;
 	void set_dictionary_property(const Dictionary &p_value);
 
-	GODOT_PROPERTY("typed_dictionary_property", GetSet("get_typed_dictionary_property", "set_typed_dictionary_property"));
+	GODOT_PROPERTY(
+			"typed_dictionary_property",
+			GetSet("get_typed_dictionary_property", "set_typed_dictionary_property"));
 	TypedDictionary<int, Resource> get_typed_dictionary_property() const;
 	void set_typed_dictionary_property(const TypedDictionary<int, Resource> &p_value);
 
@@ -98,7 +102,8 @@ class A : public Node {
 	long get_long_property() const;
 	void set_long_property(const long &p_value);
 
-	GODOT_PROPERTY("node_path_property", GetSet("get_node_path_property", "set_node_path_property"));
+	GODOT_PROPERTY(
+			"node_path_property", GetSet("get_node_path_property", "set_node_path_property"));
 	NodePath get_node_path_property() const;
 	void set_node_path_property(const NodePath &p_value);
 
@@ -106,43 +111,63 @@ class A : public Node {
 	Object *get_object_property() const;
 	void set_object_property(const Object *&p_value);
 
-	GODOT_PROPERTY("packed_byte_array_property", GetSet("get_packed_byte_array_property", "set_packed_byte_array_property"));
+	GODOT_PROPERTY(
+			"packed_byte_array_property",
+			GetSet("get_packed_byte_array_property", "set_packed_byte_array_property"));
 	PackedByteArray get_packed_byte_array_property() const;
 	void set_packed_byte_array_property(const PackedByteArray &p_value);
 
-	GODOT_PROPERTY("packed_color_array_property", GetSet("get_packed_color_array_property", "set_packed_color_array_property"));
+	GODOT_PROPERTY(
+			"packed_color_array_property",
+			GetSet("get_packed_color_array_property", "set_packed_color_array_property"));
 	PackedColorArray get_packed_color_array_property() const;
 	void set_packed_color_array_property(const PackedColorArray &p_value);
 
-	GODOT_PROPERTY("packed_float32_array_property", GetSet("get_packed_float32_array_property", "set_packed_float32_array_property"));
+	GODOT_PROPERTY(
+			"packed_float32_array_property",
+			GetSet("get_packed_float32_array_property", "set_packed_float32_array_property"));
 	PackedFloat32Array get_packed_float32_array_property() const;
 	void set_packed_float32_array_property(const PackedFloat32Array &p_value);
 
-	GODOT_PROPERTY("packed_float64_array_property", GetSet("get_packed_float64_array_property", "set_packed_float64_array_property"));
+	GODOT_PROPERTY(
+			"packed_float64_array_property",
+			GetSet("get_packed_float64_array_property", "set_packed_float64_array_property"));
 	PackedFloat64Array get_packed_float64_array_property() const;
 	void set_packed_float64_array_property(const PackedFloat64Array &p_value);
 
-	GODOT_PROPERTY("packed_int32_array_property", GetSet("get_packed_int32_array_property", "set_packed_int32_array_property"));
+	GODOT_PROPERTY(
+			"packed_int32_array_property",
+			GetSet("get_packed_int32_array_property", "set_packed_int32_array_property"));
 	PackedInt32Array get_packed_int32_array_property() const;
 	void set_packed_int32_array_property(const PackedInt32Array &p_value);
 
-	GODOT_PROPERTY("packed_int64_array_property", GetSet("get_packed_int64_array_property", "set_packed_int64_array_property"));
+	GODOT_PROPERTY(
+			"packed_int64_array_property",
+			GetSet("get_packed_int64_array_property", "set_packed_int64_array_property"));
 	PackedInt64Array get_packed_int64_array_property() const;
 	void set_packed_int64_array_property(const PackedInt64Array &p_value);
 
-	GODOT_PROPERTY("packed_string_array_property", GetSet("get_packed_string_array_property", "set_packed_string_array_property"));
+	GODOT_PROPERTY(
+			"packed_string_array_property",
+			GetSet("get_packed_string_array_property", "set_packed_string_array_property"));
 	PackedStringArray get_packed_string_array_property() const;
 	void set_packed_string_array_property(const PackedStringArray &p_value);
 
-	GODOT_PROPERTY("packed_vector2_array_property", GetSet("get_packed_vector2_array_property", "set_packed_vector2_array_property"));
+	GODOT_PROPERTY(
+			"packed_vector2_array_property",
+			GetSet("get_packed_vector2_array_property", "set_packed_vector2_array_property"));
 	PackedVector2Array get_packed_vector2_array_property() const;
 	void set_packed_vector2_array_property(const PackedVector2Array &p_value);
 
-	GODOT_PROPERTY("packed_vector3_array_property", GetSet("get_packed_vector3_array_property", "set_packed_vector3_array_property"));
+	GODOT_PROPERTY(
+			"packed_vector3_array_property",
+			GetSet("get_packed_vector3_array_property", "set_packed_vector3_array_property"));
 	PackedVector3Array get_packed_vector3_array_property() const;
 	void set_packed_vector3_array_property(const PackedVector3Array &p_value);
 
-	GODOT_PROPERTY("packed_vector4_array_property", GetSet("get_packed_vector4_array_property", "set_packed_vector4_array_property"));
+	GODOT_PROPERTY(
+			"packed_vector4_array_property",
+			GetSet("get_packed_vector4_array_property", "set_packed_vector4_array_property"));
 	PackedVector4Array get_packed_vector4_array_property() const;
 	void set_packed_vector4_array_property(const PackedVector4Array &p_value);
 
@@ -150,11 +175,13 @@ class A : public Node {
 	Plane get_plane_property() const;
 	void set_plane_property(const Plane &p_value);
 
-	GODOT_PROPERTY("projection_property", GetSet("get_projection_property", "set_projection_property"));
+	GODOT_PROPERTY(
+			"projection_property", GetSet("get_projection_property", "set_projection_property"));
 	Projection get_projection_property() const;
 	void set_projection_property(const Projection &p_value);
 
-	GODOT_PROPERTY("quaternion_property", GetSet("get_quaternion_property", "set_quaternion_property"));
+	GODOT_PROPERTY(
+			"quaternion_property", GetSet("get_quaternion_property", "set_quaternion_property"));
 	Quaternion get_quaternion_property() const;
 	void set_quaternion_property(const Quaternion &p_value);
 
@@ -174,15 +201,18 @@ class A : public Node {
 	String get_string_property() const;
 	void set_string_property(const String &p_value);
 
-	GODOT_PROPERTY("string_name_property", GetSet("get_string_name_property", "set_string_name_property"));
+	GODOT_PROPERTY(
+			"string_name_property", GetSet("get_string_name_property", "set_string_name_property"));
 	StringName get_string_name_property() const;
 	void set_string_name_property(const StringName &p_value);
 
-	GODOT_PROPERTY("transform2D_property", GetSet("get_transform2D_property", "set_transform2D_property"));
+	GODOT_PROPERTY(
+			"transform2D_property", GetSet("get_transform2D_property", "set_transform2D_property"));
 	Transform2D get_transform2D_property() const;
 	void set_transform2D_property(const Transform2D &p_value);
 
-	GODOT_PROPERTY("transform3D_property", GetSet("get_transform3D_property", "set_transform3D_property"));
+	GODOT_PROPERTY(
+			"transform3D_property", GetSet("get_transform3D_property", "set_transform3D_property"));
 	Transform3D get_transform3D_property() const;
 	void set_transform3D_property(const Transform3D &p_value);
 
@@ -226,6 +256,6 @@ class A : public Node {
 	Enum get_enum_property() const;
 	void set_enum_property(const Enum &p_value);
 };
-} //namespace Tests
+} // namespace Tests
 
 GODOT_GENERATED_GLOBAL();

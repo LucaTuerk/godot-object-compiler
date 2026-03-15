@@ -51,4 +51,4 @@ public:
 	String name;
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

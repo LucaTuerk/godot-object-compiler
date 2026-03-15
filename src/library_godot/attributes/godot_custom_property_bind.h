@@ -53,16 +53,14 @@ class GodotCustomPropertyGetSetArgument : public Argument {
 class GodotCustomPropertyGetSetParameterType : public IAttributeParameterType {
 	PARAM_TYPE(GodotCustomPropertyGetSetParameterType, GodotCustomPropertyGetSetArgument)
 
-   public:
-	static inline const char* AutoGetSet = "AutoGetSet";
-	static inline const char* GetSet = "GetSet";
-
+public:
+	static inline const char *AutoGetSet = "AutoGetSet";
+	static inline const char *GetSet = "GetSet";
 
 	String get_return_type() override;
 
 	Vector<String> get_value_names() override;
 
 	Vector<Argument> get_arguments() override;
-
 };
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

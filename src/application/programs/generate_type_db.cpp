@@ -54,14 +54,17 @@ Ref<ProgramError> GenerateTypeDB::run(ApplicationContext &p_context) {
 	TreeSitterParser parser;
 	parser.set_parse_attributes(false);
 
-	PROG_ERR_COND(!p_context.paths_include.has_value(), "No include path specified. Cannot generate the TypeDB.");
+	PROG_ERR_COND(
+			!p_context.paths_include.has_value(),
+			"No include path specified. Cannot generate the TypeDB.");
 
 	for (String include_path : *p_context.paths_include) {
 		include_path = path_absolute(include_path);
 		for (String file : directory_files_recursive(include_path)) {
 			file = path_absolute(file);
 
-			if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") && !string_suffix(file, ".gen.inc")) {
+			if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") &&
+					!string_suffix(file, ".gen.inc")) {
 				continue;
 			}
 
@@ -80,7 +83,8 @@ Ref<ProgramError> GenerateTypeDB::run(ApplicationContext &p_context) {
 
 			if (global_namespace) {
 				auto is_valid_type_target = [](const Ref<NamedContext> &node) {
-					return node->is<Class>() || node->is<Struct>() || node->is<Enum>() || node->is<Define>();
+					return node->is<Class>() || node->is<Struct>() || node->is<Enum>() ||
+							node->is<Define>();
 				};
 
 				Vector<Ref<NamedContext>> found = global_namespace->find_children<NamedContext>(
@@ -96,11 +100,14 @@ Ref<ProgramError> GenerateTypeDB::run(ApplicationContext &p_context) {
 
 						if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
 								type && is_valid_type_target(type)) {
-							PRINT_VERBOSE("TypeDB:\tSaving attribute \"%s\"", node->qualified_name().c_str());
-							ExecutionContext::instance()->get_type_db()->save_type_attribute(type, attr, file);
+							PRINT_VERBOSE(
+									"TypeDB:\tSaving attribute \"%s\"", node->qualified_name().c_str());
+							ExecutionContext::instance()->get_type_db()->save_type_attribute(
+									type, attr, file);
 						}
 					} else {
-						PRINT_VERBOSE("TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
+						PRINT_VERBOSE(
+								"TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
 						node->header = header_path(include_path, file);
 						ExecutionContext::instance()->get_type_db()->save_type_data(node, file);
 					}
@@ -112,4 +119,4 @@ Ref<ProgramError> GenerateTypeDB::run(ApplicationContext &p_context) {
 	return ProgramError::OK;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

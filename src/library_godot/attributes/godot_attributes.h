@@ -48,6 +48,7 @@
 #include "library/tree/syntax/attributes.h"
 #include "library/tree/syntax/enum.h"
 #include "property_access_specifier.h"
+#include "property_generator_options.h"
 #include "string_literal_parameter_type.h"
 
 namespace GodotObjectCompiler {
@@ -104,6 +105,7 @@ private:
 	ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlags)
 	ATTRIBUTE_REGISTER_PARAMETERS(PropertyGetAccessSpecifier)
 	ATTRIBUTE_REGISTER_PARAMETERS(PropertySetAccessSpecifier)
+	ATTRIBUTE_REGISTER_PARAMETERS(PropertyGeneratorOptions)
 };
 
 class GodotFunctionAttribute : public GodotAttributeWithParams {
@@ -152,4 +154,4 @@ class GodotPropertySubgroupAttribute : public GodotAttributeWithParams {
 	LAZY(GodotPropertySubgroupAttribute, String, literal_content);
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

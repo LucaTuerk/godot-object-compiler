@@ -42,28 +42,32 @@
 
 namespace GodotObjectCompiler {
 
-  bool InitTools::validate_arguments(ApplicationContext& p_context) {
-    return p_context.program_arguments.size() == 1 && could_be_dir_path(p_context.program_arguments[0]);
-  }
-
-  Ref<ProgramError> InitTools::run(ApplicationContext& p_context) {
-    PROG_ERR_COND(p_context.program_arguments.size() != 1,
-        "Invalid argument count for init tools program. Expected single path argument specifying target directory.");
-
-    const String path = p_context.program_arguments[0];
-    Permissions::instance()->add_write_path(path);
-
-    PROG_ERR_COND(!directory_exits(path) && !create_dir_recursive(path),
-        "Target directory does not exists and could not be created.");
-
-    for (const String& res_file : Resources::instance()->resources_recursive("res://tools")) {
-      const String content = Resources::instance()->load_text_resource(res_file);
-      const String relative = path_relative(res_file, "res://tools");
-      FileWriter writer(path_concat(path, relative));
-      writer.write(content);
-    }
-
-    return ProgramError::OK;
-  }
-
+bool InitTools::validate_arguments(ApplicationContext &p_context) {
+	return p_context.program_arguments.size() == 1 &&
+			could_be_dir_path(p_context.program_arguments[0]);
 }
+
+Ref<ProgramError> InitTools::run(ApplicationContext &p_context) {
+	PROG_ERR_COND(
+			p_context.program_arguments.size() != 1,
+			"Invalid argument count for init tools program. Expected "
+			"single path argument specifying target directory.");
+
+	const String path = p_context.program_arguments[0];
+	Permissions::instance()->add_write_path(path);
+
+	PROG_ERR_COND(
+			!directory_exits(path) && !create_dir_recursive(path),
+			"Target directory does not exists and could not be created.");
+
+	for (const String &res_file : Resources::instance()->resources_recursive("res://tools")) {
+		const String content = Resources::instance()->load_text_resource(res_file);
+		const String relative = path_relative(res_file, "res://tools");
+		FileWriter writer(path_concat(path, relative));
+		writer.write(content);
+	}
+
+	return ProgramError::OK;
+}
+
+} // namespace GodotObjectCompiler

@@ -68,4 +68,4 @@ class PlaceholderType : public Node {
 	NODE_TYPE(PlaceholderType);
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

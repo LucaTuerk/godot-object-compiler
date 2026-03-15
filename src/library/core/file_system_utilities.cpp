@@ -51,7 +51,8 @@ String read_file(const String &p_path) {
 	PANIC_COND(!file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
 	std::ifstream ifs;
 	ifs.open(absolute);
-	PANIC_COND(!ifs.is_open() || ifs.bad() || ifs.fail(), "Failed to open file \"%s\"", absolute.c_str());
+	PANIC_COND(
+			!ifs.is_open() || ifs.bad() || ifs.fail(), "Failed to open file \"%s\"", absolute.c_str());
 
 	std::ostringstream strstr;
 	strstr << ifs.rdbuf();
@@ -141,8 +142,8 @@ String path_concat_ext(const String &p_dir, const String &p_filename, const Stri
 		return "res://" + path_concat_ext(p_dir.substr(6), p_filename, p_extension);
 	}
 
-	return (
-			std::filesystem::path(p_dir) / std::filesystem::path(format("%s.%s", p_filename.c_str(), p_extension.c_str())))
+	return (std::filesystem::path(p_dir) /
+			std::filesystem::path(format("%s.%s", p_filename.c_str(), p_extension.c_str())))
 			.generic_string();
 }
 
@@ -151,8 +152,8 @@ String path_relative(const String &p_path, const String &p_base) {
 	const bool base_is_res = string_prefix(p_base, "res://");
 	if (path_is_res != base_is_res) {
 		PANIC(
-				"Invalid argument. Trying to get relative path but one path is a resource path while the other is a regular "
-				"path. (\"%s\", \"%s\")",
+				"Invalid argument. Trying to get relative path but one path is a "
+				"resource path while the other is a regular path. (\"%s\", \"%s\")",
 				p_path.c_str(), p_base.c_str());
 	}
 
@@ -193,7 +194,9 @@ char path_seperator() {
 
 Vector<String> directory_files(const String &p_path) {
 	const String absolute = path_absolute(p_path);
-	PANIC_COND(!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"", absolute.c_str());
+	PANIC_COND(
+			!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"",
+			absolute.c_str());
 
 	Vector<String> result;
 	std::filesystem::directory_iterator iter(absolute);
@@ -227,7 +230,9 @@ Vector<String> directory_files_recursive(const String &p_path) {
 
 Vector<String> directory_dirs(const String &p_path) {
 	const String absolute = path_absolute(p_path);
-	PANIC_COND(!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"", absolute.c_str());
+	PANIC_COND(
+			!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"",
+			absolute.c_str());
 
 	Vector<String> result;
 	std::filesystem::directory_iterator iter(absolute);
@@ -241,7 +246,9 @@ Vector<String> directory_dirs(const String &p_path) {
 
 Vector<String> directory_entries(const String &p_path) {
 	const String absolute = path_absolute(p_path);
-	PANIC_COND(!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"", absolute.c_str());
+	PANIC_COND(
+			!directory_exits(absolute), "Trying to iterate non existing directory \"%s\"",
+			absolute.c_str());
 
 	Vector<String> result;
 	std::filesystem::directory_iterator iter(absolute);
@@ -288,11 +295,15 @@ bool copy_file(const String &p_source, const String &p_destination) {
 	PANIC_COND(!file_exists(source), "Trying to copy non-existing file \"%s\"", source.c_str());
 	PANIC_COND(destination.empty(), "Empty destination file path on file copy.");
 	String destination_base = path_base(destination);
-	PANIC_COND(!directory_exits(destination_base) && !create_dir_recursive(destination_base),
-			"Target directory \"%s\" does not exist and could not be created on file copy", destination_base.c_str());
+	PANIC_COND(
+			!directory_exits(destination_base) && !create_dir_recursive(destination_base),
+			"Target directory \"%s\" does not exist and could not be "
+			"created on file copy",
+			destination_base.c_str());
 
 	Permissions::instance()->ensure_is_allowed_write_path(destination);
-	return std::filesystem::copy_file(source, destination, std::filesystem::copy_options::update_existing);
+	return std::filesystem::copy_file(
+			source, destination, std::filesystem::copy_options::update_existing);
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

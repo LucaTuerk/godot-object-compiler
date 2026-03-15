@@ -40,21 +40,21 @@
 
 namespace GodotObjectCompiler {
 
-  class GodotAttributeArgumentParser : public IAttributeArgumentParser {
-   public:
+class GodotAttributeArgumentParser : public IAttributeArgumentParser {
+public:
+	explicit GodotAttributeArgumentParser(const Ref<Attribute> &attribute) : weak_attribute(attribute) {}
 
-    explicit GodotAttributeArgumentParser(const Ref<Attribute>& attribute) : weak_attribute(attribute) {}
+	Ref<ParserError>
+	parse_attribute_arguments(const String &p_content, Ref<Context> p_target) override;
 
-    Ref<ParserError> parse_attribute_arguments(const String& p_content, Ref<Context> p_target) override;
+	Ref<ParserError> parse_attribute_argument(const String &p_content, Ref<Context> p_target);
 
-    Ref<ParserError> parse_attribute_argument(const String& p_content, Ref<Context> p_target);
+	static Ref<ParserError> parse_inner_arguments(
+			const String &p_content, const Ref<Context> &p_target,
+			const IAttributeParameterType::Argument &p_parameter);
 
-    static Ref<ParserError> parse_inner_arguments(
-        const String& p_content, const Ref<Context>& p_target, const IAttributeParameterType::Argument& p_parameter);
+private:
+	WeakRef<Attribute> weak_attribute;
+};
 
-   private:
-
-    WeakRef<Attribute> weak_attribute;
-  };
-
-}
+} // namespace GodotObjectCompiler

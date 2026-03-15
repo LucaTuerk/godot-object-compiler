@@ -145,10 +145,14 @@ String GenerateResources::rst_table(const Table &table) {
 Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 	GenerateTypeDB generate_type_db;
 	PROG_ERR_PASS_ON(generate_type_db.run(p_context));
-	PROG_ERR_COND(!(AssumedGodotTypes::validate_assumptions() && AssumedParameterValues::validate_assumptions()),
-			"Failed to validate some assumptions on available Godot types and macros, probably because the TypeDB "
+	PROG_ERR_COND(
+			!(AssumedGodotTypes::validate_assumptions() &&
+					AssumedParameterValues::validate_assumptions()),
+			"Failed to validate some assumptions on available Godot "
+			"types and macros, probably because the TypeDB "
 			"generator has not found the relevant files.\n"
-			"Ensure godot-cpp include path are known to goc via the -I= flag or in the .goc_project file.");
+			"Ensure godot-cpp include path are known to goc via the -I= "
+			"flag or in the .goc_project file.");
 
 	Permissions::instance()->add_write_path("resources");
 	Permissions::instance()->add_write_path("docs");
@@ -163,7 +167,8 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 			writer.write("No help available");
 		}
 
-		String doc_path = path_concat_ext("docs/cli/", string_replace(program->program_name(), "/", "_"), "rst");
+		String doc_path =
+				path_concat_ext("docs/cli/", string_replace(program->program_name(), "/", "_"), "rst");
 		write_initial_file_content(doc_path, "No documentation available");
 	}
 
@@ -190,7 +195,8 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 			table.push_back({ "Value", "Description" });
 
 			auto param_res_doc_dir = path_concat("resources/doc", param->get_return_type());
-			auto param_res_doc_path = path_concat_ext("resources/doc", param->get_return_type(), "txt");
+			auto param_res_doc_path =
+					path_concat_ext("resources/doc", param->get_return_type(), "txt");
 
 			create_dir_recursive(param_res_doc_dir);
 			write_initial_file_content(param_res_doc_path, "No documentation available");
@@ -202,7 +208,8 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 				table.push_back({ value_name, read_file(value_doc_path) });
 			}
 
-			String param_doc_path = path_concat_ext("docs/macros/parameters/", param->get_return_type(), "rst");
+			String param_doc_path =
+					path_concat_ext("docs/macros/parameters/", param->get_return_type(), "rst");
 			create_dir_recursive(path_base(param_doc_path));
 
 			StreamWriter writer;
@@ -219,18 +226,10 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 
 	Ref<Namespace> global_namespace = make_ref<Namespace>();
 	Ref<Body> body;
-	// clang-format off
-    global_namespace->add_children({
-      build<Body>().with_children({
-        Output::PragmaOnce(),
-        Output::Include("library/core/resources.h"),
-      build<Namespace>().with_children({
-        build<Identifier>("GOC_Resources"),
-        build_ref<Body>(&body)
-        })
-      })
-    });
-	// clang-format on
+	global_namespace->add_children({ build<Body>().with_children(
+			{ Output::PragmaOnce(), Output::Include("library/core/resources.h"),
+					build<Namespace>()
+							.with_children({ build<Identifier>("GOC_Resources"), build_ref<Body>(&body) }) }) });
 
 	auto files = directory_files_recursive("resources");
 	std::sort(files.begin(), files.end());
@@ -240,38 +239,36 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 		String relative = path_relative(file, path_cwd());
 
 		Ref<Output::ListNode> values;
-		// clang-format off
-      body->add_children({
-        Output::FmtText("constexpr char %s[] = ", resource_variable_name(relative).c_str() ),
-        build<Body>().with_child(build_ref<Output::ListNode>(&values, ", ", false, false)),
-        Output::Semicolon()
-      });
+		body->add_children(
+				{ Output::FmtText("constexpr char %s[] = ", resource_variable_name(relative).c_str()),
+						build<Body>().with_child(build_ref<Output::ListNode>(&values, ", ", false, false)),
+						Output::Semicolon() });
 
-      Size i = 0;
-      for (char c : content) {
-        if ((++i % 15) == 0) {
-          values->add_child(Output::FmtText("\n0x%x", c));
-        } else {
-          values->add_child(Output::FmtText("0x%x", c));
-        }
-      }
-      values->add_child(Output::FmtText("0x%x", '\0'));
-    }
-    {
-      Ref<Output::ListNode> values;
-      // clang-format off
-      body->add_children({
-        Output::FmtText("static inline GodotObjectCompiler::Resources::ResourcePack Pack = "),
-        build<Body>().with_child(build_ref<Output::ListNode>(&values, ",\n", false, false)),
-        Output::Semicolon()
-      });
-		// clang-format on
+		Size i = 0;
+		for (char c : content) {
+			if ((++i % 15) == 0) {
+				values->add_child(Output::FmtText("\n0x%x", c));
+			} else {
+				values->add_child(Output::FmtText("0x%x", c));
+			}
+		}
+		values->add_child(Output::FmtText("0x%x", '\0'));
+	}
+	{
+		Ref<Output::ListNode> values;
+		body->add_children(
+				{ Output::FmtText(
+						  "static inline GodotObjectCompiler::Resources::ResourcePack "
+						  "Pack = "),
+						build<Body>().with_child(build_ref<Output::ListNode>(&values, ",\n", false, false)),
+						Output::Semicolon() });
 
 		for (const String &file : files) {
 			String relative = path_relative(file, path_cwd());
 			String res_path = "res://" + path_relative(relative, "resources");
 			values->add_child(
-					Output::FmtText("{\"%s\", &%s[0]}", res_path.c_str(), resource_variable_name(relative).c_str()));
+					Output::FmtText(
+							"{\"%s\", &%s[0]}", res_path.c_str(), resource_variable_name(relative).c_str()));
 		}
 	}
 
@@ -290,5 +287,5 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext &p_context) {
 	return ProgramError::OK;
 }
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 #endif

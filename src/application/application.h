@@ -55,7 +55,7 @@ public:
 	static int cleanup_context(const ApplicationContext &p_context);
 };
 
-} //namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
 #define APP_ERR(...) \
 	print_err(format(__VA_ARGS__)); \

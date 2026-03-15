@@ -46,9 +46,12 @@ bool validate_assumptions() {
 	success &= Resource.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= Node.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= GodotRef.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= ModuleInitializationLevel.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= PropertyHintEnum.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= PropertyUsageFlagsEnum.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= ModuleInitializationLevel.validate(ExecutionContext::instance()->get_type_db()) ==
+			STATE_VALID;
+	success &=
+			PropertyHintEnum.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &=
+			PropertyUsageFlagsEnum.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= ADD_PROPERTY.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= Variant.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= VariantTypeEnum.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
@@ -57,21 +60,32 @@ bool validate_assumptions() {
 	success &= Dictionary.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= TypedDictionary.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= GDCLASS.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= GDREGISTER_CLASS.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= GDREGISTER_VIRTUAL_CLASS.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= GDREGISTER_ABSTRACT_CLASS.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= GDREGISTER_INTERNAL_CLASS.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= GDREGISTER_RUNTIME_CLASS.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &=
+			GDREGISTER_CLASS.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= GDREGISTER_VIRTUAL_CLASS.validate(ExecutionContext::instance()->get_type_db()) ==
+			STATE_VALID;
+	success &= GDREGISTER_ABSTRACT_CLASS.validate(ExecutionContext::instance()->get_type_db()) ==
+			STATE_VALID;
+	success &= GDREGISTER_INTERNAL_CLASS.validate(ExecutionContext::instance()->get_type_db()) ==
+			STATE_VALID;
+	success &= GDREGISTER_RUNTIME_CLASS.validate(ExecutionContext::instance()->get_type_db()) ==
+			STATE_VALID;
 	success &= GDVIRTUAL_CALL.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= GDVIRTUAL_BIND.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= BIND_ENUM_CONSTANT.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= BIND_BITFIELD_FLAG.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= VARIANT_ENUM_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= VARIANT_BITFIELD_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &=
+			BIND_ENUM_CONSTANT.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &=
+			BIND_BITFIELD_FLAG.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &=
+			VARIANT_ENUM_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &=
+			VARIANT_BITFIELD_CAST.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= MultiplayerAPI.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= MultiplayerPeer.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= MultiplayerAPIRPCMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
-	success &= MultiplayerPeerTransferMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &=
+			MultiplayerAPIRPCMode.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
+	success &= MultiplayerPeerTransferMode.validate(ExecutionContext::instance()->get_type_db()) ==
+			STATE_VALID;
 	success &= StringName.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= Callable.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
 	success &= List.validate(ExecutionContext::instance()->get_type_db()) == STATE_VALID;
@@ -80,5 +94,5 @@ bool validate_assumptions() {
 	return success;
 }
 
-} //namespace AssumedGodotTypes
-} //namespace GodotObjectCompiler
+} // namespace AssumedGodotTypes
+} // namespace GodotObjectCompiler
