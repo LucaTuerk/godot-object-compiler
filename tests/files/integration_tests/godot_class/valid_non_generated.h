@@ -35,5 +35,5 @@
 #pragma once
 
 class ValidNonGenerated : public Object {
-	GDCLASS(Valid, Object);
+  GDCLASS(Valid, Object);
 };

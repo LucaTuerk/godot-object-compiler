@@ -40,73 +40,75 @@
 namespace GodotObjectCompiler {
 
 class GodotRpcModeArgument : public Argument {
-	NODE_TYPE(GodotRpcModeArgument);
+  NODE_TYPE(GodotRpcModeArgument);
 
-	LAZY(GodotRpcModeArgument, String, rpc_mode);
-	LAZY(GodotRpcModeArgument, String, godot_rpc_mode);
+  LAZY(GodotRpcModeArgument, String, rpc_mode);
+  LAZY(GodotRpcModeArgument, String, godot_rpc_mode);
 };
 
 class GodotRpcModeParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotRpcModeParameterType, GodotRpcModeArgument);
+  PARAM_TYPE(GodotRpcModeParameterType, GodotRpcModeArgument);
 
-public:
-	String get_return_type() override;
-	Vector<String> get_value_names() override;
-	Vector<Argument> get_arguments() override;
-	bool get_godot_value_name(const String &p_value_name, String &r_godot_value_name);
+ public:
+  String get_return_type() override;
+  Vector<String> get_value_names() override;
+  Vector<Argument> get_arguments() override;
+  bool get_godot_value_name(const String& p_value_name,
+                            String& r_godot_value_name);
 
-	LAZY_MUT(GodotRpcModeParameterType, Vector<String>, value_names);
-	Dictionary<String, String> exposed_name_to_godot_value_name;
+  LAZY_MUT(GodotRpcModeParameterType, Vector<String>, value_names);
+  Dictionary<String, String> exposed_name_to_godot_value_name;
 };
 
 class GodotRpcSyncArgument : public Argument {
-	NODE_TYPE(GodotRpcSyncArgument);
+  NODE_TYPE(GodotRpcSyncArgument);
 
-	LAZY(GodotRpcSyncArgument, String, rpc_sync);
+  LAZY(GodotRpcSyncArgument, String, rpc_sync);
 };
 
 class GodotRpcSyncParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotRpcSyncParameterType, GodotRpcSyncArgument);
+  PARAM_TYPE(GodotRpcSyncParameterType, GodotRpcSyncArgument);
 
-public:
-	String get_return_type() override;
-	Vector<String> get_value_names() override;
-	Vector<Argument> get_arguments() override;
+ public:
+  String get_return_type() override;
+  Vector<String> get_value_names() override;
+  Vector<Argument> get_arguments() override;
 };
 
 class GodotRpcTransferModeArgument : public Argument {
-	NODE_TYPE(GodotRpcTransferModeArgument);
+  NODE_TYPE(GodotRpcTransferModeArgument);
 
-	LAZY(GodotRpcTransferModeArgument, String, transfer_mode);
+  LAZY(GodotRpcTransferModeArgument, String, transfer_mode);
 };
 
 class GodotRpcTransferModeParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotRpcTransferModeParameterType, GodotRpcTransferModeArgument);
+  PARAM_TYPE(GodotRpcTransferModeParameterType, GodotRpcTransferModeArgument);
 
-public:
-	String get_return_type() override;
-	Vector<String> get_value_names() override;
-	Vector<Argument> get_arguments() override;
+ public:
+  String get_return_type() override;
+  Vector<String> get_value_names() override;
+  Vector<Argument> get_arguments() override;
 
-	bool get_godot_value_name(const String &p_value_name, String &r_godot_value_name);
+  bool get_godot_value_name(const String& p_value_name,
+                            String& r_godot_value_name);
 
-	LAZY_MUT(GodotRpcTransferModeParameterType, Vector<String>, value_names);
-	Dictionary<String, String> exposed_name_to_godot_value_name;
+  LAZY_MUT(GodotRpcTransferModeParameterType, Vector<String>, value_names);
+  Dictionary<String, String> exposed_name_to_godot_value_name;
 };
 
 class GodotRpcChannelArgument : public Argument {
-	NODE_TYPE(GodotRpcChannelArgument);
+  NODE_TYPE(GodotRpcChannelArgument);
 
-	LAZY(GodotRpcChannelArgument, int, channel);
+  LAZY(GodotRpcChannelArgument, int, channel);
 };
 
 class GodotRpcChannelParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotRpcChannelParameterType, GodotRpcChannelArgument);
+  PARAM_TYPE(GodotRpcChannelParameterType, GodotRpcChannelArgument);
 
-public:
-	String get_return_type() override;
-	Vector<String> get_value_names() override;
-	Vector<Argument> get_arguments() override;
+ public:
+  String get_return_type() override;
+  Vector<String> get_value_names() override;
+  Vector<Argument> get_arguments() override;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

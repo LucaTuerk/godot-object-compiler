@@ -39,16 +39,16 @@
 namespace GodotObjectCompiler {
 
 class Identifier : public Node {
-	NODE_TYPE(Identifier);
+  NODE_TYPE(Identifier);
 
-public:
-	explicit Identifier(String name) : name(std::move(name)) {}
+ public:
+  explicit Identifier(String name) : name(std::move(name)) {}
 
-	bool copy_to(const Ref<Node> &p_other) const override;
-	String to_string() const override;
-	void write_to(IStructuredWriter *p_writer) override;
-	void read_from(IStructuredReader *p_reader) override;
-	String name;
+  bool copy_to(const Ref<Node>& p_other) const override;
+  String to_string() const override;
+  void write_to(IStructuredWriter* p_writer) override;
+  void read_from(IStructuredReader* p_reader) override;
+  String name;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

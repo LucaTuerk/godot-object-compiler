@@ -38,13 +38,13 @@ namespace A {
 namespace B {
 namespace C {}
 
-} // namespace B
+}  // namespace B
 
 namespace D {}
 
 namespace E {}
 
-} // namespace A
+}  // namespace A
 
 namespace F {
 namespace G {
@@ -53,6 +53,6 @@ namespace I {}
 
 namespace J {}
 
-} // namespace H
-} // namespace G
-} // namespace F
+}  // namespace H
+}  // namespace G
+}  // namespace F

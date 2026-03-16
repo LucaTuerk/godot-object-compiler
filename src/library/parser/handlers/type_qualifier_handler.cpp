@@ -39,20 +39,21 @@
 
 namespace GodotObjectCompiler {
 
-bool TypeQualifierHandler::handles_node(const Ref<TreeSitterNode> &p_current_src) {
-	return p_current_src->type == "type_qualifier";
+bool TypeQualifierHandler::handles_node(
+    const Ref<TreeSitterNode>& p_current_src) {
+  return p_current_src->type == "type_qualifier";
 }
 
 ParserStep TypeQualifierHandler::handle(
-		const Ref<TreeSitterNode> &p_current_src, Ref<Context> &r_current_target) {
-	if (p_current_src->content() == "const") {
-		r_current_target->create_child<Const>();
-	} else if (p_current_src->content() == "mutable") {
-		r_current_target->create_child<Mutable>();
-	} else if (p_current_src->content() == "volatile") {
-		r_current_target->create_child<Volatile>();
-	}
-	return ParserStep::StepInto();
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+  if (p_current_src->content() == "const") {
+    r_current_target->create_child<Const>();
+  } else if (p_current_src->content() == "mutable") {
+    r_current_target->create_child<Mutable>();
+  } else if (p_current_src->content() == "volatile") {
+    r_current_target->create_child<Volatile>();
+  }
+  return ParserStep::StepInto();
 }
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

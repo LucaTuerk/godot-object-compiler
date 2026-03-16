@@ -39,35 +39,35 @@
 namespace GodotObjectCompiler {
 
 class Clear : public IProgram {
-	PROGRAM(Clear, "clear")
-	PROG_NO_ARGS
+  PROGRAM(Clear, "clear")
+  PROG_NO_ARGS
 
-public:
-	Ref<ProgramError> run(ApplicationContext &p_context) override;
+ public:
+  Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
 class ClearGenerated : public IProgram {
-	PROGRAM(ClearGenerated, "clear/generated")
-	PROG_NO_ARGS
+  PROGRAM(ClearGenerated, "clear/generated")
+  PROG_NO_ARGS
 
-public:
-	Ref<ProgramError> run(ApplicationContext &p_context) override;
+ public:
+  Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
 class ClearCache : public IProgram {
-	PROGRAM(ClearCache, "clear/type_db")
-	PROG_NO_ARGS
+  PROGRAM(ClearCache, "clear/type_db")
+  PROG_NO_ARGS
 
-public:
-	Ref<ProgramError> run(ApplicationContext &p_context) override;
+ public:
+  Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
 class ClearImportedTypeDB : public IProgram {
-	PROGRAM(ClearImportedTypeDB, "clear/imported_type_db")
-	PROG_NO_ARGS
+  PROGRAM(ClearImportedTypeDB, "clear/imported_type_db")
+  PROG_NO_ARGS
 
-public:
-	Ref<ProgramError> run(ApplicationContext &p_context) override;
+ public:
+  Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

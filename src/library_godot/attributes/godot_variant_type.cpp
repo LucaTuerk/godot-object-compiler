@@ -44,61 +44,62 @@
 namespace GodotObjectCompiler {
 
 String GodotVariantTypeParameterType::get_return_type() {
-	return "GOC_VariantType";
+  return "GOC_VariantType";
 }
 
 Vector<String> GodotVariantTypeParameterType::get_value_names() {
-	return value_names();
+  return value_names();
 }
 
-Vector<IAttributeParameterType::Argument> GodotVariantTypeParameterType::get_arguments() {
-	return {};
+Vector<IAttributeParameterType::Argument>
+GodotVariantTypeParameterType::get_arguments() {
+  return {};
 }
 
 bool GodotVariantTypeParameterType::get_variant_type_for_value_name(
-		const String &p_value_name, String &r_variant_type) {
-	_value_names_lazy.poke();
+    const String& p_value_name, String& r_variant_type) {
+  _value_names_lazy.poke();
 
-	const auto itr = _value_name_to_godot_variant_type.find(p_value_name);
-	if (itr == _value_name_to_godot_variant_type.end()) {
-		r_variant_type = "";
-		return false;
-	}
+  const auto itr = _value_name_to_godot_variant_type.find(p_value_name);
+  if (itr == _value_name_to_godot_variant_type.end()) {
+    r_variant_type = "";
+    return false;
+  }
 
-	r_variant_type = itr->second;
-	return true;
+  r_variant_type = itr->second;
+  return true;
 }
 
 Vector<String> GodotVariantTypeParameterType::_value_names_lazy_get() {
-	Ref<Enum> variant_type_enum = AssumedGodotTypes::VariantTypeEnum().type;
-	if (!variant_type_enum) {
-		return {};
-	}
+  Ref<Enum> variant_type_enum = AssumedGodotTypes::VariantTypeEnum().type;
+  if (!variant_type_enum) {
+    return {};
+  }
 
-	Vector<String> results;
-	for (const String &enum_value : variant_type_enum->value_names()) {
-		String value_name = macro_case_to_pascal_case("VARIANT_TYPE_" + enum_value);
-		results.push_back(value_name);
-		_value_name_to_godot_variant_type[value_name] = enum_value;
-	}
+  Vector<String> results;
+  for (const String& enum_value : variant_type_enum->value_names()) {
+    String value_name = macro_case_to_pascal_case("VARIANT_TYPE_" + enum_value);
+    results.push_back(value_name);
+    _value_name_to_godot_variant_type[value_name] = enum_value;
+  }
 
-	return results;
+  return results;
 }
 
 String GodotVariantTypeArgument::_godot_variant_type_lazy_get() const {
-	auto ptype = GodotVariantTypeParameterType::instance();
+  auto ptype = GodotVariantTypeParameterType::instance();
 
-	const Ref<Identifier> identifier = find_child<Identifier>();
-	if (!identifier) {
-		PANIC("Malformed GodotVariantTypeArgument");
-	}
+  const Ref<Identifier> identifier = find_child<Identifier>();
+  if (!identifier) {
+    PANIC("Malformed GodotVariantTypeArgument");
+  }
 
-	String variant_type;
-	if (!ptype->get_variant_type_for_value_name(identifier->name, variant_type)) {
-		PANIC("Malformed GodotVariantTypeArgument");
-	}
+  String variant_type;
+  if (!ptype->get_variant_type_for_value_name(identifier->name, variant_type)) {
+    PANIC("Malformed GodotVariantTypeArgument");
+  }
 
-	return variant_type;
+  return variant_type;
 }
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

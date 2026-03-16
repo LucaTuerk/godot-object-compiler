@@ -34,11 +34,12 @@
 /**************************************************************************/
 #pragma once
 
-#include "godot_class/invalid_include_order.generated.h"
 #include <vector>
+
+#include "godot_class/invalid_include_order.generated.h"
 
 GODOT_CLASS();
 class InvalidIncludeOrder : public Object {
-	GODOT_GENERATED_BODY();
+  GODOT_GENERATED_BODY();
 };
 GODOT_GENERATED_GLOBAL();

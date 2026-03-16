@@ -39,14 +39,14 @@
 namespace GodotObjectCompiler {
 
 class IfDefHandler : INodeHandler {
-public:
-	void set_step(ParserStep step);
-	bool handles_node(const Ref<TreeSitterNode> &p_current_src) override;
-	ParserStep
-	handle(const Ref<TreeSitterNode> &p_current_src, Ref<Context> &r_current_target) override;
+ public:
+  void set_step(ParserStep step);
+  bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
+  ParserStep handle(const Ref<TreeSitterNode>& p_current_src,
+                    Ref<Context>& r_current_target) override;
 
-private:
-	ParserStep step = ParserStep::StepOver();
+ private:
+  ParserStep step = ParserStep::StepOver();
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

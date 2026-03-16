@@ -43,84 +43,86 @@
 #include "parser/all.h"
 #include "test_registry.h"
 
-int main(int argc, char *argv[]) {
-	bool run_integration_tests = false;
-	for (int i = 1; i < argc; i++) {
-		print_ln(argv[i]);
-		if (String(argv[i]) == "run_integration_tests") {
-			run_integration_tests = true;
-		}
-	}
+int main(int argc, char* argv[]) {
+  bool run_integration_tests = false;
+  for (int i = 1; i < argc; i++) {
+    print_ln(argv[i]);
+    if (String(argv[i]) == "run_integration_tests") {
+      run_integration_tests = true;
+    }
+  }
 
-	using namespace GodotObjectCompiler;
-	ExecutionContext::instance()->set_error_level(INFO, FULL);
-	Permissions::instance()->add_write_path(".goc_tests");
+  using namespace GodotObjectCompiler;
+  ExecutionContext::instance()->set_error_level(INFO, FULL);
+  Permissions::instance()->add_write_path(".goc_tests");
 
-	Size failed_count = 0;
-	Size success_count = 0, ignore_count = 0, all_count = 0;
-	for (const auto &[test_name, test_functor] : TestRegistry::instance()->get_tests()) {
-		PRINT_INFO("Running test case \"%s\"", test_name.c_str());
-		all_count++;
+  Size failed_count = 0;
+  Size success_count = 0, ignore_count = 0, all_count = 0;
+  for (const auto& [test_name, test_functor] :
+       TestRegistry::instance()->get_tests()) {
+    PRINT_INFO("Running test case \"%s\"", test_name.c_str());
+    all_count++;
 
-		const TestResult result = test_functor();
-		switch (result) {
-			case TEST_RESULT_SUCCESS:
-				PRINT_INFO("%s\tSuccess!", test_name.c_str());
-				print_ln(format("%s\tSuccess!", test_name.c_str()));
-				success_count++;
-				break;
-			case TEST_RESULT_FAILURE:
-				PRINT_INFO("%s\tFailed!", test_name.c_str());
-				failed_count++;
-				break;
-			case TEST_RESULT_IGNORED:
-				PRINT_INFO("%s\tIgnored!", test_name.c_str());
-				ignore_count++;
-				break;
-		}
-	}
+    const TestResult result = test_functor();
+    switch (result) {
+      case TEST_RESULT_SUCCESS:
+        PRINT_INFO("%s\tSuccess!", test_name.c_str());
+        print_ln(format("%s\tSuccess!", test_name.c_str()));
+        success_count++;
+        break;
+      case TEST_RESULT_FAILURE:
+        PRINT_INFO("%s\tFailed!", test_name.c_str());
+        failed_count++;
+        break;
+      case TEST_RESULT_IGNORED:
+        PRINT_INFO("%s\tIgnored!", test_name.c_str());
+        ignore_count++;
+        break;
+    }
+  }
 
-	if (run_integration_tests) {
-		Vector<String> include_paths;
-		for (int i = 2; i < argc; i++) {
-			include_paths.emplace_back(argv[i]);
-		}
-		TestRegistry::instance()->set_integration_tests_include_paths(include_paths);
+  if (run_integration_tests) {
+    Vector<String> include_paths;
+    for (int i = 2; i < argc; i++) {
+      include_paths.emplace_back(argv[i]);
+    }
+    TestRegistry::instance()->set_integration_tests_include_paths(
+        include_paths);
 
-		for (const auto &[test_name, test_functor] :
-				TestRegistry::instance()->get_integration_tests()) {
-			PRINT_INFO("Running test case \"%s\"", test_name.c_str());
+    for (const auto& [test_name, test_functor] :
+         TestRegistry::instance()->get_integration_tests()) {
+      PRINT_INFO("Running test case \"%s\"", test_name.c_str());
 
-			const Vector<String> args =
-					TestRegistry::instance()->get_test_application_arguments({ "generate", "type_db" });
-			Application::run(args); // we need the type db to run integration tests;
+      const Vector<String> args =
+          TestRegistry::instance()->get_test_application_arguments(
+              {"generate", "type_db"});
+      Application::run(args);  // we need the type db to run integration tests;
 
-			all_count++;
-			const TestResult result = test_functor();
-			switch (result) {
-				case TEST_RESULT_SUCCESS:
-					PRINT_INFO("%s\tSuccess!", test_name.c_str());
-					print_ln(format("%s\tSuccess!", test_name.c_str()));
-					success_count++;
-					break;
-				case TEST_RESULT_FAILURE:
-					PRINT_INFO("%s\tFailed!", test_name.c_str());
-					failed_count++;
-					break;
-				case TEST_RESULT_IGNORED:
-					PRINT_INFO("%s\tIgnored!", test_name.c_str());
-					ignore_count++;
-					break;
-			}
-		}
-	}
+      all_count++;
+      const TestResult result = test_functor();
+      switch (result) {
+        case TEST_RESULT_SUCCESS:
+          PRINT_INFO("%s\tSuccess!", test_name.c_str());
+          print_ln(format("%s\tSuccess!", test_name.c_str()));
+          success_count++;
+          break;
+        case TEST_RESULT_FAILURE:
+          PRINT_INFO("%s\tFailed!", test_name.c_str());
+          failed_count++;
+          break;
+        case TEST_RESULT_IGNORED:
+          PRINT_INFO("%s\tIgnored!", test_name.c_str());
+          ignore_count++;
+          break;
+      }
+    }
+  }
 
-	PRINT_INFO(
-			"Summary: %d failed, %d succeeded, %d ignored, %d tests run", failed_count, success_count,
-			ignore_count, all_count);
+  PRINT_INFO("Summary: %d failed, %d succeeded, %d ignored, %d tests run",
+             failed_count, success_count, ignore_count, all_count);
 
-	if (failed_count != 0) {
-		return 1;
-	}
-	return 0;
+  if (failed_count != 0) {
+    return 1;
+  }
+  return 0;
 }

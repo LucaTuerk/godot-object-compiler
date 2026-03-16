@@ -38,6 +38,6 @@
 
 GODOT_CLASS();
 class InvalidNonGD : public std::vector {
-	GODOT_GENERATED_BODY();
+  GODOT_GENERATED_BODY();
 };
 GODOT_GENERATED_GLOBAL();

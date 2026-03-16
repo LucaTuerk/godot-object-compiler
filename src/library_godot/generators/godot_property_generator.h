@@ -41,27 +41,29 @@
 namespace GodotObjectCompiler {
 
 class GodotPropertyGenerator : public IClassGenerator<GodotPropertyAttribute> {
-	GENERATOR(GodotPropertyGenerator);
+  GENERATOR(GodotPropertyGenerator);
 
-public:
-	Ref<GeneratorError> check_for_property_type_errors(
-			const Ref<Node> &p_target, const Ref<Type> &p_type, const Ref<Namespace> &p_from_namespace);
-	Ref<GeneratorError> check_for_field_property_errors(
-			const Ref<Field> &p_field, const Ref<GodotPropertyAttribute> &p_attribute,
-			const Ref<Namespace> &p_from_namespace);
-	Ref<GeneratorError> check_for_custom_bound_property_errors(
-			const GodotCustomPropertyBind &custom_bind, const Ref<GodotPropertyAttribute> &p_attribute,
-			const Ref<Namespace> &p_from_namespace);
+ public:
+  Ref<GeneratorError> check_for_property_type_errors(
+      const Ref<Node>& p_target, const Ref<Type>& p_type,
+      const Ref<Namespace>& p_from_namespace);
+  Ref<GeneratorError> check_for_field_property_errors(
+      const Ref<Field>& p_field, const Ref<GodotPropertyAttribute>& p_attribute,
+      const Ref<Namespace>& p_from_namespace);
+  Ref<GeneratorError> check_for_custom_bound_property_errors(
+      const GodotCustomPropertyBind& custom_bind,
+      const Ref<GodotPropertyAttribute>& p_attribute,
+      const Ref<Namespace>& p_from_namespace);
 
-	Ref<GeneratorError> do_generate_default_attribute_arguments(
-			Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute,
-			Ref<Context> p_default_values) override;
+  Ref<GeneratorError> do_generate_default_attribute_arguments(
+      Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute,
+      Ref<Context> p_default_values) override;
 
-	Ref<GeneratorError> do_generate(
-			Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute,
-			ClassGeneratorResult &r_result) override;
+  Ref<GeneratorError> do_generate(Ref<Class> p_target_class,
+                                  Ref<GodotPropertyAttribute> p_attribute,
+                                  ClassGeneratorResult& r_result) override;
 };
 
 REGISTER_CLASS_GENERATOR(GodotPropertyGenerator);
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

@@ -39,11 +39,11 @@
 namespace GodotObjectCompiler {
 
 class Generate : public IProgram {
-	PROGRAM(Generate, "generate");
-	PROG_NO_ARGS
+  PROGRAM(Generate, "generate");
+  PROG_NO_ARGS
 
-public:
-	Ref<ProgramError> run(ApplicationContext &p_context) override;
+ public:
+  Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

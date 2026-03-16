@@ -39,7 +39,7 @@
 namespace GodotObjectCompiler {
 
 class Struct : public Class {
-	NODE_TYPE(Struct);
+  NODE_TYPE(Struct);
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

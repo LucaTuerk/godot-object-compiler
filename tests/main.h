@@ -36,4 +36,4 @@
 #define GOC_TEST_CONTEXT
 #include "library/execution_context.h"
 
-int main(int argc, char *argv[]);
+int main(int argc, char* argv[]);

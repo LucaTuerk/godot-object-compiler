@@ -44,82 +44,84 @@
 namespace GodotObjectCompiler {
 
 String GodotPropertyHintParameterType::get_return_type() {
-	return "GOC_PropertyHint";
+  return "GOC_PropertyHint";
 }
 
 Vector<String> GodotPropertyHintParameterType::get_value_names() {
-	return value_names();
+  return value_names();
 }
 
-Vector<IAttributeParameterType::Argument> GodotPropertyHintParameterType::get_arguments() {
-	return {
-		{ ARG_STRING, "const char*", "p_hint_string", true }
-	};
+Vector<IAttributeParameterType::Argument>
+GodotPropertyHintParameterType::get_arguments() {
+  return {{ARG_STRING, "const char*", "p_hint_string", true}};
 }
 
 bool GodotPropertyHintParameterType::get_godot_hint_for_value_name(
-		const String &p_name, String &r_macro) {
-	_value_names_lazy.poke();
+    const String& p_name, String& r_macro) {
+  _value_names_lazy.poke();
 
-	if (const auto itr = _godot_hint_types.find(p_name); itr != _godot_hint_types.end()) {
-		r_macro = itr->second;
-		return true;
-	}
-	r_macro = "";
-	return false;
+  if (const auto itr = _godot_hint_types.find(p_name);
+      itr != _godot_hint_types.end()) {
+    r_macro = itr->second;
+    return true;
+  }
+  r_macro = "";
+  return false;
 }
 
 Vector<String> GodotPropertyHintParameterType::_value_names_lazy_get() {
-	Ref<Enum> prop_hint_enum = AssumedGodotTypes::PropertyHintEnum().type;
-	if (!prop_hint_enum) {
-		return {};
-	}
+  Ref<Enum> prop_hint_enum = AssumedGodotTypes::PropertyHintEnum().type;
+  if (!prop_hint_enum) {
+    return {};
+  }
 
-	Vector<String> return_value;
-	for (const String &enum_value : prop_hint_enum->value_names()) {
-		auto value_name = macro_case_to_pascal_case(string_replace(enum_value, "PROPERTY_", ""));
-		_godot_hint_types[value_name] = enum_value;
-		return_value.push_back(value_name);
-	}
-	return return_value;
+  Vector<String> return_value;
+  for (const String& enum_value : prop_hint_enum->value_names()) {
+    auto value_name =
+        macro_case_to_pascal_case(string_replace(enum_value, "PROPERTY_", ""));
+    _godot_hint_types[value_name] = enum_value;
+    return_value.push_back(value_name);
+  }
+  return return_value;
 }
 
 String GodotPropertyHintArgument::_godot_property_hint_lazy_get() const {
-	const auto ptype = GodotPropertyHintParameterType::instance();
-	String hint;
-	if (const Ref<Identifier> identifier = find_child<Identifier>();
-			identifier && ptype->get_godot_hint_for_value_name(identifier->name, hint)) {
-		return hint;
-	}
-	PANIC("Malformed property hint argument");
+  const auto ptype = GodotPropertyHintParameterType::instance();
+  String hint;
+  if (const Ref<Identifier> identifier = find_child<Identifier>();
+      identifier &&
+      ptype->get_godot_hint_for_value_name(identifier->name, hint)) {
+    return hint;
+  }
+  PANIC("Malformed property hint argument");
 }
 
 String GodotPropertyHintArgument::_hint_string_lazy_get() const {
-	const Ref<Arguments> arguments = find_child<Arguments>();
-	if (!arguments) {
-		return "\"\"";
-	}
+  const Ref<Arguments> arguments = find_child<Arguments>();
+  if (!arguments) {
+    return "\"\"";
+  }
 
-	const Ref<Argument> argument = arguments->find_child<Argument>();
-	if (!argument) {
-		return "\"\"";
-	}
+  const Ref<Argument> argument = arguments->find_child<Argument>();
+  if (!argument) {
+    return "\"\"";
+  }
 
-	const Ref<Literal> literal = argument->find_child<Literal>();
-	if (!literal) {
-		return "\"\"";
-	}
+  const Ref<Literal> literal = argument->find_child<Literal>();
+  if (!literal) {
+    return "\"\"";
+  }
 
-	return literal->content;
+  return literal->content;
 }
 
 String GodotPropertyHintArgument::_hint_content_lazy_get() const {
-	const String hint = hint_string();
-	if (hint.size() < 2) {
-		return "";
-	}
+  const String hint = hint_string();
+  if (hint.size() < 2) {
+    return "";
+  }
 
-	return hint.substr(1, hint.size() - 2);
+  return hint.substr(1, hint.size() - 2);
 }
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

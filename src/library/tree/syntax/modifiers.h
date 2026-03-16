@@ -39,59 +39,59 @@
 namespace GodotObjectCompiler {
 
 class Virtual : public Node {
-	NODE_TYPE(Virtual);
+  NODE_TYPE(Virtual);
 };
 
 class Static : public Node {
-	NODE_TYPE(Static);
+  NODE_TYPE(Static);
 };
 
 class Inline : public Node {
-	NODE_TYPE(Inline);
+  NODE_TYPE(Inline);
 };
 
 class Override : public Node {
-	NODE_TYPE(Override);
+  NODE_TYPE(Override);
 };
 
 class TypeQualifier : public Node {
-	NODE_TYPE(TypeQualifier);
+  NODE_TYPE(TypeQualifier);
 };
 
 class SigndednessModifier : public Node {
-	NODE_TYPE(SigndednessModifier);
+  NODE_TYPE(SigndednessModifier);
 };
 
 class Const : public TypeQualifier {
-	NODE_TYPE(Const);
+  NODE_TYPE(Const);
 };
 
 class Mutable : public TypeQualifier {
-	NODE_TYPE(Mutable);
+  NODE_TYPE(Mutable);
 };
 
 class Volatile : public TypeQualifier {
-	NODE_TYPE(Volatile);
+  NODE_TYPE(Volatile);
 };
 
 class ConstExpression : public TypeQualifier {
-	NODE_TYPE(ConstExpression);
+  NODE_TYPE(ConstExpression);
 };
 
 class Unsigned : public SigndednessModifier {
-	NODE_TYPE(Unsigned);
+  NODE_TYPE(Unsigned);
 };
 
 class Signed : public SigndednessModifier {
-	NODE_TYPE(Signed);
+  NODE_TYPE(Signed);
 };
 
 class Short : public SigndednessModifier {
-	NODE_TYPE(Short);
+  NODE_TYPE(Short);
 };
 
 class Long : public SigndednessModifier {
-	NODE_TYPE(Long);
+  NODE_TYPE(Long);
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

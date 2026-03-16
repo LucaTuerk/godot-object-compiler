@@ -41,44 +41,47 @@
 
 namespace GodotObjectCompiler {
 
-void Project::read_from(IStructuredReader *p_reader) {
-	p_reader->read_from_section("Godot");
-	godot_include_paths = string_split(p_reader->read<String, String>("IncludePaths"), ",", true);
+void Project::read_from(IStructuredReader* p_reader) {
+  p_reader->read_from_section("Godot");
+  godot_include_paths =
+      string_split(p_reader->read<String, String>("IncludePaths"), ",", true);
 
-	p_reader->read_from_section("Paths");
-	paths_root = p_reader->read<String, String>("RootPath");
-	paths_goc = p_reader->read<String, String>("GOCPath");
-	paths_generated = p_reader->read<String, String>("GeneratedPath");
-	paths_cache = p_reader->read<String, String>("CachePath");
-	paths_include = string_split(p_reader->read<String, String>("IncludePaths"), ",", true);
+  p_reader->read_from_section("Paths");
+  paths_root = p_reader->read<String, String>("RootPath");
+  paths_goc = p_reader->read<String, String>("GOCPath");
+  paths_generated = p_reader->read<String, String>("GeneratedPath");
+  paths_cache = p_reader->read<String, String>("CachePath");
+  paths_include =
+      string_split(p_reader->read<String, String>("IncludePaths"), ",", true);
 }
 
-void Project::write_to(IStructuredWriter *p_writer) {
-	p_writer->write_to_section("Godot");
-	p_writer->write<String, String>(
-			"IncludePaths", string_vector_combine(godot_include_paths, ","));
+void Project::write_to(IStructuredWriter* p_writer) {
+  p_writer->write_to_section("Godot");
+  p_writer->write<String, String>(
+      "IncludePaths", string_vector_combine(godot_include_paths, ","));
 
-	p_writer->write_to_section("Paths");
-	p_writer->write<String, String>("RootPath", paths_root);
-	p_writer->write<String, String>("GeneratedPath", paths_generated);
-	p_writer->write<String, String>("CachePath", paths_cache);
-	p_writer->write<String, String>("GOCPath", paths_goc);
-	p_writer->write<String, String>("IncludePaths", string_vector_combine(paths_include, ","));
+  p_writer->write_to_section("Paths");
+  p_writer->write<String, String>("RootPath", paths_root);
+  p_writer->write<String, String>("GeneratedPath", paths_generated);
+  p_writer->write<String, String>("CachePath", paths_cache);
+  p_writer->write<String, String>("GOCPath", paths_goc);
+  p_writer->write<String, String>("IncludePaths",
+                                  string_vector_combine(paths_include, ","));
 }
 
-bool Project::read_from_file(const String &p_path) {
-	Config config;
-	if (!config.read_from_file(p_path)) {
-		return false;
-	}
+bool Project::read_from_file(const String& p_path) {
+  Config config;
+  if (!config.read_from_file(p_path)) {
+    return false;
+  }
 
-	read_from(&config);
-	return true;
+  read_from(&config);
+  return true;
 }
 
-bool Project::write_to_file(const String &p_path) {
-	Config config;
-	write_to(&config);
-	return config.write_to_file(p_path);
+bool Project::write_to_file(const String& p_path) {
+  Config config;
+  write_to(&config);
+  return config.write_to_file(p_path);
 }
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler
