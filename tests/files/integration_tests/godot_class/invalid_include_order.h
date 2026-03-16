@@ -33,10 +33,10 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-
-#include <vector>
-
+// clang-format off
 #include "godot_class/invalid_include_order.generated.h"
+#include <vector>
+// clang-format on
 
 GODOT_CLASS();
 class InvalidIncludeOrder : public Object {
