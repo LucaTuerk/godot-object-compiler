@@ -65,12 +65,12 @@ template <typename T>
 using Opt = std::optional<T>;
 
 template <typename T, typename... Args>
-Ref<T> make_ref(Args &&...args) {
-	return std::make_shared<T>(std::forward<Args>(args)...);
+Ref<T> make_ref(Args&&... args) {
+  return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
 template <typename T>
-using Predicate = std::function<bool(const Ref<T> &)>;
+using Predicate = std::function<bool(const Ref<T>&)>;
 
 template <typename T>
 using Creator = std::function<Ref<T>()>;
@@ -97,85 +97,90 @@ using TypeInfo = std::type_info;
 using TypeIndex = std::type_index;
 
 template <typename T>
-void print(const T &message) {
-	std::cout << message;
+void print(const T& message) {
+  std::cout << message;
 }
 
 template <typename T>
-void print_ln(const T &message) {
-	std::cout << message << std::endl;
+void print_ln(const T& message) {
+  std::cout << message << std::endl;
 }
 
 template <typename T>
-void print_err(const T &message) {
-	std::cerr << message << std::endl;
+void print_err(const T& message) {
+  std::cerr << message << std::endl;
 }
 
-String format(const String &p_format_string);
+String format(const String& p_format_string);
 
 template <typename... Args>
-String format(const String &format_str, Args &&...args);
+String format(const String& format_str, Args&&... args);
 
 template <typename... Args>
-void fmt_print(const String &format_str, Args &&...args);
+void fmt_print(const String& format_str, Args&&... args);
 
 template <typename... Args>
-void fmt_print_ln(const String &format_str, Args &&...args);
+void fmt_print_ln(const String& format_str, Args&&... args);
 
 template <typename... Args>
-void fmt_print_err(const String &format_str, Args &&...args);
+void fmt_print_err(const String& format_str, Args&&... args);
 
-} // namespace GodotObjectCompiler
-
-template <typename... Args>
-GodotObjectCompiler::String GodotObjectCompiler::format(const String &format_str, Args &&...args) {
-	const std::size_t n = sizeof...(Args);
-	if (n == 0) {
-		return format_str;
-	}
-
-	int size_s = std::snprintf(nullptr, 0, format_str.c_str(), args...) + 1;
-	if (size_s <= 0) {
-		return "";
-	}
-	auto size = static_cast<size_t>(size_s);
-	std::unique_ptr<char[]> buf(new char[size]);
-	std::snprintf(buf.get(), size, format_str.c_str(), args...);
-	return String(buf.get(), buf.get() + size - 1);
-}
+}  // namespace GodotObjectCompiler
 
 template <typename... Args>
-void GodotObjectCompiler::fmt_print(const String &format_str, Args &&...args) {
-	print(format(format_str, std::forward<Args>(args)...));
+GodotObjectCompiler::String GodotObjectCompiler::format(
+    const String& format_str, Args&&... args) {
+  const std::size_t n = sizeof...(Args);
+  if (n == 0) {
+    return format_str;
+  }
+
+  int size_s = std::snprintf(nullptr, 0, format_str.c_str(), args...) + 1;
+  if (size_s <= 0) {
+    return "";
+  }
+  auto size = static_cast<size_t>(size_s);
+  std::unique_ptr<char[]> buf(new char[size]);
+  std::snprintf(buf.get(), size, format_str.c_str(), args...);
+  return String(buf.get(), buf.get() + size - 1);
 }
 
 template <typename... Args>
-void GodotObjectCompiler::fmt_print_err(const String &format_str, Args &&...args) {
-	print_err(format(format_str, std::forward<Args>(args)...));
+void GodotObjectCompiler::fmt_print(const String& format_str, Args&&... args) {
+  print(format(format_str, std::forward<Args>(args)...));
 }
 
 template <typename... Args>
-void GodotObjectCompiler::fmt_print_ln(const String &format_str, Args &&...args) {
-	print_ln(format(format_str, std::forward<Args>(args)...));
+void GodotObjectCompiler::fmt_print_err(const String& format_str,
+                                        Args&&... args) {
+  print_err(format(format_str, std::forward<Args>(args)...));
+}
+
+template <typename... Args>
+void GodotObjectCompiler::fmt_print_ln(const String& format_str,
+                                       Args&&... args) {
+  print_ln(format(format_str, std::forward<Args>(args)...));
 }
 
 #define UNUSED(param) (void)param
 
-#define PANIC(...) \
-	print_err(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__)); \
-	abort()
+#define PANIC(...)                                         \
+  print_err(format("PANIC!! %s:%d ", __FILE__, __LINE__) + \
+            format(__VA_ARGS__));                          \
+  abort()
 
 #define PANIC_COND(condition, ...) \
-	if ((condition)) { \
-		PANIC(__VA_ARGS__); \
-	}
+  if ((condition)) {               \
+    PANIC(__VA_ARGS__);            \
+  }
 
 #ifdef PANIC_ON_ERR
 #define ERR(...) PANIC(__VA_ARGS__)
 #else
-#define ERR(...) print_err(format("%s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__));
+#define ERR(...) \
+  print_err(format("%s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__));
 #endif
 #define ERR_COND(condition, ...) \
-	if ((condition)) { \
-		ERR(__VA_ARGS__); \
-	}
+  if ((condition)) {             \
+    ERR(__VA_ARGS__);            \
+  }

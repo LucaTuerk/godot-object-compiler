@@ -40,38 +40,39 @@
 namespace GodotObjectCompiler {
 
 class TemplateDeclarationInto : public IntoHandler<TemplateDeclarationInto> {
-	NODE_HANDLER(TemplateDeclarationInto);
+  NODE_HANDLER(TemplateDeclarationInto);
 
-public:
-	static inline String into_type = "template_declaration";
+ public:
+  static inline String into_type = "template_declaration";
 };
 
-class ConditionalExpressionSkip : public SkipHandler<ConditionalExpressionSkip> {
-	NODE_HANDLER(ConditionalExpressionSkip);
+class ConditionalExpressionSkip
+    : public SkipHandler<ConditionalExpressionSkip> {
+  NODE_HANDLER(ConditionalExpressionSkip);
 
-public:
-	static inline String skip_type = "conditional_expression";
+ public:
+  static inline String skip_type = "conditional_expression";
 };
 
 class CompoundStatementSkip : public SkipHandler<CompoundStatementSkip> {
-	NODE_HANDLER(CompoundStatementSkip);
+  NODE_HANDLER(CompoundStatementSkip);
 
-public:
-	static inline String skip_type = "compound_statement";
+ public:
+  static inline String skip_type = "compound_statement";
 };
 
 class PreprocCallSkip : public SkipHandler<PreprocCallSkip> {
-	NODE_HANDLER(PreprocCallSkip);
+  NODE_HANDLER(PreprocCallSkip);
 
-public:
-	static inline String skip_type = "preproc_call";
+ public:
+  static inline String skip_type = "preproc_call";
 };
 
 class OperatorSkip : public SkipHandler<OperatorSkip> {
-	NODE_HANDLER(OperatorSkip);
+  NODE_HANDLER(OperatorSkip);
 
-public:
-	static inline String skip_type = "operator";
+ public:
+  static inline String skip_type = "operator";
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

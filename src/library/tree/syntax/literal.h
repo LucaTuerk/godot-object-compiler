@@ -38,21 +38,21 @@
 namespace GodotObjectCompiler {
 
 class Literal : public Node {
-	NODE_TYPE(Literal);
+  NODE_TYPE(Literal);
 
-public:
-	explicit Literal(const String &content) : content(content) {}
+ public:
+  explicit Literal(const String& content) : content(content) {}
 
-	static Ref<Literal> StringLiteral(const String &content);
+  static Ref<Literal> StringLiteral(const String& content);
 
-	String to_string() const override;
-	bool copy_to(const Ref<Node> &p_other) const override;
-	void write_to(IStructuredWriter *p_writer) override;
-	void read_from(IStructuredReader *p_reader) override;
+  String to_string() const override;
+  bool copy_to(const Ref<Node>& p_other) const override;
+  void write_to(IStructuredWriter* p_writer) override;
+  void read_from(IStructuredReader* p_reader) override;
 
-	bool unwrap_string_literal(String &p_content) const;
+  bool unwrap_string_literal(String& p_content) const;
 
-	String content;
+  String content;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

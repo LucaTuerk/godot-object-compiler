@@ -43,38 +43,38 @@ namespace GodotObjectCompiler {
 namespace NodePredicates {
 
 template <typename T>
-Predicate<T> tag(const char *p_tag) {
-	return [p_tag](const Ref<T> &node) { return node->get_tag() == p_tag; };
+Predicate<T> tag(const char* p_tag) {
+  return [p_tag](const Ref<T>& node) { return node->get_tag() == p_tag; };
 }
 
-} // namespace NodePredicates
+}  // namespace NodePredicates
 
 namespace NamedContextPredicates {
 
 template <typename T>
-Predicate<T> name(const char *p_name) {
-	return [p_name](const Ref<T> &node) { return node->name() == p_name; };
+Predicate<T> name(const char* p_name) {
+  return [p_name](const Ref<T>& node) { return node->name() == p_name; };
 }
 
 template <typename T>
-Predicate<T> qualified_name(const char *p_qualified_name) {
-	return [p_qualified_name](const Ref<T> &node) {
-		return node->qualified_name() == p_qualified_name;
-	};
+Predicate<T> qualified_name(const char* p_qualified_name) {
+  return [p_qualified_name](const Ref<T>& node) {
+    return node->qualified_name() == p_qualified_name;
+  };
 }
 
-} // namespace NamedContextPredicates
+}  // namespace NamedContextPredicates
 
 namespace ClassPredicates {
 
 template <typename T>
-Predicate<T> base_class(const char *p_base_class) {
-	return [p_base_class](const Ref<T> &node) {
-		auto baseclasses = node->base_classes();
-		return baseclasses.find(p_base_class) != baseclasses.end();
-	};
+Predicate<T> base_class(const char* p_base_class) {
+  return [p_base_class](const Ref<T>& node) {
+    auto baseclasses = node->base_classes();
+    return baseclasses.find(p_base_class) != baseclasses.end();
+  };
 }
 
-} // namespace ClassPredicates
+}  // namespace ClassPredicates
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

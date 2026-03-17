@@ -40,49 +40,50 @@
 
 namespace GodotObjectCompiler {
 
-Ref<ProgramError> Clear::run(ApplicationContext &p_context) {
-	ClearCache clear_cache;
-	if (Ref<ProgramError> clear_cache_error = clear_cache.run(p_context);
-			clear_cache_error != ProgramError::OK) {
-		return clear_cache_error;
-	}
+Ref<ProgramError> Clear::run(ApplicationContext& p_context) {
+  ClearCache clear_cache;
+  if (Ref<ProgramError> clear_cache_error = clear_cache.run(p_context);
+      clear_cache_error != ProgramError::OK) {
+    return clear_cache_error;
+  }
 
-	ClearGenerated clear_generated;
-	if (Ref<ProgramError> clear_generated_error = clear_generated.run(p_context);
-			clear_generated_error != ProgramError::OK) {
-		return clear_generated_error;
-	}
+  ClearGenerated clear_generated;
+  if (Ref<ProgramError> clear_generated_error = clear_generated.run(p_context);
+      clear_generated_error != ProgramError::OK) {
+    return clear_generated_error;
+  }
 
-	ExecutionContext::instance()->clear_generated_from();
-	ExecutionContext::instance()->clear_last_modified_times();
-	return ProgramError::OK;
+  ExecutionContext::instance()->clear_generated_from();
+  ExecutionContext::instance()->clear_last_modified_times();
+  return ProgramError::OK;
 }
 
-Ref<ProgramError> ClearGenerated::run(ApplicationContext &p_context) {
-	for (const String &entry : directory_entries(p_context.paths_generated)) {
-		PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
-	}
-	return ProgramError::OK;
+Ref<ProgramError> ClearGenerated::run(ApplicationContext& p_context) {
+  for (const String& entry : directory_entries(p_context.paths_generated)) {
+    PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
+  }
+  return ProgramError::OK;
 }
 
-Ref<ProgramError> ClearCache::run(ApplicationContext &p_context) {
-	for (const String &entry : directory_entries(p_context.paths_cache)) {
-		if (string_contains(entry, ".readonly")) {
-			continue;
-		}
+Ref<ProgramError> ClearCache::run(ApplicationContext& p_context) {
+  for (const String& entry : directory_entries(p_context.paths_cache)) {
+    if (string_contains(entry, ".readonly")) {
+      continue;
+    }
 
-		PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
-	}
+    PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
+  }
 
-	return ProgramError::OK;
+  return ProgramError::OK;
 }
 
-Ref<ProgramError> ClearImportedTypeDB::run(ApplicationContext &p_context) {
-	for (const String &entry : directory_entries(p_context.paths_readonly_cache)) {
-		PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
-	}
+Ref<ProgramError> ClearImportedTypeDB::run(ApplicationContext& p_context) {
+  for (const String& entry :
+       directory_entries(p_context.paths_readonly_cache)) {
+    PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
+  }
 
-	return ProgramError::OK;
+  return ProgramError::OK;
 }
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

@@ -39,20 +39,20 @@
 namespace GodotObjectCompiler {
 
 class GodotVirtualArgument : public Argument {
-	NODE_TYPE(GodotVirtualArgument);
+  NODE_TYPE(GodotVirtualArgument);
 
-public:
-	bool is_script_virtual() const;
-	bool is_required() const;
+ public:
+  bool is_script_virtual() const;
+  bool is_required() const;
 };
 
 class GodotVirtualParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotVirtualParameterType, GodotVirtualArgument);
+  PARAM_TYPE(GodotVirtualParameterType, GodotVirtualArgument);
 
-public:
-	String get_return_type() override;
-	Vector<String> get_value_names() override;
-	Vector<Argument> get_arguments() override;
+ public:
+  String get_return_type() override;
+  Vector<String> get_value_names() override;
+  Vector<Argument> get_arguments() override;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

@@ -40,12 +40,12 @@
 namespace GodotObjectCompiler {
 
 class Field : public Member {
-	NODE_TYPE(Field);
+  NODE_TYPE(Field);
 
-public:
-	LAZY(Field, Ref<Type>, type);
-	LAZY(Field, bool, is_mutable);
-	LAZY(Field, bool, is_volatile);
+ public:
+  LAZY(Field, Ref<Type>, type);
+  LAZY(Field, bool, is_mutable);
+  LAZY(Field, bool, is_volatile);
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

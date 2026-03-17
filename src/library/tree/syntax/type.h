@@ -40,32 +40,32 @@
 namespace GodotObjectCompiler {
 
 class Reference : public Node {
-	NODE_TYPE(Reference);
+  NODE_TYPE(Reference);
 };
 
 class Pointer : public Node {
-	NODE_TYPE(Pointer);
+  NODE_TYPE(Pointer);
 };
 
 class Type : public NamedContext {
-	NODE_TYPE(Type);
+  NODE_TYPE(Type);
 
-public:
-	LAZY_MUT(Type, String, type_name);
-	LAZY(Type, String, type_name_untemplated);
-	LAZY(Type, String, type_name_unmodified);
-	LAZY(Type, String, type_name_unmodified_ptr);
-	LAZY(Type, bool, is_template_type);
-	LAZY(Type, Size, template_argument_count);
-	LAZY(Type, Ref<Type>, qualified);
-	LAZY(Type, Ref<TemplateArguments>, template_arguments);
+ public:
+  LAZY_MUT(Type, String, type_name);
+  LAZY(Type, String, type_name_untemplated);
+  LAZY(Type, String, type_name_unmodified);
+  LAZY(Type, String, type_name_unmodified_ptr);
+  LAZY(Type, bool, is_template_type);
+  LAZY(Type, Size, template_argument_count);
+  LAZY(Type, Ref<Type>, qualified);
+  LAZY(Type, Ref<TemplateArguments>, template_arguments);
 
-private:
-	bool is_qualified;
+ private:
+  bool is_qualified;
 };
 
 class PlaceholderType : public Node {
-	NODE_TYPE(PlaceholderType);
+  NODE_TYPE(PlaceholderType);
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

@@ -41,28 +41,28 @@
 namespace GodotObjectCompiler {
 
 class GodotPropertyHintArgument : public Argument {
-	NODE_TYPE(GodotPropertyHintArgument);
+  NODE_TYPE(GodotPropertyHintArgument);
 
-	LAZY(GodotPropertyHintArgument, String, godot_property_hint)
-	LAZY(GodotPropertyHintArgument, String, hint_string)
-	LAZY(GodotPropertyHintArgument, String, hint_content)
+  LAZY(GodotPropertyHintArgument, String, godot_property_hint)
+  LAZY(GodotPropertyHintArgument, String, hint_string)
+  LAZY(GodotPropertyHintArgument, String, hint_content)
 };
 
 class GodotPropertyHintParameterType : public IAttributeParameterType {
-	PARAM_TYPE(GodotPropertyHintParameterType, GodotPropertyHintArgument);
+  PARAM_TYPE(GodotPropertyHintParameterType, GodotPropertyHintArgument);
 
-public:
-	String get_return_type() override;
+ public:
+  String get_return_type() override;
 
-	Vector<String> get_value_names() override;
+  Vector<String> get_value_names() override;
 
-	Vector<Argument> get_arguments() override;
+  Vector<Argument> get_arguments() override;
 
-	bool get_godot_hint_for_value_name(const String &p_name, String &r_macro);
+  bool get_godot_hint_for_value_name(const String& p_name, String& r_macro);
 
-private:
-	LAZY_MUT(GodotPropertyHintParameterType, Vector<String>, value_names);
-	Dictionary<String, String> _godot_hint_types;
+ private:
+  LAZY_MUT(GodotPropertyHintParameterType, Vector<String>, value_names);
+  Dictionary<String, String> _godot_hint_types;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

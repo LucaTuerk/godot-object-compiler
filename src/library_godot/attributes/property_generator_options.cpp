@@ -37,20 +37,19 @@
 
 namespace GodotObjectCompiler {
 String PropertyGeneratorOptionsParameterType::get_return_type() {
-	return "GOC_PropertyGeneratorOptions";
+  return "GOC_PropertyGeneratorOptions";
 }
 
 Vector<String> PropertyGeneratorOptionsParameterType::get_value_names() {
-	return {
-		PropertyGeneratorOptionsArgument::Default,
-		PropertyGeneratorOptionsArgument::EmitChanged,
-		PropertyGeneratorOptionsArgument::EmitChangedValue,
-	};
+  return {
+      PropertyGeneratorOptionsArgument::Default,
+      PropertyGeneratorOptionsArgument::EmitChanged,
+      PropertyGeneratorOptionsArgument::EmitChangedValue,
+  };
 }
 
-Vector<IAttributeParameterType::Argument> PropertyGeneratorOptionsParameterType::get_arguments() {
-	return {
-		{ ARG_STRING, "const char*", "p_hint", true }
-	};
+Vector<IAttributeParameterType::Argument>
+PropertyGeneratorOptionsParameterType::get_arguments() {
+  return {{ARG_STRING, "const char*", "p_hint", true}};
 }
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

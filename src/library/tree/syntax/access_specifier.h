@@ -39,20 +39,18 @@
 namespace GodotObjectCompiler {
 
 class AccessSpecifier : public Node {
-	NODE_TYPE(AccessSpecifier);
+  NODE_TYPE(AccessSpecifier);
 
-public:
-	enum Type { PUBLIC,
-		PRIVATE,
-		PROTECTED };
+ public:
+  enum Type { PUBLIC, PRIVATE, PROTECTED };
 
-	explicit AccessSpecifier(Type type) : type(type) {}
+  explicit AccessSpecifier(Type type) : type(type) {}
 
-	bool copy_to(const Ref<Node> &p_other) const override;
-	String to_string() const override;
-	void write_to(IStructuredWriter *p_writer) override;
+  bool copy_to(const Ref<Node>& p_other) const override;
+  String to_string() const override;
+  void write_to(IStructuredWriter* p_writer) override;
 
-	Type type = PUBLIC;
+  Type type = PUBLIC;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler

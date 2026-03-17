@@ -39,10 +39,10 @@
 GODOT_CLASS();
 
 class Invalid : Node {
-	GODOT_GENERATED_BODY();
+  GODOT_GENERATED_BODY();
 
-	GODOT_PROPERTY();
-	Node ref_node;
+  GODOT_PROPERTY();
+  Node ref_node;
 };
 
 GODOT_GENERATED_GLOBAL();

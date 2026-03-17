@@ -40,11 +40,11 @@
 namespace GodotObjectCompiler {
 
 class PrintType : public IProgram {
-	PROGRAM(PrintType, "print/type");
+  PROGRAM(PrintType, "print/type");
 
-public:
-	bool validate_arguments(ApplicationContext &p_context) override;
-	Ref<ProgramError> run(ApplicationContext &p_context) override;
+ public:
+  bool validate_arguments(ApplicationContext& p_context) override;
+  Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-} // namespace GodotObjectCompiler
+}  // namespace GodotObjectCompiler
