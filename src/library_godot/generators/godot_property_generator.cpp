@@ -425,6 +425,13 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
           signal_parameters->build_child<Parameter>().with_children(
               {property_type->clone(), node_new<Identifier>(property_name)});
         }
+
+        generated_private_members->build_child<Function>()
+            .with_children({build<Type>().with_child<Identifier>("void"),
+                            build<Identifier>(signal_name),
+                            signal_parameters->clone()})
+            .with_child(Output::Semicolon());
+
         GodotSignalGenerator::bind_signal(p_target_class, p_attribute,
                                           signal_name, signal_parameters,
                                           r_result);
