@@ -35,6 +35,7 @@
 
 #include "attribute_db.h"
 
+#include "core/result.h"
 #include "library/generator/generator.h"
 #include "library/tree/syntax/attribute.h"
 
@@ -65,16 +66,14 @@ bool AttributeDB::is_known_macro(const String& p_macro) {
   return _macro_aliases.find(p_macro) != _macro_aliases.end();
 }
 
-Ref<Attribute> AttributeDB::create_for_macro(const String& p_macro) {
+Result<Attribute> AttributeDB::create_for_macro(const String& p_macro) {
   const auto name_itr = _macro_aliases.find(p_macro);
-  if (name_itr == _macro_aliases.end()) {
-    return nullptr;
-  }
+  ERROR_COND(name_itr == _macro_aliases.end(), "Unknown macro \"%s\"",
+             p_macro.c_str())
 
   const auto creator_itr = _creation_funcs.find(name_itr->second);
-  if (creator_itr == _creation_funcs.end()) {
-    return nullptr;
-  }
+  ERROR_COND(creator_itr == _creation_funcs.end(),
+             "No creator function bound for macro \"%s\"", p_macro.c_str());
 
   return creator_itr->second();
 }

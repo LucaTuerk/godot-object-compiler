@@ -2698,7 +2698,7 @@ namespace GOC_Resources
   constexpr char resources_variant_types_VariantTypeNil_txt[] = 
   
   {
-      0x0
+      0x56, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x0
   }
   ;
   constexpr char resources_variant_types_VariantTypeNodePath_txt[] = 

@@ -43,6 +43,9 @@ class Signals : Node {
   GODOT_GENERATED_BODY();
 
   GODOT_SIGNAL();
+  void variant_signal(Variant p_param);
+
+  GODOT_SIGNAL();
   void aabb_signal(AABB p_param);
 
   GODOT_SIGNAL();

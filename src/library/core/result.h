@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* parser_context.h                                                       */
+/* result.h                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,46 +32,90 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#pragma once
 
-#include "library/core/core.h"
-#include "library/tree/syntax/node.h"
+#pragma once
+#include "core.h"
 
 namespace GodotObjectCompiler {
-
-class TreeSitterNode;
-
+class Error;
 class Node;
-class Namespace;
-class Class;
-class Struct;
-class Function;
-class Field;
 
-struct ParserContext {
-  using NodeID = const void*;
+template <typename ResultT, typename ErrorT = Error>
+class Result {
+ public:
+  Result(const Ref<ResultT>& p_result);
+  Result(const Ref<ErrorT>& p_error);
 
-  String file_path;
-  String original_buffer;
-  String buffer;
-  Ref<Context> current_target;
-  Ref<TreeSitterNode> src_root;
-  Ref<TreeSitterNode> current_src;
-  Dictionary<Size, String> stripped_parameters;
-  bool parse_attributes = true;
+  Ref<ResultT> get_result() const;
+  bool get_result(Ref<ResultT>& r_result) const;
+  Ref<ErrorT> get_error() const;
+  bool get_error(Ref<ErrorT>& r_error) const;
 
-  [[nodiscard]] bool is_valid() const;
-
-  ParserContext() = default;
-  explicit ParserContext(const String& input);
-
-  static ParserContext from_path(const String& p_path);
-
-  Result<TreeSitterNode> create_tree(TSTree* p_tree);
-  Ref<TreeSitterNode> create_node(TSNode p_ts_node);
+  bool has_error() const;
+  bool has_result() const;
 
  private:
-  bool _invalid = true;
+  bool _has_result = false;
+  Ref<Node> _data;
 };
 
+template <typename ResultT, typename ErrorT>
+Result<ResultT, ErrorT>::Result(const Ref<ResultT>& p_result) {
+  _data = p_result;
+  _has_result = true;
+}
+
+template <typename ResultT, typename ErrorT>
+Result<ResultT, ErrorT>::Result(const Ref<ErrorT>& p_error) {
+  _data = p_error;
+  _has_result = false;
+}
+
+template <typename ResultT, typename ErrorT>
+Ref<ResultT> Result<ResultT, ErrorT>::get_result() const {
+  PANIC_COND(!_has_result, "Invalid result access.");
+  return std::dynamic_pointer_cast<ResultT>(_data);
+}
+
+template <typename ResultT, typename ErrorT>
+bool Result<ResultT, ErrorT>::get_result(Ref<ResultT>& r_result) const {
+  if (!_has_result) {
+    r_result = nullptr;
+    return false;
+  }
+  r_result = std::dynamic_pointer_cast<ResultT>(_data);
+  return true;
+}
+
+template <typename ResultT, typename ErrorT>
+Ref<ErrorT> Result<ResultT, ErrorT>::get_error() const {
+  PANIC_COND(_has_result, "Invalid error access.");
+  return std::dynamic_pointer_cast<ErrorT>(_data);
+}
+
+template <typename ResultT, typename ErrorT>
+bool Result<ResultT, ErrorT>::get_error(Ref<ErrorT>& r_error) const {
+  if (_has_result) {
+    r_error = nullptr;
+    return false;
+  }
+  r_error = std::dynamic_pointer_cast<ErrorT>(_data);
+  return true;
+}
+
+template <typename ResultT, typename ErrorT>
+bool Result<ResultT, ErrorT>::has_error() const {
+  return !_has_result;
+}
+
+template <typename ResultT, typename ErrorT>
+bool Result<ResultT, ErrorT>::has_result() const {
+  return _has_result;
+}
 }  // namespace GodotObjectCompiler
+
+#define RESULT_ERROR_PASS_ON(type, result, unwrapped_name) \
+  if (result.has_error()) {                                \
+    return ERROR_CAST(type, result.get_error());           \
+  }                                                        \
+  auto unwrapped_name = result.get_result();

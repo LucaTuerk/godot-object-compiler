@@ -275,9 +275,9 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
   Ref<Context> generated_public_members, generated_protected_members,
       generated_private_members;
   GEN_ERROR_COND(
-      unzip_generated_body(p_generated_body, &generated_public_members,
-                           &generated_protected_members,
-                           &generated_private_members) != GeneratorError::OK,
+      unzip_generated_body(p_generated_body, generated_public_members,
+                           generated_protected_members,
+                           generated_private_members) != GeneratorError::OK,
       p_target_class, "Failed to find generated body groups");
 
   Ref<Type> property_type;

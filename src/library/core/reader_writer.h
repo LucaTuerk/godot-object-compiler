@@ -34,8 +34,11 @@
 /**************************************************************************/
 #pragma once
 #include "core.h"
+#include "result.h"
 
 namespace GodotObjectCompiler {
+
+class Error;
 
 class IStringWriter {
  public:
@@ -140,10 +143,10 @@ class INodeReader {
  public:
   virtual ~INodeReader() = default;
 
-  virtual Ref<Node> read_from_file(const String& path) = 0;
+  virtual Result<Node> read_from_file(const String& path) = 0;
 
   template <typename T>
-  Ref<T> read_from_file(const String& p_path);
+  Result<T> read_from_file(const String& p_path);
 };
 
 }  // namespace GodotObjectCompiler

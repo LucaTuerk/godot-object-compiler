@@ -44,6 +44,7 @@ GOC_INTEGRATION_TEST(GeneratePropertyBinds) {
   GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/properties.h");
 
   GOC_ASSERT_QUALIFIED_NAME("Tests::Properties", generated_source)
+  GOC_ASSERT_PROP_BOUND("variant_property", "NIL");
   GOC_ASSERT_PROP_BOUND("aabb_property", "AABB");
   GOC_ASSERT_PROP_BOUND("array_property", "ARRAY");
   GOC_ASSERT_PROP_BOUND("typed_array_property", "ARRAY");
@@ -216,9 +217,10 @@ GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChanged) {
       "tests/files/integration_tests/properties_emit_changed.h");
 
   GOC_ASSERT_QUALIFIED_NAME("Tests::PropertiesEmitChanged", generated_source)
+  GOC_ASSERT_PROP_BOUND("variant_property", "NIL");
+  GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("variant_property_changed");
   GOC_ASSERT_PROP_BOUND("aabb_property", "AABB");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("aabb_property_changed")
-
   GOC_ASSERT_PROP_BOUND("array_property", "ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("array_property_changed")
   GOC_ASSERT_PROP_BOUND("typed_array_property", "ARRAY");

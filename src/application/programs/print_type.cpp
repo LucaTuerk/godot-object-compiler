@@ -49,9 +49,9 @@ Ref<ProgramError> PrintType::run(ApplicationContext& p_context) {
                 "their fully qualified name.")
 
   for (const String& name : p_context.program_arguments) {
-    const Ref<Node> type_data =
+    const Result<Node, Error> type_result =
         ExecutionContext::instance()->get_type_db()->get_type_data(name);
-    PROG_ERR_COND(!type_data, "Unknown type name: %s", name.c_str());
+    RESULT_ERROR_PASS_ON(ProgramError, type_result, type_data)
     print_ln(type_data->pretty_print());
   }
 

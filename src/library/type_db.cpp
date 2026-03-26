@@ -36,6 +36,7 @@
 
 #include "core/config.h"
 #include "core/file_system_utilities.h"
+#include "core/result.h"
 #include "core/string_utilities.h"
 #include "core/string_writer.h"
 #include "library/core/core.h"
@@ -73,13 +74,13 @@ bool ConfigNodeReaderWriter::write_to_file(Ref<Node> node, const String& path) {
   return config.write_to_file(path);
 }
 
-Ref<Node> ConfigNodeReaderWriter::read_from_file(const String& path) {
+Result<Node> ConfigNodeReaderWriter::read_from_file(const String& path) {
   Config config;
   Dictionary<UID, Ref<Node>> local;
   HashSet<UID> was_existing;
 
   if (!config.read_from_file(path)) {
-    return nullptr;
+    ERROR("Failed to read node from file \"%s\"", path.c_str());
   }
 
   for (const String& section : config.get_sections()) {
@@ -139,8 +140,7 @@ Ref<Node> ConfigNodeReaderWriter::read_from_file(const String& path) {
   for (const auto& [uid, node] : local) {
     if (node->get_parent() == nullptr) {
       if (root != nullptr) {
-        ERR("Multiple root nodes found in read config file. Invalid.");
-        return nullptr;
+        ERROR("Multiple root nodes found in read config file. Invalid.");
       }
       root = node;
     }
@@ -260,10 +260,10 @@ void TypeDB::save_type_attribute(const Ref<NamedContext>& p_type,
   }
 }
 
-Ref<Node> TypeDB::_get_type_data(const String& p_qualified_name,
-                                 Size p_template_argument_count,
-                                 const Ref<Namespace>& p_from_namespace,
-                                 CacheType p_cache_type) {
+Result<Node> TypeDB::_get_type_data(const String& p_qualified_name,
+                                    Size p_template_argument_count,
+                                    const Ref<Namespace>& p_from_namespace,
+                                    CacheType p_cache_type) {
   Reader reader;
 
   for (const String& name :
@@ -276,36 +276,37 @@ Ref<Node> TypeDB::_get_type_data(const String& p_qualified_name,
     }
 
     if (file_exists(cache_file_path)) {
-      Ref<Node> root = reader.read_from_file(cache_file_path);
-      if (!root) {
-        ERR("Failed to read node from cache file \"%s\"",
-            cache_file_path.c_str());
-        return nullptr;
+      Result<Node> root_result = reader.read_from_file(cache_file_path);
+      if (root_result.has_result()) {
+        _cache[cache_file_path] = root_result.get_result()->clone();
+        return root_result.get_result();
+      } else {
+        root_result.get_error()->set_handled();
       }
-      _cache[cache_file_path] = root->clone();
-      return root;
     }
     for (const String& using_ : ExecutionContext::instance()->get_usings()) {
       if (String using_path = _get_cache_file_path(
               format("%s::%s", using_.c_str(), name.c_str()), p_cache_type,
               p_template_argument_count);
           file_exists(using_path)) {
-        Ref<Node> root = reader.read_from_file(using_path);
-        if (!root) {
-          ERR("Failed to read node from cache file \"%s\"",
-              cache_file_path.c_str());
-          return nullptr;
+        Result<Node> root_result = reader.read_from_file(using_path);
+        if (root_result.has_result()) {
+          _cache[cache_file_path] = root_result.get_result()->clone();
+          return root_result.get_result();
         }
-        _cache[cache_file_path] = root->clone();
-        return root;
+        root_result.get_error()->set_handled();
       }
     }
   }
 
-  return nullptr;
+  ERROR_COND(p_from_namespace != nullptr,
+             "Could not find type \"%s\" in namespace \"%s\"",
+             p_qualified_name.c_str(),
+             p_from_namespace->qualified_name().c_str());
+  ERROR("Could not find type \"%s\"", p_qualified_name.c_str());
 }
 
-Ref<Attribute> TypeDB::_get_type_attribute(
+Result<Attribute> TypeDB::_get_type_attribute(
     const String& p_qualified_name, const String& p_attribute_name,
     Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace,
     CacheType cache_type) {
@@ -321,12 +322,12 @@ Ref<Attribute> TypeDB::_get_type_attribute(
     }
 
     if (file_exists(cache_file_path)) {
-      const Ref<Node> root = reader.read_from_file(cache_file_path);
-      if (!root) {
-        return nullptr;
+      const Result<Node> root_result = reader.read_from_file(cache_file_path);
+      if (root_result.has_result()) {
+        _cache[cache_file_path] = root_result.get_result()->clone();
+        return root_result.get_result()->as<Attribute>();
       }
-      _cache[cache_file_path] = root->clone();
-      return root->as<Attribute>();
+      root_result.get_error()->set_handled();
     }
 
     for (const String& using_ : ExecutionContext::instance()->get_usings()) {
@@ -334,43 +335,54 @@ Ref<Attribute> TypeDB::_get_type_attribute(
               format("%s::%s", using_.c_str(), name.c_str()), p_attribute_name,
               cache_type);
           file_exists(using_path)) {
-        const Ref<Node> root = reader.read_from_file(using_path);
-        _cache[cache_file_path] = root->clone();
-        return root->as<Attribute>();
+        const Result<Node> root_result = reader.read_from_file(using_path);
+        if (root_result.has_result()) {
+          _cache[cache_file_path] = root_result.get_result()->clone();
+          return root_result.get_result()->as<Attribute>();
+        }
+        root_result.get_error()->set_handled();
       }
     }
   }
-  return nullptr;
+
+  ERROR("Could not find attribute \"%s\" for type \"%s\"",
+        p_attribute_name.c_str(), p_qualified_name.c_str());
 }
 
-Ref<Node> TypeDB::get_type_data(const String& qualified_name,
-                                Size template_argument_count,
-                                const Ref<Namespace>& from_namespace) {
-  Ref<Node> found = _get_type_data(qualified_name, template_argument_count,
-                                   from_namespace, CacheType::READWRITE_CACHE);
-  if (!found) {
-    found = _get_type_data(qualified_name, template_argument_count,
-                           from_namespace, CacheType::READONLY_CACHE);
+Result<Node> TypeDB::get_type_data(const String& qualified_name,
+                                   Size template_argument_count,
+                                   const Ref<Namespace>& from_namespace) {
+  Result<Node> found_result =
+      _get_type_data(qualified_name, template_argument_count, from_namespace,
+                     CacheType::READWRITE_CACHE);
+  if (found_result.has_error()) {
+    found_result.get_error()->set_handled();
+    found_result = _get_type_data(qualified_name, template_argument_count,
+                                  from_namespace, CacheType::READONLY_CACHE);
   }
+  RESULT_ERROR_PASS_ON(Error, found_result, found);
   return found;
 }
 
-Ref<Attribute> TypeDB::get_type_attribute(
+Result<Attribute> TypeDB::get_type_attribute(
     const String& p_qualified_name, const String& p_attribute_name,
     Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace) {
-  Ref<Attribute> found = _get_type_attribute(
+  Result<Attribute> found_result = _get_type_attribute(
       p_qualified_name, p_attribute_name, p_template_parameter_count,
       p_from_namespace, CacheType::READWRITE_CACHE);
-  if (!found) {
-    found = _get_type_attribute(p_qualified_name, p_attribute_name,
-                                p_template_parameter_count, p_from_namespace,
-                                CacheType::READONLY_CACHE);
+
+  if (found_result.has_error()) {
+    found_result.get_error()->set_handled();
+    found_result = _get_type_attribute(
+        p_qualified_name, p_attribute_name, p_template_parameter_count,
+        p_from_namespace, CacheType::READONLY_CACHE);
   }
+  RESULT_ERROR_PASS_ON(Error, found_result, found);
   return found;
 }
 
-Ref<Node> TypeDB::get_type_data(const Ref<Type>& type,
-                                const Ref<Namespace>& from_namespace) {
+Result<Node> TypeDB::get_type_data(const Ref<Type>& type,
+                                   const Ref<Namespace>& from_namespace) {
   return get_type_data(type->name(), type->template_argument_count(),
                        from_namespace);
 }
@@ -515,14 +527,15 @@ AssumptionState TypeDB::validate_assumption(
   Vector<String> enum_name_split{namespaces.begin(), namespaces.end() - 1};
   String enum_name = string_vector_combine(enum_name_split, "::");
 
-  Ref<Enum> enum_ = get_type_data<Enum>(enum_name);
-  if (enum_ == nullptr) {
+  Result<Enum> enum_result = get_type_data<Enum>(enum_name);
+  if (enum_result.has_error()) {
+    enum_result.get_error()->set_handled();
     return STATE_INVALID;
   }
 
+  Ref<Enum> enum_ = enum_result.get_result();
   Ref<EnumValue> value = enum_->find_chain<EnumValue, EnumValues>(
       NamedContextPredicates::name<EnumValue>(namespaces.back().c_str()));
-
   if (value == nullptr) {
     return STATE_INVALID;
   }

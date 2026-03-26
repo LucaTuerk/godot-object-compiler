@@ -54,8 +54,12 @@ Ref<GeneratorError> GodotSignalGenerator::bind_signal(
                  "Failed to get or generate bind methods body.");
 
   Ref<Arguments> arguments;
-  bind_methods->add_child(
-      add_signal(p_target_class, p_signal_name, p_parameters, r_result));
+
+  Result<Function> signal_result =
+      add_signal(p_target_class, p_signal_name, p_parameters, r_result);
+  RESULT_ERROR_PASS_ON(GeneratorError, signal_result, signal);
+
+  bind_methods->add_child(signal);
 
   Ref<Parameters> func_parameters = node_new<Parameters>();
   Ref<Arguments> emit_arguments = node_new<Arguments>();

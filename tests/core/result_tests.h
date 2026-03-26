@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* parser_context.h                                                       */
+/* result_tests.h                                                         */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,45 +33,21 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "test_registry.h"
 
-#include "library/core/core.h"
-#include "library/tree/syntax/node.h"
+using namespace GodotObjectCompiler;
 
-namespace GodotObjectCompiler {
+GOC_TEST(Results) {
+  Ref<Node> node = node_new<Node>();
+  Ref<Error> error = node_new<Error>();
 
-class TreeSitterNode;
+  Result<Node> result = node;
+  GOC_TEST_ASSERT(result.has_result(), "");
+  GOC_TEST_EQ(result.get_result(), node, "");
 
-class Node;
-class Namespace;
-class Class;
-class Struct;
-class Function;
-class Field;
+  result = error;
+  GOC_TEST_ASSERT(result.has_error(), "");
+  GOC_TEST_EQ(result.get_error(), error, "");
 
-struct ParserContext {
-  using NodeID = const void*;
-
-  String file_path;
-  String original_buffer;
-  String buffer;
-  Ref<Context> current_target;
-  Ref<TreeSitterNode> src_root;
-  Ref<TreeSitterNode> current_src;
-  Dictionary<Size, String> stripped_parameters;
-  bool parse_attributes = true;
-
-  [[nodiscard]] bool is_valid() const;
-
-  ParserContext() = default;
-  explicit ParserContext(const String& input);
-
-  static ParserContext from_path(const String& p_path);
-
-  Result<TreeSitterNode> create_tree(TSTree* p_tree);
-  Ref<TreeSitterNode> create_node(TSNode p_ts_node);
-
- private:
-  bool _invalid = true;
+  return TEST_RESULT_SUCCESS;
 };
-
-}  // namespace GodotObjectCompiler

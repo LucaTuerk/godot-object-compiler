@@ -36,6 +36,7 @@
 
 #include "library/core/core.h"
 #include "library/core/reader_writer.h"
+#include "library/core/result.h"
 #include "library/execution_context.h"
 #include "library/node_db.h"
 
@@ -44,6 +45,7 @@ namespace GodotObjectCompiler {
 class Include;
 class Context;
 class Node;
+class Error;
 
 template <typename T>
 Ref<Node> default_construct();
@@ -123,6 +125,9 @@ class Node : public std::enable_shared_from_this<Node> {
   Ref<T> as();
 
   template <class T>
+  Result<T, Error> as_result();
+
+  template <class T>
   Ref<const T> const_as() const;
 
  private:
@@ -167,17 +172,6 @@ template <typename T>
 GodotObjectCompiler::Ref<GodotObjectCompiler::Node>
 GodotObjectCompiler::default_construct() {
   return ExecutionContext::instance()->get_node_db()->create<T>();
-}
-
-template <typename T>
-GodotObjectCompiler::Ref<T> GodotObjectCompiler::INodeReader::read_from_file(
-    const String& p_path) {
-  Ref<Node> result = read_from_file(p_path);
-  if (!result) {
-    return nullptr;
-  }
-
-  return result->template as<T>();
 }
 
 #define NODE_TYPE(type)                                                       \

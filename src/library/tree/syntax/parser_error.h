@@ -71,6 +71,9 @@ class GeneratorError : public Error {
   explicit GeneratorError(ErrorLevel level, const String& message)
       : Error(level, message) {}
 
+  GeneratorError(const Ref<Error>& p_error)
+      : Error(p_error->error_level, p_error->message) {}
+
   explicit GeneratorError(ErrorLevel level, const String& generator_name,
                           const String& message, Ref<Node> node);
 
@@ -93,5 +96,33 @@ class ParserError : public Error {
 
   static inline const Ref<ParserError> OK = nullptr;
 };
+
+#define ERROR_CAST(type, error)          \
+  (error->is<type>() ? error->as<type>() \
+                     : node_new<type>(error->error_level, error->message))
+
+#define ERROR(...) \
+  return node_new<Error>(ErrorLevel::ERROR, format(__VA_ARGS__));
+
+#define ERROR_COND(condition, ...) \
+  if (condition) {                 \
+    ERROR(__VA_ARGS__);            \
+  }
+
+template <typename T>
+Result<T> INodeReader::read_from_file(const String& p_path) {
+  Result<Node> result = read_from_file(p_path);
+  if (result.has_error()) {
+    return result.get_error();
+  }
+
+  Ref<T> node = result.get_result()->as<T>();
+  if (node == nullptr) {
+    ERROR("Node read from file has invalid type. Expected %s but got %s",
+          T::get_type_static().c_str(),
+          result.get_result()->get_type().c_str());
+  }
+  return node;
+}
 
 }  // namespace GodotObjectCompiler
