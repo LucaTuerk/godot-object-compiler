@@ -81,11 +81,12 @@ ParserStep FieldHandler::handle(const Ref<TreeSitterNode>& p_current_src,
 ParserStep FieldHandler::handle_known_attribute(
     const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target,
     const String& macro) {
-  Ref<Attribute> attribute =
+  Result<Attribute> attribute_result =
       ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
-  HANDLER_ERROR_COND(!attribute,
+  HANDLER_ERROR_COND(attribute_result.has_error(),
                      "Failed to create attribute for known macro %s",
                      macro.c_str());
+  Ref<Attribute> attribute = attribute_result.get_result();
 
   current_target->add_child(attribute);
   attribute->start = current_src->start_byte;

@@ -35,6 +35,7 @@
 #pragma once
 #include "core/assumption.h"
 #include "core/core.h"
+#include "core/result.h"
 #include "library/tree/syntax/context.h"
 #include "tree/syntax/attribute.h"
 #include "tree/syntax/type.h"
@@ -52,7 +53,7 @@ class ConfigNodeReaderWriter : public INodeReader, public INodeWriter {
  public:
   bool write_to_file(Ref<Node> node, const String& path) override;
 
-  Ref<Node> read_from_file(const String& path) override;
+  Result<Node> read_from_file(const String& path) override;
 };
 
 template <typename T>
@@ -90,30 +91,30 @@ class TypeDB : public IAssumptionValidator<AssumeType<Enum>>,
                            const Ref<Attribute>& p_attribute,
                            const String& p_generated_from) const;
 
-  Ref<Node> get_type_data(const String& qualified_name,
-                          Size template_parameter_count = 0,
-                          const Ref<Namespace>& from_namespace = nullptr);
+  Result<Node> get_type_data(const String& qualified_name,
+                             Size template_parameter_count = 0,
+                             const Ref<Namespace>& from_namespace = nullptr);
 
-  Ref<Attribute> get_type_attribute(
+  Result<Attribute> get_type_attribute(
       const String& p_qualified_name, const String& p_attribute_name,
       Size p_template_parameter_count = 0,
       const Ref<Namespace>& p_from_namespace = nullptr);
 
-  Ref<Node> get_type_data(const Ref<Type>& type,
+  Result<Node> get_type_data(const Ref<Type>& type,
+                             const Ref<Namespace>& from_namespace = nullptr);
+
+  template <typename T>
+  Result<T> get_type_data(const String& qualified_name,
+                          Size template_parameter_count = 0,
                           const Ref<Namespace>& from_namespace = nullptr);
 
   template <typename T>
-  Ref<T> get_type_data(const String& qualified_name,
-                       Size template_parameter_count = 0,
-                       const Ref<Namespace>& from_namespace = nullptr);
+  Result<T> get_type_data(const Ref<Type>& type,
+                          const Ref<Namespace>& from_namespace = nullptr);
 
   template <typename T>
-  Ref<T> get_type_data(const Ref<Type>& type,
-                       const Ref<Namespace>& from_namespace = nullptr);
-
-  template <typename T>
-  Ref<T> get_type_attribute(const Ref<Type>& type,
-                            const Ref<Namespace>& from_namespace = nullptr);
+  Result<T> get_type_attribute(const Ref<Type>& type,
+                               const Ref<Namespace>& from_namespace = nullptr);
 
   template <typename T>
   AssumptionState validate_t(Assumption<AssumeType<T>>& type_assumption);
@@ -146,16 +147,16 @@ class TypeDB : public IAssumptionValidator<AssumeType<Enum>>,
 
   enum class CacheType { READONLY_CACHE, READWRITE_CACHE };
 
-  Ref<Node> _get_type_data(const String& p_qualified_name,
-                           Size template_parameter_count,
-                           const Ref<Namespace>& p_from_namespace,
-                           CacheType p_cache_type);
+  Result<Node> _get_type_data(const String& p_qualified_name,
+                              Size template_parameter_count,
+                              const Ref<Namespace>& p_from_namespace,
+                              CacheType p_cache_type);
 
-  Ref<Attribute> _get_type_attribute(const String& p_qualified_name,
-                                     const String& p_attribute_name,
-                                     Size p_template_parameter_count,
-                                     const Ref<Namespace>& p_from_namespace,
-                                     CacheType cache_type);
+  Result<Attribute> _get_type_attribute(const String& p_qualified_name,
+                                        const String& p_attribute_name,
+                                        Size p_template_parameter_count,
+                                        const Ref<Namespace>& p_from_namespace,
+                                        CacheType cache_type);
 
   [[nodiscard]] String _get_cache_file_path(
       const String& p_qualified_name, CacheType p_cache_type,
@@ -174,52 +175,50 @@ class TypeDB : public IAssumptionValidator<AssumeType<Enum>>,
 };
 
 template <typename T>
-Ref<T> TypeDB::get_type_data(const String& qualified_name,
-                             Size template_parameter_count,
-                             const Ref<Namespace>& from_namespace) {
-  Ref<Node> result =
+Result<T> TypeDB::get_type_data(const String& qualified_name,
+                                Size template_parameter_count,
+                                const Ref<Namespace>& from_namespace) {
+  Result<Node> result =
       get_type_data(qualified_name, template_parameter_count, from_namespace);
-  if (!result) {
-    return nullptr;
-  }
-
-  return result->as<T>();
+  RESULT_ERROR_PASS_ON(Error, result, node);
+  ERROR_COND(!node->is<T>(), "Invalid type. Expected \"%s\" but is \"%s\"",
+             T::get_type_static().c_str(), node->get_type().c_str());
+  return node->as<T>();
 }
 
 template <typename T>
-Ref<T> TypeDB::get_type_data(const Ref<Type>& type,
-                             const Ref<Namespace>& from_namespace) {
-  Ref<Node> result = get_type_data(type, from_namespace);
-  if (!result) {
-    return nullptr;
-  }
-  return result->as<T>();
+Result<T> TypeDB::get_type_data(const Ref<Type>& type,
+                                const Ref<Namespace>& from_namespace) {
+  Result<Node> result = get_type_data(type, from_namespace);
+  RESULT_ERROR_PASS_ON(Error, result, node);
+  ERROR_COND(!node->is<T>(), "Invalid type. Expected \"%s\" but is \"%s\"",
+             T::get_type_static().c_str(), node->get_type().c_str());
+  return node->as<T>();
 }
 
 template <typename T>
-Ref<T> TypeDB::get_type_attribute(const Ref<Type>& type,
-                                  const Ref<Namespace>& from_namespace) {
-  Ref<Attribute> result =
+Result<T> TypeDB::get_type_attribute(const Ref<Type>& type,
+                                     const Ref<Namespace>& from_namespace) {
+  Result<Attribute> result =
       get_type_attribute(type->qualified_name(), T::get_type_static(),
                          type->template_argument_count(), from_namespace);
-  if (!result) {
-    return nullptr;
-  }
-
-  return result->as<T>();
+  RESULT_ERROR_PASS_ON(Error, result, node);
+  ERROR_COND(!node->is<T>(), "Invalid type. Expected \"%s\" but is \"%s\"",
+             T::get_type_static().c_str(), node->get_type().c_str());
+  return node->as<T>();
 }
 
 template <typename T>
 AssumptionState TypeDB::validate_t(Assumption<AssumeType<T>>& type_assumption) {
   AssumeType<T>& value =
       UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(type_assumption);
-  Ref<T> result = get_type_data<T>(value.name, value.template_parameter_count);
-
-  if (!result) {
+  Result<T> result =
+      get_type_data<T>(value.name, value.template_parameter_count);
+  if (result.has_error()) {
     return STATE_INVALID;
   }
 
-  value.type = result;
+  value.type = result.get_result();
   return STATE_VALID;
 }
 

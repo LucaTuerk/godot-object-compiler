@@ -42,6 +42,9 @@ class PropertiesEmitChanged : public Node {
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY(EmitChanged());
+  Variant variant_property;
+
+  GODOT_PROPERTY(EmitChanged());
   AABB aabb_property;
 
   GODOT_PROPERTY(EmitChanged());

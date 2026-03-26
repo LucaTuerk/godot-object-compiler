@@ -118,9 +118,9 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(
   Ref<Context> generated_public_members, generated_protected_members,
       generated_private_members;
   GEN_ERROR_COND(GodotGeneratorUtils::unzip_generated_body(
-                     p_generated_body, &generated_public_members,
-                     &generated_protected_members,
-                     &generated_private_members) != GeneratorError::OK,
+                     p_generated_body, generated_public_members,
+                     generated_protected_members,
+                     generated_private_members) != GeneratorError::OK,
                  p_target_class, "Failed to find generated body groups");
 
   const Vector<String> parameter_names =
@@ -218,9 +218,9 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
   Ref<Context> generated_public_members, generated_protected_members,
       generated_private_members;
   GEN_ERROR_COND(GodotGeneratorUtils::unzip_generated_body(
-                     p_generated_body, &generated_public_members,
-                     &generated_protected_members,
-                     &generated_private_members) != GeneratorError::OK,
+                     p_generated_body, generated_public_members,
+                     generated_protected_members,
+                     generated_private_members) != GeneratorError::OK,
                  p_target_class, "Failed to find generated body groups");
 
   Vector<String> parameter_names = vector_transform<Ref<Parameter>, String>(

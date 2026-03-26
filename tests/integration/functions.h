@@ -44,6 +44,7 @@ GOC_INTEGRATION_TEST(GenerateFunctionBinds) {
   GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/functions.h");
 
   GOC_ASSERT_QUALIFIED_NAME("Tests::Functions", generated_source);
+  GOC_ASSERT_FUNC_BOUND("variant_function");
   GOC_ASSERT_FUNC_BOUND("aabb_function");
   GOC_ASSERT_FUNC_BOUND("array_function");
   GOC_ASSERT_FUNC_BOUND("typed_array_function");

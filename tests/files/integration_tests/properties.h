@@ -42,6 +42,9 @@ class Properties : public Node {
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY();
+  Variant variant_property;
+
+  GODOT_PROPERTY();
   AABB aabb_property;
 
   GODOT_PROPERTY();

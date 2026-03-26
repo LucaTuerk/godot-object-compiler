@@ -35,6 +35,7 @@
 #include "library/parser/parser_context.h"
 
 #include "library/core/file_system_utilities.h"
+#include "library/core/result.h"
 #include "library/parser/parser.h"
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/all.h"
@@ -72,11 +73,10 @@ ParserContext ParserContext::from_path(const String& p_path) {
   return result;
 }
 
-Ref<TreeSitterNode> ParserContext::create_tree(TSTree* p_tree) {
+Result<TreeSitterNode> ParserContext::create_tree(TSTree* p_tree) {
   TSNode ts_root = ts_tree_root_node(p_tree);
-  if (ts_node_is_null(ts_root)) {
-    return nullptr;
-  }
+  ERROR_COND(ts_node_is_null(ts_root),
+             "Root node is null in parsed TreeSitter tree.");
 
   return create_node(ts_root);
 }

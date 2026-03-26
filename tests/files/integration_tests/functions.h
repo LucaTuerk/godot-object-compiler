@@ -43,6 +43,9 @@ class Functions : Node {
   GODOT_GENERATED_BODY();
 
   GODOT_FUNCTION();
+  Variant variant_function();
+
+  GODOT_FUNCTION();
   AABB aabb_function();
 
   GODOT_FUNCTION();

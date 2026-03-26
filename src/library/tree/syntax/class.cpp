@@ -67,10 +67,11 @@ Vector<Ref<Class>> Class::_base_classes_lazy_get() {
 
   Vector<Ref<Class>> result;
   for (const Ref<Type>& type : bases->find_children<Type>()) {
-    if (Ref<Class> base_class =
+    if (Result<Class, Error> base_class_result =
             ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
-                type, this->as<Class>())) {
-      result.push_back(base_class);
+                type, this->as<Class>());
+        base_class_result.has_result()) {
+      result.push_back(base_class_result.get_result());
     }
   }
 

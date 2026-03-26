@@ -100,9 +100,12 @@ bool GodotMacroIncludeGenerator::generate_macros(
       }
     }
 
-    Ref<Attribute> attr =
+    Result<Attribute> attr_result =
         ExecutionContext::instance()->get_attribute_db()->create_for_macro(
             macro);
+    PANIC_COND(attr_result.has_error(), "Failed to create macro attribute");
+    Ref<Attribute> attr = attr_result.get_result();
+
     if (attr->is<GeneratedBodyAttribute>() ||
         attr->is<GeneratedGlobalAttribute>()) {
       p_write_to->add_child(
@@ -320,9 +323,6 @@ Ref<Context> GodotMacroIncludeGenerator::generate(Ref<Context> p_tree,
   HashSet<String> generated_param_types;
   for (const String& macro :
        ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
-    Ref<Attribute> attribute =
-        ExecutionContext::instance()->get_attribute_db()->create_for_macro(
-            macro);
     Vector<Ref<IAttributeParameterType>> params =
         ExecutionContext::instance()
             ->get_attribute_db()

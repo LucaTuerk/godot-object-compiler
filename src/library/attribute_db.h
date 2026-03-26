@@ -80,7 +80,7 @@ class AttributeDB {
 
   bool is_known_macro(const String& p_macro);
 
-  Ref<Attribute> create_for_macro(const String& p_macro);
+  Result<Attribute> create_for_macro(const String& p_macro);
 
   Vector<Ref<IAttributeParameterType>> get_parameters_for_macro(
       const String& p_macro);

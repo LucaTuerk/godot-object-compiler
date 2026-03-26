@@ -47,9 +47,8 @@ Ref<Node> Node::clone() const {
   if (Ref<Node> new_node = create(); copy_to(new_node)) {
     new_node->_tag = _tag;
     return new_node;
-  } else {
-    return nullptr;
   }
+  PANIC("Failed to clone node of type %s", get_type().c_str());
 }
 
 void Node::write_to(IStructuredWriter* p_writer) {

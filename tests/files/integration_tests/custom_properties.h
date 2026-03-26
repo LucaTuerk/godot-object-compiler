@@ -42,6 +42,11 @@ GODOT_CLASS();
 class A : public Node {
   GODOT_GENERATED_BODY();
 
+  GODOT_PROPERTY("variant_property",
+                 GetSet("get_variant_property", "set_variant_property"));
+  Variant get_variant_property() const;
+  void set_variant_property(const Variant& p_value);
+
   GODOT_PROPERTY("aabb_property",
                  GetSet("get_aabb_property", "set_aabb_property"));
   AABB get_aabb_property() const;

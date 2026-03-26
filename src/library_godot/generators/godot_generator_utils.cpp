@@ -97,13 +97,14 @@ String GodotGeneratorUtils::type_name_remove_usings(String p_typename) {
 bool GodotGeneratorUtils::get_type_header(Ref<Type> p_type,
                                           Ref<Namespace> p_from_namespace,
                                           String& r_header) {
-  if (Ref<NamedContext> type_data =
-          ExecutionContext::instance()
-              ->get_type_db()
-              ->get_type_data<NamedContext>(p_type, p_from_namespace);
-      type_data) {
-    r_header = type_data->header;
+  Result<NamedContext> type_result =
+      ExecutionContext::instance()->get_type_db()->get_type_data<NamedContext>(
+          p_type, p_from_namespace);
+  if (type_result.has_result()) {
+    r_header = type_result.get_result()->header;
     return !r_header.empty();
+  } else {
+    type_result.get_error()->set_handled();
   }
   r_header = "";
   return false;
@@ -114,7 +115,7 @@ Ref<Type> GodotGeneratorUtils::const_ref(const String& p_type_name) {
       {build<Const>(), build<Identifier>(p_type_name), build<Reference>()});
 }
 
-Ref<Function> GodotGeneratorUtils::add_signal(
+Result<Function> GodotGeneratorUtils::add_signal(
     const Ref<Class>& p_target_class, const String& p_signal_name,
     const Ref<Parameters>& p_parameters, ClassGeneratorResult& r_result) {
   Ref<Arguments> arguments;
@@ -136,19 +137,16 @@ Ref<Function> GodotGeneratorUtils::add_signal(
   for (const Ref<Parameter>& parameter :
        p_parameters->find_children<Parameter>()) {
     Ref<Type> type = parameter->find_child<Type>();
-    if (!type) {
-      return nullptr;
-    }
+    ERROR_COND(type == nullptr, "Failed to find type for signal parameter.");
 
     type = type->qualified();
     Ref<Identifier> identifier = parameter->find_child<Identifier>();
     String name = identifier ? identifier->name : format("p_param_%d", i);
 
-    Ref<Node> property_info = build_property_info_defaults(
+    Result<Node> property_info_result = build_property_info_defaults(
         type, name, r_result, p_target_class, DEFAULTS_SIGNAL_ARGUMENT);
-    if (!property_info) {
-      return nullptr;
-    }
+    RESULT_ERROR_PASS_ON(Error, property_info_result, property_info);
+
     arguments->build_child<Argument>().with_child(property_info);
     i += 1;
   }
@@ -271,8 +269,9 @@ Ref<Function> GodotGeneratorUtils::bind_static_method(
 Ref<Body> GodotGeneratorUtils::get_bind_methods_body(
     const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
     const Ref<Context>& p_generated_sources) {
-  Ref<Context> public_members;
-  unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+  Ref<Context> public_members, _protected_members, _private_members;
+  unzip_generated_body(p_generated_body, public_members, _protected_members,
+                       _private_members);
   PANIC_COND(!public_members, "Failed to get public members group.");
 
   bool bind_methods_defined =
@@ -309,8 +308,9 @@ Ref<Body> GodotGeneratorUtils::get_bind_methods_body(
 Ref<Body> GodotGeneratorUtils::get_notification_body(
     const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
     const Ref<Context>& p_generated_sources) {
-  Ref<Context> public_members;
-  unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+  Ref<Context> public_members, _protected_members, _private_members;
+  unzip_generated_body(p_generated_body, public_members, _protected_members,
+                       _private_members);
   PANIC_COND(!public_members, "Failed to get public members group.");
 
   bool notification_defined =
@@ -357,8 +357,9 @@ Ref<Body> GodotGeneratorUtils::get_notification_body(
 Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
     const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
     const Ref<Context>& p_generated_sources) {
-  Ref<Context> public_members;
-  unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+  Ref<Context> public_members, _protected_members, _private_members;
+  unzip_generated_body(p_generated_body, public_members, _protected_members,
+                       _private_members);
   PANIC_COND(!public_members, "Failed to get public members group.");
 
   bool get_property_list_defined =
@@ -419,8 +420,9 @@ Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
 
 Ref<Body> GodotGeneratorUtils::get_function_names_body(
     const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
-  Ref<Context> public_members;
-  unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+  Ref<Context> public_members, _protected_members, _private_members;
+  unzip_generated_body(p_generated_body, public_members, _protected_members,
+                       _private_members);
   PANIC_COND(!public_members, "Failed to get public members group.");
 
   Ref<Struct> function_names = public_members->find_child(
@@ -429,16 +431,20 @@ Ref<Body> GodotGeneratorUtils::get_function_names_body(
 
   if (!function_names) {
     auto base_names = p_target_class->direct_bases_names();
-    if (base_names.size() == 1 &&
+    auto type_result =
         ExecutionContext::instance()->get_type_db()->get_type_attribute(
             base_names[0], GodotClassAttribute::get_type_static(), 0,
-            p_target_class) != nullptr) {
+            p_target_class);
+    if (base_names.size() == 1 && type_result.has_result()) {
       public_members->build_child<Struct>().with_children(
           {build<Identifier>("FunctionNames"),
            build<BaseClasses>().with_child(build<Type>().with_child<Identifier>(
                base_names[0] + "::FunctionNames")),
            build_ref<Body>(&function_names_body)});
     } else {
+      if (type_result.has_error()) {
+        type_result.get_error()->set_handled();
+      }
       public_members->build_child<Struct>().with_children(
           {build<Identifier>("FunctionNames"),
            build_ref<Body>(&function_names_body)});
@@ -453,8 +459,9 @@ Ref<Body> GodotGeneratorUtils::get_function_names_body(
 
 Ref<Body> GodotGeneratorUtils::get_property_names_body(
     const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
-  Ref<Context> public_members;
-  unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+  Ref<Context> public_members, _protected_members, _private_members;
+  unzip_generated_body(p_generated_body, public_members, _protected_members,
+                       _private_members);
   PANIC_COND(!public_members, "Failed to get public members group.");
 
   Ref<Struct> property_names = public_members->find_child(
@@ -462,16 +469,21 @@ Ref<Body> GodotGeneratorUtils::get_property_names_body(
   Ref<Body> property_names_body;
   if (!property_names) {
     auto base_names = p_target_class->direct_bases_names();
-    if (base_names.size() == 1 &&
+    auto type_result =
         ExecutionContext::instance()->get_type_db()->get_type_attribute(
             base_names[0], GodotClassAttribute::get_type_static(), 0,
-            p_target_class) != nullptr) {
+            p_target_class);
+    if (base_names.size() == 1 && type_result.has_result()) {
       public_members->build_child<Struct>().with_children(
           {build<Identifier>("PropertyNames"),
            build<BaseClasses>().with_child(build<Type>().with_child<Identifier>(
                base_names[0] + "::PropertyNames")),
            build_ref<Body>(&property_names_body)});
     } else {
+      if (type_result.has_error()) {
+        type_result.get_error()->set_handled();
+      }
+
       public_members->build_child<Struct>().with_children(
           {build<Identifier>("PropertyNames"),
            build_ref<Body>(&property_names_body)});
@@ -486,8 +498,9 @@ Ref<Body> GodotGeneratorUtils::get_property_names_body(
 
 Ref<Body> GodotGeneratorUtils::get_signal_names_body(
     const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body) {
-  Ref<Context> public_members;
-  unzip_generated_body(p_generated_body, &public_members, nullptr, nullptr);
+  Ref<Context> public_members, _protected_members, _private_members;
+  unzip_generated_body(p_generated_body, public_members, _protected_members,
+                       _private_members);
   PANIC_COND(!public_members, "Failed to get public members group.");
 
   Ref<Struct> signal_names = public_members->find_child(
@@ -495,16 +508,21 @@ Ref<Body> GodotGeneratorUtils::get_signal_names_body(
   Ref<Body> signal_names_body;
   if (!signal_names) {
     auto base_names = p_target_class->direct_bases_names();
-    if (base_names.size() == 1 &&
+    auto type_result =
         ExecutionContext::instance()->get_type_db()->get_type_attribute(
             base_names[0], GodotClassAttribute::get_type_static(), 0,
-            p_target_class) != nullptr) {
+            p_target_class);
+    if (base_names.size() == 1 && type_result.has_result()) {
       public_members->build_child<Struct>().with_children(
           {build<Identifier>("SignalNames"),
            build<BaseClasses>().with_child(build<Type>().with_child<Identifier>(
                base_names[0] + "::SignalNames")),
            build_ref<Body>(&signal_names_body)});
     } else {
+      if (type_result.has_error()) {
+        type_result.get_error()->set_handled();
+      }
+
       public_members->build_child<Struct>().with_children(
           {build<Identifier>("SignalNames"),
            build_ref<Body>(&signal_names_body)});
@@ -541,26 +559,20 @@ Ref<Body> GodotGeneratorUtils::get_if_body(const Ref<Context>& p_target,
 }
 
 Ref<GeneratorError> GodotGeneratorUtils::unzip_generated_body(
-    const Ref<Context>& p_generated_body, Ref<Context>* r_public_members,
-    Ref<Context>* r_protected_members, Ref<Context>* r_private_members) {
-  if (r_public_members != nullptr) {
-    *r_public_members = p_generated_body->find_child(
-        0, NodePredicates::tag<Context>("public_members"));
-    GEN_ERROR_COND(!r_public_members, p_generated_body,
-                   "Failed to get public members group");
-  }
-  if (r_protected_members != nullptr) {
-    *r_protected_members = p_generated_body->find_child(
-        0, NodePredicates::tag<Context>("protected_members"));
-    GEN_ERROR_COND(!r_protected_members, p_generated_body,
-                   "Failed to get protected members group");
-  }
-  if (r_private_members != nullptr) {
-    *r_private_members = p_generated_body->find_child(
-        0, NodePredicates::tag<Context>("private_members"));
-    GEN_ERROR_COND(!r_private_members, p_generated_body,
-                   "Failed to get private members group");
-  }
+    const Ref<Context>& p_generated_body, Ref<Context>& r_public_members,
+    Ref<Context>& r_protected_members, Ref<Context>& r_private_members) {
+  r_public_members = p_generated_body->find_child(
+      0, NodePredicates::tag<Context>("public_members"));
+  GEN_ERROR_COND(r_public_members == nullptr, p_generated_body,
+                 "Failed to get public members group");
+  r_protected_members = p_generated_body->find_child(
+      0, NodePredicates::tag<Context>("protected_members"));
+  GEN_ERROR_COND(r_protected_members == nullptr, p_generated_body,
+                 "Failed to get protected members group");
+  r_private_members = p_generated_body->find_child(
+      0, NodePredicates::tag<Context>("private_members"));
+  GEN_ERROR_COND(r_private_members == nullptr, p_generated_body,
+                 "Failed to get private members group");
 
   return GeneratorError::OK;
 }
@@ -626,15 +638,16 @@ bool GodotGeneratorUtils::class_has_base_class(
 
   // TODO: this will not work if the base class name is not fully qualified
   for (const String& base : p_target_class->direct_bases_names()) {
-    Ref<Class> base_class =
+    Result<Class> base_result =
         ExecutionContext::instance()->get_type_db()->get_type_data<Class>(base);
-    if (!base_class) {
+    if (base_result.has_error()) {
       fmt_print_err("%s: Base class \"%s\" not found!",
                     p_target_class->name().c_str(), base.c_str());
       return false;
     }
 
-    return class_has_base_class(base_class, p_base_class_qualified);
+    return class_has_base_class(base_result.get_result(),
+                                p_base_class_qualified);
   }
 
   return false;
@@ -709,7 +722,7 @@ bool GodotGeneratorUtils::get_defaults_for_type(
           value->literal()->content.c_str()));
     }
 
-    Ref<GodotEnumAttribute> attribute =
+    Result<GodotEnumAttribute> attribute_result =
         ExecutionContext::instance()
             ->get_type_db()
             ->get_type_attribute<GodotEnumAttribute>(p_target_type,
@@ -717,10 +730,11 @@ bool GodotGeneratorUtils::get_defaults_for_type(
 
     bool is_flags = false;
 
-    if (attribute) {
+    if (attribute_result.has_result()) {
       if (const Ref<Identifier> argument_identifier =
-              attribute->find_chain<Identifier, Arguments,
-                                    EnumGeneratorOptionsArgument>()) {
+              attribute_result.get_result()
+                  ->find_chain<Identifier, Arguments,
+                               EnumGeneratorOptionsArgument>()) {
         is_flags = argument_identifier->name ==
                    EnumGeneratorOptionsArgument::EnumFlags;
       }
@@ -879,26 +893,28 @@ bool GodotGeneratorUtils::type_is_godot_typed_dictionary_type(
 
 bool GodotGeneratorUtils::type_is_ref_counted_type(
     const Ref<Type>& p_inner_type, const Ref<Namespace>& p_from_namespace) {
-  const Ref<Class> _class =
+  const Result<Class> class_result =
       ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
           p_inner_type->type_name_unmodified(), 0, p_from_namespace);
-  if (!_class) {
+  if (class_result.has_error()) {
+    class_result.get_error()->set_handled();
     return false;
   }
 
-  return class_is_ref_counted_type(_class);
+  return class_is_ref_counted_type(class_result.get_result());
 }
 
 bool GodotGeneratorUtils::type_is_object_type(
-    const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace) {
-  const Ref<Class> _class =
+    const Ref<Type>& p_inner_type, const Ref<Namespace>& p_from_namespace) {
+  const Result<Class> class_result =
       ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
-          p_target_type->type_name_unmodified(), 0, p_from_namespace);
-  if (!_class) {
+          p_inner_type->type_name_unmodified(), 0, p_from_namespace);
+  if (class_result.has_error()) {
+    class_result.get_error()->set_handled();
     return false;
   }
 
-  return class_is_godot_object_type(_class);
+  return class_is_godot_object_type(class_result.get_result());
 }
 
 bool GodotGeneratorUtils::type_is_godot_collection_type(
@@ -917,27 +933,29 @@ bool GodotGeneratorUtils::type_is_godot_collection_type(
 
 bool GodotGeneratorUtils::type_is_node_type(
     const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace) {
-  const Ref<Class> _class =
+  const Result<Class> class_result =
       ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
           p_target_type->type_name_unmodified(), 0, p_from_namespace);
-  if (!_class) {
+  if (class_result.has_error()) {
+    class_result.get_error()->set_handled();
     return false;
   }
 
-  return class_is_node_type(_class);
+  return class_is_node_type(class_result.get_result());
 }
 
 bool GodotGeneratorUtils::type_is_enum_type(
     const Ref<Type>& p_target_type, Ref<Enum>& p_enum_object,
     const Ref<Namespace>& p_from_namespace) {
-  const Ref<Enum> _enum =
+  const Result<Enum> enum_result =
       ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(
           p_target_type->type_name_unmodified(), 0, p_from_namespace);
-  if (!_enum) {
+  if (enum_result.has_error()) {
+    enum_result.get_error()->set_handled();
     p_enum_object = nullptr;
     return false;
   }
-  p_enum_object = _enum;
+  p_enum_object = enum_result.get_result();
   return true;
 }
 
@@ -1089,7 +1107,7 @@ Ref<Node> GodotGeneratorUtils::build_property_info(
        })});
 }
 
-Ref<Node> GodotGeneratorUtils::build_property_info_defaults(
+Result<Node> GodotGeneratorUtils::build_property_info_defaults(
     const Ref<Type>& p_type, const String& p_property_name,
     ClassGeneratorResult& r_result, const Ref<Namespace>& p_from_namespace,
     DefaultsUsage p_usage) {
@@ -1099,7 +1117,7 @@ Ref<Node> GodotGeneratorUtils::build_property_info_defaults(
 
   if (!get_defaults_for_type(p_type, variant_type, property_hint, usage_flags,
                              p_from_namespace, p_usage)) {
-    return nullptr;
+    ERROR("Failed to get default property info.")
   }
 
   return build_property_info(variant_type, property_hint, {usage_flags},

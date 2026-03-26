@@ -35,6 +35,7 @@
 
 #pragma once
 #include "library/core/core.h"
+#include "library/core/result.h"
 #include "library/generator/generator.h"
 #include "library/tree/syntax/namespace.h"
 #include "library/tree/syntax/type.h"
@@ -63,10 +64,10 @@ bool get_type_header(Ref<Type> p_type, Ref<Namespace> p_from_namespace,
 
 Ref<Type> const_ref(const String& p_type_name);
 
-Ref<Function> add_signal(const Ref<Class>& p_target_class,
-                         const String& p_signal_name,
-                         const Ref<Parameters>& p_parameters,
-                         ClassGeneratorResult& r_result);
+Result<Function> add_signal(const Ref<Class>& p_target_class,
+                            const String& p_signal_name,
+                            const Ref<Parameters>& p_parameters,
+                            ClassGeneratorResult& r_result);
 
 Ref<Function> emit_signal(const String& p_signal_name,
                           const Ref<Arguments>& p_arguments);
@@ -114,9 +115,9 @@ Ref<Context> get_include_section(const Ref<Context>& p_target);
 Ref<Body> get_if_body(const Ref<Context>& p_target, const String& condition);
 
 Ref<GeneratorError> unzip_generated_body(const Ref<Context>& p_generated_body,
-                                         Ref<Context>* r_public_members,
-                                         Ref<Context>* r_protected_members,
-                                         Ref<Context>* r_private_members);
+                                         Ref<Context>& r_public_members,
+                                         Ref<Context>& r_protected_members,
+                                         Ref<Context>& r_private_members);
 
 bool check_is_valid_named_argument(const Ref<Node>& p_node, String& p_name);
 
@@ -210,7 +211,7 @@ Ref<Node> build_property_info(
     const Ref<GodotVariantTypeArgument>& p_variant_type,
     const String& p_property_name, ClassGeneratorResult& r_result);
 
-Ref<Node> build_property_info_defaults(
+Result<Node> build_property_info_defaults(
     const Ref<Type>& p_type, const String& p_property_name,
     ClassGeneratorResult& r_result, const Ref<Namespace>& p_from_namespace,
     DefaultsUsage p_usage = DEFAULTS_PROPERTY_BINDING);
