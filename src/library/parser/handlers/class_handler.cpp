@@ -63,7 +63,7 @@ ParserStep ClassHandler::handle(const Ref<TreeSitterNode>& p_current_src,
     }
 
     Ref<Node> previous_node = r_current_target->get_child(-1);
-    r_current_target = r_current_target->build_child<Class>();
+    r_current_target = r_current_target->B<Class>();
     r_current_target->create_child<Identifier>(identifier->content());
     identifier->set_handled();
     if (previous_node && previous_node->is<TemplateParameters>()) {
@@ -72,7 +72,7 @@ ParserStep ClassHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   }
 
   if (p_current_src->type == "base_class_clause") {
-    r_current_target = r_current_target->build_child<BaseClasses>();
+    r_current_target = r_current_target->B<BaseClasses>();
   }
 
   return ParserStep::StepInto();

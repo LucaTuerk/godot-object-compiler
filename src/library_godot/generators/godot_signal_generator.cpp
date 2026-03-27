@@ -74,25 +74,24 @@ Ref<GeneratorError> GodotSignalGenerator::bind_signal(
     Ref<Identifier> identifier = parameter->find_child<Identifier>();
     String name = identifier ? identifier->name : format("p_param_%d", i);
 
-    func_parameters->build_child<Parameter>().with_children({
+    func_parameters->B<Parameter>()[{
         type->clone(),
-        build<Identifier>(name),
-    });
+        B<Identifier>(name),
+    }];
 
-    emit_arguments->build_child<Argument>().with_children({
-        build<Identifier>(name),
-    });
+    emit_arguments->B<Argument>()[{
+        B<Identifier>(name),
+    }];
 
     i += 1;
   }
 
-  p_generated_sources->build_child<Function>().with_children({
-      build<Type>().with_child<Identifier>("void"),
-      build<Identifier>(p_target_class->qualified_name() +
-                        "::" + p_signal_name),
+  p_generated_sources->B<Function>()[{
+      B<Type>()[B<Identifier>("void")],
+      B<Identifier>(p_target_class->qualified_name() + "::" + p_signal_name),
       func_parameters,
-      build<Body>().with_child(emit_signal(p_signal_name, emit_arguments)),
-  });
+      B<Body>()[emit_signal(p_signal_name, emit_arguments)],
+  }];
 
   const Ref<Body> signal_names_body =
       get_signal_names_body(p_target_class, p_generated_body);
@@ -113,8 +112,7 @@ GodotSignalGenerator::do_generate_default_attribute_arguments(
     Ref<Context> p_default_values) {
   UNUSED(p_target_class);
   UNUSED(p_attribute);
-  p_default_values->add_children(
-      {build<StringLiteralArgument>().with_child<Literal>("")});
+  p_default_values->add_children({B<StringLiteralArgument>()[B<Literal>("")]});
   return GeneratorError::OK;
 }
 

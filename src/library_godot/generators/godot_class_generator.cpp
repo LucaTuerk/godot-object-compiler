@@ -84,17 +84,14 @@ Ref<GeneratorError> GodotClassGenerator::generate_initialization(
     Ref<Body> if_body;
     const Ref<Context> if_clause = Output::Spaces(
         {Output::Text(format("if (p_level == %s) ", godot_init_level.c_str())),
-         build_ref<Body>(&if_body)});
+         R<Body>(&if_body)});
     if_clause->set_tag(p_target_class->first_base_qualifed_name());
 
-    if_body->add_child(
-        build<Function>()
-            .with_children({
-                build<Identifier>(godot_registration_macro),
-                build<Arguments>().with_child(build<Argument>().with_child(
-                    Output::Text(p_target_class->qualified_name()))),
-            })
-            .with_child(Output::Semicolon()));
+    if_body->B<Function>()[{
+        B<Identifier>(godot_registration_macro),
+        B<Arguments>()[B<Argument>()[Output::Text(
+            p_target_class->qualified_name())]],
+    }][Output::Semicolon()];
 
     Ref<Node> first_inheritor = p_initialize_content->find_child(
         0, NodePredicates::tag<Node>(p_target_class->qualified_name().c_str()));
@@ -115,12 +112,10 @@ GodotClassGenerator::do_generate_default_attribute_arguments(
   UNUSED(p_target_class);
   UNUSED(p_attribute);
   p_default_values->add_children(
-      {build<GodotModuleInitializationLevelArgument>()
-           .with_child<Identifier>(AssumedParameterValues::LevelScene())
-           .with_child<Arguments>(),
-       build<GodotClassTypeArgument>()
-           .with_child<Identifier>(AssumedParameterValues::GodotClass())
-           .with_child<Arguments>()});
+      {B<GodotModuleInitializationLevelArgument>()[B<Identifier>(
+           AssumedParameterValues::LevelScene())][B<Arguments>()],
+       B<GodotClassTypeArgument>()[B<Identifier>(
+           AssumedParameterValues::GodotClass())][B<Arguments>()]});
 
   return GeneratorError::OK;
 }
@@ -162,24 +157,20 @@ Ref<GeneratorError> GodotClassGenerator::do_generate(
       r_result.generated_header_include_path.c_str());
 
   Ref<Function> gd_class =
-      build<Function>()
-          .with_children(
-              {build<Identifier>(AssumedGodotTypes::GDCLASS().type->name()),
-               build<Arguments>().with_children({
-                   build<Argument>().with_child(
-                       Output::Text(p_target_class->name())),
-                   build<Argument>().with_child(Output::Text(bases[0])),
-               })})
-          .with_child(Output::Semicolon());
+      B<Function>()[{B<Identifier>(AssumedGodotTypes::GDCLASS().type->name()),
+                     B<Arguments>()[{
+                         B<Argument>()[Output::Text(p_target_class->name())],
+                         B<Argument>()[Output::Text(bases[0])],
+                     }]}][Output::Semicolon()];
 
   p_generated_body->add_children({
       gd_class,
-      build<AccessSpecifier>(AccessSpecifier::PUBLIC),
-      build<Context>().with_tag("public_members"),
-      build<AccessSpecifier>(AccessSpecifier::PROTECTED),
-      build<Context>().with_tag("protected_members"),
-      build<AccessSpecifier>(AccessSpecifier::PRIVATE),
-      build<Context>().with_tag("private_members"),
+      B<AccessSpecifier>(AccessSpecifier::PUBLIC),
+      B<Context>().$("public_members"),
+      B<AccessSpecifier>(AccessSpecifier::PROTECTED),
+      B<Context>().$("protected_members"),
+      B<AccessSpecifier>(AccessSpecifier::PRIVATE),
+      B<Context>().$("private_members"),
   });
 
   get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);

@@ -150,22 +150,18 @@ bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
                       value_names_documentation->as<Output::OutputNode>()}));
 
   p_write_to->add_child(Output::DocComment(type_documentation));
-  p_write_to->build_child<Output::SnippetNode>("class " + type_name + " {};");
+  p_write_to->B<Output::SnippetNode>("class " + type_name + " {};");
   p_write_to->add_child(Output::NewLine());
 
   if ((p_type->get_features() & IAttributeParameterType::FEATURE_FLAG)) {
-    p_write_to->build_child<Function>().with_children(
-        {build<ConstExpression>(),
-         build<Type>().with_child<Identifier>(type_name),
-         build<Identifier>("operator |"),
-         build<Parameters>().with_children(
-             {build<Parameter>().with_children(
-                  {build<Type>().with_child<Identifier>(type_name),
-                   build<Identifier>(" a")}),
-              build<Parameter>().with_children(
-                  {build<Type>().with_child<Identifier>(type_name),
-                   build<Identifier>(" b")})}),
-         build<Body>().with_child(Output::Return("{}"))});
+    p_write_to->B<Function>()[{
+        B<ConstExpression>(), B<Type>()[B<Identifier>(type_name)],
+        B<Identifier>("operator |"),
+        B<Parameters>()[{B<Parameter>()[{B<Type>()[B<Identifier>(type_name)],
+                                         B<Identifier>(" a")}],
+                         B<Parameter>()[{B<Type>()[B<Identifier>(type_name)],
+                                         B<Identifier>(" b")}]}],
+        B<Body>()[Output::Return("{}")]}];
   }
 
   Size index = 0;
@@ -186,45 +182,34 @@ bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
     }
 
     if (arguments.empty()) {
-      p_write_to->build_child<Field>()
-          .with_children({build<ConstExpression>(),
-                          build<Type>().with_child<Identifier>(type_name),
-                          build<Identifier>(value_name),
-                          build<Literal>("= {}")})
-          .with_child(Output::Semicolon());
+      p_write_to->B<Field>()[{
+          B<ConstExpression>(), B<Type>()[B<Identifier>(type_name)],
+          B<Identifier>(value_name), B<Literal>("= {}")}][Output::Semicolon()];
     } else {
       Ref<Parameters> parameters;
-      p_write_to->build_child<Function>().with_children(
-          {build<ConstExpression>(),
-           build<Type>().with_child<Identifier>(type_name),
-           build<Identifier>(value_name), build_ref<Parameters>(&parameters),
-           build<Body>().with_child(Output::Return("{}"))});
+      p_write_to->B<Function>()[{
+          B<ConstExpression>(), B<Type>()[B<Identifier>(type_name)],
+          B<Identifier>(value_name), R<Parameters>(&parameters),
+          B<Body>()[Output::Return("{}")]}];
 
       for (const auto& argument : arguments) {
         if (argument.type == IAttributeParameterType::ARG_STRING) {
           Ref<Parameter> parameter;
-          parameters->add_child(
-              build_ref<Parameter>(&parameter)
-                  .with_children({
-                      build<Type>().with_children({build<Const>(),
-                                                   build<Identifier>("char"),
-                                                   build<Pointer>()}),
-                      build<Identifier>(argument.name),
-                  }));
+          parameters->add_child(R<Parameter>(&parameter)[{
+              B<Type>()[{B<Const>(), B<Identifier>("char"), B<Pointer>()}],
+              B<Identifier>(argument.name),
+          }]);
           if (argument.optional) {
-            parameter->build_child<Literal>("\"\"");
+            parameter->B<Literal>("\"\"");
           }
         } else if (argument.type == IAttributeParameterType::ARG_INTEGER) {
           Ref<Parameter> parameter;
-          parameters->add_child(build_ref<Parameter>(&parameter)
-                                    .with_children({
-                                        build<Type>().with_children({
-                                            build<Identifier>("int"),
-                                        }),
-                                        build<Identifier>(argument.name),
-                                    }));
+          parameters->add_child(R<Parameter>(&parameter)[{
+              B<Type>()[B<Identifier>("int")],
+              B<Identifier>(argument.name),
+          }]);
           if (argument.optional) {
-            parameter->build_child<Literal>("0");
+            parameter->B<Literal>("0");
           }
         } else {
           PANIC("Unimplemented IAttributeParameterType %d",
@@ -243,20 +228,18 @@ bool GodotMacroIncludeGenerator::generate_prototype_methods(
     const Vector<Ref<IAttributeParameterType>>& p_params) {
   Vector<Vector<Size>> subsets = find_all_subsets(p_params.size());
 
-  p_write_to->build_child<Function>().with_children(
-      {build<ConstExpression>(), build<Type>().with_child<Identifier>("bool"),
-       build<Identifier>(p_macro + "_prototype"),
-       build<Parameters>().with_child(build<Parameter>()),
-       build<Body>().with_child(Output::Return("true"))});
+  p_write_to->B<Function>()[{
+      B<ConstExpression>(), B<Type>()[B<Identifier>("bool")],
+      B<Identifier>(p_macro + "_prototype"), B<Parameters>()[B<Parameter>()],
+      B<Body>()[Output::Return("true")]}];
   p_write_to->add_child(Output::NewLine());
 
   for (const Ref<IAttributeParameterType>& param : p_params) {
-    p_write_to->build_child<Function>().with_children(
-        {build<ConstExpression>(), build<Type>().with_child<Identifier>("bool"),
-         build<Identifier>(p_macro + "_prototype"),
-         build<Parameters>().with_child(build<Parameter>().with_child(
-             Output::Text(param->get_return_type()))),
-         build<Body>().with_child(Output::Return("true"))});
+    p_write_to->B<Function>()[{
+        B<ConstExpression>(), B<Type>()[B<Identifier>("bool")],
+        B<Identifier>(p_macro + "_prototype"),
+        B<Parameters>()[B<Parameter>()[Output::Text(param->get_return_type())]],
+        B<Body>()[Output::Return("true")]}];
     p_write_to->add_child(Output::NewLine());
   }
 
@@ -265,22 +248,21 @@ bool GodotMacroIncludeGenerator::generate_prototype_methods(
     Ref<Parameters> params;
     Ref<Body> body;
 
-    p_write_to->build_child<Output::ListNode>(" ", false, false)
-        .with_children({Output::Text("template "),
-                        build<Output::EnclosingNode>("<", ">")
-                            .with_child_ref<Output::ListNode>(
-                                &template_params, ", ", false, false)});
+    p_write_to->B<Output::ListNode>(" ", false, false)[{
+        Output::Text("template "),
+        B<Output::EnclosingNode>("<", ">").with_child_ref<Output::ListNode>(
+            &template_params, ", ", false, false)}];
 
-    p_write_to->build_child<Function>().with_children(
-        {build<ConstExpression>(), build<Type>().with_child<Identifier>("bool"),
-         build<Identifier>(p_macro + "_prototype"),
-         build_ref<Parameters>(&params), build_ref<Body>(&body)});
+    p_write_to
+        ->B<Function>()[{B<ConstExpression>(), B<Type>()[B<Identifier>("bool")],
+                         B<Identifier>(p_macro + "_prototype"),
+                         R<Parameters>(&params), R<Body>(&body)}];
+
     p_write_to->add_child(Output::NewLine());
 
     for (Size j = 0; j < size; ++j) {
       template_params->add_child(Output::FmtText("typename T%d", j + 1));
-      params->build_child<Parameter>().with_child(
-          Output::FmtText("T%d p_arg%d", j + 1, j + 1));
+      params->B<Parameter>()[Output::FmtText("T%d p_arg%d", j + 1, j + 1)];
     }
 
     for (Size curr = 0; curr < size - 1; ++curr) {
@@ -317,8 +299,8 @@ Ref<Context> GodotMacroIncludeGenerator::generate(Ref<Context> p_tree,
   generate_macros(entry);
 
   Ref<Body> namespace_body;
-  entry->build_child<Namespace>().with_children(
-      {build<Identifier>("GOC_Macros"), build_ref<Body>(&namespace_body)});
+  entry
+      ->B<Namespace>()[{B<Identifier>("GOC_Macros"), R<Body>(&namespace_body)}];
 
   HashSet<String> generated_param_types;
   for (const String& macro :

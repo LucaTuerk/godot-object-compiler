@@ -49,7 +49,7 @@ bool NamespaceHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
 ParserStep NamespaceHandler::handle(const Ref<TreeSitterNode>& p_current_src,
                                     Ref<Context>& r_current_target) {
   UNUSED(p_current_src);
-  r_current_target = r_current_target->build_child<Namespace>();
+  r_current_target = r_current_target->B<Namespace>();
   return ParserStep::StepInto();
 }
 

@@ -46,9 +46,11 @@ class GodotMacroIncludeGenerator : public IGenerator {
 
  private:
   static bool generate_macros(const Ref<Context>& p_write_to);
+
   static bool generate_attribute_parameter_type(
       const Ref<IAttributeParameterType>& p_type,
       const Ref<Context>& p_write_to);
+
   static bool generate_prototype_methods(
       const Ref<Context>& p_write_to, const String& p_macro,
       const Vector<Ref<IAttributeParameterType>>& p_params);

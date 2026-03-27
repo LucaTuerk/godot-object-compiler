@@ -394,9 +394,8 @@ Ref<ListNode> MacroFunctionDefine(const String& p_name,
 }
 
 Ref<EnclosingNode> DocComment(const Ref<Node>& p_content) {
-  return build<EnclosingNode>("/**\n*", "/")
-      .with_child(build<ReplaceNode>("\n", "\n*")
-                      .with_child(build<IndentNode>(2).with_child(p_content)));
+  return B<EnclosingNode>(
+      "/**\n*", "/")[B<ReplaceNode>("\n", "\n*")[B<IndentNode>(2)[p_content]]];
 }
 
 Ref<ListNode> Define(const String& p_name,
@@ -426,7 +425,7 @@ Ref<ListNode> If(const Ref<Node>& p_condition,
       Text("if("),
       p_condition,
       Text(")"),
-      build<Body>().with_children(std::move(p_children)),
+      B<Body>()[std::move(p_children)],
   });
   return result;
 }

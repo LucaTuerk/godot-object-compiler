@@ -236,10 +236,9 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
 
   Ref<Namespace> global_namespace = make_ref<Namespace>();
   Ref<Body> body;
-  global_namespace->add_children({build<Body>().with_children(
-      {Output::PragmaOnce(), Output::Include("library/core/resources.h"),
-       build<Namespace>().with_children(
-           {build<Identifier>("GOC_Resources"), build_ref<Body>(&body)})})});
+  global_namespace->add_children({B<Body>()[{
+      Output::PragmaOnce(), Output::Include("library/core/resources.h"),
+      B<Namespace>()[{B<Identifier>("GOC_Resources"), R<Body>(&body)}]}]});
 
   auto files = directory_files_recursive("resources");
   std::sort(files.begin(), files.end());
@@ -252,8 +251,7 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
     body->add_children(
         {Output::FmtText("constexpr char %s[] = ",
                          resource_variable_name(relative).c_str()),
-         build<Body>().with_child(
-             build_ref<Output::ListNode>(&values, ", ", false, false)),
+         B<Body>()[R<Output::ListNode>(&values, ", ", false, false)],
          Output::Semicolon()});
 
     Size i = 0;
@@ -272,8 +270,7 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
         {Output::FmtText(
              "static inline GodotObjectCompiler::Resources::ResourcePack "
              "Pack = "),
-         build<Body>().with_child(
-             build_ref<Output::ListNode>(&values, ",\n", false, false)),
+         B<Body>()[R<Output::ListNode>(&values, ",\n", false, false)],
          Output::Semicolon()});
 
     for (const String& file : files) {

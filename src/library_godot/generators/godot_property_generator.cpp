@@ -180,16 +180,16 @@ GodotPropertyGenerator::do_generate_default_attribute_arguments(
   if (Ref<Field> target_field = p_attribute->TargetField(); target_field) {
     property_type = target_field->type();
 
-    property_get_access_specifier->build_child<Identifier>(
+    property_get_access_specifier->B<Identifier>(
         PropertyGetAccessSpecifierArgument::PublicGet);
     if (target_field->is_private_member()) {
-      property_set_access_specifier->build_child<Identifier>(
+      property_set_access_specifier->B<Identifier>(
           PropertySetAccessSpecifierArgument::PrivateSet);
     } else if (target_field->is_protected_member()) {
-      property_set_access_specifier->build_child<Identifier>(
+      property_set_access_specifier->B<Identifier>(
           PropertySetAccessSpecifierArgument::ProtectedSet);
     } else {
-      property_set_access_specifier->build_child<Identifier>(
+      property_set_access_specifier->B<Identifier>(
           PropertySetAccessSpecifierArgument::PublicSet);
     }
 
@@ -201,9 +201,9 @@ GodotPropertyGenerator::do_generate_default_attribute_arguments(
         "Could not find getter function \"%s\" for custom bound property.",
         custom_bind->getter_name.c_str());
     property_type = custom_bind->getter->type();
-    property_get_access_specifier->build_child<Identifier>(
+    property_get_access_specifier->B<Identifier>(
         PropertyGetAccessSpecifierArgument::PrivateGet);
-    property_set_access_specifier->build_child<Identifier>(
+    property_set_access_specifier->B<Identifier>(
         PropertySetAccessSpecifierArgument::PrivateSet);
   } else {
     GEN_ERROR(p_attribute,
@@ -229,18 +229,17 @@ GodotPropertyGenerator::do_generate_default_attribute_arguments(
   }
 
   Ref<StringLiteralArgument> string_literal_argument =
-      build<StringLiteralArgument>().with_child(make_ref<Literal>(""));
+      B<StringLiteralArgument>()[make_ref<Literal>("")];
 
   Ref<GodotCustomPropertyGetSetArgument> custom_bind_argument =
-      build<GodotCustomPropertyGetSetArgument>().with_children(
-          {make_ref<Identifier>(
-               GodotCustomPropertyGetSetParameterType::AutoGetSet),
-           make_ref<Arguments>()});
+      B<GodotCustomPropertyGetSetArgument>()[{
+          B<Identifier>(GodotCustomPropertyGetSetParameterType::AutoGetSet),
+          B<Arguments>()}];
 
   Ref<PropertyGeneratorOptionsArgument> property_generator_options_argument =
-      build<PropertyGeneratorOptionsArgument>().with_children(
-          {node_new<Identifier>(PropertyGeneratorOptionsArgument::Default),
-           build<Arguments>()});
+      B<PropertyGeneratorOptionsArgument>()[{
+          B<Identifier>(PropertyGeneratorOptionsArgument::Default),
+          B<Arguments>()}];
 
   p_default_values->add_children(
       {custom_bind_argument, string_literal_argument, custom_bind_argument,
@@ -352,8 +351,8 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
     Ref<Node> set_type =
         !is_obj_type ? const_ref(type_name) : property_type->clone();
     if (is_enum_type) {
-      get_type = build<Type>().with_child<Identifier>("int");
-      set_type = build<Type>().with_child<Identifier>("int");
+      get_type = B<Type>()[B<Identifier>("int")];
+      set_type = B<Type>()[B<Identifier>("int")];
     }
 
     Ref<PropertyGeneratorOptionsArgument> generator_options =
@@ -377,29 +376,21 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
     }
 
     Ref<Function> get_def =
-        build<Function>()
-            .with_children({get_type->clone(), build<Identifier>(getter_name),
-                            build<Parameters>(), build<Const>()})
-            .with_child(Output::Semicolon());
+        B<Function>()[{get_type->clone(), B<Identifier>(getter_name),
+                       B<Parameters>(), B<Const>()}][Output::Semicolon()];
 
-    Ref<Function> get_impl = build<Function>().with_children(
-        {get_type->clone(),
-         build<Identifier>(p_target_class->qualified_name() +
-                           "::" + getter_name),
-         build<Parameters>(), build<Const>(),
-         build<Body>().with_child(Output::Return(backing_field_name))});
+    Ref<Function> get_impl = B<Function>()[{
+        get_type->clone(),
+        B<Identifier>(p_target_class->qualified_name() + "::" + getter_name),
+        B<Parameters>(), B<Const>(),
+        B<Body>()[Output::Return(backing_field_name)]}];
 
-    Ref<Function> set_def =
-        build<Function>()
-            .with_children({build<Type>().with_child<Identifier>("void"),
-                            build<Identifier>(setter_name),
-                            build<Parameters>().with_child(
-                                build<Parameter>().with_children({
-                                    set_type->clone(),
-                                    build<Identifier>(
-                                        format("p_%s", property_name.c_str())),
-                                }))})
-            .with_child(Output::Semicolon());
+    Ref<Function> set_def = B<Function>().with_children(
+        {B<Type>()[B<Identifier>("void")], B<Identifier>(setter_name),
+         B<Parameters>()[B<Parameter>()[{
+             set_type->clone(),
+             B<Identifier>(format("p_%s", property_name.c_str())),
+         }]]})[Output::Semicolon()];
 
     Ref<Body> set_body = node_new<Body>();
     Ref<Node> assign =
@@ -422,15 +413,13 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
         Ref<Parameters> signal_parameters = node_new<Parameters>();
         if (generator_options_identifier->name ==
             PropertyGeneratorOptionsArgument::EmitChangedValue) {
-          signal_parameters->build_child<Parameter>().with_children(
-              {property_type->clone(), node_new<Identifier>(property_name)});
+          signal_parameters->B<Parameter>()[{
+              property_type->clone(), node_new<Identifier>(property_name)}];
         }
 
-        generated_private_members->build_child<Function>()
-            .with_children({build<Type>().with_child<Identifier>("void"),
-                            build<Identifier>(signal_name),
-                            signal_parameters->clone()})
-            .with_child(Output::Semicolon());
+        generated_private_members->B<Function>()[{
+            B<Type>()[B<Identifier>("void")], B<Identifier>(signal_name),
+            signal_parameters->clone()}][Output::Semicolon()];
 
         GodotSignalGenerator::bind_signal(p_target_class, p_attribute,
                                           signal_name, signal_parameters,
@@ -440,8 +429,7 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
       Ref<Arguments> emit_arguments = node_new<Arguments>();
       if (generator_options_identifier->name ==
           PropertyGeneratorOptionsArgument::EmitChangedValue) {
-        emit_arguments->build_child<Argument>().with_child<Literal>(
-            property_name);
+        emit_arguments->B<Argument>()[B<Literal>(property_name)];
       }
 
       set_body->add_children(
@@ -454,13 +442,12 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
       set_body->add_child(assign);
     }
 
-    Ref<Function> set_impl = build<Function>().with_children(
-        {build<Type>().with_child<Identifier>("void"),
-         build<Identifier>(p_target_class->qualified_name() +
-                           "::" + setter_name),
-         build<Parameters>().with_child(build<Parameter>().with_children(
-             {set_type->clone(), build<Identifier>("p_" + property_name)})),
-         set_body});
+    Ref<Function> set_impl = B<Function>()[{
+        B<Type>()[B<Identifier>("void")],
+        B<Identifier>(p_target_class->qualified_name() + "::" + setter_name),
+        B<Parameters>()[B<Parameter>()[{set_type->clone(),
+                                        B<Identifier>("p_" + property_name)}]],
+        set_body}];
 
     Ref<PropertyGetAccessSpecifierArgument> get_access_specifier_argument =
         p_attribute->arguments()
@@ -533,25 +520,17 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
   Ref<Node> property_info_no_editor = build_property_info(
       variant_type, property_hint, usage_flags, property_name, r_result, true);
 
-  Ref<Function> add_property =
-      build<Function>()
-          .with_children(
-              {build<Identifier>(
-                   AssumedGodotTypes::ADD_PROPERTY().type->name()),
-               build<Arguments>().with_children({
-                   build<Argument>().with_children({property_info_no_editor}),
-                   build<Argument>().with_child(
-                       Output::StringLiteral(setter_name)),
-                   build<Argument>().with_child(
-                       Output::StringLiteral(getter_name)),
-               })})
-          .with_child(Output::Semicolon());
+  Ref<Function> add_property = B<Function>()[{
+      B<Identifier>(AssumedGodotTypes::ADD_PROPERTY().type->name()),
+      B<Arguments>()[{
+          B<Argument>()[property_info_no_editor],
+          B<Argument>()[Output::StringLiteral(setter_name)],
+          B<Argument>()[Output::StringLiteral(getter_name)],
+      }]}][Output::Semicolon()];
 
-  get_property_list_body->build_child<Function>()
-      .with_children({build<Identifier>("p_list->push_back"),
-                      build<Arguments>().with_children(
-                          {build<Argument>().with_child(property_info)})})
-      .with_child(Output::Semicolon());
+  get_property_list_body->B<Function>()[{
+      B<Identifier>("p_list->push_back"),
+      B<Arguments>()[B<Argument>()[property_info]]}][Output::Semicolon()];
 
   bind_methods_body->add_child(add_property);
 

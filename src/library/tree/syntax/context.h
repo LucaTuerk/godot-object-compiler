@@ -52,17 +52,20 @@ enum BranchExplorationType {
   DFS,
 };
 
-template <typename T, typename... Args>
+template <typename NodeT, typename... Args>
 class Builder {
  public:
   Builder(Args... args);
 
-  operator Ref<T>();
+  operator Ref<NodeT>();
 
-  template <typename B, typename = std::enable_if_t<std::is_base_of_v<B, T>>>
+  template <typename B,
+            typename = std::enable_if_t<std::is_base_of_v<B, NodeT>>>
   operator Ref<B>();
 
   operator Ref<Node>();
+
+  Builder& operator[](const Ref<Node>& p_node);
 
   template <typename B, typename... BArgs>
   Builder& with_child(BArgs... child_args);
@@ -70,18 +73,22 @@ class Builder {
   template <typename B, typename... BArgs>
   Builder& with_child_ref(Ref<B>* ptr, BArgs... child_args);
 
-  Builder& with_child(Ref<Node> p_child);
+  Builder& with_child(const Ref<Node>& p_child);
 
-  Builder& with_child_ref(Ref<Node>* p_node, Ref<Node> p_child);
+  Builder& with_child_ref(Ref<Node>* p_node, const Ref<Node>&);
+
+  Builder& operator[](std::initializer_list<Ref<Node>>&& p_children);
 
   Builder& with_children(std::initializer_list<Ref<Node>>&& p_children);
 
   Builder& with_tag(const String& p_tag);
 
+  Builder& $(const String& p_tag);
+
  private:
   Builder(Ref<Context> parent, Args... args);
 
-  Ref<T> _created;
+  Ref<NodeT> _created;
 
   friend Context;
 };
@@ -126,6 +133,7 @@ class Context : public Node {
   using ChildIterator = decltype(_children)::iterator;
 
   ChildIterator begin();
+
   ChildIterator end();
 
   ChildIterator remove_child(ChildIterator p_itr);
@@ -160,6 +168,9 @@ class Context : public Node {
 
   template <class T, typename... Args>
   Ref<T> create_child(Args&&... args);
+
+  template <class T, typename... Args>
+  Builder<T, Args...> B(Args&&... args);
 
   template <class T, typename... Args>
   Builder<T, Args...> build_child(Args&&... args);
@@ -402,6 +413,11 @@ Builder<T, Args...> Context::build_child(Args&&... args) {
   return Builder<T, Args...>(this->as<Context>(), std::forward<Args>(args)...);
 }
 
+template <class T, typename... Args>
+Builder<T, Args...> Context::B(Args&&... args) {
+  return build_child<T, Args...>(std::forward<Args>(args)...);
+}
+
 template <class T>
 void find_recursive_helper(Node* node, bool recursive, Vector<Ref<T>>& results,
                            Predicate<T> predicate) {
@@ -459,6 +475,17 @@ Builder<T, Args...>::operator Ref<Node>() {
 }
 
 template <typename T, typename... Args>
+Builder<T, Args...>& Builder<T, Args...>::operator[](const Ref<Node>& p_node) {
+  return with_child(p_node);
+}
+
+template <typename T, typename... Args>
+Builder<T, Args...>& Builder<T, Args...>::operator[](
+    std::initializer_list<Ref<Node>>&& p_children) {
+  return with_children(std::move(p_children));
+}
+
+template <typename T, typename... Args>
 template <typename B, typename... BArgs>
 Builder<T, Args...>& Builder<T, Args...>::with_child(BArgs... child_args) {
   _created->add_child(node_new<B>(std::forward<BArgs>(child_args)...));
@@ -478,8 +505,8 @@ Builder<T, Args...>& Builder<T, Args...>::with_child_ref(Ref<B>* ptr,
 }
 
 template <typename T, typename... Args>
-Builder<T, Args...>& Builder<T, Args...>::with_child_ref(Ref<Node>* p_node,
-                                                         Ref<Node> p_child) {
+Builder<T, Args...>& Builder<T, Args...>::with_child_ref(
+    Ref<Node>* p_node, const Ref<Node>& p_child) {
   _created->add_child(p_child);
   if (p_node) {
     *p_node = p_child;
@@ -488,7 +515,7 @@ Builder<T, Args...>& Builder<T, Args...>::with_child_ref(Ref<Node>* p_node,
 }
 
 template <typename T, typename... Args>
-Builder<T, Args...>& Builder<T, Args...>::with_child(Ref<Node> p_child) {
+Builder<T, Args...>& Builder<T, Args...>::with_child(const Ref<Node>& p_child) {
   _created->add_child(p_child);
   return *this;
 }
@@ -509,6 +536,11 @@ Builder<T, Args...>& Builder<T, Args...>::with_tag(const String& p_tag) {
 }
 
 template <typename T, typename... Args>
+Builder<T, Args...>& Builder<T, Args...>::$(const String& p_tag) {
+  return with_tag(p_tag);
+}
+
+template <typename T, typename... Args>
 Builder<T, Args...> build(Args... args) {
   return Builder<T, Args...>(args...);
 }
@@ -518,6 +550,16 @@ Builder<T, Args...> build_ref(Ref<T>* ptr, Args... args) {
   Builder<T, Args...> builder(args...);
   *ptr = builder;
   return builder;
+}
+
+template <typename T, typename... Args>
+Builder<T, Args...> B(Args... args) {
+  return build<T, Args...>(args...);
+}
+
+template <typename T, typename... Args>
+Builder<T, Args...> R(Ref<T>* ptr, Args... args) {
+  return build_ref<T, Args...>(ptr, args...);
 }
 
 }  // namespace GodotObjectCompiler

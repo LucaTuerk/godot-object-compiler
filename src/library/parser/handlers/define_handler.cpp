@@ -52,10 +52,9 @@ ParserStep DefineHandler::handle(const Ref<TreeSitterNode>& p_current_src,
       p_current_src->find_child<TreeSitterNode>(0, type_is("identifier"));
   if (identifier) {
     Ref<Define> define =
-        r_current_target->build_child<Define>().with_child<Identifier>(
-            identifier->content());
+        r_current_target->B<Define>()[B<Identifier>(identifier->content())];
     if (p_current_src->type == "preproc_function_def") {
-      define->build_child<Arguments>();
+      define->B<Arguments>();
     }
   }
   return ParserStep::StepOver();

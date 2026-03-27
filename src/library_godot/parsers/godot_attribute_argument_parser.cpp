@@ -129,7 +129,7 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_argument(
         }
 
         p_target->add_child(argument);
-        argument->build_child<Literal>(p_content);
+        argument->B<Literal>(p_content);
         no_match = false;
         break;
       }
@@ -152,8 +152,8 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_argument(
     }
 
     p_target->add_child(argument_node);
-    argument_node->build_child<Identifier>(outer);
-    Ref<Arguments> inner_arguments = argument_node->build_child<Arguments>();
+    argument_node->B<Identifier>(outer);
+    Ref<Arguments> inner_arguments = argument_node->B<Arguments>();
 
     if (inner.empty()) {
       return ParserError::OK;
@@ -215,10 +215,10 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_inner_arguments(
     const IAttributeParameterType::Argument& p_parameter) {
   switch (p_parameter.type) {
     case IAttributeParameterType::ARG_STRING:
-      p_target->build_child<Argument>().with_child<Literal>(p_content);
+      p_target->B<Argument>()[B<Literal>(p_content)];
       break;
     case IAttributeParameterType::ARG_INTEGER:
-      p_target->build_child<Argument>().with_child<Literal>(p_content);
+      p_target->B<Argument>()[B<Literal>(p_content)];
       break;
     default:
       PANIC("Unimplemented IAttributeParameterType %d",
