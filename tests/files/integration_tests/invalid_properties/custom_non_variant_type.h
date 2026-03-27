@@ -38,13 +38,14 @@
 #include "invalid_properties/custom_non_variant_type.generated.h"
 
 GODOT_CLASS();
-class Invalid : Node {
-  GODOT_GENERATED_BODY();
+class Invalid : Node
+{
+    GODOT_GENERATED_BODY();
 
-  GODOT_PROPERTY("property", GetSet("get_property", "set_property"));
+    GODOT_PROPERTY("property", GetSet("get_property", "set_property"));
 
-  void set_property(const std::vector<int>& p_value);
-  std::vector<int> get_property() const;
+    void set_property(const std::vector<int>& p_value);
+    std::vector<int> get_property() const;
 };
 
 GODOT_GENERATED_GLOBAL();

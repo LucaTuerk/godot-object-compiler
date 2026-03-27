@@ -38,91 +38,99 @@
 #include "library/parser/parser_context.h"
 #include "node.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Error : public Node {
-  NODE_TYPE(Error);
+    class Error : public Node
+    {
+        NODE_TYPE(Error);
 
- public:
-  explicit Error(ErrorLevel level, const String& message)
-      : error_level(level), message(message) {}
+      public:
+        explicit Error(ErrorLevel level, const String& message)
+            : error_level(level), message(message)
+        {
+        }
 
-  ~Error() override;
+        ~Error() override;
 
-  String to_string() const override;
-  bool copy_to(const Ref<Node>& p_other) const override;
-  void write_to(IStructuredWriter* p_writer) override;
-  void read_from(IStructuredReader* p_reader) override;
-  void set_handled();
+        String to_string() const override;
+        bool copy_to(const Ref<Node>& p_other) const override;
+        void write_to(IStructuredWriter* p_writer) override;
+        void read_from(IStructuredReader* p_reader) override;
+        void set_handled();
 
-  ErrorLevel error_level;
-  String message;
+        ErrorLevel error_level;
+        String message;
 
-  static inline const Ref<Error> OK = nullptr;
+        static inline const Ref<Error> OK = nullptr;
 
- private:
-  bool handled = false;
-};
+      private:
+        bool handled = false;
+    };
 
-class GeneratorError : public Error {
-  NODE_TYPE(GeneratorError);
+    class GeneratorError : public Error
+    {
+        NODE_TYPE(GeneratorError);
 
- public:
-  explicit GeneratorError(ErrorLevel level, const String& message)
-      : Error(level, message) {}
+      public:
+        explicit GeneratorError(ErrorLevel level, const String& message) : Error(level, message)
+        {
+        }
 
-  GeneratorError(const Ref<Error>& p_error)
-      : Error(p_error->error_level, p_error->message) {}
+        GeneratorError(const Ref<Error>& p_error) : Error(p_error->error_level, p_error->message)
+        {
+        }
 
-  explicit GeneratorError(ErrorLevel level, const String& generator_name,
-                          const String& message, Ref<Node> node);
+        explicit GeneratorError(
+            ErrorLevel level, const String& generator_name, const String& message, Ref<Node> node);
 
-  static inline const Ref<GeneratorError> OK = nullptr;
-};
+        static inline const Ref<GeneratorError> OK = nullptr;
+    };
 
-class ParserError : public Error {
-  NODE_TYPE(ParserError);
+    class ParserError : public Error
+    {
+        NODE_TYPE(ParserError);
 
- public:
-  explicit ParserError(ErrorLevel level, const String& message)
-      : Error(level, message) {}
+      public:
+        explicit ParserError(ErrorLevel level, const String& message) : Error(level, message)
+        {
+        }
 
-  explicit ParserError(ErrorLevel level, const Ref<TreeSitterNode>& node,
-                       const String& message);
+        explicit ParserError(
+            ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message);
 
-  explicit ParserError(ErrorLevel level, const String& parser_name,
-                       const String& message, const String& file_path,
-                       const String& file_content, Size line, Size column);
+        explicit ParserError(
+            ErrorLevel level, const String& parser_name, const String& message,
+            const String& file_path, const String& file_content, Size line, Size column);
 
-  static inline const Ref<ParserError> OK = nullptr;
-};
+        static inline const Ref<ParserError> OK = nullptr;
+    };
 
-#define ERROR_CAST(type, error)          \
-  (error->is<type>() ? error->as<type>() \
-                     : node_new<type>(error->error_level, error->message))
+#define ERROR_CAST(type, error)                                                                    \
+    (error->is<type>() ? error->as<type>() : node_new<type>(error->error_level, error->message))
 
-#define ERROR(...) \
-  return node_new<Error>(ErrorLevel::ERROR, format(__VA_ARGS__));
+#define ERROR(...) return node_new<Error>(ErrorLevel::ERROR, format(__VA_ARGS__));
 
-#define ERROR_COND(condition, ...) \
-  if (condition) {                 \
-    ERROR(__VA_ARGS__);            \
-  }
+#define ERROR_COND(condition, ...)                                                                 \
+    if (condition) {                                                                               \
+        ERROR(__VA_ARGS__);                                                                        \
+    }
 
-template <typename T>
-Result<T> INodeReader::read_from_file(const String& p_path) {
-  Result<Node> result = read_from_file(p_path);
-  if (result.has_error()) {
-    return result.get_error();
-  }
+    template <typename T> Result<T> INodeReader::read_from_file(const String& p_path)
+    {
+        Result<Node> result = read_from_file(p_path);
+        if (result.has_error()) {
+            return result.get_error();
+        }
 
-  Ref<T> node = result.get_result()->as<T>();
-  if (node == nullptr) {
-    ERROR("Node read from file has invalid type. Expected %s but got %s",
-          T::get_type_static().c_str(),
-          result.get_result()->get_type().c_str());
-  }
-  return node;
-}
+        Ref<T> node = result.get_result()->as<T>();
+        if (node == nullptr) {
+            ERROR(
+                "Node read from file has invalid type. Expected %s "
+                "but got %s",
+                T::get_type_static().c_str(), result.get_result()->get_type().c_str());
+        }
+        return node;
+    }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

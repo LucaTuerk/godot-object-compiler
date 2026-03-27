@@ -37,210 +37,220 @@
 #include "library/core/core.h"
 #include "library/tree/syntax/all.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class IStringWriter;
+    class IStringWriter;
 
-namespace Output {
+    namespace Output
+    {
 
-class OutputNode : public Context {
- public:
-  virtual void get_output(IStringWriter* p_writer) = 0;
-};
+        class OutputNode : public Context
+        {
+          public:
+            virtual void get_output(IStringWriter* p_writer) = 0;
+        };
 
-class IndentNode : public OutputNode {
-  NODE_TYPE(IndentNode);
+        class IndentNode : public OutputNode
+        {
+            NODE_TYPE(IndentNode);
 
- public:
-  explicit IndentNode(Size amount) : amount(amount) {}
+          public:
+            explicit IndentNode(Size amount) : amount(amount)
+            {
+            }
 
-  void get_output(IStringWriter* p_writer) override;
+            void get_output(IStringWriter* p_writer) override;
 
-  bool copy_to(const Ref<Node>& p_other) const override;
+            bool copy_to(const Ref<Node>& p_other) const override;
 
-  Size amount = 0;
+            Size amount = 0;
 
-  LAZY(IndentNode, Size, total_amount);
-};
+            LAZY(IndentNode, Size, total_amount);
+        };
 
-class EnclosingNode : public OutputNode {
-  NODE_TYPE(EnclosingNode);
+        class EnclosingNode : public OutputNode
+        {
+            NODE_TYPE(EnclosingNode);
 
- public:
-  EnclosingNode(String before, String after)
-      : before(std::move(before)), after(std::move(after)) {}
+          public:
+            EnclosingNode(String before, String after)
+                : before(std::move(before)), after(std::move(after))
+            {
+            }
 
-  void get_output(IStringWriter* p_writer) override;
-  bool copy_to(const Ref<Node>& p_other) const override;
+            void get_output(IStringWriter* p_writer) override;
+            bool copy_to(const Ref<Node>& p_other) const override;
 
-  String before;
-  String after;
-};
+            String before;
+            String after;
+        };
 
-class ListNode : public OutputNode {
-  NODE_TYPE(ListNode);
+        class ListNode : public OutputNode
+        {
+            NODE_TYPE(ListNode);
 
- public:
-  ListNode(String delimiter, bool before_first = false, bool after_last = false)
-      : delimiter(std::move(delimiter)),
-        before_first(before_first),
-        after_last(after_last) {}
+          public:
+            ListNode(String delimiter, bool before_first = false, bool after_last = false)
+                : delimiter(std::move(delimiter)), before_first(before_first),
+                  after_last(after_last)
+            {
+            }
 
-  void get_output(IStringWriter* p_writer) override;
+            void get_output(IStringWriter* p_writer) override;
 
-  bool copy_to(const Ref<Node>& p_other) const override;
+            bool copy_to(const Ref<Node>& p_other) const override;
 
-  String delimiter;
-  bool before_first = false;
-  bool after_last = true;
-};
+            String delimiter;
+            bool before_first = false;
+            bool after_last = true;
+        };
 
-class ReplaceNode : public OutputNode {
-  NODE_TYPE(ReplaceNode);
+        class ReplaceNode : public OutputNode
+        {
+            NODE_TYPE(ReplaceNode);
 
- public:
-  explicit ReplaceNode(const String& search, const String& replace)
-      : search(search), replace(replace) {}
+          public:
+            explicit ReplaceNode(const String& search, const String& replace)
+                : search(search), replace(replace)
+            {
+            }
 
-  void get_output(IStringWriter* p_writer) override;
+            void get_output(IStringWriter* p_writer) override;
 
-  bool copy_to(const Ref<Node>& p_other) const override;
+            bool copy_to(const Ref<Node>& p_other) const override;
 
-  String search;
-  String replace;
-};
+            String search;
+            String replace;
+        };
 
-class SnippetNode : public OutputNode {
-  NODE_TYPE(SnippetNode);
+        class SnippetNode : public OutputNode
+        {
+            NODE_TYPE(SnippetNode);
 
- public:
-  explicit SnippetNode(const String& content) : content(content) {}
+          public:
+            explicit SnippetNode(const String& content) : content(content)
+            {
+            }
 
-  void get_output(IStringWriter* p_writer) override;
+            void get_output(IStringWriter* p_writer) override;
 
-  bool copy_to(const Ref<Node>& p_other) const override;
+            bool copy_to(const Ref<Node>& p_other) const override;
 
-  String content;
-};
+            String content;
+        };
 
-Ref<IndentNode> Indent(Size p_indent,
-                       std::initializer_list<Ref<Node>>&& p_children);
+        Ref<IndentNode> Indent(Size p_indent, std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<EnclosingNode> Brackets(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<EnclosingNode> Brackets(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<EnclosingNode> SquareBrackets(
-    std::initializer_list<Ref<Node>>&& p_children);
+        Ref<EnclosingNode> SquareBrackets(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<EnclosingNode> Braces(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<EnclosingNode> Braces(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<EnclosingNode> Chevrons(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<EnclosingNode> Chevrons(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<ListNode> Lines(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<ListNode> Lines(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<ReplaceNode> EscapedLines(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<ReplaceNode> EscapedLines(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<ListNode> Spaces(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<ListNode> Spaces(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<ListNode> NoSep(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<ListNode> NoSep(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<ListNode> Params(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<ListNode> Params(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<ListNode> ConstRefParam(const String& p_type, const String& p_name,
-                            Ref<OutputNode> p_default_val = nullptr);
+        Ref<ListNode> ConstRefParam(
+            const String& p_type, const String& p_name, Ref<OutputNode> p_default_val = nullptr);
 
-Ref<ListNode> Param(const String& p_type, const String& p_name,
-                    Ref<OutputNode> p_default_val = nullptr);
+        Ref<ListNode>
+        Param(const String& p_type, const String& p_name, Ref<OutputNode> p_default_val = nullptr);
 
-Ref<ListNode> LineOfCode(std::initializer_list<Ref<Node>>&& p_children);
+        Ref<ListNode> LineOfCode(std::initializer_list<Ref<Node>>&& p_children);
 
-Ref<ListNode> ParamDecl(const String& p_type, const String& p_name);
+        Ref<ListNode> ParamDecl(const String& p_type, const String& p_name);
 
-Ref<SnippetNode> Text(const String& p_content);
+        Ref<SnippetNode> Text(const String& p_content);
 
-template <typename... Args>
-Ref<SnippetNode> FmtText(const String& p_fmt_string, Args&&... args);
+        template <typename... Args>
+        Ref<SnippetNode> FmtText(const String& p_fmt_string, Args&&... args);
 
-template <typename... Args>
-Ref<SnippetNode> FmtText(const String& p_fmt_string, Args&&... args) {
-  return Text(format(p_fmt_string, std::forward<Args>(args)...));
-}
+        template <typename... Args>
+        Ref<SnippetNode> FmtText(const String& p_fmt_string, Args&&... args)
+        {
+            return Text(format(p_fmt_string, std::forward<Args>(args)...));
+        }
 
-Ref<SnippetNode> BoldText(const String& p_content);
+        Ref<SnippetNode> BoldText(const String& p_content);
 
-Ref<SnippetNode> StringLiteral(const String& p_content);
+        Ref<SnippetNode> StringLiteral(const String& p_content);
 
-Ref<SnippetNode> Semicolon();
+        Ref<SnippetNode> Semicolon();
 
-Ref<SnippetNode> NewLine();
+        Ref<SnippetNode> NewLine();
 
-Ref<ListNode> FuncCall(const String& p_function_name,
-                       std::initializer_list<Ref<Node>>&& p_parameters);
+        Ref<ListNode>
+        FuncCall(const String& p_function_name, std::initializer_list<Ref<Node>>&& p_parameters);
 
-Ref<ListNode> FuncImpl(const String& p_modifiers_front,
-                       const String& p_return_type,
-                       const String& p_function_name,
-                       std::initializer_list<Ref<Node>>&& p_params,
-                       const String& p_modifiers,
-                       std::initializer_list<Ref<Node>>&& p_lines);
+        Ref<ListNode> FuncImpl(
+            const String& p_modifiers_front, const String& p_return_type,
+            const String& p_function_name, std::initializer_list<Ref<Node>>&& p_params,
+            const String& p_modifiers, std::initializer_list<Ref<Node>>&& p_lines);
 
-Ref<ListNode> FuncDef(const String& p_modifiers_front,
-                      const String& p_return_type,
-                      const String& p_function_name,
-                      std::initializer_list<Ref<Node>>&& p_params,
-                      const String& p_modifiers);
+        Ref<ListNode> FuncDef(
+            const String& p_modifiers_front, const String& p_return_type,
+            const String& p_function_name, std::initializer_list<Ref<Node>>&& p_params,
+            const String& p_modifiers);
 
-Ref<ListNode> ConstRef(const String& p_type);
+        Ref<ListNode> ConstRef(const String& p_type);
 
-Ref<ListNode> MemberFuncDef(const String& p_type, const String& p_name,
-                            std::initializer_list<Ref<Node>>&& p_parameters,
-                            const String& p_modifiers);
+        Ref<ListNode> MemberFuncDef(
+            const String& p_type, const String& p_name,
+            std::initializer_list<Ref<Node>>&& p_parameters, const String& p_modifiers);
 
-Ref<ListNode> MemberFuncImpl(const String& p_return_type,
-                             const String& p_class_name, const String& p_name,
-                             std::initializer_list<Ref<Node>>&& p_params,
-                             const String& modifiers,
-                             std::initializer_list<Ref<Node>>&& lines);
+        Ref<ListNode> MemberFuncImpl(
+            const String& p_return_type, const String& p_class_name, const String& p_name,
+            std::initializer_list<Ref<Node>>&& p_params, const String& modifiers,
+            std::initializer_list<Ref<Node>>&& lines);
 
-Ref<ListNode> DeclAssign(const String& p_type, const String& p_name,
-                         const Ref<Node>& p_value);
+        Ref<ListNode>
+        DeclAssign(const String& p_type, const String& p_name, const Ref<Node>& p_value);
 
-Ref<ListNode> Assign(const String& p_variable_name, const Ref<Node>& p_value);
+        Ref<ListNode> Assign(const String& p_variable_name, const Ref<Node>& p_value);
 
-Ref<ListNode> Return(const String& p_name);
+        Ref<ListNode> Return(const String& p_name);
 
-Ref<SnippetNode> Param(const String& p_name);
+        Ref<SnippetNode> Param(const String& p_name);
 
-Ref<SnippetNode> Include(const String& p_path);
+        Ref<SnippetNode> Include(const String& p_path);
 
-Ref<SnippetNode> SystemInclude(const String& p_path);
+        Ref<SnippetNode> SystemInclude(const String& p_path);
 
-Ref<ListNode> Namespace(const String& p_name, Ref<OutputNode> p_content);
+        Ref<ListNode> Namespace(const String& p_name, Ref<OutputNode> p_content);
 
-Ref<ListNode> Class(const String& p_name, const Ref<Node>& p_content);
+        Ref<ListNode> Class(const String& p_name, const Ref<Node>& p_content);
 
-Ref<ListNode> Class(const String& p_name, const String& p_base,
-                    Ref<OutputNode> p_content);
+        Ref<ListNode> Class(const String& p_name, const String& p_base, Ref<OutputNode> p_content);
 
-Ref<ListNode> Enum(const String& p_name, const Ref<Node>& p_content);
+        Ref<ListNode> Enum(const String& p_name, const Ref<Node>& p_content);
 
-Ref<ListNode> MacroFunctionDefine(const String& p_name,
-                                  std::initializer_list<Ref<Node>>&& p_params,
-                                  std::initializer_list<Ref<Node>>&& p_lines);
+        Ref<ListNode> MacroFunctionDefine(
+            const String& p_name, std::initializer_list<Ref<Node>>&& p_params,
+            std::initializer_list<Ref<Node>>&& p_lines);
 
-Ref<EnclosingNode> DocComment(const Ref<Node>& p_content);
+        Ref<EnclosingNode> DocComment(const Ref<Node>& p_content);
 
-Ref<ListNode> Define(const String& p_name,
-                     std::initializer_list<Ref<Node>>&& p_params,
-                     const String& p_content);
+        Ref<ListNode> Define(
+            const String& p_name, std::initializer_list<Ref<Node>>&& p_params,
+            const String& p_content);
 
-Ref<ListNode> Define(const String& p_name,
-                     std::initializer_list<Ref<Node>>&& p_params,
-                     std::initializer_list<Ref<Node>>&& p_lines);
+        Ref<ListNode> Define(
+            const String& p_name, std::initializer_list<Ref<Node>>&& p_params,
+            std::initializer_list<Ref<Node>>&& p_lines);
 
-Ref<SnippetNode> PragmaOnce();
+        Ref<SnippetNode> PragmaOnce();
 
-Ref<ListNode> If(const Ref<Node>& p_condition,
-                 std::initializer_list<Ref<Node>> p_children);
+        Ref<ListNode> If(const Ref<Node>& p_condition, std::initializer_list<Ref<Node>> p_children);
 
-}  // namespace Output
-}  // namespace GodotObjectCompiler
+    } // namespace Output
+} // namespace GodotObjectCompiler

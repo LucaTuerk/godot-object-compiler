@@ -37,7 +37,8 @@
 #include "godot_class/invalid_non_gd.generated.h"
 
 GODOT_CLASS();
-class InvalidNonGD : public std::vector {
-  GODOT_GENERATED_BODY();
+class InvalidNonGD : public std::vector
+{
+    GODOT_GENERATED_BODY();
 };
 GODOT_GENERATED_GLOBAL();

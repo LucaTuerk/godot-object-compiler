@@ -39,29 +39,27 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_TEST(FileReadWriteTest) {
-  String base = path_absolute(".goc_tests/tmp");
+GOC_TEST(FileReadWriteTest)
+{
+    String base = path_absolute(".goc_tests/tmp");
 
-  for (Size i = 0; i < 100; ++i) {
-    String filename = path_concat_ext(base, generate_random_string(10), "txt");
-    Size size = i * 100;
-    String content = generate_random_string(size);
-    write_file(filename, content);
-    GOC_TEST_ASSERT(file_exists(filename),
-                    "File \"%s\" does not exist after write", filename.c_str());
+    for (Size i = 0; i < 100; ++i) {
+        String filename = path_concat_ext(base, generate_random_string(10), "txt");
+        Size size = i * 100;
+        String content = generate_random_string(size);
+        write_file(filename, content);
+        GOC_TEST_ASSERT(
+            file_exists(filename), "File \"%s\" does not exist after write", filename.c_str());
 
-    String read_content = read_file(filename);
-    GOC_TEST_EQ(content, read_content, "Invalid read content from \"%s\"",
-                filename.c_str());
-    GOC_TEST_EQ(read_content.size(), size, "Invalid read size from \"%s\"",
-                filename.c_str());
+        String read_content = read_file(filename);
+        GOC_TEST_EQ(content, read_content, "Invalid read content from \"%s\"", filename.c_str());
+        GOC_TEST_EQ(read_content.size(), size, "Invalid read size from \"%s\"", filename.c_str());
 
-    GOC_TEST_ASSERT(remove_file(filename), "Failed to remove file \"%s\"",
-                    filename.c_str());
-    GOC_TEST_ASSERT(!file_exists(filename),
-                    "File \"%s\" still exists after sucessfull remove call",
-                    filename.c_str());
-  }
+        GOC_TEST_ASSERT(remove_file(filename), "Failed to remove file \"%s\"", filename.c_str());
+        GOC_TEST_ASSERT(
+            !file_exists(filename), "File \"%s\" still exists after sucessfull remove call",
+            filename.c_str());
+    }
 
-  return TEST_RESULT_SUCCESS;
+    return TEST_RESULT_SUCCESS;
 };

@@ -38,11 +38,12 @@
 
 GODOT_CLASS();
 
-class Invalid : Node {
-  GODOT_GENERATED_BODY();
+class Invalid : Node
+{
+    GODOT_GENERATED_BODY();
 
-  GODOT_PROPERTY();
-  std::vector<int> no_variant;
+    GODOT_PROPERTY();
+    std::vector<int> no_variant;
 };
 
 GODOT_GENERATED_GLOBAL();

@@ -36,153 +36,155 @@
 
 #include "properties.generated.h"
 
-namespace Tests {
-GODOT_CLASS();
-class Properties : public Node {
-  GODOT_GENERATED_BODY();
+namespace Tests
+{
+    GODOT_CLASS();
+    class Properties : public Node
+    {
+        GODOT_GENERATED_BODY();
 
-  GODOT_PROPERTY();
-  Variant variant_property;
+        GODOT_PROPERTY();
+        Variant variant_property;
 
-  GODOT_PROPERTY();
-  AABB aabb_property;
+        GODOT_PROPERTY();
+        AABB aabb_property;
 
-  GODOT_PROPERTY();
-  Array array_property;
+        GODOT_PROPERTY();
+        Array array_property;
 
-  GODOT_PROPERTY();
-  TypedArray<Resource> typed_array_property;
+        GODOT_PROPERTY();
+        TypedArray<Resource> typed_array_property;
 
-  GODOT_PROPERTY();
-  Basis basis_property;
+        GODOT_PROPERTY();
+        Basis basis_property;
 
-  GODOT_PROPERTY();
-  bool bool_property = false;
+        GODOT_PROPERTY();
+        bool bool_property = false;
 
-  GODOT_PROPERTY();
-  Callable callable_property;
+        GODOT_PROPERTY();
+        Callable callable_property;
 
-  GODOT_PROPERTY();
-  Color color_property;
+        GODOT_PROPERTY();
+        Color color_property;
 
-  GODOT_PROPERTY();
-  Dictionary dictionary_property;
+        GODOT_PROPERTY();
+        Dictionary dictionary_property;
 
-  GODOT_PROPERTY();
-  TypedDictionary<int, Resource> typed_dictionary_property;
+        GODOT_PROPERTY();
+        TypedDictionary<int, Resource> typed_dictionary_property;
 
-  GODOT_PROPERTY();
-  float float_property = 0;
+        GODOT_PROPERTY();
+        float float_property = 0;
 
-  GODOT_PROPERTY();
-  real_t real_t_property = 0;
+        GODOT_PROPERTY();
+        real_t real_t_property = 0;
 
-  GODOT_PROPERTY();
-  double double_property = 0;
+        GODOT_PROPERTY();
+        double double_property = 0;
 
-  GODOT_PROPERTY();
-  int int_property = 0;
+        GODOT_PROPERTY();
+        int int_property = 0;
 
-  GODOT_PROPERTY();
-  long long_property = 0;
+        GODOT_PROPERTY();
+        long long_property = 0;
 
-  GODOT_PROPERTY();
-  NodePath node_path_property;
+        GODOT_PROPERTY();
+        NodePath node_path_property;
 
-  GODOT_PROPERTY();
-  Object* object_property = nullptr;
+        GODOT_PROPERTY();
+        Object* object_property = nullptr;
 
-  GODOT_PROPERTY();
-  PackedByteArray packed_byte_array_property;
+        GODOT_PROPERTY();
+        PackedByteArray packed_byte_array_property;
 
-  GODOT_PROPERTY();
-  PackedColorArray packed_color_array_property;
+        GODOT_PROPERTY();
+        PackedColorArray packed_color_array_property;
 
-  GODOT_PROPERTY();
-  PackedFloat32Array packed_float32_array_property;
+        GODOT_PROPERTY();
+        PackedFloat32Array packed_float32_array_property;
 
-  GODOT_PROPERTY();
-  PackedFloat64Array packed_float64_array_property;
+        GODOT_PROPERTY();
+        PackedFloat64Array packed_float64_array_property;
 
-  GODOT_PROPERTY();
-  PackedInt32Array packed_int32_array_property;
+        GODOT_PROPERTY();
+        PackedInt32Array packed_int32_array_property;
 
-  GODOT_PROPERTY();
-  PackedInt64Array packed_int64_array_property;
+        GODOT_PROPERTY();
+        PackedInt64Array packed_int64_array_property;
 
-  GODOT_PROPERTY();
-  PackedStringArray packed_string_array_property;
+        GODOT_PROPERTY();
+        PackedStringArray packed_string_array_property;
 
-  GODOT_PROPERTY();
-  PackedVector2Array packed_vector2_array_property;
+        GODOT_PROPERTY();
+        PackedVector2Array packed_vector2_array_property;
 
-  GODOT_PROPERTY();
-  PackedVector3Array packed_vector3_array_property;
+        GODOT_PROPERTY();
+        PackedVector3Array packed_vector3_array_property;
 
-  GODOT_PROPERTY();
-  PackedVector4Array packed_vector4_array_property;
+        GODOT_PROPERTY();
+        PackedVector4Array packed_vector4_array_property;
 
-  GODOT_PROPERTY();
-  Plane plane_property;
+        GODOT_PROPERTY();
+        Plane plane_property;
 
-  GODOT_PROPERTY();
-  Projection projection_property;
+        GODOT_PROPERTY();
+        Projection projection_property;
 
-  GODOT_PROPERTY();
-  Quaternion quaternion_property;
+        GODOT_PROPERTY();
+        Quaternion quaternion_property;
 
-  GODOT_PROPERTY();
-  Rect2 rect2_property;
+        GODOT_PROPERTY();
+        Rect2 rect2_property;
 
-  GODOT_PROPERTY();
-  Rect2i rect2i_property;
+        GODOT_PROPERTY();
+        Rect2i rect2i_property;
 
-  GODOT_PROPERTY();
-  Signal signal_property;
+        GODOT_PROPERTY();
+        Signal signal_property;
 
-  GODOT_PROPERTY();
-  String string_property;
+        GODOT_PROPERTY();
+        String string_property;
 
-  GODOT_PROPERTY();
-  StringName string_name_property;
+        GODOT_PROPERTY();
+        StringName string_name_property;
 
-  GODOT_PROPERTY();
-  Transform2D transform2D_property;
+        GODOT_PROPERTY();
+        Transform2D transform2D_property;
 
-  GODOT_PROPERTY();
-  Transform3D transform3D_property;
+        GODOT_PROPERTY();
+        Transform3D transform3D_property;
 
-  GODOT_PROPERTY();
-  Vector2 vector2_property;
+        GODOT_PROPERTY();
+        Vector2 vector2_property;
 
-  GODOT_PROPERTY();
-  Vector2i vector2i_property;
+        GODOT_PROPERTY();
+        Vector2i vector2i_property;
 
-  GODOT_PROPERTY();
-  Vector3 vector3_property;
+        GODOT_PROPERTY();
+        Vector3 vector3_property;
 
-  GODOT_PROPERTY();
-  Vector3i vector3i_property;
+        GODOT_PROPERTY();
+        Vector3i vector3i_property;
 
-  GODOT_PROPERTY();
-  Vector4 vector4_property;
+        GODOT_PROPERTY();
+        Vector4 vector4_property;
 
-  GODOT_PROPERTY();
-  Vector4i vector4i_property;
+        GODOT_PROPERTY();
+        Vector4i vector4i_property;
 
-  GODOT_PROPERTY();
-  Node* node_property = nullptr;
+        GODOT_PROPERTY();
+        Node* node_property = nullptr;
 
-  GODOT_PROPERTY();
-  Ref<Resource> resource_property;
+        GODOT_PROPERTY();
+        Ref<Resource> resource_property;
 
-  GODOT_ENUM();
+        GODOT_ENUM();
 
-  enum Enum { ENUM_VALUE };
+        enum Enum { ENUM_VALUE };
 
-  GODOT_PROPERTY();
-  Enum enum_property = ENUM_VALUE;
-};
-}  // namespace Tests
+        GODOT_PROPERTY();
+        Enum enum_property = ENUM_VALUE;
+    };
+} // namespace Tests
 
 GODOT_GENERATED_GLOBAL();

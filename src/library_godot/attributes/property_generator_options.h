@@ -36,25 +36,27 @@
 #pragma once
 #include "library/generator/attribute_parameter_type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class PropertyGeneratorOptionsArgument : public Argument {
-  NODE_TYPE(PropertyGeneratorOptionsArgument);
+    class PropertyGeneratorOptionsArgument : public Argument
+    {
+        NODE_TYPE(PropertyGeneratorOptionsArgument);
 
- public:
-  static inline const char* Default = "PropertyGeneratorOptionsDefault";
-  static inline const char* EmitChanged = "EmitChanged";
-  static inline const char* EmitChangedValue = "EmitChangedValue";
-};
+      public:
+        static inline const char* Default = "PropertyGeneratorOptionsDefault";
+        static inline const char* EmitChanged = "EmitChanged";
+        static inline const char* EmitChangedValue = "EmitChangedValue";
+    };
 
-class PropertyGeneratorOptionsParameterType : public IAttributeParameterType {
-  PARAM_TYPE(PropertyGeneratorOptionsParameterType,
-             PropertyGeneratorOptionsArgument)
+    class PropertyGeneratorOptionsParameterType : public IAttributeParameterType
+    {
+        PARAM_TYPE(PropertyGeneratorOptionsParameterType, PropertyGeneratorOptionsArgument)
 
- public:
-  String get_return_type() override;
-  Vector<String> get_value_names() override;
-  Vector<Argument> get_arguments() override;
-};
+      public:
+        String get_return_type() override;
+        Vector<String> get_value_names() override;
+        Vector<Argument> get_arguments() override;
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

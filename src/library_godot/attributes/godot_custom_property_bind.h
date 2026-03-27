@@ -36,32 +36,34 @@
 #include "library/generator/attribute_parameter_type.h"
 #include "library/tree/syntax/function.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-struct GodotCustomPropertyBind {
-  String property_name;
-  String getter_name;
-  String setter_name;
-  Ref<Function> getter;
-  Ref<Function> setter;
-};
+    struct GodotCustomPropertyBind {
+        String property_name;
+        String getter_name;
+        String setter_name;
+        Ref<Function> getter;
+        Ref<Function> setter;
+    };
 
-class GodotCustomPropertyGetSetArgument : public Argument {
-  NODE_TYPE(GodotCustomPropertyGetSetArgument);
-};
+    class GodotCustomPropertyGetSetArgument : public Argument
+    {
+        NODE_TYPE(GodotCustomPropertyGetSetArgument);
+    };
 
-class GodotCustomPropertyGetSetParameterType : public IAttributeParameterType {
-  PARAM_TYPE(GodotCustomPropertyGetSetParameterType,
-             GodotCustomPropertyGetSetArgument)
+    class GodotCustomPropertyGetSetParameterType : public IAttributeParameterType
+    {
+        PARAM_TYPE(GodotCustomPropertyGetSetParameterType, GodotCustomPropertyGetSetArgument)
 
- public:
-  static inline const char* AutoGetSet = "AutoGetSet";
-  static inline const char* GetSet = "GetSet";
+      public:
+        static inline const char* AutoGetSet = "AutoGetSet";
+        static inline const char* GetSet = "GetSet";
 
-  String get_return_type() override;
+        String get_return_type() override;
 
-  Vector<String> get_value_names() override;
+        Vector<String> get_value_names() override;
 
-  Vector<Argument> get_arguments() override;
-};
-}  // namespace GodotObjectCompiler
+        Vector<Argument> get_arguments() override;
+    };
+} // namespace GodotObjectCompiler

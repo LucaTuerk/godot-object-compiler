@@ -37,6 +37,7 @@
 #include "godot_class/invalid_no_gen_global.generated.h"
 
 GODOT_CLASS();
-class InvalidNoGenBody : public Object {
-  GODOT_GENERATED_BODY();
+class InvalidNoGenBody : public Object
+{
+    GODOT_GENERATED_BODY();
 };

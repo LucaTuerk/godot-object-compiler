@@ -39,7 +39,8 @@
 // clang-format on
 
 GODOT_CLASS();
-class InvalidIncludeOrder : public Object {
-  GODOT_GENERATED_BODY();
+class InvalidIncludeOrder : public Object
+{
+    GODOT_GENERATED_BODY();
 };
 GODOT_GENERATED_GLOBAL();

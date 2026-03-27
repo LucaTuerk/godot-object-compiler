@@ -37,23 +37,26 @@
 #include "library/generator/attribute_parameter_type.h"
 #include "library/tree/syntax/function.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class EnumGeneratorOptionsArgument : public Argument {
-  NODE_TYPE(EnumGeneratorOptionsArgument);
+    class EnumGeneratorOptionsArgument : public Argument
+    {
+        NODE_TYPE(EnumGeneratorOptionsArgument);
 
- public:
-  static inline const char* EnumDefault = "EnumDefault";
-  static inline const char* EnumFlags = "EnumFlags";
-};
+      public:
+        static inline const char* EnumDefault = "EnumDefault";
+        static inline const char* EnumFlags = "EnumFlags";
+    };
 
-class EnumGeneratorOptionsParameterType : public IAttributeParameterType {
-  PARAM_TYPE(EnumGeneratorOptionsParameterType, EnumGeneratorOptionsArgument)
+    class EnumGeneratorOptionsParameterType : public IAttributeParameterType
+    {
+        PARAM_TYPE(EnumGeneratorOptionsParameterType, EnumGeneratorOptionsArgument)
 
- public:
-  String get_return_type() override;
-  Vector<String> get_value_names() override;
-  Vector<Argument> get_arguments() override;
-};
+      public:
+        String get_return_type() override;
+        Vector<String> get_value_names() override;
+        Vector<Argument> get_arguments() override;
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

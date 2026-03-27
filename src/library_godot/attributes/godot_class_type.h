@@ -37,27 +37,30 @@
 #include "library/generator/attribute_parameter_type.h"
 #include "library/tree/syntax/function.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GodotClassTypeArgument : public Argument {
-  NODE_TYPE(GodotClassTypeArgument);
-};
+    class GodotClassTypeArgument : public Argument
+    {
+        NODE_TYPE(GodotClassTypeArgument);
+    };
 
-class GodotClassTypeParameterType : public IAttributeParameterType {
-  PARAM_TYPE(GodotClassTypeParameterType, GodotClassTypeArgument);
+    class GodotClassTypeParameterType : public IAttributeParameterType
+    {
+        PARAM_TYPE(GodotClassTypeParameterType, GodotClassTypeArgument);
 
- public:
-  String get_return_type() override;
+      public:
+        String get_return_type() override;
 
-  Vector<String> get_value_names() override;
+        Vector<String> get_value_names() override;
 
-  Vector<Argument> get_arguments() override;
+        Vector<Argument> get_arguments() override;
 
-  bool get_macro_for_value_name(const String& p_value_name, String& r_macro);
+        bool get_macro_for_value_name(const String& p_value_name, String& r_macro);
 
- private:
-  LAZY_MUT(GodotClassTypeParameterType, Vector<String>, value_names);
-  Dictionary<String, String> _value_name_to_macro;
-};
+      private:
+        LAZY_MUT(GodotClassTypeParameterType, Vector<String>, value_names);
+        Dictionary<String, String> _value_name_to_macro;
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -37,25 +37,28 @@
 
 #include "library/type_db.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool PrintType::validate_arguments(ApplicationContext& p_context) {
-  return !p_context.program_arguments.empty();
-}
+    bool PrintType::validate_arguments(ApplicationContext& p_context)
+    {
+        return !p_context.program_arguments.empty();
+    }
 
-Ref<ProgramError> PrintType::run(ApplicationContext& p_context) {
-  PROG_ERR_COND(p_context.program_arguments.empty(),
-                "No type name provided. Please specify one or more types by "
-                "their fully qualified name.")
+    Ref<ProgramError> PrintType::run(ApplicationContext& p_context)
+    {
+        PROG_ERR_COND(
+            p_context.program_arguments.empty(), "No type name provided. Please specify one or "
+                                                 "more types by their fully qualified name.")
 
-  for (const String& name : p_context.program_arguments) {
-    const Result<Node, Error> type_result =
-        ExecutionContext::instance()->get_type_db()->get_type_data(name);
-    RESULT_ERROR_PASS_ON(ProgramError, type_result, type_data)
-    print_ln(type_data->pretty_print());
-  }
+        for (const String& name : p_context.program_arguments) {
+            const Result<Node, Error> type_result =
+                ExecutionContext::instance()->get_type_db()->get_type_data(name);
+            RESULT_ERROR_PASS_ON(ProgramError, type_result, type_data)
+            print_ln(type_data->pretty_print());
+        }
 
-  return ProgramError::OK;
-}
+        return ProgramError::OK;
+    }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

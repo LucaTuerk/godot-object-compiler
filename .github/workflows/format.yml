@@ -1,29 +1,29 @@
 name: format.yml
 on:
-  workflow_call:
+    workflow_call:
 
 jobs:
-  check-format:
-    name: Check Formating
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v4
-        with:
-          submodules: "false"
+    check-format:
+        name: Check Formating
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Project
+              uses: actions/checkout@v4
+              with:
+                  submodules: "false"
 
-      - name: Create all.h
-        run: |
-          python ./tools/create_all_h.py
+            - name: Create all.h
+              run: |
+                  python ./tools/create_all_h.py
 
-      - name: Generate licence headers
-        run: |
-          python ./tools/add_licence_headers.py
+            - name: Generate licence headers
+              run: |
+                  python ./tools/add_licence_headers.py
 
-      - name: Run format
-        shell: bash
-        run: |
-          python ./tools/format.py
+            - name: Run format
+              shell: bash
+              run: |
+                  python ./tools/format.py
 
-      - name: Verify no changes
-        run: git diff --exit-code
+            - name: Verify no changes
+              run: git diff --exit-code

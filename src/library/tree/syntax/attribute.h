@@ -36,63 +36,74 @@
 #include "context.h"
 #include "library/parser/attribute_argument_parser.h"
 
-#define ATTRIBUTE_TYPE(node_type, target_type, target)                     \
-  NODE_TYPE(node_type);                                                    \
-                                                                           \
- protected:                                                                \
-  virtual bool _verify_target_class(Ref<Node> p_resolved) const override { \
-    return p_resolved->is<target_type>();                                  \
-  }                                                                        \
-                                                                           \
-  virtual Target _get_target() const override { return target; }           \
-                                                                           \
- public:                                                                   \
-  Ref<target_type> Target##target_type() {                                 \
-    Ref<Node> node_target = resolve_target();                              \
-    if (!node_target) {                                                    \
-      return nullptr;                                                      \
-    }                                                                      \
-    return node_target->as<target_type>();                                 \
-  }                                                                        \
-                                                                           \
- private:
+#define ATTRIBUTE_TYPE(node_type, target_type, target)                                             \
+    NODE_TYPE(node_type);                                                                          \
+                                                                                                   \
+  protected:                                                                                       \
+    virtual bool _verify_target_class(Ref<Node> p_resolved) const override                         \
+    {                                                                                              \
+        return p_resolved->is<target_type>();                                                      \
+    }                                                                                              \
+                                                                                                   \
+    virtual Target _get_target() const override                                                    \
+    {                                                                                              \
+        return target;                                                                             \
+    }                                                                                              \
+                                                                                                   \
+  public:                                                                                          \
+    Ref<target_type> Target##target_type()                                                         \
+    {                                                                                              \
+        Ref<Node> node_target = resolve_target();                                                  \
+        if (!node_target) {                                                                        \
+            return nullptr;                                                                        \
+        }                                                                                          \
+        return node_target->as<target_type>();                                                     \
+    }                                                                                              \
+                                                                                                   \
+  private:
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Attribute : public NamedContext {
- public:
-  enum Target {
-    NEXT,        // attribute applies to next sibling in the context
-    CONTAINING,  // attribute applies to a containing ancestral context
-    NONE,        // no target
-  };
+    class Attribute : public NamedContext
+    {
+      public:
+        enum Target {
+            NEXT,       // attribute applies to next sibling in the
+                        // context
+            CONTAINING, // attribute applies to a containing
+                        // ancestral context
+            NONE,       // no target
+        };
 
-  Ref<Node> resolve_target() const;
-  bool verify_target(const Ref<Node>& p_resolved) const;
-  virtual Ref<IAttributeArgumentParser> get_argument_parser();
+        Ref<Node> resolve_target() const;
+        bool verify_target(const Ref<Node>& p_resolved) const;
+        virtual Ref<IAttributeArgumentParser> get_argument_parser();
 
-  Size start{};
-  Size end{};
-  Size line{};
+        Size start{};
+        Size end{};
+        Size line{};
 
- protected:
-  virtual Target _get_target() const = 0;
-  virtual bool _verify_target_class(Ref<Node> p_resolved) const = 0;
-  virtual bool _verify_target(const Ref<Node>& p_resolved) const;
-};
+      protected:
+        virtual Target _get_target() const = 0;
+        virtual bool _verify_target_class(Ref<Node> p_resolved) const = 0;
+        virtual bool _verify_target(const Ref<Node>& p_resolved) const;
+    };
 
-class UnparsedAttributeArguments : public Node {
-  NODE_TYPE(UnparsedAttributeArguments);
+    class UnparsedAttributeArguments : public Node
+    {
+        NODE_TYPE(UnparsedAttributeArguments);
 
- public:
-  explicit UnparsedAttributeArguments(const String& content)
-      : content(content) {}
-  String content;
+      public:
+        explicit UnparsedAttributeArguments(const String& content) : content(content)
+        {
+        }
+        String content;
 
-  String to_string() const override;
-  bool copy_to(const Ref<Node>& p_other) const override;
-  void write_to(IStructuredWriter* p_writer) override;
-  void read_from(IStructuredReader* p_reader) override;
-};
+        String to_string() const override;
+        bool copy_to(const Ref<Node>& p_other) const override;
+        void write_to(IStructuredWriter* p_writer) override;
+        void read_from(IStructuredReader* p_reader) override;
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

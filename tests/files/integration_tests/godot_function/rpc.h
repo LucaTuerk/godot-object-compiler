@@ -38,32 +38,33 @@
 
 GODOT_CLASS();
 
-class Rpc : public Node {
-  GODOT_GENERATED_BODY();
+class Rpc : public Node
+{
+    GODOT_GENERATED_BODY();
 
-  GODOT_FUNCTION(Authority);
-  void rpc_function_authority();
+    GODOT_FUNCTION(Authority);
+    void rpc_function_authority();
 
-  GODOT_FUNCTION(AnyPeer);
-  void rpc_function_anypeer();
+    GODOT_FUNCTION(AnyPeer);
+    void rpc_function_anypeer();
 
-  GODOT_FUNCTION(Authority, Reliable);
-  void rpc_function_reliable();
+    GODOT_FUNCTION(Authority, Reliable);
+    void rpc_function_reliable();
 
-  GODOT_FUNCTION(Authority, Unreliable);
-  void rpc_function_unreliable();
+    GODOT_FUNCTION(Authority, Unreliable);
+    void rpc_function_unreliable();
 
-  GODOT_FUNCTION(Authority, UnreliableOrdered);
-  void rpc_function_unreliable_ordered();
+    GODOT_FUNCTION(Authority, UnreliableOrdered);
+    void rpc_function_unreliable_ordered();
 
-  GODOT_FUNCTION(Authority, CallRemote);
-  void rpc_function_call_remote();
+    GODOT_FUNCTION(Authority, CallRemote);
+    void rpc_function_call_remote();
 
-  GODOT_FUNCTION(Authority, CallLocal);
-  void rpc_function_call_local();
+    GODOT_FUNCTION(Authority, CallLocal);
+    void rpc_function_call_local();
 
-  GODOT_FUNCTION(Authority, Channel(1));
-  void rpc_function_channel_one();
+    GODOT_FUNCTION(Authority, Channel(1));
+    void rpc_function_channel_one();
 };
 
 GODOT_GENERATED_GLOBAL();

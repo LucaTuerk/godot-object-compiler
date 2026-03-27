@@ -38,31 +38,38 @@
 #include "library/tree/syntax/identifier.h"
 #include "library_godot/generated_assumptions/parameter_types.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String GodotVirtualParameterType::get_return_type() { return "GOC_Virtual"; }
+    String GodotVirtualParameterType::get_return_type()
+    {
+        return "GOC_Virtual";
+    }
 
-Vector<String> GodotVirtualParameterType::get_value_names() {
-  return {"NoVirtual", "ScriptVirtual", "ScriptVirtualRequired"};
-}
+    Vector<String> GodotVirtualParameterType::get_value_names()
+    {
+        return {"NoVirtual", "ScriptVirtual", "ScriptVirtualRequired"};
+    }
 
-Vector<IAttributeParameterType::Argument>
-GodotVirtualParameterType::get_arguments() {
-  return {};
-}
+    Vector<IAttributeParameterType::Argument> GodotVirtualParameterType::get_arguments()
+    {
+        return {};
+    }
 
-bool GodotVirtualArgument::is_script_virtual() const {
-  const Ref<Identifier> identifier = find_child<Identifier>();
-  PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
+    bool GodotVirtualArgument::is_script_virtual() const
+    {
+        const Ref<Identifier> identifier = find_child<Identifier>();
+        PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
 
-  return identifier->name != AssumedParameterValues::NoVirtual();
-}
+        return identifier->name != AssumedParameterValues::NoVirtual();
+    }
 
-bool GodotVirtualArgument::is_required() const {
-  const Ref<Identifier> identifier = find_child<Identifier>();
-  PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
+    bool GodotVirtualArgument::is_required() const
+    {
+        const Ref<Identifier> identifier = find_child<Identifier>();
+        PANIC_COND(!identifier, "Invalid GodotVirtualArgument");
 
-  return identifier->name == AssumedParameterValues::ScriptVirtualRequired();
-}
+        return identifier->name == AssumedParameterValues::ScriptVirtualRequired();
+    }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -36,10 +36,12 @@
 #pragma once
 #include "context.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Define : public NamedContext {
-  NODE_TYPE(Define);
-};
+    class Define : public NamedContext
+    {
+        NODE_TYPE(Define);
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

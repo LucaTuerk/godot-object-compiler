@@ -40,17 +40,20 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/namespace.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool NamespaceHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
-  return p_current_src->type == "namespace_definition";
-}
+    bool NamespaceHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+    {
+        return p_current_src->type == "namespace_definition";
+    }
 
-ParserStep NamespaceHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                                    Ref<Context>& r_current_target) {
-  UNUSED(p_current_src);
-  r_current_target = r_current_target->B<Namespace>();
-  return ParserStep::StepInto();
-}
+    ParserStep NamespaceHandler::handle(
+        const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+    {
+        UNUSED(p_current_src);
+        r_current_target = r_current_target->B<Namespace>();
+        return ParserStep::StepInto();
+    }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

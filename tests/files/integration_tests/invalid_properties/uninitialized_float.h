@@ -38,11 +38,12 @@
 
 GODOT_CLASS();
 
-class Invalid : Node {
-  GODOT_GENERATED_BODY();
+class Invalid : Node
+{
+    GODOT_GENERATED_BODY();
 
-  GODOT_PROPERTY();
-  float unitialized_float;
+    GODOT_PROPERTY();
+    float unitialized_float;
 };
 
 GODOT_GENERATED_GLOBAL();

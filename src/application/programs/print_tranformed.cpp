@@ -42,45 +42,48 @@
 #include "library/tree/syntax/namespace.h"
 #include "library_godot/assumptions.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool PrintTransformed::validate_arguments(ApplicationContext& p_context) {
-  return p_context.program_arguments.size() == 1 &&
-         could_be_file_path(p_context.program_arguments[0]);
-}
+    bool PrintTransformed::validate_arguments(ApplicationContext& p_context)
+    {
+        return p_context.program_arguments.size() == 1 &&
+               could_be_file_path(p_context.program_arguments[0]);
+    }
 
-Ref<ProgramError> PrintTransformed::run(ApplicationContext& p_context) {
-  PROG_ERR_COND(
-      p_context.program_arguments.size() != 1,
-      "Invalid argument count for program %s. Expected 1 path argument.",
-      get_type_static().c_str());
+    Ref<ProgramError> PrintTransformed::run(ApplicationContext& p_context)
+    {
+        PROG_ERR_COND(
+            p_context.program_arguments.size() != 1,
+            "Invalid argument count for program %s. Expected 1 path argument.",
+            get_type_static().c_str());
 
-  auto path = path_absolute(p_context.program_arguments[0]);
+        auto path = path_absolute(p_context.program_arguments[0]);
 
-  PROG_ERR_COND(!file_exists(path),
-                "Invalid path argument for program %s. File does not exist.",
-                get_type_static().c_str());
+        PROG_ERR_COND(
+            !file_exists(path), "Invalid path argument for program %s. File does not exist.",
+            get_type_static().c_str());
 
-  GenerateTypeDB generate_type_db;
-  PROG_ERR_COND(generate_type_db.run(p_context) != ProgramError::OK,
-                "Failed to generate the type db.");
+        GenerateTypeDB generate_type_db;
+        PROG_ERR_COND(
+            generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the type db.");
 
-  PROG_ERR_COND(!(AssumedGodotTypes::validate_assumptions() &&
-                  AssumedParameterValues::validate_assumptions()),
-                "Failed to validate some assumptions on available Godot "
-                "types and macros, probably because the TypeDB "
-                "generator has not found the relevant files.\n"
-                "Ensure godot-cpp include path are known to goc via the -I= "
-                "flag or in the .goc_project file.");
+        PROG_ERR_COND(
+            !(AssumedGodotTypes::validate_assumptions() &&
+              AssumedParameterValues::validate_assumptions()),
+            "Failed to validate some assumptions on available Godot types and macros, probably "
+            "because the TypeDB generator has not found the relevant files.\nEnsure godot-cpp "
+            "include path are known to goc via the -I= flag or in the .goc_project file.");
 
-  TreeSitterParser parser;
-  const Ref<Namespace> ns = node_new<Namespace>();
+        TreeSitterParser parser;
+        const Ref<Namespace> ns = node_new<Namespace>();
 
-  PROG_ERR_COND(parser.parse_file(path, ns) != ParserError::OK,
-                "Failed to parse file %s.", path.c_str());
+        PROG_ERR_COND(
+            parser.parse_file(path, ns) != ParserError::OK, "Failed to parse file %s.",
+            path.c_str());
 
-  print_ln(ns->pretty_print());
-  return ProgramError::OK;
-}
+        print_ln(ns->pretty_print());
+        return ProgramError::OK;
+    }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

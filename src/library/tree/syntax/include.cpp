@@ -39,30 +39,34 @@
 #include "library/tree/syntax/namespace.h"
 #include "library/type_db.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String Include::to_string() const {
-  return is_system_include ? "Include: " + include_path
-                           : "Include: \"" + include_path + "\"";
-}
+    String Include::to_string() const
+    {
+        return is_system_include ? "Include: " + include_path : "Include: \"" + include_path + "\"";
+    }
 
-void Include::read_from(IStructuredReader* p_reader) {
-  Context::read_from(p_reader);
-  include_path = p_reader->read<String, String>("include_path");
-  is_system_include = p_reader->read<String, bool>("is_system_include");
-}
+    void Include::read_from(IStructuredReader* p_reader)
+    {
+        Context::read_from(p_reader);
+        include_path = p_reader->read<String, String>("include_path");
+        is_system_include = p_reader->read<String, bool>("is_system_include");
+    }
 
-void Include::write_to(IStructuredWriter* p_writer) {
-  Context::write_to(p_writer);
-  p_writer->write("include_path", include_path);
-  p_writer->write("is_system_include", is_system_include);
-}
+    void Include::write_to(IStructuredWriter* p_writer)
+    {
+        Context::write_to(p_writer);
+        p_writer->write("include_path", include_path);
+        p_writer->write("is_system_include", is_system_include);
+    }
 
-bool Include::copy_to(const Ref<Node>& p_other) const {
-  COPY_GUARD(Include, Context)
-  target->include_path = include_path;
-  target->is_system_include = is_system_include;
-  return true;
-}
+    bool Include::copy_to(const Ref<Node>& p_other) const
+    {
+        COPY_GUARD(Include, Context)
+        target->include_path = include_path;
+        target->is_system_include = is_system_include;
+        return true;
+    }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

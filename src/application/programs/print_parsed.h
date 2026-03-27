@@ -36,14 +36,16 @@
 #pragma once
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class PrintParsed : public IProgram {
-  PROJECTLESS_PROGRAM(PrintParsed, "print/parsed")
+    class PrintParsed : public IProgram
+    {
+        PROJECTLESS_PROGRAM(PrintParsed, "print/parsed")
 
- public:
-  bool validate_arguments(ApplicationContext& p_context) override;
-  Ref<ProgramError> run(ApplicationContext& p_context) override;
-};
+      public:
+        bool validate_arguments(ApplicationContext& p_context) override;
+        Ref<ProgramError> run(ApplicationContext& p_context) override;
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -36,14 +36,16 @@
 #pragma once
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class PrintTransformed : public IProgram {
-  PROGRAM(PrintTransformed, "print/transformed")
+    class PrintTransformed : public IProgram
+    {
+        PROGRAM(PrintTransformed, "print/transformed")
 
- public:
-  bool validate_arguments(ApplicationContext& p_context) override;
-  Ref<ProgramError> run(ApplicationContext& p_context) override;
-};
+      public:
+        bool validate_arguments(ApplicationContext& p_context) override;
+        Ref<ProgramError> run(ApplicationContext& p_context) override;
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

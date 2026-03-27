@@ -39,24 +39,24 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(GenerateNestedNamespaces) {
-  GOC_INTEGRATION_TEST_GEN_FILE(
-      "tests/files/integration_tests/nested_namespaces.h");
+GOC_INTEGRATION_TEST(GenerateNestedNamespaces)
+{
+    GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/nested_namespaces.h");
 
-  GOC_ASSERT_QUALIFIED_NAME("Tests::A::classA", generated_source)
-  GOC_ASSERT_PROP_BOUND("propA", "INT")
-  GOC_ASSERT_QUALIFIED_NAME("Tests::A::B::classAB", generated_source)
-  GOC_ASSERT_PROP_BOUND("propAB", "INT")
-  GOC_ASSERT_QUALIFIED_NAME("Tests::C::classC", generated_source)
-  GOC_ASSERT_PROP_BOUND("propC", "INT")
-  GOC_ASSERT_QUALIFIED_NAME("Tests::C::D::classCD", generated_source)
-  GOC_ASSERT_PROP_BOUND("propCD", "INT")
-  GOC_ASSERT_QUALIFIED_NAME("Tests::E::classE", generated_source)
-  GOC_ASSERT_PROP_BOUND("propE", "INT")
-  GOC_ASSERT_QUALIFIED_NAME("Tests::E::F::classEF", generated_source)
-  GOC_ASSERT_PROP_BOUND("propEF", "INT")
-  GOC_ASSERT_QUALIFIED_NAME("Tests::E::F::G::classEFG", generated_source)
-  GOC_ASSERT_PROP_BOUND("propEFG", "INT")
+    GOC_ASSERT_QUALIFIED_NAME("Tests::A::classA", generated_source)
+    GOC_ASSERT_PROP_BOUND("propA", "INT")
+    GOC_ASSERT_QUALIFIED_NAME("Tests::A::B::classAB", generated_source)
+    GOC_ASSERT_PROP_BOUND("propAB", "INT")
+    GOC_ASSERT_QUALIFIED_NAME("Tests::C::classC", generated_source)
+    GOC_ASSERT_PROP_BOUND("propC", "INT")
+    GOC_ASSERT_QUALIFIED_NAME("Tests::C::D::classCD", generated_source)
+    GOC_ASSERT_PROP_BOUND("propCD", "INT")
+    GOC_ASSERT_QUALIFIED_NAME("Tests::E::classE", generated_source)
+    GOC_ASSERT_PROP_BOUND("propE", "INT")
+    GOC_ASSERT_QUALIFIED_NAME("Tests::E::F::classEF", generated_source)
+    GOC_ASSERT_PROP_BOUND("propEF", "INT")
+    GOC_ASSERT_QUALIFIED_NAME("Tests::E::F::G::classEFG", generated_source)
+    GOC_ASSERT_PROP_BOUND("propEFG", "INT")
 
-  return TEST_RESULT_SUCCESS;
+    return TEST_RESULT_SUCCESS;
 };

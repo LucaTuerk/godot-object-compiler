@@ -37,7 +37,8 @@
 #include "godot_class/valid_simple.generated.h"
 
 GODOT_CLASS();
-class ValidSimple : public Object {
-  GODOT_GENERATED_BODY();
+class ValidSimple : public Object
+{
+    GODOT_GENERATED_BODY();
 };
 GODOT_GENERATED_GLOBAL();

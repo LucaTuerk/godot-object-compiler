@@ -36,28 +36,29 @@
 #pragma once
 #include "core.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-template <typename T, typename X>
-bool vector_contains(const Vector<T>& vector, const X& item) {
-  return std::find(vector.begin(), vector.end(), T(item)) != vector.end();
-}
-
-template <typename T>
-typename Vector<T>::iterator find(const Vector<T>& vector, const T& item) {
-  return std::find(vector.begin(), vector.end(), item);
-}
-
-template <typename T, typename X>
-Vector<X> vector_transform(const Vector<T>& vector,
-                           std::function<bool(const T&, X&)> function) {
-  Vector<X> result;
-  for (const T& item : vector) {
-    if (X out; function(item, out)) {
-      result.push_back(out);
+    template <typename T, typename X> bool vector_contains(const Vector<T>& vector, const X& item)
+    {
+        return std::find(vector.begin(), vector.end(), T(item)) != vector.end();
     }
-  }
-  return result;
-}
 
-}  // namespace GodotObjectCompiler
+    template <typename T> typename Vector<T>::iterator find(const Vector<T>& vector, const T& item)
+    {
+        return std::find(vector.begin(), vector.end(), item);
+    }
+
+    template <typename T, typename X>
+    Vector<X> vector_transform(const Vector<T>& vector, std::function<bool(const T&, X&)> function)
+    {
+        Vector<X> result;
+        for (const T& item : vector) {
+            if (X out; function(item, out)) {
+                result.push_back(out);
+            }
+        }
+        return result;
+    }
+
+} // namespace GodotObjectCompiler

@@ -38,11 +38,12 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(BindEnums) {
-  GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/enums.h");
+GOC_INTEGRATION_TEST(BindEnums)
+{
+    GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/enums.h");
 
-  GOC_ASSERT_ENUM_BOUND("RegularEnum", "REGULAR_VALUE_1", "REGULAR_VALUE_2");
-  GOC_ASSERT_FLAGS_BOUND("FlagsEnum", "FLAG_0", "FLAG_1");
+    GOC_ASSERT_ENUM_BOUND("RegularEnum", "REGULAR_VALUE_1", "REGULAR_VALUE_2");
+    GOC_ASSERT_FLAGS_BOUND("FlagsEnum", "FLAG_0", "FLAG_1");
 
-  return TEST_RESULT_SUCCESS;
+    return TEST_RESULT_SUCCESS;
 };

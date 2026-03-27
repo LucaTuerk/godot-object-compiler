@@ -41,32 +41,34 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/namespace.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool PrintParsed::validate_arguments(ApplicationContext& p_context) {
-  return p_context.program_arguments.size() == 1 &&
-         could_be_file_path(p_context.program_arguments[0]);
-}
+    bool PrintParsed::validate_arguments(ApplicationContext& p_context)
+    {
+        return p_context.program_arguments.size() == 1 &&
+               could_be_file_path(p_context.program_arguments[0]);
+    }
 
-Ref<ProgramError> PrintParsed::run(ApplicationContext& p_context) {
-  PROG_ERR_COND(
-      p_context.program_arguments.size() != 1,
-      "Invalid argument count for program %s. Expected 1 path argument.",
-      get_type_static().c_str());
+    Ref<ProgramError> PrintParsed::run(ApplicationContext& p_context)
+    {
+        PROG_ERR_COND(
+            p_context.program_arguments.size() != 1,
+            "Invalid argument count for program %s. Expected 1 path argument.",
+            get_type_static().c_str());
 
-  const auto path = path_absolute(p_context.program_arguments[0]);
+        const auto path = path_absolute(p_context.program_arguments[0]);
 
-  PROG_ERR_COND(!file_exists(path),
-                "Invalid path argument for program %s. File does not exist.",
-                get_type_static().c_str());
+        PROG_ERR_COND(
+            !file_exists(path), "Invalid path argument for program %s. File does not exist.",
+            get_type_static().c_str());
 
-  ParserContext parser_context(read_file(path));
+        ParserContext parser_context(read_file(path));
 
-  PROG_ERR_COND(!parser_context.is_valid(), "Failed to parse file %s.",
-                path.c_str());
+        PROG_ERR_COND(!parser_context.is_valid(), "Failed to parse file %s.", path.c_str());
 
-  print_ln(parser_context.current_src->pretty_print());
-  return ProgramError::OK;
-}
+        print_ln(parser_context.current_src->pretty_print());
+        return ProgramError::OK;
+    }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -40,61 +40,63 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/all.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool ParserContext::is_valid() const {
-  return current_src && !current_src->empty();
-}
-
-ParserContext::ParserContext(const String& input) {
-  original_buffer = input;
-  buffer = input;
-  current_target =
-      ExecutionContext::instance()->get_node_db()->create<Namespace>();
-
-  TSParser* parser = ts_parser_new();
-  ts_parser_set_language(parser, tree_sitter_cpp());
-
-  TSTree* tree =
-      ts_parser_parse_string(parser, nullptr, buffer.c_str(), buffer.length());
-  TSNode node = ts_tree_root_node(tree);
-
-  _invalid = ts_node_is_null(node);
-  current_src = _invalid ? nullptr : create_node(node);
-  src_root = current_src;
-
-  ts_tree_delete(tree);
-  ts_parser_delete(parser);
-}
-
-ParserContext ParserContext::from_path(const String& p_path) {
-  ParserContext result{read_file(p_path)};
-  result.file_path = p_path;
-  return result;
-}
-
-Result<TreeSitterNode> ParserContext::create_tree(TSTree* p_tree) {
-  TSNode ts_root = ts_tree_root_node(p_tree);
-  ERROR_COND(ts_node_is_null(ts_root),
-             "Root node is null in parsed TreeSitter tree.");
-
-  return create_node(ts_root);
-}
-
-Ref<TreeSitterNode> ParserContext::create_node(TSNode p_ts_node) {
-  if (ts_node_is_null(p_ts_node) ||
-      String(ts_node_type(p_ts_node)) == "comment") {
-    return nullptr;
-  }
-
-  Ref<TreeSitterNode> node = node_new<TreeSitterNode>(p_ts_node, this);
-  for (uint32_t i = 0; i < ts_node_child_count(p_ts_node); ++i) {
-    if (auto child = create_node(ts_node_child(p_ts_node, i))) {
-      node->add_child(child);
+    bool ParserContext::is_valid() const
+    {
+        return current_src && !current_src->empty();
     }
-  }
 
-  return node;
-}
+    ParserContext::ParserContext(const String& input)
+    {
+        original_buffer = input;
+        buffer = input;
+        current_target = ExecutionContext::instance()->get_node_db()->create<Namespace>();
 
-}  // namespace GodotObjectCompiler
+        TSParser* parser = ts_parser_new();
+        ts_parser_set_language(parser, tree_sitter_cpp());
+
+        TSTree* tree = ts_parser_parse_string(parser, nullptr, buffer.c_str(), buffer.length());
+        TSNode node = ts_tree_root_node(tree);
+
+        _invalid = ts_node_is_null(node);
+        current_src = _invalid ? nullptr : create_node(node);
+        src_root = current_src;
+
+        ts_tree_delete(tree);
+        ts_parser_delete(parser);
+    }
+
+    ParserContext ParserContext::from_path(const String& p_path)
+    {
+        ParserContext result{read_file(p_path)};
+        result.file_path = p_path;
+        return result;
+    }
+
+    Result<TreeSitterNode> ParserContext::create_tree(TSTree* p_tree)
+    {
+        TSNode ts_root = ts_tree_root_node(p_tree);
+        ERROR_COND(ts_node_is_null(ts_root), "Root node is null in parsed TreeSitter tree.");
+
+        return create_node(ts_root);
+    }
+
+    Ref<TreeSitterNode> ParserContext::create_node(TSNode p_ts_node)
+    {
+        if (ts_node_is_null(p_ts_node) || String(ts_node_type(p_ts_node)) == "comment") {
+            return nullptr;
+        }
+
+        Ref<TreeSitterNode> node = node_new<TreeSitterNode>(p_ts_node, this);
+        for (uint32_t i = 0; i < ts_node_child_count(p_ts_node); ++i) {
+            if (auto child = create_node(ts_node_child(p_ts_node, i))) {
+                node->add_child(child);
+            }
+        }
+
+        return node;
+    }
+
+} // namespace GodotObjectCompiler

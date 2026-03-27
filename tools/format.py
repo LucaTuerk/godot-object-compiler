@@ -10,4 +10,4 @@ files.extend(Path("tests").rglob("*.cpp"))
 files.extend(Path("tests").rglob("*.h"))
 
 for path in files:
-    subprocess.run(["clang-format", "-i", path])
+    subprocess.run(["clang-format-18", "-i", path])

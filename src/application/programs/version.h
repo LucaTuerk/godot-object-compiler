@@ -36,22 +36,25 @@
 #pragma once
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Version : public IProgram {
-  PROJECTLESS_PROGRAM(Version, "version")
-  PROG_NO_ARGS
+    class Version : public IProgram
+    {
+        PROJECTLESS_PROGRAM(Version, "version")
+        PROG_NO_ARGS
 
- public:
-  Ref<ProgramError> run(ApplicationContext& p_context) override;
-};
+      public:
+        Ref<ProgramError> run(ApplicationContext& p_context) override;
+    };
 
-class BuildNum : public IProgram {
-  PROJECTLESS_PROGRAM(BuildNum, "build_num")
-  PROG_NO_ARGS
+    class BuildNum : public IProgram
+    {
+        PROJECTLESS_PROGRAM(BuildNum, "build_num")
+        PROG_NO_ARGS
 
- public:
-  Ref<ProgramError> run(ApplicationContext& p_context) override;
-};
+      public:
+        Ref<ProgramError> run(ApplicationContext& p_context) override;
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

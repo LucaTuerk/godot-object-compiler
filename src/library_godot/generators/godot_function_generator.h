@@ -37,36 +37,36 @@
 #include "library/generator/generator.h"
 #include "library_godot/attributes/godot_attributes.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GodotFunctionGenerator : public IClassGenerator<GodotFunctionAttribute> {
-  GENERATOR(GodotFunctionGenerator)
+    class GodotFunctionGenerator : public IClassGenerator<GodotFunctionAttribute>
+    {
+        GENERATOR(GodotFunctionGenerator)
 
- public:
-  Ref<GeneratorError> do_generate_default_attribute_arguments(
-      Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
-      Ref<Context> p_default_values) override;
+      public:
+        Ref<GeneratorError> do_generate_default_attribute_arguments(
+            Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
+            Ref<Context> p_default_values) override;
 
-  Ref<GeneratorError> do_generate(Ref<Class> p_target_class,
-                                  Ref<GodotFunctionAttribute> p_attribute,
-                                  ClassGeneratorResult& r_result) override;
+        Ref<GeneratorError> do_generate(
+            Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
+            ClassGeneratorResult& r_result) override;
 
- private:
-  static Ref<GeneratorError> generate_virtual(
-      const Ref<Class>& p_target_class, const String& p_bind_name,
-      const Ref<Function>& p_target_function,
-      const Ref<GodotFunctionAttribute>& p_attribute,
-      const Ref<Context>& p_bind_methods_body, ClassGeneratorResult& r_result);
+      private:
+        static Ref<GeneratorError> generate_virtual(
+            const Ref<Class>& p_target_class, const String& p_bind_name,
+            const Ref<Function>& p_target_function, const Ref<GodotFunctionAttribute>& p_attribute,
+            const Ref<Context>& p_bind_methods_body, ClassGeneratorResult& r_result);
 
-  static Ref<GeneratorError> generate_rpc(
-      const Ref<Class>& p_target_class, const String& p_function_name,
-      const Ref<GodotRpcModeArgument>& p_rpc_mode,
-      const Ref<GodotRpcTransferModeArgument>& p_transport_mode,
-      const Ref<GodotRpcSyncArgument>& p_sync,
-      const Ref<GodotRpcChannelArgument>& p_channel,
-      ClassGeneratorResult& r_result);
-};
+        static Ref<GeneratorError> generate_rpc(
+            const Ref<Class>& p_target_class, const String& p_function_name,
+            const Ref<GodotRpcModeArgument>& p_rpc_mode,
+            const Ref<GodotRpcTransferModeArgument>& p_transport_mode,
+            const Ref<GodotRpcSyncArgument>& p_sync, const Ref<GodotRpcChannelArgument>& p_channel,
+            ClassGeneratorResult& r_result);
+    };
 
-REGISTER_CLASS_GENERATOR(GodotFunctionGenerator)
+    REGISTER_CLASS_GENERATOR(GodotFunctionGenerator)
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

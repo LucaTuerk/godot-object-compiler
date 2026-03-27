@@ -37,17 +37,18 @@
 #include "enums.generated.h"
 
 GODOT_CLASS();
-class Enums : public Object {
-  GODOT_GENERATED_BODY();
+class Enums : public Object
+{
+    GODOT_GENERATED_BODY();
 
-  GODOT_ENUM();
-  enum RegularEnum {
-    REGULAR_VALUE_1,
-    REGULAR_VALUE_2,
-  };
+    GODOT_ENUM();
+    enum RegularEnum {
+        REGULAR_VALUE_1,
+        REGULAR_VALUE_2,
+    };
 
-  GODOT_ENUM(EnumFlags);
-  enum FlagsEnum { FLAG_0 = 0, FLAG_1 = 1 };
+    GODOT_ENUM(EnumFlags);
+    enum FlagsEnum { FLAG_0 = 0, FLAG_1 = 1 };
 };
 
 GODOT_GENERATED_GLOBAL();

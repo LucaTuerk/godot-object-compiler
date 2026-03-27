@@ -41,114 +41,118 @@
 #include "library/type_db.h"
 #include "modifiers.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String Type::_type_name_lazy_get() {
-  StreamWriter writer;
-  OutputTransformator().transform(shared_from_this())->get_output(&writer);
-  return string_shrink_inner_space(string_trim(writer.get_string()));
-}
-
-String Type::_type_name_untemplated_lazy_get() const {
-  StreamWriter writer;
-  Ref<Type> temp = node_new<Type>();
-  for (const Ref<Node>& child : _children) {
-    if (child->is<TemplateParameters>() || child->is<TemplateArguments>()) {
-      continue;
-    }
-    temp->add_child(child->clone());
-  }
-
-  OutputTransformator().transform(temp)->get_output(&writer);
-  return string_shrink_inner_space(string_trim(writer.get_string()));
-}
-
-String Type::_type_name_unmodified_lazy_get() const {
-  StreamWriter writer;
-  Ref<Type> temp = node_new<Type>();
-  for (const Ref<Node>& child : _children) {
-    if (child->is<TypeQualifier>() || child->is<Pointer>() ||
-        child->is<Reference>()) {
-      continue;
+    String Type::_type_name_lazy_get()
+    {
+        StreamWriter writer;
+        OutputTransformator().transform(shared_from_this())->get_output(&writer);
+        return string_shrink_inner_space(string_trim(writer.get_string()));
     }
 
-    temp->add_child(child->clone());
-  }
+    String Type::_type_name_untemplated_lazy_get() const
+    {
+        StreamWriter writer;
+        Ref<Type> temp = node_new<Type>();
+        for (const Ref<Node>& child : _children) {
+            if (child->is<TemplateParameters>() || child->is<TemplateArguments>()) {
+                continue;
+            }
+            temp->add_child(child->clone());
+        }
 
-  OutputTransformator().transform(temp)->get_output(&writer);
-  return string_shrink_inner_space(string_trim(writer.get_string()));
-}
-
-String Type::_type_name_unmodified_ptr_lazy_get() const {
-  StreamWriter writer;
-  Ref<Type> temp = node_new<Type>();
-  for (const Ref<Node>& child : _children) {
-    if (child->is<TypeQualifier>() || child->is<Reference>()) {
-      continue;
+        OutputTransformator().transform(temp)->get_output(&writer);
+        return string_shrink_inner_space(string_trim(writer.get_string()));
     }
 
-    temp->add_child(child->clone());
-  }
+    String Type::_type_name_unmodified_lazy_get() const
+    {
+        StreamWriter writer;
+        Ref<Type> temp = node_new<Type>();
+        for (const Ref<Node>& child : _children) {
+            if (child->is<TypeQualifier>() || child->is<Pointer>() || child->is<Reference>()) {
+                continue;
+            }
 
-  OutputTransformator().transform(temp)->get_output(&writer);
-  return string_shrink_inner_space(string_trim(writer.get_string()));
-}
+            temp->add_child(child->clone());
+        }
 
-Size Type::_template_argument_count_lazy_get() const {
-  if (!is_template_type()) {
-    return 0;
-  }
-  return template_arguments()->get_child_count();
-}
-
-bool Type::_is_template_type_lazy_get() const {
-  return template_arguments() != nullptr;
-}
-
-Ref<TemplateArguments> Type::_template_arguments_lazy_get() const {
-  return find_child<TemplateArguments>();
-}
-
-Ref<Type> Type::_qualified_lazy_get() const {
-  Ref<Type> result = clone<Type>();
-  if (is_qualified) {
-    return result;
-  }
-
-  Ref<TemplateArguments> template_arguments = result->template_arguments();
-  if (template_arguments) {
-    Ref<TemplateArguments> replacement_arguments =
-        node_new<TemplateArguments>();
-    for (const Ref<Node>& argument : *this->template_arguments()) {
-      if (Ref<Type> type = argument->as<Type>(); type) {
-        replacement_arguments->add_child(type->qualified());
-      } else {
-        replacement_arguments->add_child(argument->clone());
-      }
+        OutputTransformator().transform(temp)->get_output(&writer);
+        return string_shrink_inner_space(string_trim(writer.get_string()));
     }
-    result->replace_child(template_arguments, replacement_arguments);
-  }
 
-  Ref<Namespace> namespace_ = find_ancestor<Namespace>();
-  Ref<Identifier> identifier = result->find_child<Identifier>();
-  Result<Node> type_result =
-      ExecutionContext::instance()->get_type_db()->get_type_data(result,
-                                                                 namespace_);
-  Ref<NamedContext> named = type_result.has_result()
-                                ? type_result.get_result()->as<NamedContext>()
-                                : nullptr;
-  if (type_result.has_error()) {
-    type_result.get_error()->set_handled();
-  }
+    String Type::_type_name_unmodified_ptr_lazy_get() const
+    {
+        StreamWriter writer;
+        Ref<Type> temp = node_new<Type>();
+        for (const Ref<Node>& child : _children) {
+            if (child->is<TypeQualifier>() || child->is<Reference>()) {
+                continue;
+            }
 
-  if (named) {
-    result->replace_child(identifier,
-                          node_new<Identifier>(named->qualified_name()));
-  } else {
-    result->replace_child(identifier, node_new<Identifier>(name()));
-  }
-  result->is_qualified = true;
-  return result;
-}
+            temp->add_child(child->clone());
+        }
 
-}  // namespace GodotObjectCompiler
+        OutputTransformator().transform(temp)->get_output(&writer);
+        return string_shrink_inner_space(string_trim(writer.get_string()));
+    }
+
+    Size Type::_template_argument_count_lazy_get() const
+    {
+        if (!is_template_type()) {
+            return 0;
+        }
+        return template_arguments()->get_child_count();
+    }
+
+    bool Type::_is_template_type_lazy_get() const
+    {
+        return template_arguments() != nullptr;
+    }
+
+    Ref<TemplateArguments> Type::_template_arguments_lazy_get() const
+    {
+        return find_child<TemplateArguments>();
+    }
+
+    Ref<Type> Type::_qualified_lazy_get() const
+    {
+        Ref<Type> result = clone<Type>();
+        if (is_qualified) {
+            return result;
+        }
+
+        Ref<TemplateArguments> template_arguments = result->template_arguments();
+        if (template_arguments) {
+            Ref<TemplateArguments> replacement_arguments = node_new<TemplateArguments>();
+            for (const Ref<Node>& argument : *this->template_arguments()) {
+                if (Ref<Type> type = argument->as<Type>(); type) {
+                    replacement_arguments->add_child(type->qualified());
+                } else {
+                    replacement_arguments->add_child(argument->clone());
+                }
+            }
+            result->replace_child(template_arguments, replacement_arguments);
+        }
+
+        Ref<Namespace> namespace_ = find_ancestor<Namespace>();
+        Ref<Identifier> identifier = result->find_child<Identifier>();
+        Result<Node> type_result =
+            ExecutionContext::instance()->get_type_db()->get_type_data(result, namespace_);
+        Ref<NamedContext> named =
+            type_result.has_result() ? type_result.get_result()->as<NamedContext>() : nullptr;
+        if (type_result.has_error()) {
+            type_result.get_error()->set_handled();
+        }
+
+        if (named) {
+            result->replace_child(identifier, node_new<Identifier>(named->qualified_name()));
+        } else {
+            result->replace_child(identifier, node_new<Identifier>(name()));
+        }
+        result->is_qualified = true;
+        return result;
+    }
+
+} // namespace GodotObjectCompiler

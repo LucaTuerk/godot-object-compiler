@@ -35,20 +35,22 @@
 
 #include "enum_generator_options.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String EnumGeneratorOptionsParameterType::get_return_type() {
-  return "GOC_EnumGeneratorOptions";
-}
+    String EnumGeneratorOptionsParameterType::get_return_type()
+    {
+        return "GOC_EnumGeneratorOptions";
+    }
 
-Vector<String> EnumGeneratorOptionsParameterType::get_value_names() {
-  return {EnumGeneratorOptionsArgument::EnumDefault,
-          EnumGeneratorOptionsArgument::EnumFlags};
-}
+    Vector<String> EnumGeneratorOptionsParameterType::get_value_names()
+    {
+        return {EnumGeneratorOptionsArgument::EnumDefault, EnumGeneratorOptionsArgument::EnumFlags};
+    }
 
-Vector<IAttributeParameterType::Argument>
-EnumGeneratorOptionsParameterType::get_arguments() {
-  return {};
-}
+    Vector<IAttributeParameterType::Argument> EnumGeneratorOptionsParameterType::get_arguments()
+    {
+        return {};
+    }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

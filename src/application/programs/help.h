@@ -36,21 +36,23 @@
 #pragma once
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Help : public IProgram {
-  PROJECTLESS_PROGRAM(Help, "help")
+    class Help : public IProgram
+    {
+        PROJECTLESS_PROGRAM(Help, "help")
 
- public:
-  bool validate_arguments(ApplicationContext& p_context) override;
-  Ref<ProgramError> run(ApplicationContext& p_context) override;
+      public:
+        bool validate_arguments(ApplicationContext& p_context) override;
+        Ref<ProgramError> run(ApplicationContext& p_context) override;
 
- private:
-  using Column = Pair<Size, String>;
+      private:
+        using Column = Pair<Size, String>;
 
-  static void print_title(const String& p_title, Size width);
-  static void print_help_columns(const Column& column1, const Column& column2);
-  static String get_help_text(const ProgramPath& p_path);
-};
+        static void print_title(const String& p_title, Size width);
+        static void print_help_columns(const Column& column1, const Column& column2);
+        static String get_help_text(const ProgramPath& p_path);
+    };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
