@@ -386,7 +386,7 @@ Ref<GeneratorError> GodotPropertyGenerator::do_generate(
         B<Body>()[Output::Return(backing_field_name)]}];
 
     Ref<Function> set_def = B<Function>().with_children(
-        {B<Type>()[B<Identifier>("void"), B<Identifier>(setter_name)],
+        {B<Type>()[B<Identifier>("void")], B<Identifier>(setter_name),
          B<Parameters>()[B<Parameter>()[{
              set_type->clone(),
              B<Identifier>(format("p_%s", property_name.c_str())),
