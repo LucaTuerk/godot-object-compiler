@@ -59,10 +59,9 @@ namespace GodotObjectCompiler
             return false;
         }
         write_initial_file_content(
-            lock_path, "This file is used by the godot object compiler to check "
-                       "if "
-                       "the last program exit was graceful.\n"
-                       "Removing this file may lead to unexpected behaviour.");
+            lock_path,
+            "This file is used by the godot object compiler to check if the last program exit was "
+            "graceful.\nRemoving this file may lead to unexpected behaviour.");
         return true;
     }
 
@@ -79,10 +78,8 @@ namespace GodotObjectCompiler
             return p_return_code;
         }
 
-        APP_ERR("GOC: Tried to exit gracefully but lock file no longer "
-                "exists. "
-                "This indicates a corrupted GOC directory.\n"
-                "You may want to clear your cache to ensure smooth "
+        APP_ERR("GOC: Tried to exit gracefully but lock file no longer exists. This indicates a "
+                "corrupted GOC directory.\nYou may want to clear your cache to ensure smooth "
                 "operations.")
     }
 
@@ -144,27 +141,20 @@ namespace GodotObjectCompiler
             }
 
             if (!was_last_exit_graceful(r_context)) {
-                PRINT_INFO("GOC: Last exit was ungraceful. "
-                           "Clearing context and files.");
+                PRINT_INFO("GOC: Last exit was ungraceful. Clearing context and files.");
                 APP_ERR_COND(
                     clear.run(r_context) != ProgramError::OK,
-                    "Failed to clear the goc directories after "
-                    "an "
-                    "ungraceful exit was detected.\n"
-                    "Please delete your goc folders manually "
-                    "to ensure "
-                    "smooth operations.")
+                    "Failed to clear the goc directories after an ungraceful exit was "
+                    "detected.\nPlease delete your goc folders manually to ensure smooth "
+                    "operations.")
             }
 
             APP_ERR_COND(
                 !r_context.paths_root.has_value(),
-                "No project root path specified, but is needed for "
-                "selected program.");
+                "No project root path specified, but is needed for selected program.");
             APP_ERR_COND(
                 !r_context.paths_include.has_value(),
-                "No include paths were specified, but are needed "
-                "for "
-                "selected program.");
+                "No include paths were specified, but are needed for selected program.");
 
             r_context.paths_include->push_back(*r_context.paths_root);
 
@@ -194,13 +184,10 @@ namespace GodotObjectCompiler
                 if (String last_build_num = read_file(build_num_file);
                     last_build_num != build_num) {
                     APP_ERR_COND(
-                        clear.run(r_context) != ProgramError::OK, "Failed to clear the goc "
-                                                                  "directories after a "
-                                                                  "change in goc version was "
-                                                                  "detected.\n"
-                                                                  "Please delete your goc folders "
-                                                                  "manually to "
-                                                                  "ensure smooth operations.")
+                        clear.run(r_context) != ProgramError::OK,
+                        "Failed to clear the goc directories after a change in goc version was "
+                        "detected.\nPlease delete your goc folders manually to ensure smooth "
+                        "operations.")
                 }
             }
 

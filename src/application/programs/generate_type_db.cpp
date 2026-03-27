@@ -71,10 +71,7 @@ namespace GodotObjectCompiler
                 }
 
                 if (!ExecutionContext::instance()->file_modified(file)) {
-                    PRINT_VERBOSE(
-                        "TypeDB:\tSkipping \"%s\". Not "
-                        "modified.",
-                        file.c_str());
+                    PRINT_VERBOSE("TypeDB:\tSkipping \"%s\". Not modified.", file.c_str());
                     continue;
                 }
                 PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
@@ -106,19 +103,14 @@ namespace GodotObjectCompiler
                             if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
                                 type && is_valid_type_target(type)) {
                                 PRINT_VERBOSE(
-                                    "TypeDB:"
-                                    "\tSaving "
-                                    "attribute "
-                                    "\"%s\"",
+                                    "TypeDB:\tSaving attribute \"%s\"",
                                     node->qualified_name().c_str());
                                 ExecutionContext::instance()->get_type_db()->save_type_attribute(
                                     type, attr, file);
                             }
                         } else {
                             PRINT_VERBOSE(
-                                "TypeDB:\tSaving "
-                                "type \"%s\"",
-                                node->qualified_name().c_str());
+                                "TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
                             node->header = header_path(include_path, file);
                             ExecutionContext::instance()->get_type_db()->save_type_data(node, file);
                         }

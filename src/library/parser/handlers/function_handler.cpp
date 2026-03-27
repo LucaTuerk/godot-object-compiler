@@ -113,10 +113,7 @@ namespace GodotObjectCompiler
                     attribute->remove_all_children();
                     attribute->add_child(node_new<ParserError>(
                         error->error_level, "TreeSitterParser",
-                        format(
-                            "Failed to parse attribute "
-                            "arguments.\n%s",
-                            error->message.c_str()),
+                        format("Failed to parse attribute arguments.\n%s", error->message.c_str()),
                         current_src->context->file_path, current_src->context->original_buffer,
                         attribute->line, current_src->start_point.column + 1));
                     error->set_handled();

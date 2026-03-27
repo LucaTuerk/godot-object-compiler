@@ -51,15 +51,13 @@ namespace GodotObjectCompiler
     {
         PROG_ERR_COND(
             p_context.program_arguments.size() != 1,
-            "Invalid argument count. Expected path to the type_db "
-            "directory to import.");
+            "Invalid argument count. Expected path to the type_db directory to import.");
 
         const String& import_path = p_context.program_arguments[0];
 
         PROG_ERR_COND(
             !directory_exits(import_path),
-            "Invalid argument. Could not find director at provided "
-            "path \"%s\".",
+            "Invalid argument. Could not find director at provided path \"%s\".",
             p_context.program_arguments[0].c_str());
 
         for (const String& file : directory_files_recursive(import_path)) {
@@ -69,9 +67,7 @@ namespace GodotObjectCompiler
 
             PROG_ERR_COND(
                 !directory_exits(base) && !create_dir_recursive(base),
-                "Import failed. Could not create target directory "
-                "at \"%s\".",
-                base.c_str());
+                "Import failed. Could not create target directory at \"%s\".", base.c_str());
             PROG_ERR_COND(
                 !copy_file(file, destination_path), "Failed to copy file \"%s\" to \"%s\"",
                 file.c_str(), destination_path.c_str());

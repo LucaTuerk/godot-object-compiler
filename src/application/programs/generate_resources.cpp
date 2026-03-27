@@ -154,12 +154,9 @@ namespace GodotObjectCompiler
         PROG_ERR_COND(
             !(AssumedGodotTypes::validate_assumptions() &&
               AssumedParameterValues::validate_assumptions()),
-            "Failed to validate some assumptions on available Godot "
-            "types and macros, probably because the TypeDB "
-            "generator has not found the relevant files.\n"
-            "Ensure godot-cpp include path are known to goc via the "
-            "-I= "
-            "flag or in the .goc_project file.");
+            "Failed to validate some assumptions on available Godot types and macros, probably "
+            "because the TypeDB generator has not found the relevant files.\nEnsure godot-cpp "
+            "include path are known to goc via the -I= flag or in the .goc_project file.");
 
         Permissions::instance()->add_write_path("resources");
         Permissions::instance()->add_write_path("docs");
@@ -264,9 +261,8 @@ namespace GodotObjectCompiler
         {
             Ref<Output::ListNode> values;
             body->add_children(
-                {Output::FmtText("static inline "
-                                 "GodotObjectCompiler::Resources::ResourcePack "
-                                 "Pack = "),
+                {Output::FmtText(
+                     "static inline GodotObjectCompiler::Resources::ResourcePack Pack = "),
                  B<Body>()[R<Output::ListNode>(&values, ",\n", false, false)],
                  Output::Semicolon()});
 

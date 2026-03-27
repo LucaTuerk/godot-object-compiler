@@ -149,8 +149,7 @@ namespace GodotObjectCompiler
         if (paths_root.has_value() && !directory_exits(*paths_root)) {
             if (!create_dir_recursive(*paths_root)) {
                 print_err(format(
-                    "Invalid root path \"%s\". Could not find "
-                    "or create directory.",
+                    "Invalid root path \"%s\". Could not find or create directory.",
                     paths_root->c_str()));
                 success = false;
             }
@@ -159,9 +158,7 @@ namespace GodotObjectCompiler
         if (!directory_exits(paths_cache)) {
             if (!create_dir_recursive(paths_cache)) {
                 print_err(format(
-                    "Invalid cache path \"%s\". Could not find "
-                    "or "
-                    "create directory.",
+                    "Invalid cache path \"%s\". Could not find or create directory.",
                     paths_cache.c_str()));
                 success = false;
             }
@@ -170,9 +167,7 @@ namespace GodotObjectCompiler
         if (!directory_exits(paths_generated)) {
             if (!create_dir_recursive(paths_generated)) {
                 print_err(format(
-                    "Invalid generated path \"%s\". Could not "
-                    "find or "
-                    "create directory.",
+                    "Invalid generated path \"%s\". Could not find or create directory.",
                     paths_generated.c_str()));
                 success = false;
             }
@@ -181,10 +176,8 @@ namespace GodotObjectCompiler
         if (files_input.has_value()) {
             for (const String& file : *files_input) {
                 if (!file_exists(file)) {
-                    print_err(format(
-                        "Invalid input file \"%s\". File "
-                        "does not exist.",
-                        file.c_str()));
+                    print_err(
+                        format("Invalid input file \"%s\". File does not exist.", file.c_str()));
                     success = false;
                 }
             }
@@ -194,8 +187,7 @@ namespace GodotObjectCompiler
             for (const String& include_path : *paths_include) {
                 if (!directory_exits(include_path)) {
                     print_err(format(
-                        "Invalid include path\"%s\". Path "
-                        "is not a directory.",
+                        "Invalid include path\"%s\". Path is not a directory.",
                         include_path.c_str()));
                 }
             }

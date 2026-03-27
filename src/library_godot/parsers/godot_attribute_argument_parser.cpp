@@ -50,8 +50,7 @@ namespace GodotObjectCompiler
 
         if (!attribute) {
             return node_new<ParserError>(
-                ERROR, "Invalid attribute parser for . "
-                       "Associated attribute has exited scope.");
+                ERROR, "Invalid attribute parser for . Associated attribute has exited scope.");
         }
 
         const Vector<String> arguments = split_arguments(p_content);
@@ -70,9 +69,8 @@ namespace GodotObjectCompiler
             arguments.size() > types.size()) {
             return node_new<ParserError>(
                 ERROR, format(
-                           "Invalid argument count, expected at "
-                           "most %d but found %d",
-                           types.size(), arguments.size()));
+                           "Invalid argument count, expected at most %d but found %d", types.size(),
+                           arguments.size()));
         }
 
         for (const String& argument : arguments) {
@@ -80,8 +78,7 @@ namespace GodotObjectCompiler
                 if (single.empty()) {
                     return node_new<ParserError>(
                         ERROR, format(
-                                   "Invalid empty sub argument "
-                                   "found in argument \"%s\"",
+                                   "Invalid empty sub argument found in argument \"%s\"",
                                    argument.c_str()));
                 }
 
@@ -115,8 +112,7 @@ namespace GodotObjectCompiler
         if (types.empty()) {
             return node_new<ParserError>(
                 ERROR, format(
-                           "No valid parameter types found for "
-                           "attribute %s",
+                           "No valid parameter types found for attribute %s",
                            attribute->get_type().c_str()));
         }
 
@@ -130,9 +126,8 @@ namespace GodotObjectCompiler
                     const Ref<Argument> argument = str_literal->create_argument();
                     if (!argument) {
                         return node_new<ParserError>(
-                            ERROR, "Failed to create argument "
-                                   "node for type " +
-                                       type->get_return_type());
+                            ERROR,
+                            "Failed to create argument node for type " + type->get_return_type());
                     }
 
                     p_target->add_child(argument);
@@ -170,11 +165,10 @@ namespace GodotObjectCompiler
 
             if (arguments.size() > parameters.size()) {
                 return node_new<ParserError>(
-                    ERROR, format(
-                               "Invalid inner argument count for "
-                               "\"%s\", expected at "
-                               "most %d but found %d",
-                               p_content.c_str(), parameters.size(), arguments.size()));
+                    ERROR,
+                    format(
+                        "Invalid inner argument count for \"%s\", expected at most %d but found %d",
+                        p_content.c_str(), parameters.size(), arguments.size()));
             }
 
             if (parameters.size() > arguments.size()) {
@@ -189,10 +183,8 @@ namespace GodotObjectCompiler
                 if (diff > optional_count) {
                     return node_new<ParserError>(
                         ERROR, format(
-                                   "Invalid inner argument count "
-                                   "%d for \"%s\", "
-                                   "expected %d parameters with "
-                                   "%d being optional.",
+                                   "Invalid inner argument count %d for \"%s\", expected %d "
+                                   "parameters with %d being optional.",
                                    arguments.size(), p_content.c_str(), parameters.size(),
                                    optional_count));
                 }
@@ -205,21 +197,18 @@ namespace GodotObjectCompiler
                     error->set_handled();
                     return node_new<ParserError>(
                         ERROR, format(
-                                   "Failed to parse argument "
-                                   "\"%s\". %s",
-                                   p_content.c_str(), attribute->get_type().c_str(),
-                                   error->message.c_str()));
+                                   "Failed to parse argument \"%s\". %s", p_content.c_str(),
+                                   attribute->get_type().c_str(), error->message.c_str()));
                 }
             }
         }
 
         if (no_match) {
             return node_new<ParserError>(
-                ERROR, format(
-                           "Failed to find matching argument type "
-                           "with value "
-                           "name \"%s\" for attribute %s",
-                           p_content.c_str(), attribute->get_type().c_str()));
+                ERROR,
+                format(
+                    "Failed to find matching argument type with value name \"%s\" for attribute %s",
+                    p_content.c_str(), attribute->get_type().c_str()));
         }
         return ParserError::OK;
     }

@@ -90,8 +90,8 @@ namespace GodotObjectCompiler
         auto global_namespace = r_target->as<Namespace>();
         if (!global_namespace || !global_namespace->qualified_name().empty()) {
             return node_new<ParserError>(
-                ERROR, "TreeSitterParser: Invalid target node, "
-                       "expected to be the global namespace.");
+                ERROR,
+                "TreeSitterParser: Invalid target node, expected to be the global namespace.");
         }
 
         auto recall = [&]() {
@@ -123,10 +123,7 @@ namespace GodotObjectCompiler
 
                             PANIC_COND(
                                 !context.current_target->has_parent(),
-                                "Invalid orphan "
-                                "parser target "
-                                "after call to "
-                                "NodeHandler %s",
+                                "Invalid orphan parser target after call to NodeHandler %s",
                                 node_handler->get_type().c_str())
 
                             if (before != context.current_target) {

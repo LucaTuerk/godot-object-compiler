@@ -140,8 +140,7 @@ namespace GodotObjectCompiler
         for (const auto& [uid, node] : local) {
             if (node->get_parent() == nullptr) {
                 if (root != nullptr) {
-                    ERROR("Multiple root nodes found in "
-                          "read config file. Invalid.");
+                    ERROR("Multiple root nodes found in read config file. Invalid.");
                 }
                 root = node;
             }
@@ -242,8 +241,7 @@ namespace GodotObjectCompiler
 
         if (string_contains(path, INVALID_NAME)) {
             PRINT_ERROR(
-                "Failed to get cache path for attribute \"%s\" on "
-                "type \"%s\"",
+                "Failed to get cache path for attribute \"%s\" on type \"%s\"",
                 p_attribute->get_type().c_str(), p_attribute->qualified_name().c_str());
             return;
         }
@@ -516,8 +514,7 @@ namespace GodotObjectCompiler
         Vector<String> namespaces = string_split(p_assumption().name, "::");
         if (namespaces.size() == 1) {
             PRINT_ERROR(
-                "EnumValue assumption required fully qualified "
-                "name. Got: \"%s\"",
+                "EnumValue assumption required fully qualified name. Got: \"%s\"",
                 p_assumption().name.c_str());
             return STATE_INVALID;
         }

@@ -95,16 +95,14 @@ namespace GodotObjectCompiler
 
             if (!p_context.set_from_project(project)) {
                 return make_ref<ProgramError>(
-                    ERROR, "Failed to setup ApplicationContext "
-                           "from provided "
-                           "project settings. Abort!");
+                    ERROR,
+                    "Failed to setup ApplicationContext from provided project settings. Abort!");
             }
 
             Ref<ProgramError> init_resources_error = InitLocalResources().run(p_context);
 
             String _ = input(format(
-                "\n|-> Successfully generated project file \"%s\" "
-                "(enter to exit)",
+                "\n|-> Successfully generated project file \"%s\" (enter to exit)",
                 path_absolute(project_file_path).c_str()));
         }
         return ProgramError::OK;

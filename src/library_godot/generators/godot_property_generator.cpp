@@ -64,17 +64,14 @@ namespace GodotObjectCompiler
 
         GEN_ERROR_COND(
             is_ref_type && !is_inner_refcounted_type, p_target,
-            "Ref<%s> inner type is invalid, %s is not a RefCounted "
-            "type.",
+            "Ref<%s> inner type is invalid, %s is not a RefCounted type.",
             inner->type_name().c_str(), inner->type_name().c_str());
         GEN_ERROR_COND(
             is_refcounted_type && !is_ref_type, p_target,
-            "RefCounted property backing field needs to be wrapped in "
-            "Ref<...>.");
+            "RefCounted property backing field needs to be wrapped in Ref<...>.");
         GEN_ERROR_COND(
             is_object_type && !is_ptr, p_target,
-            "Object type property backing field needs to be a pointer "
-            "type.");
+            "Object type property backing field needs to be a pointer type.");
 
         return GeneratorError::OK;
     }
@@ -103,16 +100,13 @@ namespace GodotObjectCompiler
 
         GEN_ERROR_COND(
             is_object_type && !is_ref_type && literal == nullptr, p_field,
-            "Object type property backing field needs to be "
-            "initialized.");
+            "Object type property backing field needs to be initialized.");
         GEN_ERROR_COND(
             is_primitive_type && literal == nullptr, p_field,
-            "Primitive type property backing field needs to be "
-            "initialized.");
+            "Primitive type property backing field needs to be initialized.");
         GEN_ERROR_COND(
             is_enum_type && literal == nullptr, p_field,
-            "Enum type property backing field needs to be "
-            "initialized.");
+            "Enum type property backing field needs to be initialized.");
         return GeneratorError::OK;
     }
 
@@ -125,13 +119,11 @@ namespace GodotObjectCompiler
             "Empty property name in custom bound property.");
         GEN_ERROR_COND(
             !custom_bind.getter, p_attribute,
-            "Could not find getter function \"%s\" for custom bound "
-            "property.",
+            "Could not find getter function \"%s\" for custom bound property.",
             custom_bind.getter_name.c_str());
         GEN_ERROR_COND(
             !custom_bind.setter, p_attribute,
-            "Could not find setter function \"%s\" for custom bound "
-            "property.",
+            "Could not find setter function \"%s\" for custom bound property.",
             custom_bind.setter_name.c_str());
 
         Ref<Type> getter_type = custom_bind.getter->type();
@@ -143,23 +135,18 @@ namespace GodotObjectCompiler
         GEN_ERROR_COND(
             !custom_bind.getter->parameters() ||
                 custom_bind.getter->parameters()->get_child_count() != 0,
-            custom_bind.getter,
-            "Invalid parameter count on property getter, expected to "
-            "be 0");
+            custom_bind.getter, "Invalid parameter count on property getter, expected to be 0");
         GEN_ERROR_COND(
             !custom_bind.setter->parameters() ||
                 custom_bind.setter->parameters()->get_child_count() != 1,
-            custom_bind.setter,
-            "Invalid parameter count on property setter, expected to "
-            "be 1");
+            custom_bind.setter, "Invalid parameter count on property setter, expected to be 1");
 
         Ref<Type> setter_param_type = custom_bind.setter->find_chain<Type, Parameters, Parameter>();
         GEN_ERROR_COND(
             !setter_param_type, custom_bind.setter, "Failed to get setter parameter type.");
         GEN_ERROR_COND(
             setter_type->type_name() != "void", custom_bind.setter,
-            "Invalid return type on property setter, expected to be "
-            "void");
+            "Invalid return type on property setter, expected to be void");
         GEN_ERROR_COND(
             setter_param_type->type_name_unmodified() != getter_type->type_name_unmodified(),
             p_attribute, "Invalid non matching types on getter / setter pair");
@@ -201,8 +188,7 @@ namespace GodotObjectCompiler
                    custom_bind) {
             GEN_ERROR_COND(
                 !custom_bind->getter, p_attribute,
-                "Could not find getter function \"%s\" for custom "
-                "bound property.",
+                "Could not find getter function \"%s\" for custom bound property.",
                 custom_bind->getter_name.c_str());
             property_type = custom_bind->getter->type();
             property_get_access_specifier->B<Identifier>(
@@ -211,8 +197,8 @@ namespace GodotObjectCompiler
                 PropertySetAccessSpecifierArgument::PrivateSet);
         } else {
             GEN_ERROR(
-                p_attribute, "Failed to get target field or custom bind for "
-                             "GodotProperty attribute.");
+                p_attribute,
+                "Failed to get target field or custom bind for GodotProperty attribute.");
         }
         GEN_ERROR_COND(!property_type, p_attribute, "Could not get property type.");
         property_type = property_type->qualified();
@@ -228,8 +214,7 @@ namespace GodotObjectCompiler
         if (!get_defaults_for_type(
                 property_type, variant_type, property_hint, property_usage_flags, p_target_class)) {
             GEN_ERROR(
-                p_attribute, "Unknown property type. Failed to determine "
-                             "default property info.");
+                p_attribute, "Unknown property type. Failed to determine default property info.");
         }
 
         Ref<StringLiteralArgument> string_literal_argument =
@@ -266,15 +251,13 @@ namespace GodotObjectCompiler
             get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
         GEN_ERROR_COND(
             !bind_methods_body, p_target_class,
-            "Failed to find or generate the _bind_methods function "
-            "body.");
+            "Failed to find or generate the _bind_methods function body.");
 
         Ref<Body> get_property_list_body =
             get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
         GEN_ERROR_COND(
             !get_property_list_body, p_target_class,
-            "Failed to find or generate the _get_property_list "
-            "function body.");
+            "Failed to find or generate the _get_property_list function body.");
 
         Ref<Context> generated_public_members, generated_protected_members,
             generated_private_members;
@@ -369,9 +352,7 @@ namespace GodotObjectCompiler
             if (generator_options_hint) {
                 GEN_ERROR_COND(
                     !generator_options_hint->unwrap_string_literal(generator_hint_string),
-                    p_attribute,
-                    "Failed to get property hint literal "
-                    "content.");
+                    p_attribute, "Failed to get property hint literal content.");
             }
 
             Ref<Function> get_def = B<Function>()[{
@@ -531,8 +512,7 @@ namespace GodotObjectCompiler
         GEN_ERROR_COND(!property_names_body, p_attribute, "Failed to get property names body.");
 
         property_names_body->add_child(Output::Text(format(
-            "static const %s& %s() {static const %s sn = \"%s\"; "
-            "return sn; }",
+            "static const %s& %s() {static const %s sn = \"%s\"; return sn; }",
             AssumedGodotTypes::StringName().type->qualified_name().c_str(), property_name.c_str(),
             AssumedGodotTypes::StringName().type->qualified_name().c_str(),
             property_name.c_str())));

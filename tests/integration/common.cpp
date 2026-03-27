@@ -177,9 +177,7 @@ bool signal_bound(
 
     if (p_no_args && string_contains(line, ",")) {
         fmt_print_err(
-            "Invalid arguments found for signal bind \"%s\" expecting "
-            "no args.",
-            p_signal_name);
+            "Invalid arguments found for signal bind \"%s\" expecting no args.", p_signal_name);
         return false;
     }
     return true;

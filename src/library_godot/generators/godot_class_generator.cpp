@@ -55,9 +55,7 @@ namespace GodotObjectCompiler
                 ->find_chain<Identifier, Arguments, GodotModuleInitializationLevelArgument>();
         GEN_ERROR_COND(
             !init_level_identifier, p_target_class,
-            "Could not determine "
-            "GodotModuleInitializationLevelArgument "
-            "identifier.");
+            "Could not determine GodotModuleInitializationLevelArgument identifier.");
 
         const String init_level_name = init_level_identifier->name;
         const Ref<GodotModuleInitializationLevelParameterType> init_level_type =
@@ -67,9 +65,9 @@ namespace GodotObjectCompiler
         if (!init_level_type->get_godot_init_level_for_value_name(
                 init_level_name, godot_init_level)) {
             GEN_ERROR(
-                p_target_class, "Failed to get ModuleInitializationLevel "
-                                "enum value for value name " +
-                                    init_level_name)
+                p_target_class,
+                "Failed to get ModuleInitializationLevel enum value for value name " +
+                    init_level_name)
         }
 
         const Ref<Identifier> class_type_identifier =
@@ -141,13 +139,13 @@ namespace GodotObjectCompiler
         Vector<String> bases = p_target_class->direct_bases_names();
         GEN_ERROR_COND(
             bases.empty(), p_target_class,
-            "Target class does not name base classes and thus cannot "
-            "inherit from a Godot object type.");
+            "Target class does not name base classes and thus cannot inherit from a Godot object "
+            "type.");
 
         if (!class_is_godot_object_type(p_target_class)) {
             GEN_ERROR(
-                p_target_class, "Target class does not inherit from a godot "
-                                "object class or the class was not found.");
+                p_target_class, "Target class does not inherit from a godot object class or the "
+                                "class was not found.");
         }
 
         Ref<Include> last_include = p_target_class->find_ancestor<Include>(BY_SIBLINGS_PREV);

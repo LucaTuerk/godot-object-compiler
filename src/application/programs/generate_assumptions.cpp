@@ -64,11 +64,9 @@ namespace GodotObjectCompiler
 
     Ref<Node> generate_value_name_assumption(const String& return_type, const String& value_name)
     {
-        String format = "inline Assumption<String> VALUE_NAME {\n"
-                        "\"VALUE_NAME\",\n"
-                        "\"Assume that the value \\\"VALUE_NAME\\\" exists in the "
-                        "RETURN_TYPE generated type.\"\n"
-                        "};";
+        String format =
+            "inline Assumption<String> VALUE_NAME {\n\"VALUE_NAME\",\n\"Assume that the value "
+            "\\\"VALUE_NAME\\\" exists in the RETURN_TYPE generated type.\"\n};";
 
         format = string_replace(format, "VALUE_NAME", value_name);
         format = string_replace(format, "RETURN_TYPE", return_type);
@@ -85,8 +83,7 @@ namespace GodotObjectCompiler
 
         Permissions::instance()->add_write_path("src/library_godot/generated_assumptions");
         String header_path = "src/library_godot/generated_assumptions/parameter_types.h";
-        String source_path = "src/library_godot/generated_assumptions/"
-                             "parameter_types.cpp";
+        String source_path = "src/library_godot/generated_assumptions/parameter_types.cpp";
 
         Vector<Ref<IAttributeParameterType>> parameter_types = {
             make_ref<GodotClassTypeParameterType>(),
@@ -116,8 +113,7 @@ namespace GodotObjectCompiler
             Output::Include("library_godot/attributes/godot_module_init_level.h"),
             Output::Include("library_godot/attributes/godot_variant_type.h"),
             Output::Include("library_godot/attributes/godot_property_hint.h"),
-            Output::Include("library_godot/attributes/"
-                            "godot_property_usage_flags.h"),
+            Output::Include("library_godot/attributes/godot_property_usage_flags.h"),
             Output::Include("library_godot/attributes/godot_rpc.h"),
             B<Namespace>()[{
                 B<Identifier>("GodotObjectCompiler"),
@@ -144,15 +140,13 @@ namespace GodotObjectCompiler
 
         for (const Ref<IAttributeParameterType>& parameter_type : parameter_types) {
             Ref<Body> inner_body = validate_body->B<Body>();
-            String format = "Ref<PARAM_TYPE> validator = "
-                            "make_ref<PARAM_TYPE>();";
+            String format = "Ref<PARAM_TYPE> validator = make_ref<PARAM_TYPE>();";
             inner_body->add_child(
                 Output::Text(string_replace(format, "PARAM_TYPE", parameter_type->get_type())));
 
             for (const String& value_name : parameter_type->get_value_names()) {
-                String validate_format = "success &= "
-                                         "VALUE_NAME.validate(validator.get()) == "
-                                         "STATE_VALID;";
+                String validate_format =
+                    "success &= VALUE_NAME.validate(validator.get()) == STATE_VALID;";
                 inner_body->add_child(
                     Output::Text(string_replace(validate_format, "VALUE_NAME", value_name)));
             }

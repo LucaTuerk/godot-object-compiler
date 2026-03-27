@@ -70,8 +70,7 @@ namespace GodotObjectCompiler
     {
         PANIC_COND(
             !is_allowed_write_path(p_path),
-            "Trying to write to \"%s\" but it is not an allowed write "
-            "path!",
+            "Trying to write to \"%s\" but it is not an allowed write path!",
             path_absolute(p_path).c_str())
     }
 

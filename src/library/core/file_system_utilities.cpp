@@ -169,10 +169,8 @@ namespace GodotObjectCompiler
         const bool base_is_res = string_prefix(p_base, "res://");
         if (path_is_res != base_is_res) {
             PANIC(
-                "Invalid argument. Trying to get relative path but "
-                "one path is a "
-                "resource path while the other is a regular path. "
-                "(\"%s\", \"%s\")",
+                "Invalid argument. Trying to get relative path but one path is a resource path "
+                "while the other is a regular path. (\"%s\", \"%s\")",
                 p_path.c_str(), p_base.c_str());
         }
 
@@ -331,8 +329,7 @@ namespace GodotObjectCompiler
         String destination_base = path_base(destination);
         PANIC_COND(
             !directory_exits(destination_base) && !create_dir_recursive(destination_base),
-            "Target directory \"%s\" does not exist and could not be "
-            "created on file copy",
+            "Target directory \"%s\" does not exist and could not be created on file copy",
             destination_base.c_str());
 
         Permissions::instance()->ensure_is_allowed_write_path(destination);

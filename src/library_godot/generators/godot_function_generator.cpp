@@ -109,8 +109,8 @@ namespace GodotObjectCompiler
         const Ref<Parameters> parameters = target_function->parameters();
         GEN_ERROR_COND(
             !parameters, p_target_class,
-            "Function does not name parameters, this was probably "
-            "parsed as a function call. Abort");
+            "Function does not name parameters, this was probably parsed as a function call. "
+            "Abort");
 
         Ref<Context> generated_public_members, generated_protected_members,
             generated_private_members;
@@ -171,8 +171,7 @@ namespace GodotObjectCompiler
             GodotGeneratorUtils::get_function_names_body(p_target_class, p_generated_body);
         GEN_ERROR_COND(!function_names_body, p_attribute, "Failed to get function names body.");
         function_names_body->add_child(Output::Text(format(
-            "static const %s& %s() {static const %s sn = \"%s\"; "
-            "return sn; }",
+            "static const %s& %s() {static const %s sn = \"%s\"; return sn; }",
             AssumedGodotTypes::StringName().type->qualified_name().c_str(),
             target_function->name().c_str(),
             AssumedGodotTypes::StringName().type->qualified_name().c_str(),

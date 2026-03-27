@@ -311,8 +311,8 @@ namespace GodotObjectCompiler
 
     String generate_random_string(size_t p_length)
     {
-        const std::string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv"
-                                       "wxyz";
+        const std::string characters =
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         std::random_device random_device;
         std::mt19937 generator(random_device());
         std::uniform_int_distribution<> distribution(0, characters.size() - 1);

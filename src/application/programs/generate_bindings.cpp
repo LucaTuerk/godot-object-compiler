@@ -74,15 +74,12 @@ namespace GodotObjectCompiler
         PROG_ERR_COND(
             !(AssumedGodotTypes::validate_assumptions() &&
               AssumedParameterValues::validate_assumptions()),
-            "Failed to validate some assumptions on available Godot "
-            "types and macros, probably because the TypeDB "
-            "generator has not found the relevant files.\n"
-            "Ensure godot-cpp include path are known to goc via the "
-            "-I= "
-            "flag or in the .goc_project file.");
+            "Failed to validate some assumptions on available Godot types and macros, probably "
+            "because the TypeDB generator has not found the relevant files.\nEnsure godot-cpp "
+            "include path are known to goc via the -I= flag or in the .goc_project file.");
         PROG_ERR_COND(
-            !p_context.paths_root.has_value(), "No project root path specified. Cannot generate "
-                                               "bindings.");
+            !p_context.paths_root.has_value(),
+            "No project root path specified. Cannot generate bindings.");
         PROG_ERR_COND(
             !p_context.files_input.has_value(),
             "No input files specified. Cannot generate bindings.");
@@ -171,9 +168,7 @@ namespace GodotObjectCompiler
         for (String input_file : *p_context.files_input) {
             if (!path_is_descendant(*p_context.paths_root, input_file)) {
                 PRINT_INFO(
-                    "Input file \"%s\" is not in the root "
-                    "path. Skipping.",
-                    input_file.c_str())
+                    "Input file \"%s\" is not in the root path. Skipping.", input_file.c_str())
                 continue;
             }
 
@@ -184,9 +179,7 @@ namespace GodotObjectCompiler
                 bool hpp_exists = file_exists(hpp_file);
                 if (!h_exists && !hpp_exists) {
                     PRINT_VERBOSE(
-                        "No header found for input file "
-                        "\"%s\". Skipping",
-                        input_file.c_str());
+                        "No header found for input file \"%s\". Skipping", input_file.c_str());
                     continue;
                 }
                 if (h_exists) {
@@ -231,9 +224,8 @@ namespace GodotObjectCompiler
                 global_namespace->body()->find_children<GeneratedGlobalAttribute>();
             PROG_ERR_COND(
                 generated_global_attributes.size() > 1,
-                "Multiple GODOT_GENERATED_GLOBAL attributes found "
-                "in "
-                "file, only on is required and allowed.");
+                "Multiple GODOT_GENERATED_GLOBAL attributes found in file, only on is required and "
+                "allowed.");
             Ref<GeneratedGlobalAttribute> generated_global_attribute =
                 generated_global_attributes.empty() ? nullptr : generated_global_attributes[0];
 
@@ -268,18 +260,15 @@ namespace GodotObjectCompiler
 
                 Ref<Node> previous = target_class->get_previous_sibling();
                 if (!previous) {
-                    PRINT_VERBOSE("No previous sibling found, class "
-                                  "cannot have a "
-                                  "GodotClassAttribute applied. "
-                                  "Skipping class.");
+                    PRINT_VERBOSE("No previous sibling found, class cannot have a "
+                                  "GodotClassAttribute applied. Skipping class.");
                     continue;
                 }
 
                 Ref<GodotClassAttribute> class_attribute = previous->as<GodotClassAttribute>();
                 if (!class_attribute) {
-                    PRINT_VERBOSE("Class does not have a "
-                                  "GodotClassAttribute "
-                                  "applied. Skipping class.");
+                    PRINT_VERBOSE(
+                        "Class does not have a GodotClassAttribute applied. Skipping class.");
                     continue;
                 }
 
@@ -287,17 +276,14 @@ namespace GodotObjectCompiler
                     target_class->body()->find_child<GeneratedBodyAttribute>();
                 PROG_ERR_COND(
                     !generated_body_attribute || generated_body_attribute->get_index() != 0,
-                    "Generated class requires a "
-                    "GODOT_GENERATED_BODY "
-                    "attribute as first entry in the class "
-                    "body.");
+                    "Generated class requires a GODOT_GENERATED_BODY attribute as first entry in "
+                    "the class body.");
 
                 result.generated_body_line = generated_body_attribute->line;
                 result.generated_sources->add_child(Output::NewLine());
 
                 PROG_ERR_COND(
-                    !generated_global_attribute, "File must contain a "
-                                                 "GODOT_GENERATED_GLOBAL "
+                    !generated_global_attribute, "File must contain a GODOT_GENERATED_GLOBAL "
                                                  "attribute in the global namespace.");
 
                 GodotClassGenerator class_generator;
@@ -307,8 +293,7 @@ namespace GodotObjectCompiler
                         target_class, class_attribute, class_default_values);
                 PROG_ERR_COND(
                     class_def_gen_error != GeneratorError::OK,
-                    "Failed to generate default attribute "
-                    "arguments.");
+                    "Failed to generate default attribute arguments.");
 
                 ClassGenerator::merge_default_attribute_arguments(
                     class_attribute, class_default_values);
@@ -322,8 +307,8 @@ namespace GodotObjectCompiler
                     target_class, class_attribute, result.initialize, result.uninitialize);
 
                 PROG_ERR_COND(
-                    init_gen_error != GeneratorError::OK, "Failed to generate class initialization "
-                                                          "code.")
+                    init_gen_error != GeneratorError::OK,
+                    "Failed to generate class initialization code.")
 
                 if (result.initialize->get_child_count() > 0 ||
                     result.uninitialize->get_child_count() > 0) {
@@ -332,9 +317,7 @@ namespace GodotObjectCompiler
 
                 if (!ExecutionContext::instance()->file_modified(input_file)) {
                     PRINT_VERBOSE(
-                        "Input file \"%s\" was not "
-                        "modified since last "
-                        "read. Skipping.",
+                        "Input file \"%s\" was not modified since last read. Skipping.",
                         input_file.c_str());
                     continue;
                 }
@@ -350,12 +333,8 @@ namespace GodotObjectCompiler
                                         target_class, attribute, default_values);
 
                                 PROG_ERR_COND(
-                                    attr_def_error != GeneratorError::OK, "Failed to "
-                                                                          "generate "
-                                                                          "default "
-                                                                          "attribute "
-                                                                          "arguments"
-                                                                          ".");
+                                    attr_def_error != GeneratorError::OK,
+                                    "Failed to generate default attribute arguments.");
 
                                 ClassGenerator::merge_default_attribute_arguments(
                                     attribute, default_values);
@@ -363,11 +342,7 @@ namespace GodotObjectCompiler
                                 Ref<GeneratorError> attr_error =
                                     generator->generate(target_class, attribute, result);
 
-                                PROG_ERR_COND(
-                                    attr_error, "Failed to "
-                                                "generate "
-                                                "attribute "
-                                                "code.");
+                                PROG_ERR_COND(attr_error, "Failed to generate attribute code.");
                             }
                         }
                     }
@@ -377,8 +352,7 @@ namespace GodotObjectCompiler
 
             if (!ExecutionContext::instance()->file_modified(input_file)) {
                 PRINT_VERBOSE(
-                    "Input file \"%s\" was not modified since "
-                    "last read. Skipping.",
+                    "Input file \"%s\" was not modified since last read. Skipping.",
                     input_file.c_str());
                 continue;
             }

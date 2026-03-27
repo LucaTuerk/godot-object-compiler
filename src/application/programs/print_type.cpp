@@ -48,10 +48,8 @@ namespace GodotObjectCompiler
     Ref<ProgramError> PrintType::run(ApplicationContext& p_context)
     {
         PROG_ERR_COND(
-            p_context.program_arguments.empty(),
-            "No type name provided. Please specify one or more types "
-            "by "
-            "their fully qualified name.")
+            p_context.program_arguments.empty(), "No type name provided. Please specify one or "
+                                                 "more types by their fully qualified name.")
 
         for (const String& name : p_context.program_arguments) {
             const Result<Node, Error> type_result =

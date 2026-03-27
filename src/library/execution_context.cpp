@@ -232,9 +232,8 @@ namespace GodotObjectCompiler
             if (!file_exists(path)) {
                 for (const String& generated_file : generated_files) {
                     PRINT_VERBOSE(
-                        "Removing orphan \"%s\", generated "
-                        "from \"%s\"",
-                        generated_file.c_str(), path.c_str());
+                        "Removing orphan \"%s\", generated from \"%s\"", generated_file.c_str(),
+                        path.c_str());
                     if (file_exists(generated_file)) {
                         remove_file(generated_file);
                     }
@@ -265,9 +264,8 @@ namespace GodotObjectCompiler
         for (const String& generated : itr->second) {
             if (file_exists(generated)) {
                 PRINT_VERBOSE(
-                    "Removing orphan \"%s\", generated from "
-                    "\"%s\"",
-                    generated.c_str(), p_path.c_str());
+                    "Removing orphan \"%s\", generated from \"%s\"", generated.c_str(),
+                    p_path.c_str());
                 remove_file(generated);
             }
         }

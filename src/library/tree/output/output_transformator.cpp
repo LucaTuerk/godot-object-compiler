@@ -83,9 +83,8 @@ namespace GodotObjectCompiler
                      transform(_class->body()), Output::Semicolon()});
             }
             ERR_COND(
-                !base_names.empty(), "Classes with multiple inheritance are not "
-                                     "supported by the "
-                                     "OutputTransformator");
+                !base_names.empty(),
+                "Classes with multiple inheritance are not supported by the OutputTransformator");
             return Output::Spaces(
                 {Output::Text(specifier), Output::Text(_class->name()), transform(_class->body()),
                  Output::Semicolon()});

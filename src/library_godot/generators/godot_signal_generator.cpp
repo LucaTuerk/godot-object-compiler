@@ -96,8 +96,7 @@ namespace GodotObjectCompiler
         GEN_ERROR_COND(!signal_names_body, p_current_node, "Failed to get signal names body.");
 
         signal_names_body->add_child(Output::Text(format(
-            "static const StringName& %s() {static const "
-            "StringName sn = \"%s\"; return sn; }",
+            "static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
             p_signal_name.c_str(), p_signal_name.c_str())));
 
         return GeneratorError::OK;

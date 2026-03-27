@@ -73,8 +73,7 @@ namespace GodotObjectCompiler
             "GOC_BODY_COMBINE",
             {Output::Text("A"), Output::Text("B"), Output::Text("C"), Output::Text("D")},
             "GOC_BODY_COMBINE_INNER(A, B, C, D)"));
-        String generated_content = "GOC_BODY_COMBINE(GOC_GENERATED_, "
-                                   "__LINE__, _, GOC_FILE_ID())()";
+        String generated_content = "GOC_BODY_COMBINE(GOC_GENERATED_, __LINE__, _, GOC_FILE_ID())()";
 
         for (const String& macro :
              ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
@@ -111,16 +110,13 @@ namespace GodotObjectCompiler
                 p_write_to->add_child(Output::Define(
                     macro, {Output::Text("...")},
                     generated_content +
-                        "; static_assert( [](){ using "
-                        "namespace "
-                        "GOC_Macros; return " +
-                        macro + "_prototype(__VA_ARGS__);},\"\")"));
+                        "; static_assert( [](){ using namespace GOC_Macros; return " + macro +
+                        "_prototype(__VA_ARGS__);},\"\")"));
             } else {
                 p_write_to->add_child(Output::Define(
                     macro, {Output::Text("...")},
-                    "static_assert( [](){ using namespace "
-                    "GOC_Macros; return " +
-                        macro + "_prototype(__VA_ARGS__);},\"\")"));
+                    "static_assert( [](){ using namespace GOC_Macros; return " + macro +
+                        "_prototype(__VA_ARGS__);},\"\")"));
             }
         }
         return true;
@@ -211,9 +207,7 @@ namespace GodotObjectCompiler
                         }
                     } else {
                         PANIC(
-                            "Unimplemented "
-                            "IAttributeParameterType "
-                            "%d",
+                            "Unimplemented IAttributeParameterType %d",
                             static_cast<int>(argument.type));
                     }
                 }
@@ -269,9 +263,7 @@ namespace GodotObjectCompiler
             for (Size curr = 0; curr < size - 1; ++curr) {
                 for (Size cmp = curr + 1; cmp < size; ++cmp) {
                     body->add_child(Output::FmtText(
-                        "static_assert(!std::is_same_v<T%d,"
-                        "T%d>, "
-                        "\"Duplicate argument types %d and "
+                        "static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d and "
                         "%d\");",
                         curr + 1, cmp + 1, curr + 1, cmp + 1));
                 }

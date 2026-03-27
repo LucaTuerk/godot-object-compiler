@@ -53,16 +53,15 @@ namespace GodotObjectCompiler
     {
         PROG_ERR_COND(
             p_context.program_arguments.size() != 1,
-            "Invalid argument count for init tools program. Expected "
-            "single path argument specifying target directory.");
+            "Invalid argument count for init tools program. Expected single path argument "
+            "specifying target directory.");
 
         const String path = p_context.program_arguments[0];
         Permissions::instance()->add_write_path(path);
 
         PROG_ERR_COND(
             !directory_exits(path) && !create_dir_recursive(path),
-            "Target directory does not exists and could not be "
-            "created.");
+            "Target directory does not exists and could not be created.");
 
         for (const String& res_file : Resources::instance()->resources_recursive("res://tools")) {
             const String content = Resources::instance()->load_text_resource(res_file);

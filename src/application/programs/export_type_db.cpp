@@ -57,16 +57,14 @@ namespace GodotObjectCompiler
     {
         PROG_ERR_COND(
             p_context.program_arguments.size() != 1,
-            "Invalid argument count. Expected directory path to export "
-            "TypeDB to.");
+            "Invalid argument count. Expected directory path to export TypeDB to.");
 
         String export_dir = p_context.program_arguments[0];
 
         if (directory_exits(export_dir) &&
             (!directory_dirs(export_dir).empty() || !directory_files(export_dir).empty())) {
-            PROG_ERR("A non empty directory exists at the export "
-                     "path. Path must "
-                     "point to an empty or non existing directory");
+            PROG_ERR("A non empty directory exists at the export path. Path must point to an empty "
+                     "or non existing directory");
         }
 
         Permissions::instance()->add_write_path(export_dir);
