@@ -40,30 +40,29 @@
 namespace GodotObjectCompiler
 {
 
-class GodotVariantTypeArgument : public Argument
-{
-  NODE_TYPE(GodotVariantTypeArgument);
+    class GodotVariantTypeArgument : public Argument
+    {
+        NODE_TYPE(GodotVariantTypeArgument);
 
-  LAZY(GodotVariantTypeArgument, String, godot_variant_type)
-};
+        LAZY(GodotVariantTypeArgument, String, godot_variant_type)
+    };
 
-class GodotVariantTypeParameterType : public IAttributeParameterType
-{
-  PARAM_TYPE(GodotVariantTypeParameterType, GodotVariantTypeArgument)
+    class GodotVariantTypeParameterType : public IAttributeParameterType
+    {
+        PARAM_TYPE(GodotVariantTypeParameterType, GodotVariantTypeArgument)
 
-public:
-  String get_return_type() override;
+      public:
+        String get_return_type() override;
 
-  Vector<String> get_value_names() override;
+        Vector<String> get_value_names() override;
 
-  Vector<Argument> get_arguments() override;
+        Vector<Argument> get_arguments() override;
 
-  bool get_variant_type_for_value_name(
-      const String& p_value_name, String& r_variant_type);
+        bool get_variant_type_for_value_name(const String& p_value_name, String& r_variant_type);
 
-private:
-  LAZY_MUT(GodotVariantTypeParameterType, Vector<String>, value_names)
-  Dictionary<String, String> _value_name_to_godot_variant_type;
-};
+      private:
+        LAZY_MUT(GodotVariantTypeParameterType, Vector<String>, value_names)
+        Dictionary<String, String> _value_name_to_godot_variant_type;
+    };
 
 } // namespace GodotObjectCompiler

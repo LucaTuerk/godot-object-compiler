@@ -39,16 +39,16 @@ using namespace GodotObjectCompiler;
 
 GOC_TEST(Results)
 {
-  Ref<Node> node = node_new<Node>();
-  Ref<Error> error = node_new<Error>();
+    Ref<Node> node = node_new<Node>();
+    Ref<Error> error = node_new<Error>();
 
-  Result<Node> result = node;
-  GOC_TEST_ASSERT(result.has_result(), "");
-  GOC_TEST_EQ(result.get_result(), node, "");
+    Result<Node> result = node;
+    GOC_TEST_ASSERT(result.has_result(), "");
+    GOC_TEST_EQ(result.get_result(), node, "");
 
-  result = error;
-  GOC_TEST_ASSERT(result.has_error(), "");
-  GOC_TEST_EQ(result.get_error(), error, "");
+    result = error;
+    GOC_TEST_ASSERT(result.has_error(), "");
+    GOC_TEST_EQ(result.get_error(), error, "");
 
-  return TEST_RESULT_SUCCESS;
+    return TEST_RESULT_SUCCESS;
 };

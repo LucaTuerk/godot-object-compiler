@@ -39,17 +39,17 @@
 namespace GodotObjectCompiler
 {
 
-class GenerateBindings : public IProgram
-{
-  PROGRAM(GenerateBindings, "generate/bindings")
-  PROG_NO_ARGS
+    class GenerateBindings : public IProgram
+    {
+        PROGRAM(GenerateBindings, "generate/bindings")
+        PROG_NO_ARGS
 
-public:
-  String file_id(const String& p_file_name);
+      public:
+        String file_id(const String& p_file_name);
 
-  String generated_macro_name(const String& p_header, Size p_line);
+        String generated_macro_name(const String& p_header, Size p_line);
 
-  Ref<ProgramError> run(ApplicationContext& p_context) override;
-};
+        Ref<ProgramError> run(ApplicationContext& p_context) override;
+    };
 
 } // namespace GodotObjectCompiler

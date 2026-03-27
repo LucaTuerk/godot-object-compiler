@@ -44,62 +44,61 @@
 namespace GodotObjectCompiler
 {
 
-enum TestResult {
-  TEST_RESULT_SUCCESS,
-  TEST_RESULT_FAILURE,
-  TEST_RESULT_IGNORED
-};
+    enum TestResult { TEST_RESULT_SUCCESS, TEST_RESULT_FAILURE, TEST_RESULT_IGNORED };
 
-using TestFunctor = std::function<TestResult()>;
+    using TestFunctor = std::function<TestResult()>;
 
-class TestRegistry
-{
-public:
-  static TestRegistry* instance()
-  {
-    static TestRegistry instance;
-    return &instance;
-  }
+    class TestRegistry
+    {
+      public:
+        static TestRegistry* instance()
+        {
+            static TestRegistry instance;
+            return &instance;
+        }
 
-  bool register_test(const String& name, TestFunctor functor);
-  bool register_integration_test(const String& name, TestFunctor functor);
+        bool register_test(const String& name, TestFunctor functor);
+        bool register_integration_test(const String& name, TestFunctor functor);
 
-  String test_generated_folder();
-  String test_root_folder();
+        String test_generated_folder();
+        String test_root_folder();
 
-  Vector<String>
-  get_test_application_arguments(const ProgramPath& p_program_path);
-  Vector<String> get_integration_tests_include_paths();
-  void set_integration_tests_include_paths(const Vector<String>& p_paths);
+        Vector<String> get_test_application_arguments(const ProgramPath& p_program_path);
+        Vector<String> get_integration_tests_include_paths();
+        void set_integration_tests_include_paths(const Vector<String>& p_paths);
 
-  const Dictionary<String, TestFunctor>& get_tests();
-  const Dictionary<String, TestFunctor>& get_integration_tests();
+        const Dictionary<String, TestFunctor>& get_tests();
+        const Dictionary<String, TestFunctor>& get_integration_tests();
 
-private:
-  Vector<String> include_paths;
-  Dictionary<String, TestFunctor> tests;
-  Dictionary<String, TestFunctor> integration_tests;
-};
+      private:
+        Vector<String> include_paths;
+        Dictionary<String, TestFunctor> tests;
+        Dictionary<String, TestFunctor> integration_tests;
+    };
 
-class TestRegister
-{
-  String name;
+    class TestRegister
+    {
+        String name;
 
-public:
-  explicit TestRegister(String name) : name(std::move(name)) {}
+      public:
+        explicit TestRegister(String name) : name(std::move(name))
+        {
+        }
 
-  bool operator<<(TestFunctor functor) const;
-};
+        bool operator<<(TestFunctor functor) const;
+    };
 
-class IntegrationTestRegister
-{
-  String name;
+    class IntegrationTestRegister
+    {
+        String name;
 
-public:
-  explicit IntegrationTestRegister(String name) : name(std::move(name)) {}
+      public:
+        explicit IntegrationTestRegister(String name) : name(std::move(name))
+        {
+        }
 
-  bool operator<<(TestFunctor functor) const;
-};
+        bool operator<<(TestFunctor functor) const;
+    };
 
 } // namespace GodotObjectCompiler
 
@@ -117,39 +116,39 @@ public:
 
 #define GOC_TEST_IGNORE() return GodotObjectCompiler::TEST_RESULT_IGNORED;
 
-#define GOC_TEST_ASSERT(condition, ...)                                        \
-  if (!(condition)) {                                                          \
-    fmt_print_err(__VA_ARGS__);                                                \
-    return GodotObjectCompiler::TEST_RESULT_FAILURE;                           \
-  }
+#define GOC_TEST_ASSERT(condition, ...)                                                            \
+    if (!(condition)) {                                                                            \
+        fmt_print_err(__VA_ARGS__);                                                                \
+        return GodotObjectCompiler::TEST_RESULT_FAILURE;                                           \
+    }
 
-#define GOC_TEST_EQ(a, b, ...)                                                 \
-  if (!((a) == (b))) {                                                         \
-    GodotObjectCompiler::StreamWriter writer;                                  \
-    writer.write(format(__VA_ARGS__));                                         \
-    writer.write(" Expected to be ");                                          \
-    writer.write_generic(b);                                                   \
-    writer.write_generic(" but was "), writer.write_generic(a);                \
-    writer.write("."), print_err(writer.get_string());                         \
-    return GodotObjectCompiler::TEST_RESULT_FAILURE;                           \
-  }
+#define GOC_TEST_EQ(a, b, ...)                                                                     \
+    if (!((a) == (b))) {                                                                           \
+        GodotObjectCompiler::StreamWriter writer;                                                  \
+        writer.write(format(__VA_ARGS__));                                                         \
+        writer.write(" Expected to be ");                                                          \
+        writer.write_generic(b);                                                                   \
+        writer.write_generic(" but was "), writer.write_generic(a);                                \
+        writer.write("."), print_err(writer.get_string());                                         \
+        return GodotObjectCompiler::TEST_RESULT_FAILURE;                                           \
+    }
 
-#define GOC_TEST_NEQ(a, b, ...)                                                \
-  if (((a) == (b))) {                                                          \
-    GodotObjectCompiler::StreamWriter writer;                                  \
-    writer.write(format(__VA_ARGS__));                                         \
-    writer.write(" Expected not equal to ");                                   \
-    writer.write_generic(b);                                                   \
-    writer.write_generic(" but was "), writer.write_generic(a);                \
-    writer.write("."), print_err(writer.get_string());                         \
-    return GodotObjectCompiler::TEST_RESULT_FAILURE;                           \
-  }
+#define GOC_TEST_NEQ(a, b, ...)                                                                    \
+    if (((a) == (b))) {                                                                            \
+        GodotObjectCompiler::StreamWriter writer;                                                  \
+        writer.write(format(__VA_ARGS__));                                                         \
+        writer.write(" Expected not equal to ");                                                   \
+        writer.write_generic(b);                                                                   \
+        writer.write_generic(" but was "), writer.write_generic(a);                                \
+        writer.write("."), print_err(writer.get_string());                                         \
+        return GodotObjectCompiler::TEST_RESULT_FAILURE;                                           \
+    }
 
-#define GOC_TEST_PARSE_FILE(path)                                              \
-  Ref<Namespace> global_namespace = node_new<Namespace>();                     \
-  {                                                                            \
-    TreeSitterParser parser;                                                   \
-    Ref<ParserError> error = parser.parse_file(path, global_namespace);        \
-    GOC_TEST_EQ(error, ParserError::OK, "Parser error occurred");              \
-  }                                                                            \
-  GOC_TEST_ASSERT(global_namespace, "Global Namespace is invalid.");
+#define GOC_TEST_PARSE_FILE(path)                                                                  \
+    Ref<Namespace> global_namespace = node_new<Namespace>();                                       \
+    {                                                                                              \
+        TreeSitterParser parser;                                                                   \
+        Ref<ParserError> error = parser.parse_file(path, global_namespace);                        \
+        GOC_TEST_EQ(error, ParserError::OK, "Parser error occurred");                              \
+    }                                                                                              \
+    GOC_TEST_ASSERT(global_namespace, "Global Namespace is invalid.");

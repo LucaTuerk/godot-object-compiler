@@ -39,116 +39,114 @@
 namespace GodotObjectCompiler
 {
 
-class Error;
+    class Error;
 
-class IStringWriter
-{
-public:
-  virtual ~IStringWriter() = default;
-  virtual void write(const String& p_value) = 0;
+    class IStringWriter
+    {
+      public:
+        virtual ~IStringWriter() = default;
+        virtual void write(const String& p_value) = 0;
 
-  template <typename T> void write_generic(const T& value);
+        template <typename T> void write_generic(const T& value);
 
-  virtual String get_string() = 0;
-  virtual Size current_length() = 0;
-};
+        virtual String get_string() = 0;
+        virtual Size current_length() = 0;
+    };
 
-class IStructuredWriter
-{
-public:
-  virtual ~IStructuredWriter() = default;
+    class IStructuredWriter
+    {
+      public:
+        virtual ~IStructuredWriter() = default;
 
-  template <typename K, typename V> void write(const K& key, const V& value);
+        template <typename K, typename V> void write(const K& key, const V& value);
 
-  template <typename S> void write_to_section(const S& section);
+        template <typename S> void write_to_section(const S& section);
 
-  virtual bool write_to_file(const String& p_path) = 0;
+        virtual bool write_to_file(const String& p_path) = 0;
 
-protected:
-  virtual void _write_to_section(const String& p_section) = 0;
-  virtual void _write(const String& p_key, const String& p_value) = 0;
-};
+      protected:
+        virtual void _write_to_section(const String& p_section) = 0;
+        virtual void _write(const String& p_key, const String& p_value) = 0;
+    };
 
-class IStructuredReader
-{
-public:
-  virtual ~IStructuredReader() = default;
+    class IStructuredReader
+    {
+      public:
+        virtual ~IStructuredReader() = default;
 
-  template <typename K, typename V> V read(const K& key);
+        template <typename K, typename V> V read(const K& key);
 
-  template <typename S> void read_from_section(const S& section);
+        template <typename S> void read_from_section(const S& section);
 
-  virtual bool read_from_file(const String& p_path) = 0;
+        virtual bool read_from_file(const String& p_path) = 0;
 
-protected:
-  virtual void _read_from_section(const String& p_section) = 0;
-  virtual String _read(const String& p_key) = 0;
-};
+      protected:
+        virtual void _read_from_section(const String& p_section) = 0;
+        virtual String _read(const String& p_key) = 0;
+    };
 
-template <typename T> void IStringWriter::write_generic(const T& value)
-{
-  std::stringstream strstr;
-  strstr << value;
-  write(strstr.str());
-}
+    template <typename T> void IStringWriter::write_generic(const T& value)
+    {
+        std::stringstream strstr;
+        strstr << value;
+        write(strstr.str());
+    }
 
-template <typename K, typename V>
-void IStructuredWriter::write(const K& key, const V& value)
-{
-  std::stringstream key_str, value_str;
-  key_str << key;
-  value_str << value;
+    template <typename K, typename V> void IStructuredWriter::write(const K& key, const V& value)
+    {
+        std::stringstream key_str, value_str;
+        key_str << key;
+        value_str << value;
 
-  _write(key_str.str(), value_str.str());
-}
+        _write(key_str.str(), value_str.str());
+    }
 
-template <typename S> void IStructuredWriter::write_to_section(const S& section)
-{
-  std::stringstream section_str;
-  section_str << section;
+    template <typename S> void IStructuredWriter::write_to_section(const S& section)
+    {
+        std::stringstream section_str;
+        section_str << section;
 
-  _write_to_section(section_str.str());
-}
+        _write_to_section(section_str.str());
+    }
 
-template <typename K, typename V> V IStructuredReader::read(const K& key)
-{
-  std::stringstream key_str;
-  key_str << key;
+    template <typename K, typename V> V IStructuredReader::read(const K& key)
+    {
+        std::stringstream key_str;
+        key_str << key;
 
-  std::istringstream ss(_read(key_str.str()));
-  V result;
-  ss >> result;
+        std::istringstream ss(_read(key_str.str()));
+        V result;
+        ss >> result;
 
-  return result;
-}
+        return result;
+    }
 
-template <typename S>
-void IStructuredReader::read_from_section(const S& section)
-{
-  std::stringstream section_str;
-  section_str << section;
+    template <typename S> void IStructuredReader::read_from_section(const S& section)
+    {
+        std::stringstream section_str;
+        section_str << section;
 
-  _read_from_section(section_str.str());
-}
+        _read_from_section(section_str.str());
+    }
 
-class Node;
+    class Node;
 
-class INodeWriter
-{
-public:
-  virtual ~INodeWriter() = default;
+    class INodeWriter
+    {
+      public:
+        virtual ~INodeWriter() = default;
 
-  virtual bool write_to_file(Ref<Node> node, const String& path) = 0;
-};
+        virtual bool write_to_file(Ref<Node> node, const String& path) = 0;
+    };
 
-class INodeReader
-{
-public:
-  virtual ~INodeReader() = default;
+    class INodeReader
+    {
+      public:
+        virtual ~INodeReader() = default;
 
-  virtual Result<Node> read_from_file(const String& path) = 0;
+        virtual Result<Node> read_from_file(const String& path) = 0;
 
-  template <typename T> Result<T> read_from_file(const String& p_path);
-};
+        template <typename T> Result<T> read_from_file(const String& p_path);
+    };
 
 } // namespace GodotObjectCompiler

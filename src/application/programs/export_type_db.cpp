@@ -47,60 +47,60 @@
 namespace GodotObjectCompiler
 {
 
-bool ExportTypeDB::validate_arguments(ApplicationContext& p_context)
-{
-  return p_context.program_arguments.size() == 1 &&
-         could_be_dir_path(p_context.program_arguments[0]);
-}
-
-Ref<ProgramError> ExportTypeDB::run(ApplicationContext& p_context)
-{
-  PROG_ERR_COND(
-      p_context.program_arguments.size() != 1,
-      "Invalid argument count. Expected directory path to export TypeDB to.");
-
-  String export_dir = p_context.program_arguments[0];
-
-  if (directory_exits(export_dir) && (!directory_dirs(export_dir).empty() ||
-                                      !directory_files(export_dir).empty())) {
-    PROG_ERR(
-        "A non empty directory exists at the export path. Path must "
-        "point to an empty or non existing directory");
-  }
-
-  Permissions::instance()->add_write_path(export_dir);
-
-  PROG_ERR_COND(
-      !directory_exits(export_dir) && !create_dir_recursive(export_dir),
-      "Failed to create export directory.");
-
-  ClearCache clear_cache;
-  Ref<ProgramError> clear_error = clear_cache.run(p_context);
-  if (clear_error != ProgramError::OK) {
-    return clear_error;
-  }
-
-  GenerateTypeDB generate_type_db;
-  Ref<ProgramError> generate_error = generate_type_db.run(p_context);
-  if (generate_error != ProgramError::OK) {
-    return generate_error;
-  }
-
-  for (const String& file : directory_files_recursive(p_context.paths_cache)) {
-    if (string_contains(file, ".readonly")) {
-      continue;
+    bool ExportTypeDB::validate_arguments(ApplicationContext& p_context)
+    {
+        return p_context.program_arguments.size() == 1 &&
+               could_be_dir_path(p_context.program_arguments[0]);
     }
 
-    String relative_path = path_relative(file, p_context.paths_cache);
-    String destination_path = path_concat(export_dir, relative_path);
+    Ref<ProgramError> ExportTypeDB::run(ApplicationContext& p_context)
+    {
+        PROG_ERR_COND(
+            p_context.program_arguments.size() != 1,
+            "Invalid argument count. Expected directory path to export "
+            "TypeDB to.");
 
-    PROG_ERR_COND(
-        !copy_file(file, destination_path),
-        "Failed to copy file \"%s\" to \"%s\"", file.c_str(),
-        destination_path.c_str());
-  }
+        String export_dir = p_context.program_arguments[0];
 
-  return ProgramError::OK;
-}
+        if (directory_exits(export_dir) &&
+            (!directory_dirs(export_dir).empty() || !directory_files(export_dir).empty())) {
+            PROG_ERR("A non empty directory exists at the export "
+                     "path. Path must "
+                     "point to an empty or non existing directory");
+        }
+
+        Permissions::instance()->add_write_path(export_dir);
+
+        PROG_ERR_COND(
+            !directory_exits(export_dir) && !create_dir_recursive(export_dir),
+            "Failed to create export directory.");
+
+        ClearCache clear_cache;
+        Ref<ProgramError> clear_error = clear_cache.run(p_context);
+        if (clear_error != ProgramError::OK) {
+            return clear_error;
+        }
+
+        GenerateTypeDB generate_type_db;
+        Ref<ProgramError> generate_error = generate_type_db.run(p_context);
+        if (generate_error != ProgramError::OK) {
+            return generate_error;
+        }
+
+        for (const String& file : directory_files_recursive(p_context.paths_cache)) {
+            if (string_contains(file, ".readonly")) {
+                continue;
+            }
+
+            String relative_path = path_relative(file, p_context.paths_cache);
+            String destination_path = path_concat(export_dir, relative_path);
+
+            PROG_ERR_COND(
+                !copy_file(file, destination_path), "Failed to copy file \"%s\" to \"%s\"",
+                file.c_str(), destination_path.c_str());
+        }
+
+        return ProgramError::OK;
+    }
 
 } // namespace GodotObjectCompiler

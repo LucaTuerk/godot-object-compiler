@@ -40,41 +40,39 @@
 namespace GodotObjectCompiler
 {
 
-class TrailingReturnTypeInto : public IntoHandler<TrailingReturnTypeInto>
-{
-  NODE_HANDLER(TrailingReturnTypeInto);
+    class TrailingReturnTypeInto : public IntoHandler<TrailingReturnTypeInto>
+    {
+        NODE_HANDLER(TrailingReturnTypeInto);
 
-public:
-  static inline String into_type = "trailing_return_type";
-};
+      public:
+        static inline String into_type = "trailing_return_type";
+    };
 
-class TypeDescriptorInto : public IntoHandler<TypeDescriptorInto>
-{
-  NODE_HANDLER(TypeDescriptorInto);
+    class TypeDescriptorInto : public IntoHandler<TypeDescriptorInto>
+    {
+        NODE_HANDLER(TypeDescriptorInto);
 
-public:
-  static inline String into_type = "type_descriptor";
-};
+      public:
+        static inline String into_type = "type_descriptor";
+    };
 
-class PlaceholderTypeGenerate
-    : public GenerateHandler<PlaceholderTypeGenerate, PlaceholderType>
-{
-  NODE_HANDLER(PlaceholderTypeGenerate);
+    class PlaceholderTypeGenerate : public GenerateHandler<PlaceholderTypeGenerate, PlaceholderType>
+    {
+        NODE_HANDLER(PlaceholderTypeGenerate);
 
-public:
-  static inline String generate_type = "placeholder_type_generate";
-  static inline ParserStep next_step = ParserStep::StepOver();
-};
+      public:
+        static inline String generate_type = "placeholder_type_generate";
+        static inline ParserStep next_step = ParserStep::StepOver();
+    };
 
-class TypeHandler : public INodeHandler
-{
-  NODE_HANDLER(TypeHandler);
+    class TypeHandler : public INodeHandler
+    {
+        NODE_HANDLER(TypeHandler);
 
-public:
-  bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
-  ParserStep handle(
-      const Ref<TreeSitterNode>& p_current_src,
-      Ref<Context>& r_current_target) override;
-};
+      public:
+        bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
+        ParserStep
+        handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) override;
+    };
 
 } // namespace GodotObjectCompiler

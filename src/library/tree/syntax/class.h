@@ -41,41 +41,41 @@
 namespace GodotObjectCompiler
 {
 
-class Field;
-class Function;
-class Body;
+    class Field;
+    class Function;
+    class Body;
 
-class BaseClasses : public Context
-{
-  NODE_TYPE(BaseClasses);
-};
+    class BaseClasses : public Context
+    {
+        NODE_TYPE(BaseClasses);
+    };
 
-class Class : public Namespace
-{
-  NODE_TYPE(Class);
+    class Class : public Namespace
+    {
+        NODE_TYPE(Class);
 
-public:
-  LAZY(Class, Size, template_parameter_count);
-  /* collections */
-  LAZY(Class, Vector<String>, direct_bases_names);
-  LAZY_MUT(Class, Vector<Ref<Class>>, base_classes);
-  LAZY(Class, bool, has_generated_class_attribute);
-  LAZY(Class, Vector<Ref<Attribute>>, attributes);
-  LAZY(Class, String, first_base_qualifed_name);
-  // Functions
-  LAZY(Class, Vector<Ref<Function>>, member_functions);
-  LAZY(Class, Vector<Ref<Function>>, public_member_functions);
-  LAZY(Class, Vector<Ref<Function>>, protected_member_functions);
-  LAZY(Class, Vector<Ref<Function>>, private_member_functions);
-  // Fields
-  LAZY(Class, Vector<Ref<Field>>, member_fields);
-  LAZY(Class, Vector<Ref<Field>>, public_member_fields);
-  LAZY(Class, Vector<Ref<Field>>, protected_member_fields);
-  LAZY(Class, Vector<Ref<Field>>, private_member_fields);
+      public:
+        LAZY(Class, Size, template_parameter_count);
+        /* collections */
+        LAZY(Class, Vector<String>, direct_bases_names);
+        LAZY_MUT(Class, Vector<Ref<Class>>, base_classes);
+        LAZY(Class, bool, has_generated_class_attribute);
+        LAZY(Class, Vector<Ref<Attribute>>, attributes);
+        LAZY(Class, String, first_base_qualifed_name);
+        // Functions
+        LAZY(Class, Vector<Ref<Function>>, member_functions);
+        LAZY(Class, Vector<Ref<Function>>, public_member_functions);
+        LAZY(Class, Vector<Ref<Function>>, protected_member_functions);
+        LAZY(Class, Vector<Ref<Function>>, private_member_functions);
+        // Fields
+        LAZY(Class, Vector<Ref<Field>>, member_fields);
+        LAZY(Class, Vector<Ref<Field>>, public_member_fields);
+        LAZY(Class, Vector<Ref<Field>>, protected_member_fields);
+        LAZY(Class, Vector<Ref<Field>>, private_member_fields);
 
-public:
-  bool has_function_named(const String& name) const;
-  bool copy_to(const Ref<Node>& p_other) const override;
-};
+      public:
+        bool has_function_named(const String& name) const;
+        bool copy_to(const Ref<Node>& p_other) const override;
+    };
 
 } // namespace GodotObjectCompiler

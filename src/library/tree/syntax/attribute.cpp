@@ -38,70 +38,70 @@
 namespace GodotObjectCompiler
 {
 
-Ref<Node> Attribute::resolve_target() const
-{
-  switch (_get_target()) {
-  case NEXT: {
-    Ref<Node> target = get_next_sibling();
-    if (verify_target(target)) {
-      return target;
+    Ref<Node> Attribute::resolve_target() const
+    {
+        switch (_get_target()) {
+        case NEXT: {
+            Ref<Node> target = get_next_sibling();
+            if (verify_target(target)) {
+                return target;
+            }
+            return nullptr;
+        } break;
+        case CONTAINING: {
+            return find_parent<Node>(
+                [this](const Ref<Node>& p_parent) { return verify_target(p_parent); });
+        } break;
+        case NONE: {
+            return nullptr;
+        } break;
+        default: {
+            PANIC("UNIMPLEMENTED");
+        }
+        }
     }
-    return nullptr;
-  } break;
-  case CONTAINING: {
-    return find_parent<Node>(
-        [this](const Ref<Node>& p_parent) { return verify_target(p_parent); });
-  } break;
-  case NONE: {
-    return nullptr;
-  } break;
-  default: {
-    PANIC("UNIMPLEMENTED");
-  }
-  }
-}
 
-bool Attribute::verify_target(const Ref<Node>& p_resolved) const
-{
-  if (!_verify_target_class(p_resolved)) {
-    return false;
-  }
+    bool Attribute::verify_target(const Ref<Node>& p_resolved) const
+    {
+        if (!_verify_target_class(p_resolved)) {
+            return false;
+        }
 
-  return _verify_target(p_resolved);
-}
+        return _verify_target(p_resolved);
+    }
 
-Ref<IAttributeArgumentParser> Attribute::get_argument_parser()
-{
-  return nullptr;
-}
+    Ref<IAttributeArgumentParser> Attribute::get_argument_parser()
+    {
+        return nullptr;
+    }
 
-bool Attribute::_verify_target(const Ref<Node>& p_resolved) const
-{
-  UNUSED(p_resolved);
-  return true;
-}
-String UnparsedAttributeArguments::to_string() const
-{
-  return format("%s: \"%s\"", Node::to_string().c_str(), content.c_str());
-}
+    bool Attribute::_verify_target(const Ref<Node>& p_resolved) const
+    {
+        UNUSED(p_resolved);
+        return true;
+    }
+    String UnparsedAttributeArguments::to_string() const
+    {
+        return format("%s: \"%s\"", Node::to_string().c_str(), content.c_str());
+    }
 
-bool UnparsedAttributeArguments::copy_to(const Ref<Node>& p_other) const
-{
-  COPY_GUARD(UnparsedAttributeArguments, Node);
-  target->content = content;
-  return true;
-}
+    bool UnparsedAttributeArguments::copy_to(const Ref<Node>& p_other) const
+    {
+        COPY_GUARD(UnparsedAttributeArguments, Node);
+        target->content = content;
+        return true;
+    }
 
-void UnparsedAttributeArguments::write_to(IStructuredWriter* p_writer)
-{
-  Node::write_to(p_writer);
-  p_writer->write<String, String>("_content", content);
-}
+    void UnparsedAttributeArguments::write_to(IStructuredWriter* p_writer)
+    {
+        Node::write_to(p_writer);
+        p_writer->write<String, String>("_content", content);
+    }
 
-void UnparsedAttributeArguments::read_from(IStructuredReader* p_reader)
-{
-  Node::read_from(p_reader);
-  content = p_reader->read<String, String>("_content");
-}
+    void UnparsedAttributeArguments::read_from(IStructuredReader* p_reader)
+    {
+        Node::read_from(p_reader);
+        content = p_reader->read<String, String>("_content");
+    }
 
 } // namespace GodotObjectCompiler

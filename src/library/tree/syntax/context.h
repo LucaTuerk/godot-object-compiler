@@ -39,554 +39,535 @@
 namespace GodotObjectCompiler
 {
 
-class Namespace;
-class Body;
+    class Namespace;
+    class Body;
 
-enum StemExplorationType {
-  DIRECT_PARENTS,
-  BY_SIBLINGS_PREV,
-  BY_SIBLINGS_NEXT,
-};
+    enum StemExplorationType {
+        DIRECT_PARENTS,
+        BY_SIBLINGS_PREV,
+        BY_SIBLINGS_NEXT,
+    };
 
-enum BranchExplorationType {
-  BFS,
-  DFS,
-};
+    enum BranchExplorationType {
+        BFS,
+        DFS,
+    };
 
-template <typename NodeT, typename... Args> class Builder
-{
-public:
-  Builder(Args... args);
+    template <typename NodeT, typename... Args> class Builder
+    {
+      public:
+        Builder(Args... args);
 
-  operator Ref<NodeT>();
+        operator Ref<NodeT>();
 
-  template <
-      typename B, typename = std::enable_if_t<std::is_base_of_v<B, NodeT>>>
-  operator Ref<B>();
+        template <typename B, typename = std::enable_if_t<std::is_base_of_v<B, NodeT>>>
+        operator Ref<B>();
 
-  operator Ref<Node>();
+        operator Ref<Node>();
 
-  Builder& operator[](const Ref<Node>& p_node);
+        Builder& operator[](const Ref<Node>& p_node);
 
-  template <typename B, typename... BArgs>
-  Builder& with_child(BArgs... child_args);
+        template <typename B, typename... BArgs> Builder& with_child(BArgs... child_args);
 
-  template <typename B, typename... BArgs>
-  Builder& with_child_ref(Ref<B>* ptr, BArgs... child_args);
+        template <typename B, typename... BArgs>
+        Builder& with_child_ref(Ref<B>* ptr, BArgs... child_args);
 
-  Builder& with_child(const Ref<Node>& p_child);
+        Builder& with_child(const Ref<Node>& p_child);
 
-  Builder& with_child_ref(Ref<Node>* p_node, const Ref<Node>&);
+        Builder& with_child_ref(Ref<Node>* p_node, const Ref<Node>&);
 
-  Builder& operator[](std::initializer_list<Ref<Node>>&& p_children);
+        Builder& operator[](std::initializer_list<Ref<Node>>&& p_children);
 
-  Builder& with_children(std::initializer_list<Ref<Node>>&& p_children);
+        Builder& with_children(std::initializer_list<Ref<Node>>&& p_children);
 
-  Builder& with_tag(const String& p_tag);
+        Builder& with_tag(const String& p_tag);
 
-  Builder& $(const String& p_tag);
+        Builder& $(const String& p_tag);
 
-private:
-  Builder(Ref<Context> parent, Args... args);
+      private:
+        Builder(Ref<Context> parent, Args... args);
 
-  Ref<NodeT> _created;
+        Ref<NodeT> _created;
 
-  friend Context;
-};
+        friend Context;
+    };
 
-class Context : public Node
-{
-  NODE_TYPE(Context);
+    class Context : public Node
+    {
+        NODE_TYPE(Context);
 
-public:
-  bool copy_to(const Ref<Node>& p_other) const override;
+      public:
+        bool copy_to(const Ref<Node>& p_other) const override;
 
-  void add_child(Ref<Node> p_child);
+        void add_child(Ref<Node> p_child);
 
-  void add_child_before(Ref<Node> p_child, Ref<Node> p_existing);
+        void add_child_before(Ref<Node> p_child, Ref<Node> p_existing);
 
-  void add_children(std::initializer_list<Ref<Node>>&& p_children);
+        void add_children(std::initializer_list<Ref<Node>>&& p_children);
 
-  void remove_child(const Ref<Node>& p_child);
+        void remove_child(const Ref<Node>& p_child);
 
-  void replace_child(
-      const Ref<Node>& p_child, const Ref<Node>& p_new_child,
-      bool take_children = false);
+        void replace_child(
+            const Ref<Node>& p_child, const Ref<Node>& p_new_child, bool take_children = false);
 
-  bool empty() const;
+        bool empty() const;
 
-  Size get_child_count() const;
+        Size get_child_count() const;
 
-  Size get_descendant_count() const;
+        Size get_descendant_count() const;
 
-  template <typename T> Ref<T> get_child(SignedIndex p_idx) const;
+        template <typename T> Ref<T> get_child(SignedIndex p_idx) const;
 
-  Ref<Node> get_child(SignedIndex p_idx) const;
+        Ref<Node> get_child(SignedIndex p_idx) const;
 
-  Ref<Node> get_child_strict(SignedIndex p_idx) const;
+        Ref<Node> get_child_strict(SignedIndex p_idx) const;
 
-  List<Ref<Node>>& get_children();
+        List<Ref<Node>>& get_children();
 
-  template <typename T> using NodeFunctor = void (*)(Ref<T>);
+        template <typename T> using NodeFunctor = void (*)(Ref<T>);
 
-  List<Ref<Node>> _children{};
+        List<Ref<Node>> _children{};
 
-  using ChildIterator = decltype(_children)::iterator;
+        using ChildIterator = decltype(_children)::iterator;
 
-  ChildIterator begin();
+        ChildIterator begin();
 
-  ChildIterator end();
+        ChildIterator end();
 
-  ChildIterator remove_child(ChildIterator p_itr);
+        ChildIterator remove_child(ChildIterator p_itr);
 
-  ChildIterator reparent_child(ChildIterator p_itr, Ref<Context> p_new_parent);
-
-  void remove_all_children();
-
-  template <typename T>
-  Ref<T> find_chain(Predicate<T> p_predicate = default_node_predicate<T>) const;
-
-  template <typename T, typename C, typename... Args>
-  Ref<T> find_chain(Predicate<T> p_predicate = default_node_predicate<T>) const;
-
-  template <typename T>
-  Ref<T> find_child(
-      Index p_start_idx = 0,
-      Predicate<T> p_predicate = default_node_predicate<T>) const;
-
-  template <class T>
-  Ref<T> find_ancestor(
-      StemExplorationType p_type = DIRECT_PARENTS,
-      Predicate<T> p_predicate = default_node_predicate<T>) const;
-
-  template <class T>
-  Ref<T> find_descendant(
-      BranchExplorationType p_order = BFS,
-      Predicate<T> p_predicate = default_node_predicate<T>) const;
-
-  template <class T>
-  Ref<T> find_previous_sibling(
-      Predicate<T> p_predicate = default_node_predicate<T>) const;
-
-  template <class T, typename... Args> Ref<T> create_child(Args&&... args);
-
-  template <class T, typename... Args> Builder<T, Args...> B(Args&&... args);
-
-  template <class T, typename... Args>
-  Builder<T, Args...> build_child(Args&&... args);
-
-  template <class T>
-  Vector<Ref<T>> find_children(
-      bool p_recursive = false,
-      Predicate<T> p_predicate = default_node_predicate<T>) const;
-
-  void write_to(IStructuredWriter* p_writer) override;
-};
-
-class Body : public Context
-{
-  NODE_TYPE(Body);
-};
-
-class NamedContext : public Context
-{
-  NODE_TYPE(NamedContext);
-
-public:
-  bool copy_to(const Ref<Node>& p_other) const override;
-
-  void read_from(IStructuredReader* p_reader) override;
-
-  void write_to(IStructuredWriter* p_writer) override;
-
-  String header;
-
-private:
-  LAZY(NamedContext, Ref<Body>, body);
-  LAZY(NamedContext, String, name);
-  LAZY(NamedContext, String, qualified_name);
-  LAZY(NamedContext, String, mangled_name);
-  LAZY(NamedContext, Vector<String>, namespaces_names)
-};
-
-template <typename T> Ref<T> Node::clone() const
-{
-  Ref<Node> cloned = clone();
-  Ref<T> cloned_t = cloned->as<T>();
-  PANIC_COND(!cloned_t, "Failed to clone.");
-  return cloned_t;
-}
-
-template <class T> Ref<T> Node::find_parent(Predicate<T> p_predicate) const
-{
-  Ref<Node> current = get_parent();
-
-  while (current) {
-    Ref<T> casted = std::dynamic_pointer_cast<T>(current);
-    if (casted != nullptr && p_predicate(casted)) {
-      return casted;
-    }
-    current = current->get_parent();
-  }
-
-  return nullptr;
-}
-
-template <class T> Ref<T> Node::get_previous_sibling() const
-{
-  Ref<Node> prev = get_previous_sibling();
-  if (!prev) {
-    return nullptr;
-  }
-  return prev->as<T>();
-}
-
-template <class T> Ref<T> Node::get_next_sibling() const
-{
-  Ref<Node> next = get_next_sibling();
-  if (!next) {
-    return nullptr;
-  }
-  return next->as<T>();
-}
-
-template <class T> Ref<T> Node::find_previous_sibling()
-{
-  Ref<Node> current = get_previous_sibling();
-
-  while (current) {
-    if (Ref<T> casted = std::dynamic_pointer_cast<T>(current)) {
-      return casted;
-    }
-    current = current->get_previous_sibling();
-  }
-
-  return nullptr;
-}
-
-template <class T>
-Ref<T> Context::find_ancestor(
-    StemExplorationType p_type, Predicate<T> p_predicate) const
-{
-  Node* current = const_cast<Context*>(this);
-  do {
-    switch (p_type) {
-      {
-      case DIRECT_PARENTS:
-        current = current->get_parent().get();
-      }
-      break;
-    case BY_SIBLINGS_PREV: {
-      Node* prev = current->get_previous_sibling().get();
-      current = prev ? prev : current->get_parent().get();
-    } break;
-    case BY_SIBLINGS_NEXT: {
-      Node* next = current->get_next_sibling().get();
-      current = next ? next : current->get_parent().get();
-    } break;
-    }
-    if (!current) {
-      return nullptr;
+        ChildIterator reparent_child(ChildIterator p_itr, Ref<Context> p_new_parent);
+
+        void remove_all_children();
+
+        template <typename T>
+        Ref<T> find_chain(Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+        template <typename T, typename C, typename... Args>
+        Ref<T> find_chain(Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+        template <typename T>
+        Ref<T> find_child(
+            Index p_start_idx = 0, Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+        template <class T>
+        Ref<T> find_ancestor(
+            StemExplorationType p_type = DIRECT_PARENTS,
+            Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+        template <class T>
+        Ref<T> find_descendant(
+            BranchExplorationType p_order = BFS,
+            Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+        template <class T>
+        Ref<T> find_previous_sibling(Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+        template <class T, typename... Args> Ref<T> create_child(Args&&... args);
+
+        template <class T, typename... Args> Builder<T, Args...> B(Args&&... args);
+
+        template <class T, typename... Args> Builder<T, Args...> build_child(Args&&... args);
+
+        template <class T>
+        Vector<Ref<T>> find_children(
+            bool p_recursive = false, Predicate<T> p_predicate = default_node_predicate<T>) const;
+
+        void write_to(IStructuredWriter* p_writer) override;
+    };
+
+    class Body : public Context
+    {
+        NODE_TYPE(Body);
+    };
+
+    class NamedContext : public Context
+    {
+        NODE_TYPE(NamedContext);
+
+      public:
+        bool copy_to(const Ref<Node>& p_other) const override;
+
+        void read_from(IStructuredReader* p_reader) override;
+
+        void write_to(IStructuredWriter* p_writer) override;
+
+        String header;
+
+      private:
+        LAZY(NamedContext, Ref<Body>, body);
+        LAZY(NamedContext, String, name);
+        LAZY(NamedContext, String, qualified_name);
+        LAZY(NamedContext, String, mangled_name);
+        LAZY(NamedContext, Vector<String>, namespaces_names)
+    };
+
+    template <typename T> Ref<T> Node::clone() const
+    {
+        Ref<Node> cloned = clone();
+        Ref<T> cloned_t = cloned->as<T>();
+        PANIC_COND(!cloned_t, "Failed to clone.");
+        return cloned_t;
     }
 
-    Ref<T> current_t = current->as<T>();
-    if (current_t && p_predicate(current_t)) {
-      return current_t;
-    }
-  } while (current);
+    template <class T> Ref<T> Node::find_parent(Predicate<T> p_predicate) const
+    {
+        Ref<Node> current = get_parent();
 
-  return nullptr;
-}
-
-template <typename T> Ref<T> Context::get_child(SignedIndex p_idx) const
-{
-  const Ref<Node> node = get_child(p_idx);
-  if (!node) {
-    return nullptr;
-  }
-
-  Ref<T> node_t = node->as<T>();
-  if (!node_t) {
-    return nullptr;
-  }
-
-  return node_t;
-}
-
-template <typename T> Ref<T> Context::find_chain(Predicate<T> p_predicate) const
-{
-  return find_child<T>(0, p_predicate);
-}
-
-template <typename T, typename C, typename... Args>
-Ref<T> Context::find_chain(Predicate<T> p_predicate) const
-{
-  Ref<C> current = find_child<C>();
-  if (!current) {
-    return nullptr;
-  }
-
-  return current->template find_chain<T, Args...>(p_predicate);
-}
-
-template <typename T>
-Ref<T> Context::find_child(Index p_start_idx, Predicate<T> p_predicate) const
-{
-  if (p_start_idx >= _children.size()) {
-    return nullptr;
-  }
-
-  auto itr = std::next(_children.begin(), p_start_idx);
-
-  while (itr != _children.end()) {
-    Ref<T> tChild = std::dynamic_pointer_cast<T>(*itr);
-    if (tChild && p_predicate(tChild)) {
-      return tChild;
-    }
-    ++itr;
-  }
-
-  return nullptr;
-}
-
-template <class T>
-Ref<T> Context::find_descendant(
-    BranchExplorationType p_order, Predicate<T> p_predicate) const
-{
-  switch (p_order) {
-  case DFS:
-    for (const Ref<Node>& child : _children) {
-      Ref<T> child_t = child->as<T>();
-      if (child_t && p_predicate(child_t)) {
-        return child_t;
-      } else if (child->is<Context>()) {
-        Ref<T> child_res =
-            child->as<Context>()->find_descendant<T>(p_order, p_predicate);
-        if (child_res && p_predicate(child_res)) {
-          return child_res;
+        while (current) {
+            Ref<T> casted = std::dynamic_pointer_cast<T>(current);
+            if (casted != nullptr && p_predicate(casted)) {
+                return casted;
+            }
+            current = current->get_parent();
         }
-      }
+
+        return nullptr;
     }
-    break;
-  case BFS:
-    for (const Ref<Node>& child : _children) {
-      Ref<T> child_t = child->as<T>();
-      if (child_t && p_predicate(child_t)) {
-        return child_t;
-      }
-    }
-    for (const Ref<Node>& child : _children) {
-      if (child->is<Context>()) {
-        if (Ref<T> child_res = child->as<Context>()->find_descendant<T>(
-                p_order, p_predicate)) {
-          return child_res;
+
+    template <class T> Ref<T> Node::get_previous_sibling() const
+    {
+        Ref<Node> prev = get_previous_sibling();
+        if (!prev) {
+            return nullptr;
         }
-      }
+        return prev->as<T>();
     }
-    break;
-  }
-  return nullptr;
-}
 
-template <class T>
-Ref<T> Context::find_previous_sibling(Predicate<T> p_predicate) const
-{
-  if (get_parent() == nullptr) {
-    return nullptr;
-  }
-
-  Ref<Node> current = get_previous_sibling();
-  while (current) {
-    Ref<T> current_t = current->as<T>();
-    if (current_t && p_predicate(current_t)) {
-      return current_t;
+    template <class T> Ref<T> Node::get_next_sibling() const
+    {
+        Ref<Node> next = get_next_sibling();
+        if (!next) {
+            return nullptr;
+        }
+        return next->as<T>();
     }
-    current = current->get_previous_sibling();
-  }
 
-  return nullptr;
-}
+    template <class T> Ref<T> Node::find_previous_sibling()
+    {
+        Ref<Node> current = get_previous_sibling();
 
-template <class T, typename... Args>
-Ref<T> Context::create_child(Args&&... args)
-{
-  Ref<T> child = ExecutionContext::instance()->get_node_db()->create<T>(
-      std::forward<Args>(args)...);
-  add_child(child);
-  return child;
-}
+        while (current) {
+            if (Ref<T> casted = std::dynamic_pointer_cast<T>(current)) {
+                return casted;
+            }
+            current = current->get_previous_sibling();
+        }
 
-template <class T, typename... Args>
-Builder<T, Args...> Context::build_child(Args&&... args)
-{
-  return Builder<T, Args...>(this->as<Context>(), std::forward<Args>(args)...);
-}
-
-template <class T, typename... Args>
-Builder<T, Args...> Context::B(Args&&... args)
-{
-  return build_child<T, Args...>(std::forward<Args>(args)...);
-}
-
-template <class T>
-void find_recursive_helper(
-    Node* node, bool recursive, Vector<Ref<T>>& results, Predicate<T> predicate)
-{
-  Ref<T> node_t = node->as<T>();
-  Ref<Context> node_context = node->as<Context>();
-
-  if (node_t && predicate(node_t)) {
-    results.push_back(node_t);
-  }
-
-  if (recursive && node_context) {
-    for (const Ref<Node>& child : *node_context) {
-      find_recursive_helper(child.get(), recursive, results, predicate);
+        return nullptr;
     }
-  }
-}
 
-template <class T>
-Vector<Ref<T>>
-Context::find_children(bool p_recursive, Predicate<T> p_predicate) const
-{
-  Vector<Ref<T>> results;
-  for (const Ref<Node>& child : _children) {
-    find_recursive_helper(child.get(), p_recursive, results, p_predicate);
-  }
-  return results;
-}
+    template <class T>
+    Ref<T> Context::find_ancestor(StemExplorationType p_type, Predicate<T> p_predicate) const
+    {
+        Node* current = const_cast<Context*>(this);
+        do {
+            switch (p_type) {
+                {
+                case DIRECT_PARENTS:
+                    current = current->get_parent().get();
+                }
+                break;
+            case BY_SIBLINGS_PREV: {
+                Node* prev = current->get_previous_sibling().get();
+                current = prev ? prev : current->get_parent().get();
+            } break;
+            case BY_SIBLINGS_NEXT: {
+                Node* next = current->get_next_sibling().get();
+                current = next ? next : current->get_parent().get();
+            } break;
+            }
+            if (!current) {
+                return nullptr;
+            }
 
-template <typename T, typename... Args>
-Builder<T, Args...>::Builder(Args... args)
-{
-  _created = node_new<T>(std::forward<Args>(args)...);
-}
+            Ref<T> current_t = current->as<T>();
+            if (current_t && p_predicate(current_t)) {
+                return current_t;
+            }
+        } while (current);
 
-template <typename T, typename... Args>
-Builder<T, Args...>::Builder(Ref<Context> parent, Args... args)
-{
-  _created = node_new<T>(std::forward<Args>(args)...);
-  if (parent) {
-    parent->add_child(_created);
-  }
-}
+        return nullptr;
+    }
 
-template <typename T, typename... Args> Builder<T, Args...>::operator Ref<T>()
-{
-  return _created;
-}
+    template <typename T> Ref<T> Context::get_child(SignedIndex p_idx) const
+    {
+        const Ref<Node> node = get_child(p_idx);
+        if (!node) {
+            return nullptr;
+        }
 
-template <typename T, typename... Args>
-template <typename B, typename>
-Builder<T, Args...>::operator Ref<B>()
-{
-  return _created->template as<B>();
-}
+        Ref<T> node_t = node->as<T>();
+        if (!node_t) {
+            return nullptr;
+        }
 
-template <typename T, typename... Args>
-Builder<T, Args...>::operator Ref<Node>()
-{
-  return std::dynamic_pointer_cast<Node>(_created);
-}
+        return node_t;
+    }
 
-template <typename T, typename... Args>
-Builder<T, Args...>& Builder<T, Args...>::operator[](const Ref<Node>& p_node)
-{
-  return with_child(p_node);
-}
+    template <typename T> Ref<T> Context::find_chain(Predicate<T> p_predicate) const
+    {
+        return find_child<T>(0, p_predicate);
+    }
 
-template <typename T, typename... Args>
-Builder<T, Args...>&
-Builder<T, Args...>::operator[](std::initializer_list<Ref<Node>>&& p_children)
-{
-  return with_children(std::move(p_children));
-}
+    template <typename T, typename C, typename... Args>
+    Ref<T> Context::find_chain(Predicate<T> p_predicate) const
+    {
+        Ref<C> current = find_child<C>();
+        if (!current) {
+            return nullptr;
+        }
 
-template <typename T, typename... Args>
-template <typename B, typename... BArgs>
-Builder<T, Args...>& Builder<T, Args...>::with_child(BArgs... child_args)
-{
-  _created->add_child(node_new<B>(std::forward<BArgs>(child_args)...));
-  return *this;
-}
+        return current->template find_chain<T, Args...>(p_predicate);
+    }
 
-template <typename T, typename... Args>
-template <typename B, typename... BArgs>
-Builder<T, Args...>&
-Builder<T, Args...>::with_child_ref(Ref<B>* ptr, BArgs... child_args)
-{
-  Ref<B> child = node_new<B>(std::forward<BArgs>(child_args)...);
-  _created->add_child(child);
-  if (ptr) {
-    *ptr = child;
-  }
-  return *this;
-}
+    template <typename T>
+    Ref<T> Context::find_child(Index p_start_idx, Predicate<T> p_predicate) const
+    {
+        if (p_start_idx >= _children.size()) {
+            return nullptr;
+        }
 
-template <typename T, typename... Args>
-Builder<T, Args...>&
-Builder<T, Args...>::with_child_ref(Ref<Node>* p_node, const Ref<Node>& p_child)
-{
-  _created->add_child(p_child);
-  if (p_node) {
-    *p_node = p_child;
-  }
-  return *this;
-}
+        auto itr = std::next(_children.begin(), p_start_idx);
 
-template <typename T, typename... Args>
-Builder<T, Args...>& Builder<T, Args...>::with_child(const Ref<Node>& p_child)
-{
-  _created->add_child(p_child);
-  return *this;
-}
+        while (itr != _children.end()) {
+            Ref<T> tChild = std::dynamic_pointer_cast<T>(*itr);
+            if (tChild && p_predicate(tChild)) {
+                return tChild;
+            }
+            ++itr;
+        }
 
-template <typename T, typename... Args>
-Builder<T, Args...>& Builder<T, Args...>::with_children(
-    std::initializer_list<Ref<Node>>&& p_children)
-{
-  for (Ref<Node> child : p_children) {
-    _created->add_child(child);
-  }
-  return *this;
-}
+        return nullptr;
+    }
 
-template <typename T, typename... Args>
-Builder<T, Args...>& Builder<T, Args...>::with_tag(const String& p_tag)
-{
-  _created->set_tag(p_tag);
-  return *this;
-}
+    template <class T>
+    Ref<T> Context::find_descendant(BranchExplorationType p_order, Predicate<T> p_predicate) const
+    {
+        switch (p_order) {
+        case DFS:
+            for (const Ref<Node>& child : _children) {
+                Ref<T> child_t = child->as<T>();
+                if (child_t && p_predicate(child_t)) {
+                    return child_t;
+                } else if (child->is<Context>()) {
+                    Ref<T> child_res =
+                        child->as<Context>()->find_descendant<T>(p_order, p_predicate);
+                    if (child_res && p_predicate(child_res)) {
+                        return child_res;
+                    }
+                }
+            }
+            break;
+        case BFS:
+            for (const Ref<Node>& child : _children) {
+                Ref<T> child_t = child->as<T>();
+                if (child_t && p_predicate(child_t)) {
+                    return child_t;
+                }
+            }
+            for (const Ref<Node>& child : _children) {
+                if (child->is<Context>()) {
+                    if (Ref<T> child_res =
+                            child->as<Context>()->find_descendant<T>(p_order, p_predicate)) {
+                        return child_res;
+                    }
+                }
+            }
+            break;
+        }
+        return nullptr;
+    }
 
-template <typename T, typename... Args>
-Builder<T, Args...>& Builder<T, Args...>::$(const String& p_tag)
-{
-  return with_tag(p_tag);
-}
+    template <class T> Ref<T> Context::find_previous_sibling(Predicate<T> p_predicate) const
+    {
+        if (get_parent() == nullptr) {
+            return nullptr;
+        }
 
-template <typename T, typename... Args> Builder<T, Args...> build(Args... args)
-{
-  return Builder<T, Args...>(args...);
-}
+        Ref<Node> current = get_previous_sibling();
+        while (current) {
+            Ref<T> current_t = current->as<T>();
+            if (current_t && p_predicate(current_t)) {
+                return current_t;
+            }
+            current = current->get_previous_sibling();
+        }
 
-template <typename T, typename... Args>
-Builder<T, Args...> build_ref(Ref<T>* ptr, Args... args)
-{
-  Builder<T, Args...> builder(args...);
-  *ptr = builder;
-  return builder;
-}
+        return nullptr;
+    }
 
-template <typename T, typename... Args> Builder<T, Args...> B(Args... args)
-{
-  return build<T, Args...>(args...);
-}
+    template <class T, typename... Args> Ref<T> Context::create_child(Args&&... args)
+    {
+        Ref<T> child =
+            ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
+        add_child(child);
+        return child;
+    }
 
-template <typename T, typename... Args>
-Builder<T, Args...> R(Ref<T>* ptr, Args... args)
-{
-  return build_ref<T, Args...>(ptr, args...);
-}
+    template <class T, typename... Args> Builder<T, Args...> Context::build_child(Args&&... args)
+    {
+        return Builder<T, Args...>(this->as<Context>(), std::forward<Args>(args)...);
+    }
+
+    template <class T, typename... Args> Builder<T, Args...> Context::B(Args&&... args)
+    {
+        return build_child<T, Args...>(std::forward<Args>(args)...);
+    }
+
+    template <class T>
+    void find_recursive_helper(
+        Node* node, bool recursive, Vector<Ref<T>>& results, Predicate<T> predicate)
+    {
+        Ref<T> node_t = node->as<T>();
+        Ref<Context> node_context = node->as<Context>();
+
+        if (node_t && predicate(node_t)) {
+            results.push_back(node_t);
+        }
+
+        if (recursive && node_context) {
+            for (const Ref<Node>& child : *node_context) {
+                find_recursive_helper(child.get(), recursive, results, predicate);
+            }
+        }
+    }
+
+    template <class T>
+    Vector<Ref<T>> Context::find_children(bool p_recursive, Predicate<T> p_predicate) const
+    {
+        Vector<Ref<T>> results;
+        for (const Ref<Node>& child : _children) {
+            find_recursive_helper(child.get(), p_recursive, results, p_predicate);
+        }
+        return results;
+    }
+
+    template <typename T, typename... Args> Builder<T, Args...>::Builder(Args... args)
+    {
+        _created = node_new<T>(std::forward<Args>(args)...);
+    }
+
+    template <typename T, typename... Args>
+    Builder<T, Args...>::Builder(Ref<Context> parent, Args... args)
+    {
+        _created = node_new<T>(std::forward<Args>(args)...);
+        if (parent) {
+            parent->add_child(_created);
+        }
+    }
+
+    template <typename T, typename... Args> Builder<T, Args...>::operator Ref<T>()
+    {
+        return _created;
+    }
+
+    template <typename T, typename... Args>
+    template <typename B, typename>
+    Builder<T, Args...>::operator Ref<B>()
+    {
+        return _created->template as<B>();
+    }
+
+    template <typename T, typename... Args> Builder<T, Args...>::operator Ref<Node>()
+    {
+        return std::dynamic_pointer_cast<Node>(_created);
+    }
+
+    template <typename T, typename... Args>
+    Builder<T, Args...>& Builder<T, Args...>::operator[](const Ref<Node>& p_node)
+    {
+        return with_child(p_node);
+    }
+
+    template <typename T, typename... Args>
+    Builder<T, Args...>&
+    Builder<T, Args...>::operator[](std::initializer_list<Ref<Node>>&& p_children)
+    {
+        return with_children(std::move(p_children));
+    }
+
+    template <typename T, typename... Args>
+    template <typename B, typename... BArgs>
+    Builder<T, Args...>& Builder<T, Args...>::with_child(BArgs... child_args)
+    {
+        _created->add_child(node_new<B>(std::forward<BArgs>(child_args)...));
+        return *this;
+    }
+
+    template <typename T, typename... Args>
+    template <typename B, typename... BArgs>
+    Builder<T, Args...>& Builder<T, Args...>::with_child_ref(Ref<B>* ptr, BArgs... child_args)
+    {
+        Ref<B> child = node_new<B>(std::forward<BArgs>(child_args)...);
+        _created->add_child(child);
+        if (ptr) {
+            *ptr = child;
+        }
+        return *this;
+    }
+
+    template <typename T, typename... Args>
+    Builder<T, Args...>&
+    Builder<T, Args...>::with_child_ref(Ref<Node>* p_node, const Ref<Node>& p_child)
+    {
+        _created->add_child(p_child);
+        if (p_node) {
+            *p_node = p_child;
+        }
+        return *this;
+    }
+
+    template <typename T, typename... Args>
+    Builder<T, Args...>& Builder<T, Args...>::with_child(const Ref<Node>& p_child)
+    {
+        _created->add_child(p_child);
+        return *this;
+    }
+
+    template <typename T, typename... Args>
+    Builder<T, Args...>&
+    Builder<T, Args...>::with_children(std::initializer_list<Ref<Node>>&& p_children)
+    {
+        for (Ref<Node> child : p_children) {
+            _created->add_child(child);
+        }
+        return *this;
+    }
+
+    template <typename T, typename... Args>
+    Builder<T, Args...>& Builder<T, Args...>::with_tag(const String& p_tag)
+    {
+        _created->set_tag(p_tag);
+        return *this;
+    }
+
+    template <typename T, typename... Args>
+    Builder<T, Args...>& Builder<T, Args...>::$(const String& p_tag)
+    {
+        return with_tag(p_tag);
+    }
+
+    template <typename T, typename... Args> Builder<T, Args...> build(Args... args)
+    {
+        return Builder<T, Args...>(args...);
+    }
+
+    template <typename T, typename... Args> Builder<T, Args...> build_ref(Ref<T>* ptr, Args... args)
+    {
+        Builder<T, Args...> builder(args...);
+        *ptr = builder;
+        return builder;
+    }
+
+    template <typename T, typename... Args> Builder<T, Args...> B(Args... args)
+    {
+        return build<T, Args...>(args...);
+    }
+
+    template <typename T, typename... Args> Builder<T, Args...> R(Ref<T>* ptr, Args... args)
+    {
+        return build_ref<T, Args...>(ptr, args...);
+    }
 
 } // namespace GodotObjectCompiler

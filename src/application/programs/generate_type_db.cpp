@@ -51,78 +51,83 @@
 namespace GodotObjectCompiler
 {
 
-Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context)
-{
-  TreeSitterParser parser;
-  parser.set_parse_attributes(false);
+    Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context)
+    {
+        TreeSitterParser parser;
+        parser.set_parse_attributes(false);
 
-  PROG_ERR_COND(
-      !p_context.paths_include.has_value(),
-      "No include path specified. Cannot generate the TypeDB.");
+        PROG_ERR_COND(
+            !p_context.paths_include.has_value(),
+            "No include path specified. Cannot generate the TypeDB.");
 
-  for (String include_path : *p_context.paths_include) {
-    include_path = path_absolute(include_path);
-    for (String file : directory_files_recursive(include_path)) {
-      file = path_absolute(file);
+        for (String include_path : *p_context.paths_include) {
+            include_path = path_absolute(include_path);
+            for (String file : directory_files_recursive(include_path)) {
+                file = path_absolute(file);
 
-      if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") &&
-          !string_suffix(file, ".gen.inc")) {
-        continue;
-      }
+                if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") &&
+                    !string_suffix(file, ".gen.inc")) {
+                    continue;
+                }
 
-      if (!ExecutionContext::instance()->file_modified(file)) {
-        PRINT_VERBOSE("TypeDB:\tSkipping \"%s\". Not modified.", file.c_str());
-        continue;
-      }
-      PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
+                if (!ExecutionContext::instance()->file_modified(file)) {
+                    PRINT_VERBOSE(
+                        "TypeDB:\tSkipping \"%s\". Not "
+                        "modified.",
+                        file.c_str());
+                    continue;
+                }
+                PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
 
-      Ref<Namespace> global_namespace = node_new<Namespace>();
-      Ref<ParserError> error = parser.parse_file(file, global_namespace);
+                Ref<Namespace> global_namespace = node_new<Namespace>();
+                Ref<ParserError> error = parser.parse_file(file, global_namespace);
 
-      if (error != ParserError::OK) {
-        continue;
-      }
+                if (error != ParserError::OK) {
+                    continue;
+                }
 
-      if (global_namespace) {
-        auto is_valid_type_target = [](const Ref<NamedContext>& node) {
-          return node->is<Class>() || node->is<Struct>() || node->is<Enum>() ||
-                 node->is<Define>();
-        };
+                if (global_namespace) {
+                    auto is_valid_type_target = [](const Ref<NamedContext>& node) {
+                        return node->is<Class>() || node->is<Struct>() || node->is<Enum>() ||
+                               node->is<Define>();
+                    };
 
-        Vector<Ref<NamedContext>> found =
-            global_namespace->find_children<NamedContext>(
-                true, [is_valid_type_target](const Ref<NamedContext>& node) {
-                  return is_valid_type_target(node) || node->is<Attribute>();
-                });
+                    Vector<Ref<NamedContext>> found = global_namespace->find_children<NamedContext>(
+                        true, [is_valid_type_target](const Ref<NamedContext>& node) {
+                            return is_valid_type_target(node) || node->is<Attribute>();
+                        });
 
-        for (const Ref<NamedContext>& node : found) {
-          if (Ref<Attribute> attr = node->as<Attribute>(); attr) {
-            if (!attr->resolve_target()) {
-              continue;
+                    for (const Ref<NamedContext>& node : found) {
+                        if (Ref<Attribute> attr = node->as<Attribute>(); attr) {
+                            if (!attr->resolve_target()) {
+                                continue;
+                            }
+
+                            if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
+                                type && is_valid_type_target(type)) {
+                                PRINT_VERBOSE(
+                                    "TypeDB:"
+                                    "\tSaving "
+                                    "attribute "
+                                    "\"%s\"",
+                                    node->qualified_name().c_str());
+                                ExecutionContext::instance()->get_type_db()->save_type_attribute(
+                                    type, attr, file);
+                            }
+                        } else {
+                            PRINT_VERBOSE(
+                                "TypeDB:\tSaving "
+                                "type \"%s\"",
+                                node->qualified_name().c_str());
+                            node->header = header_path(include_path, file);
+                            ExecutionContext::instance()->get_type_db()->save_type_data(node, file);
+                        }
+                    }
+                }
             }
-
-            if (Ref<NamedContext> type =
-                    attr->resolve_target()->as<NamedContext>();
-                type && is_valid_type_target(type)) {
-              PRINT_VERBOSE(
-                  "TypeDB:\tSaving attribute \"%s\"",
-                  node->qualified_name().c_str());
-              ExecutionContext::instance()->get_type_db()->save_type_attribute(
-                  type, attr, file);
-            }
-          } else {
-            PRINT_VERBOSE(
-                "TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
-            node->header = header_path(include_path, file);
-            ExecutionContext::instance()->get_type_db()->save_type_data(
-                node, file);
-          }
         }
-      }
-    }
-  }
 
-  return ProgramError::OK;
-}
+        return ProgramError::OK;
+    }
 
 } // namespace GodotObjectCompiler

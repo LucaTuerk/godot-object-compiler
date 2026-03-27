@@ -39,77 +39,75 @@
 namespace GodotObjectCompiler
 {
 
-class StreamWriter : public IStringWriter
-{
-public:
-  void write(const String& p_value) override;
+    class StreamWriter : public IStringWriter
+    {
+      public:
+        void write(const String& p_value) override;
 
-  String get_string() override;
+        String get_string() override;
 
-  Size current_length() override;
+        Size current_length() override;
 
-private:
-  std::stringstream _stream;
-  Size _current_length = 0;
-};
+      private:
+        std::stringstream _stream;
+        Size _current_length = 0;
+    };
 
-class FileWriter : public IStringWriter
-{
-public:
-  FileWriter(const FileWriter& other) = delete;
+    class FileWriter : public IStringWriter
+    {
+      public:
+        FileWriter(const FileWriter& other) = delete;
 
-  FileWriter(FileWriter&& other) noexcept
-      : IStringWriter(std::move(other)), _path(std::move(other._path)),
-        _do_not_write_same_content(other._do_not_write_same_content),
-        _generated(other._generated), _moved(false),
-        _stream(std::move(other._stream)), _file(std::move(other._file))
-  {
-    other._moved = true;
-  }
+        FileWriter(FileWriter&& other) noexcept
+            : IStringWriter(std::move(other)), _path(std::move(other._path)),
+              _do_not_write_same_content(other._do_not_write_same_content),
+              _generated(other._generated), _moved(false), _stream(std::move(other._stream)),
+              _file(std::move(other._file))
+        {
+            other._moved = true;
+        }
 
-  FileWriter& operator=(const FileWriter& other) = delete;
+        FileWriter& operator=(const FileWriter& other) = delete;
 
-  FileWriter& operator=(FileWriter&& other) noexcept
-  {
-    if (this == &other) {
-      return *this;
-    }
-    IStringWriter::operator=(std::move(other));
-    other._moved = true;
-    _path = std::move(other._path);
-    _do_not_write_same_content = other._do_not_write_same_content;
-    _generated = other._generated;
-    _moved = false;
-    _stream = std::move(other._stream);
-    _file = std::move(other._file);
-    return *this;
-  }
+        FileWriter& operator=(FileWriter&& other) noexcept
+        {
+            if (this == &other) {
+                return *this;
+            }
+            IStringWriter::operator=(std::move(other));
+            other._moved = true;
+            _path = std::move(other._path);
+            _do_not_write_same_content = other._do_not_write_same_content;
+            _generated = other._generated;
+            _moved = false;
+            _stream = std::move(other._stream);
+            _file = std::move(other._file);
+            return *this;
+        }
 
-  explicit FileWriter(
-      const String& path, bool do_not_write_same_content = true);
+        explicit FileWriter(const String& path, bool do_not_write_same_content = true);
 
-  ~FileWriter() override;
+        ~FileWriter() override;
 
-  static FileWriter
-  generated(const String& path, const String& p_generated_from);
+        static FileWriter generated(const String& path, const String& p_generated_from);
 
-  void write(const String& p_value) override;
+        void write(const String& p_value) override;
 
-  String get_string() override;
+        String get_string() override;
 
-  Size current_length() override;
+        Size current_length() override;
 
-private:
-  FileWriter(const String& path, const String& initial_content);
+      private:
+        FileWriter(const String& path, const String& initial_content);
 
-  static String _generated_header(const String& p_file_name);
+        static String _generated_header(const String& p_file_name);
 
-  String _path;
-  bool _do_not_write_same_content = true;
-  bool _generated = false;
-  bool _moved = false;
-  StreamWriter _stream;
-  std::fstream _file;
-};
+        String _path;
+        bool _do_not_write_same_content = true;
+        bool _generated = false;
+        bool _moved = false;
+        StreamWriter _stream;
+        std::fstream _file;
+    };
 
 } // namespace GodotObjectCompiler

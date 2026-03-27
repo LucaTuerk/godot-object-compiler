@@ -40,97 +40,96 @@
 namespace GodotObjectCompiler
 {
 
-Vector<String>
-IAttributeArgumentParser::split_arguments(const String& p_content)
-{
-  std::stringstream strstr;
-  Vector<String> result;
+    Vector<String> IAttributeArgumentParser::split_arguments(const String& p_content)
+    {
+        std::stringstream strstr;
+        Vector<String> result;
 
-  Size brackets_open = 0;
-  Size quotes_open = 0;
-  bool escaped = false;
+        Size brackets_open = 0;
+        Size quotes_open = 0;
+        bool escaped = false;
 
-  if (string_trim(p_content).empty()) {
-    return {};
-  }
+        if (string_trim(p_content).empty()) {
+            return {};
+        }
 
-  for (char c : p_content) {
-    if (!escaped) {
-      if (c == '(') {
-        brackets_open++;
-      } else if (c == ')') {
-        if (brackets_open == 0) {
-          return {};
+        for (char c : p_content) {
+            if (!escaped) {
+                if (c == '(') {
+                    brackets_open++;
+                } else if (c == ')') {
+                    if (brackets_open == 0) {
+                        return {};
+                    }
+                    brackets_open--;
+                } else if (c == '"') {
+                    if (quotes_open) {
+                        quotes_open--;
+                    } else {
+                        quotes_open++;
+                    }
+                } else if (c == '\\') {
+                    escaped = true;
+                    strstr << c;
+                    continue;
+                } else if (c == ',') {
+                    if (!quotes_open && !brackets_open) {
+                        result.push_back(strstr.str());
+                        strstr = {};
+                        continue;
+                    }
+                }
+            }
+
+            strstr << c;
+            escaped = false;
         }
-        brackets_open--;
-      } else if (c == '"') {
-        if (quotes_open) {
-          quotes_open--;
-        } else {
-          quotes_open++;
-        }
-      } else if (c == '\\') {
-        escaped = true;
-        strstr << c;
-        continue;
-      } else if (c == ',') {
-        if (!quotes_open && !brackets_open) {
-          result.push_back(strstr.str());
-          strstr = {};
-          continue;
-        }
-      }
+
+        result.push_back(string_trim(strstr.str()));
+        return result;
     }
 
-    strstr << c;
-    escaped = false;
-  }
+    void IAttributeArgumentParser::split_outer_inner(
+        const String& p_content, String& r_outer, String& r_inner)
+    {
+        std::stringstream inner_strm;
+        std::stringstream outer_strm;
+        r_outer = "";
+        r_inner = "";
 
-  result.push_back(string_trim(strstr.str()));
-  return result;
-}
+        bool open = false;
+        bool escaped = false;
+        for (char c : p_content) {
+            if (!escaped) {
+                if (c == '(') {
+                    open = true;
+                    continue;
+                } else if (c == ')') {
+                    break;
+                } else if (c == '\\') {
+                    escaped = true;
+                    inner_strm << c;
+                    continue;
+                }
+            }
 
-void IAttributeArgumentParser::split_outer_inner(
-    const String& p_content, String& r_outer, String& r_inner)
-{
-  std::stringstream inner_strm;
-  std::stringstream outer_strm;
-  r_outer = "";
-  r_inner = "";
+            if (open) {
+                inner_strm << c;
+                escaped = false;
+            } else {
+                outer_strm << c;
+            }
+        }
 
-  bool open = false;
-  bool escaped = false;
-  for (char c : p_content) {
-    if (!escaped) {
-      if (c == '(') {
-        open = true;
-        continue;
-      } else if (c == ')') {
-        break;
-      } else if (c == '\\') {
-        escaped = true;
-        inner_strm << c;
-        continue;
-      }
+        r_outer = string_trim(outer_strm.str());
+        r_inner = string_trim(inner_strm.str());
     }
 
-    if (open) {
-      inner_strm << c;
-      escaped = false;
-    } else {
-      outer_strm << c;
+    Vector<String> IAttributeArgumentParser::split_flags(const String& p_content)
+    {
+        Vector<String> split = string_split(p_content, "|");
+        std::transform(split.cbegin(), split.cend(), split.begin(), &string_trim);
+        return split;
     }
-  }
-
-  r_outer = string_trim(outer_strm.str());
-  r_inner = string_trim(inner_strm.str());
-}
-
-Vector<String> IAttributeArgumentParser::split_flags(const String& p_content)
-{
-  Vector<String> split = string_split(p_content, "|");
-  std::transform(split.cbegin(), split.cend(), split.begin(), &string_trim);
-  return split;
-}
 
 } // namespace GodotObjectCompiler

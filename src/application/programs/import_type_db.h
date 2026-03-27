@@ -38,13 +38,13 @@
 namespace GodotObjectCompiler
 {
 
-class ImportTypeDB : public IProgram
-{
-  PROGRAM(ImportTypeDB, "import/type_db");
+    class ImportTypeDB : public IProgram
+    {
+        PROGRAM(ImportTypeDB, "import/type_db");
 
-public:
-  bool validate_arguments(ApplicationContext& p_context) override;
-  Ref<ProgramError> run(ApplicationContext& p_context) override;
-};
+      public:
+        bool validate_arguments(ApplicationContext& p_context) override;
+        Ref<ProgramError> run(ApplicationContext& p_context) override;
+    };
 
 } // namespace GodotObjectCompiler

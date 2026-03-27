@@ -44,11 +44,11 @@ using namespace GodotObjectCompiler;
 
 int main(int argc, char* argv[])
 {
-  Vector<String> args;
-  for (int i = 1; i < argc; i++) {
-    args.emplace_back(argv[i]);
-  }
+    Vector<String> args;
+    for (int i = 1; i < argc; i++) {
+        args.emplace_back(argv[i]);
+    }
 
-  ExecutionContext::instance()->set_error_level(ERROR, FULL);
-  return Application::run(args);
+    ExecutionContext::instance()->set_error_level(ERROR, FULL);
+    return Application::run(args);
 }

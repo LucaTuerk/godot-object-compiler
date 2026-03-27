@@ -34,94 +34,99 @@
 /**************************************************************************/
 #pragma once
 
-#define LAZY(classname, type, name)                                            \
-private:                                                                       \
-  type _##name##_lazy_get() const;                                             \
-  mutable Lazy<type, classname> _##name##_lazy{                                \
-      this, &classname::_##name##_lazy_get};                                   \
-                                                                               \
-public:                                                                        \
-  type const& name() const { return _##name##_lazy.get(); }                    \
-                                                                               \
-private:
+#define LAZY(classname, type, name)                                                                \
+  private:                                                                                         \
+    type _##name##_lazy_get() const;                                                               \
+    mutable Lazy<type, classname> _##name##_lazy{this, &classname::_##name##_lazy_get};            \
+                                                                                                   \
+  public:                                                                                          \
+    type const& name() const                                                                       \
+    {                                                                                              \
+        return _##name##_lazy.get();                                                               \
+    }                                                                                              \
+                                                                                                   \
+  private:
 
-#define STATIC_LAZY(classname, type, name)                                     \
-private:                                                                       \
-  type _##name##_lazy_get() const;                                             \
-                                                                               \
-public:                                                                        \
-  type const& name() const                                                     \
-  {                                                                            \
-    static type __value = _##name##_lazy_get();                                \
-    return __value;                                                            \
-  }                                                                            \
-                                                                               \
-private:
+#define STATIC_LAZY(classname, type, name)                                                         \
+  private:                                                                                         \
+    type _##name##_lazy_get() const;                                                               \
+                                                                                                   \
+  public:                                                                                          \
+    type const& name() const                                                                       \
+    {                                                                                              \
+        static type __value = _##name##_lazy_get();                                                \
+        return __value;                                                                            \
+    }                                                                                              \
+                                                                                                   \
+  private:
 
-#define LAZY_MUT(classname, type, name)                                        \
-private:                                                                       \
-  type _##name##_lazy_get();                                                   \
-  mutable Lazy<type, classname> _##name##_lazy{                                \
-      this, &classname::_##name##_lazy_get};                                   \
-                                                                               \
-public:                                                                        \
-  type const& name() const { return _##name##_lazy.get(); }                    \
-                                                                               \
-private:
+#define LAZY_MUT(classname, type, name)                                                            \
+  private:                                                                                         \
+    type _##name##_lazy_get();                                                                     \
+    mutable Lazy<type, classname> _##name##_lazy{this, &classname::_##name##_lazy_get};            \
+                                                                                                   \
+  public:                                                                                          \
+    type const& name() const                                                                       \
+    {                                                                                              \
+        return _##name##_lazy.get();                                                               \
+    }                                                                                              \
+                                                                                                   \
+  private:
 
 namespace GodotObjectCompiler
 {
 
-template <typename T, typename C>
+    template <typename T, typename C>
 
-class Lazy
-{
-public:
-  using Getter = T (C::*)();
-  using ConstGetter = T (C::*)() const;
+    class Lazy
+    {
+      public:
+        using Getter = T (C::*)();
+        using ConstGetter = T (C::*)() const;
 
-  Lazy(C* obj, Getter getter) : _obj(obj), _getter(getter), _is_const(false) {}
+        Lazy(C* obj, Getter getter) : _obj(obj), _getter(getter), _is_const(false)
+        {
+        }
 
-  Lazy(C* obj, ConstGetter getter)
-      : _obj(obj), _const_getter(getter), _is_const(true)
-  {
-  }
+        Lazy(C* obj, ConstGetter getter) : _obj(obj), _const_getter(getter), _is_const(true)
+        {
+        }
 
-  void operator=(T const& data)
-  {
-    _data = data;
-    _has_data = true;
-  }
+        void operator=(T const& data)
+        {
+            _data = data;
+            _has_data = true;
+        }
 
-  void poke() const;
+        void poke() const;
 
-  T const& get() const;
+        T const& get() const;
 
-private:
-  C* _obj;
-  Getter _getter;
-  ConstGetter _const_getter;
-  mutable bool _is_const = false;
-  mutable bool _has_data = false;
-  mutable T _data;
-};
+      private:
+        C* _obj;
+        Getter _getter;
+        ConstGetter _const_getter;
+        mutable bool _is_const = false;
+        mutable bool _has_data = false;
+        mutable T _data;
+    };
 
-template <typename T, typename C> void Lazy<T, C>::poke() const
-{
-  if (!_has_data) {
-    if (_is_const) {
-      _data = (_obj->*_const_getter)();
-    } else {
-      _data = (_obj->*_getter)();
+    template <typename T, typename C> void Lazy<T, C>::poke() const
+    {
+        if (!_has_data) {
+            if (_is_const) {
+                _data = (_obj->*_const_getter)();
+            } else {
+                _data = (_obj->*_getter)();
+            }
+            _has_data = true;
+        }
     }
-    _has_data = true;
-  }
-}
 
-template <typename T, typename C> const T& Lazy<T, C>::get() const
-{
-  poke();
-  return _data;
-}
+    template <typename T, typename C> const T& Lazy<T, C>::get() const
+    {
+        poke();
+        return _data;
+    }
 
 } // namespace GodotObjectCompiler

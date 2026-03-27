@@ -43,55 +43,55 @@
 namespace GodotObjectCompiler
 {
 
-class Type;
+    class Type;
 
-class Arguments : public Context
-{
-  NODE_TYPE(Arguments);
-};
+    class Arguments : public Context
+    {
+        NODE_TYPE(Arguments);
+    };
 
-class Argument : public Context
-{
-  NODE_TYPE(Argument);
-};
+    class Argument : public Context
+    {
+        NODE_TYPE(Argument);
+    };
 
-class Parameters : public Context
-{
-  NODE_TYPE(Parameters);
-};
+    class Parameters : public Context
+    {
+        NODE_TYPE(Parameters);
+    };
 
-class TemplateParameters : public Context
-{
-  NODE_TYPE(TemplateParameters);
-};
+    class TemplateParameters : public Context
+    {
+        NODE_TYPE(TemplateParameters);
+    };
 
-class TemplateArguments : public Context
-{
-  NODE_TYPE(TemplateArguments);
-};
+    class TemplateArguments : public Context
+    {
+        NODE_TYPE(TemplateArguments);
+    };
 
-class Parameter : public NamedContext
-{
-  NODE_TYPE(Parameter);
+    class Parameter : public NamedContext
+    {
+        NODE_TYPE(Parameter);
 
-public:
-  LAZY(Parameter, Ref<Type>, type)
-  LAZY(Parameter, Ref<Literal>, default_value);
-};
+      public:
+        LAZY(Parameter, Ref<Type>, type)
+        LAZY(Parameter, Ref<Literal>, default_value);
+    };
 
-class Function : public Member
-{
-  NODE_TYPE(Function);
+    class Function : public Member
+    {
+        NODE_TYPE(Function);
 
-public:
-  /* child nodes */
-  LAZY(Function, Ref<Type>, type);
-  LAZY(Function, Ref<Parameters>, parameters);
-  LAZY(Function, Ref<Arguments>, arguments);
-  LAZY(Function, Vector<Ref<Literal>>, default_values);
+      public:
+        /* child nodes */
+        LAZY(Function, Ref<Type>, type);
+        LAZY(Function, Ref<Parameters>, parameters);
+        LAZY(Function, Ref<Arguments>, arguments);
+        LAZY(Function, Vector<Ref<Literal>>, default_values);
 
-public:
-  bool copy_to(const Ref<Node>& p_other) const override;
-};
+      public:
+        bool copy_to(const Ref<Node>& p_other) const override;
+    };
 
 } // namespace GodotObjectCompiler

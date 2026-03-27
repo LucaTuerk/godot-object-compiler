@@ -41,21 +41,20 @@
 namespace GodotObjectCompiler
 {
 
-String Parser::Helpers::remove_macros(const String& p_input)
-{
-  StreamWriter writer;
-  for (String line : string_split(p_input, "\n")) {
-    if (!string_prefix(string_trim(line), "#")) {
-      for (const String& macro :
-           ExecutionContext::instance()->get_remove_macros()) {
-        line = string_replace(line, macro, "");
-      }
-    }
-    writer.write(line);
-    writer.write("\n");
-  }
+    String Parser::Helpers::remove_macros(const String& p_input)
+    {
+        StreamWriter writer;
+        for (String line : string_split(p_input, "\n")) {
+            if (!string_prefix(string_trim(line), "#")) {
+                for (const String& macro : ExecutionContext::instance()->get_remove_macros()) {
+                    line = string_replace(line, macro, "");
+                }
+            }
+            writer.write(line);
+            writer.write("\n");
+        }
 
-  return writer.get_string();
-}
+        return writer.get_string();
+    }
 
 } // namespace GodotObjectCompiler

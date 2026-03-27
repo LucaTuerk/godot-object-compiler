@@ -36,38 +36,38 @@
 
 namespace A
 {
-namespace B
-{
-namespace C
-{
-}
+    namespace B
+    {
+        namespace C
+        {
+        }
 
-} // namespace B
+    } // namespace B
 
-namespace D
-{
-}
+    namespace D
+    {
+    }
 
-namespace E
-{
-}
+    namespace E
+    {
+    }
 
 } // namespace A
 
 namespace F
 {
-namespace G
-{
-namespace H
-{
-namespace I
-{
-}
+    namespace G
+    {
+        namespace H
+        {
+            namespace I
+            {
+            }
 
-namespace J
-{
-}
+            namespace J
+            {
+            }
 
-} // namespace H
-} // namespace G
+        } // namespace H
+    } // namespace G
 } // namespace F

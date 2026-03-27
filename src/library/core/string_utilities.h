@@ -39,61 +39,57 @@
 namespace GodotObjectCompiler
 {
 
-String hash_string(Hash p_hash);
+    String hash_string(Hash p_hash);
 
-String generate_random_string(size_t p_length);
+    String generate_random_string(size_t p_length);
 
-bool is_whitespace(char p_char);
+    bool is_whitespace(char p_char);
 
-bool string_contains(const String& p_content, const String& p_check);
+    bool string_contains(const String& p_content, const String& p_check);
 
-bool string_suffix(const String& p_content, const String& p_suffix);
+    bool string_suffix(const String& p_content, const String& p_suffix);
 
-bool string_prefix(const String& p_content, const String& p_prefix);
+    bool string_prefix(const String& p_content, const String& p_prefix);
 
-bool string_enclosed_by(const String& p_content, const String& p_prefix);
+    bool string_enclosed_by(const String& p_content, const String& p_prefix);
 
-bool string_only_contains(const String& p_content, char p_char);
+    bool string_only_contains(const String& p_content, char p_char);
 
-String
-string_vector_combine(const Vector<String>& p_vector, String p_delimiter);
+    String string_vector_combine(const Vector<String>& p_vector, String p_delimiter);
 
-String string_replace(
-    const String& p_target, const String& p_search_str,
-    const String& p_replace_with);
+    String string_replace(
+        const String& p_target, const String& p_search_str, const String& p_replace_with);
 
-String extract_lines(
-    const String& p_content, Size p_start_line, Size p_end_line,
-    Size p_highlight_line);
+    String extract_lines(
+        const String& p_content, Size p_start_line, Size p_end_line, Size p_highlight_line);
 
-String string_trim(const String& p_content);
+    String string_trim(const String& p_content);
 
-String string_trim_left(const String& p_content);
+    String string_trim_left(const String& p_content);
 
-String string_trim_right(const String& p_content);
+    String string_trim_right(const String& p_content);
 
-String string_pad_right(const String& p_content, char p_padding, Size p_size);
+    String string_pad_right(const String& p_content, char p_padding, Size p_size);
 
-String string_pad_left(const String& p_content, char p_padding, Size p_size);
+    String string_pad_left(const String& p_content, char p_padding, Size p_size);
 
-String string_shrink_inner_space(const String& p_content);
+    String string_shrink_inner_space(const String& p_content);
 
-int string_to_int(const String& p_content);
+    int string_to_int(const String& p_content);
 
-bool string_to_int(const String& p_content, int& r_result);
+    bool string_to_int(const String& p_content, int& r_result);
 
-void string_get_2d_size(const String& p_content, Size& p_x, Size& p_y);
+    void string_get_2d_size(const String& p_content, Size& p_x, Size& p_y);
 
-String char_times_n(char p_char, Size p_n);
+    String char_times_n(char p_char, Size p_n);
 
-String macro_case_to_pascal_case(const String& p_content);
+    String macro_case_to_pascal_case(const String& p_content);
 
-String cpp_enum_case_to_exposed_enum_case(const String& p_content);
+    String cpp_enum_case_to_exposed_enum_case(const String& p_content);
 
-Vector<String> string_split(
-    const String& p_content, const String& p_delimiter,
-    bool p_leave_empty = false);
+    Vector<String>
+    string_split(const String& p_content, const String& p_delimiter, bool p_leave_empty = false);
 
-Vector<String> string_split_length(const String& p_content, Size length);
+    Vector<String> string_split_length(const String& p_content, Size length);
 
 } // namespace GodotObjectCompiler

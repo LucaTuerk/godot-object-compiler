@@ -38,22 +38,22 @@
 namespace GodotObjectCompiler
 {
 
-class Node;
+    class Node;
 
-class IOutputTransformator
-{
-public:
-  virtual ~IOutputTransformator() = default;
+    class IOutputTransformator
+    {
+      public:
+        virtual ~IOutputTransformator() = default;
 
-  virtual Ref<Output::OutputNode> transform(Ref<Node> p_tree) = 0;
-};
+        virtual Ref<Output::OutputNode> transform(Ref<Node> p_tree) = 0;
+    };
 
-class OutputTransformator : public IOutputTransformator
-{
-public:
-  Ref<Output::OutputNode> transform(Ref<Node> p_tree) override;
+    class OutputTransformator : public IOutputTransformator
+    {
+      public:
+        Ref<Output::OutputNode> transform(Ref<Node> p_tree) override;
 
-  void replace_non_output_children(const Ref<Output::OutputNode>& p_node);
-};
+        void replace_non_output_children(const Ref<Output::OutputNode>& p_node);
+    };
 
 } // namespace GodotObjectCompiler

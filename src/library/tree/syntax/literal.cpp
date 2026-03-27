@@ -38,44 +38,47 @@
 namespace GodotObjectCompiler
 {
 
-Ref<Literal> Literal::StringLiteral(const String& content)
-{
-  return node_new<Literal>("\"" + content + "\"");
-}
+    Ref<Literal> Literal::StringLiteral(const String& content)
+    {
+        return node_new<Literal>("\"" + content + "\"");
+    }
 
-String Literal::to_string() const { return "Literal: " + content; }
+    String Literal::to_string() const
+    {
+        return "Literal: " + content;
+    }
 
-bool Literal::copy_to(const Ref<Node>& p_other) const
-{
-  COPY_GUARD(Literal, Node);
-  target->content = content;
-  return true;
-}
+    bool Literal::copy_to(const Ref<Node>& p_other) const
+    {
+        COPY_GUARD(Literal, Node);
+        target->content = content;
+        return true;
+    }
 
-void Literal::write_to(IStructuredWriter* p_writer)
-{
-  Node::write_to(p_writer);
-  p_writer->write("literal_content", content);
-}
+    void Literal::write_to(IStructuredWriter* p_writer)
+    {
+        Node::write_to(p_writer);
+        p_writer->write("literal_content", content);
+    }
 
-void Literal::read_from(IStructuredReader* p_reader)
-{
-  Node::read_from(p_reader);
-  content = p_reader->read<String, String>("literal_content");
-}
+    void Literal::read_from(IStructuredReader* p_reader)
+    {
+        Node::read_from(p_reader);
+        content = p_reader->read<String, String>("literal_content");
+    }
 
-bool Literal::unwrap_string_literal(String& p_content) const
-{
-  if (content.size() < 2) {
-    p_content = "";
-    return false;
-  }
+    bool Literal::unwrap_string_literal(String& p_content) const
+    {
+        if (content.size() < 2) {
+            p_content = "";
+            return false;
+        }
 
-  if (content.at(0) != '"' || content.at(content.size() - 1) != '"') {
-    return false;
-  }
-  p_content = content.substr(1, content.size() - 2);
-  return true;
-}
+        if (content.at(0) != '"' || content.at(content.size() - 1) != '"') {
+            return false;
+        }
+        p_content = content.substr(1, content.size() - 2);
+        return true;
+    }
 
 } // namespace GodotObjectCompiler

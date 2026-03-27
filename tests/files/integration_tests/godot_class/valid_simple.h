@@ -39,6 +39,6 @@
 GODOT_CLASS();
 class ValidSimple : public Object
 {
-  GODOT_GENERATED_BODY();
+    GODOT_GENERATED_BODY();
 };
 GODOT_GENERATED_GLOBAL();

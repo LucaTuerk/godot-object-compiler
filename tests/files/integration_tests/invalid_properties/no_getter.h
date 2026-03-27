@@ -41,11 +41,11 @@ GODOT_CLASS();
 
 class Invalid : Node
 {
-  GODOT_GENERATED_BODY();
+    GODOT_GENERATED_BODY();
 
-  GODOT_PROPERTY("property", GetSet("set_property"));
+    GODOT_PROPERTY("property", GetSet("set_property"));
 
-  void set_property(const int& p_value);
+    void set_property(const int& p_value);
 };
 
 GODOT_GENERATED_GLOBAL();

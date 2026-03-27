@@ -39,20 +39,20 @@
 namespace GodotObjectCompiler
 {
 
-class GenerateResources : public IProgram
-{
-  PROGRAM(GenerateResources, "generate/resources");
-  PROG_NO_ARGS
+    class GenerateResources : public IProgram
+    {
+        PROGRAM(GenerateResources, "generate/resources");
+        PROG_NO_ARGS
 
-public:
-  using TableRow = Vector<String>;
-  using Table = Vector<TableRow>;
+      public:
+        using TableRow = Vector<String>;
+        using Table = Vector<TableRow>;
 
-  String rst_header(const String& p_text, char p_punctioation);
-  String rst_table(const Table& table);
+        String rst_header(const String& p_text, char p_punctioation);
+        String rst_table(const Table& table);
 
-  Ref<ProgramError> run(ApplicationContext& p_context) override;
-};
+        Ref<ProgramError> run(ApplicationContext& p_context) override;
+    };
 
 } // namespace GodotObjectCompiler
 #endif

@@ -43,46 +43,51 @@
 namespace GodotObjectCompiler
 {
 
-Ref<Type> Function::_type_lazy_get() const { return find_child<Type>(); }
-
-Ref<Parameters> Function::_parameters_lazy_get() const
-{
-  return find_child<Parameters>();
-}
-
-Ref<Arguments> Function::_arguments_lazy_get() const
-{
-  return find_child<Arguments>();
-}
-
-bool Function::copy_to(const Ref<Node>& p_other) const
-{
-  COPY_GUARD(Function, Member);
-  return true;
-}
-
-Ref<Type> Parameter::_type_lazy_get() const { return find_child<Type>(); }
-
-Ref<Literal> Parameter::_default_value_lazy_get() const
-{
-  return find_child<Literal>();
-}
-
-Vector<Ref<Literal>> Function::_default_values_lazy_get() const
-{
-  Vector<Ref<Literal>> default_value_literals;
-  if (!parameters()) {
-    return {};
-  }
-
-  for (const Ref<Parameter>& parameter :
-       parameters()->find_children<Parameter>()) {
-    if (parameter->default_value()) {
-      default_value_literals.push_back(parameter->default_value());
+    Ref<Type> Function::_type_lazy_get() const
+    {
+        return find_child<Type>();
     }
-  }
 
-  return default_value_literals;
-}
+    Ref<Parameters> Function::_parameters_lazy_get() const
+    {
+        return find_child<Parameters>();
+    }
+
+    Ref<Arguments> Function::_arguments_lazy_get() const
+    {
+        return find_child<Arguments>();
+    }
+
+    bool Function::copy_to(const Ref<Node>& p_other) const
+    {
+        COPY_GUARD(Function, Member);
+        return true;
+    }
+
+    Ref<Type> Parameter::_type_lazy_get() const
+    {
+        return find_child<Type>();
+    }
+
+    Ref<Literal> Parameter::_default_value_lazy_get() const
+    {
+        return find_child<Literal>();
+    }
+
+    Vector<Ref<Literal>> Function::_default_values_lazy_get() const
+    {
+        Vector<Ref<Literal>> default_value_literals;
+        if (!parameters()) {
+            return {};
+        }
+
+        for (const Ref<Parameter>& parameter : parameters()->find_children<Parameter>()) {
+            if (parameter->default_value()) {
+                default_value_literals.push_back(parameter->default_value());
+            }
+        }
+
+        return default_value_literals;
+    }
 
 } // namespace GodotObjectCompiler

@@ -38,84 +38,84 @@
 
 namespace Tests
 {
-namespace A
-{
+    namespace A
+    {
 
-GODOT_CLASS();
-class classA : public Object
-{
-  GODOT_GENERATED_BODY();
-  GODOT_PROPERTY();
-  int propA = 0;
-};
-namespace B
-{
-GODOT_CLASS();
-class classAB : public Object
-{
-  GODOT_GENERATED_BODY();
-  GODOT_PROPERTY();
-  int propAB = 0;
-};
-} // namespace B
-} // namespace A
+        GODOT_CLASS();
+        class classA : public Object
+        {
+            GODOT_GENERATED_BODY();
+            GODOT_PROPERTY();
+            int propA = 0;
+        };
+        namespace B
+        {
+            GODOT_CLASS();
+            class classAB : public Object
+            {
+                GODOT_GENERATED_BODY();
+                GODOT_PROPERTY();
+                int propAB = 0;
+            };
+        } // namespace B
+    } // namespace A
 
-namespace C
-{
+    namespace C
+    {
 
-GODOT_CLASS();
-class classC : public Object
-{
-  GODOT_GENERATED_BODY();
-  GODOT_PROPERTY();
-  int propC = 0;
-};
-namespace D
-{
+        GODOT_CLASS();
+        class classC : public Object
+        {
+            GODOT_GENERATED_BODY();
+            GODOT_PROPERTY();
+            int propC = 0;
+        };
+        namespace D
+        {
 
-GODOT_CLASS();
-class classCD : public Object
-{
-  GODOT_GENERATED_BODY();
-  GODOT_PROPERTY();
-  int propCD = 0;
-};
-} // namespace D
-} // namespace C
+            GODOT_CLASS();
+            class classCD : public Object
+            {
+                GODOT_GENERATED_BODY();
+                GODOT_PROPERTY();
+                int propCD = 0;
+            };
+        } // namespace D
+    } // namespace C
 
-namespace E
-{
+    namespace E
+    {
 
-GODOT_CLASS();
-class classE : public Object
-{
-  GODOT_GENERATED_BODY();
-  GODOT_PROPERTY();
-  int propE = 0;
-};
-namespace F
-{
+        GODOT_CLASS();
+        class classE : public Object
+        {
+            GODOT_GENERATED_BODY();
+            GODOT_PROPERTY();
+            int propE = 0;
+        };
+        namespace F
+        {
 
-GODOT_CLASS();
-class classEF : public Object
-{
-  GODOT_GENERATED_BODY();
-  GODOT_PROPERTY();
-  int propEF = 0;
-};
-namespace G
-{
+            GODOT_CLASS();
+            class classEF : public Object
+            {
+                GODOT_GENERATED_BODY();
+                GODOT_PROPERTY();
+                int propEF = 0;
+            };
+            namespace G
+            {
 
-GODOT_CLASS();
-class classEFG : public Object
-{
-  GODOT_GENERATED_BODY();
-  GODOT_PROPERTY();
-  int propEFG = 0;
-};
+                GODOT_CLASS();
+                class classEFG : public Object
+                {
+                    GODOT_GENERATED_BODY();
+                    GODOT_PROPERTY();
+                    int propEFG = 0;
+                };
 
-} // namespace G
-} // namespace F
-} // namespace E
+            } // namespace G
+        } // namespace F
+    } // namespace E
 } // namespace Tests
 GODOT_GENERATED_GLOBAL();

@@ -39,5 +39,5 @@
 GODOT_CLASS();
 class InvalidNoGenBody : public Object
 {
-  GODOT_GENERATED_BODY();
+    GODOT_GENERATED_BODY();
 };
