@@ -23,7 +23,7 @@ jobs:
             - name: Run format
               shell: bash
               run: |
-                  python ./tools/format.py
+                  python ./tools/format_pipeline.py
 
             - name: Verify no changes
               run: git diff --exit-code
