@@ -34,13 +34,16 @@
 /**************************************************************************/
 #include "enum.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Vector<Ref<EnumValue>> Enum::_values_lazy_get() const {
+Vector<Ref<EnumValue>> Enum::_values_lazy_get() const
+{
   return find_children<EnumValue>(true);
 }
 
-Vector<String> Enum::_value_names_lazy_get() const {
+Vector<String> Enum::_value_names_lazy_get() const
+{
   Vector<String> result;
 
   for (Ref<Node> child : values()) {
@@ -54,10 +57,11 @@ Vector<String> Enum::_value_names_lazy_get() const {
   return result;
 }
 
-Ref<Literal> EnumValue::_literal_lazy_get() const {
+Ref<Literal> EnumValue::_literal_lazy_get() const
+{
   Ref<Literal> value = find_child<Literal>();
   PANIC_COND(!value, "No enum value literal found. This is invalid.")
   return value;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -37,40 +37,50 @@
 
 #include "library/tree/syntax/identifier.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String PropertyGetAccessSpecifierParameterType::get_return_type() {
+String PropertyGetAccessSpecifierParameterType::get_return_type()
+{
   return "GOC_PropertyGetAccessSpecifier";
 }
 
-Vector<String> PropertyGetAccessSpecifierParameterType::get_value_names() {
-  return {PropertyGetAccessSpecifierArgument::PrivateGet,
-          PropertyGetAccessSpecifierArgument::ProtectedGet,
-          PropertyGetAccessSpecifierArgument::PublicGet};
+Vector<String> PropertyGetAccessSpecifierParameterType::get_value_names()
+{
+  return {
+      PropertyGetAccessSpecifierArgument::PrivateGet,
+      PropertyGetAccessSpecifierArgument::ProtectedGet,
+      PropertyGetAccessSpecifierArgument::PublicGet};
 }
 
 Vector<IAttributeParameterType::Argument>
-PropertyGetAccessSpecifierParameterType::get_arguments() {
+PropertyGetAccessSpecifierParameterType::get_arguments()
+{
   return {};
 }
 
-String PropertySetAccessSpecifierParameterType::get_return_type() {
+String PropertySetAccessSpecifierParameterType::get_return_type()
+{
   return "GOC_PropertySetAccessSpecifier";
 }
 
-Vector<String> PropertySetAccessSpecifierParameterType::get_value_names() {
-  return {PropertySetAccessSpecifierArgument::PrivateSet,
-          PropertySetAccessSpecifierArgument::ProtectedSet,
-          PropertySetAccessSpecifierArgument::PublicSet};
+Vector<String> PropertySetAccessSpecifierParameterType::get_value_names()
+{
+  return {
+      PropertySetAccessSpecifierArgument::PrivateSet,
+      PropertySetAccessSpecifierArgument::ProtectedSet,
+      PropertySetAccessSpecifierArgument::PublicSet};
 }
 
 Vector<IAttributeParameterType::Argument>
-PropertySetAccessSpecifierParameterType::get_arguments() {
+PropertySetAccessSpecifierParameterType::get_arguments()
+{
   return {};
 }
 
 bool PropertyGetAccessSpecifierArgument::get_specifier(
-    AccessSpecifier::Type& r_specifier) const {
+    AccessSpecifier::Type& r_specifier) const
+{
   const Ref<Identifier> identifier = find_child<Identifier>();
   if (!identifier) {
     ERR("Failed to find identifier.");
@@ -92,7 +102,8 @@ bool PropertyGetAccessSpecifierArgument::get_specifier(
 }
 
 bool PropertyGetAccessSpecifierArgument::get_specifier_cpp_name(
-    String& r_specifier_name) const {
+    String& r_specifier_name) const
+{
   r_specifier_name = "";
   const Ref<Identifier> identifier = find_child<Identifier>();
   if (!identifier) {
@@ -116,7 +127,8 @@ bool PropertyGetAccessSpecifierArgument::get_specifier_cpp_name(
 }
 
 bool PropertySetAccessSpecifierArgument::get_specifier(
-    AccessSpecifier::Type& r_specifier) const {
+    AccessSpecifier::Type& r_specifier) const
+{
   const Ref<Identifier> identifier = find_child<Identifier>();
   if (!identifier) {
     ERR("Failed to find identifier.");
@@ -138,7 +150,8 @@ bool PropertySetAccessSpecifierArgument::get_specifier(
 }
 
 bool PropertySetAccessSpecifierArgument::get_specifier_cpp_name(
-    String& r_specifier_name) const {
+    String& r_specifier_name) const
+{
   r_specifier_name = "";
   const Ref<Identifier> identifier = find_child<Identifier>();
   if (!identifier) {
@@ -161,4 +174,4 @@ bool PropertySetAccessSpecifierArgument::get_specifier_cpp_name(
   return false;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

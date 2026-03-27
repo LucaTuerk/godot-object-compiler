@@ -38,12 +38,14 @@
 #include "godot_generator_utils.h"
 #include "library_godot/generated_assumptions/parameter_types.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 Ref<GeneratorError>
 GodotCategoryGenerator::do_generate_default_attribute_arguments(
     Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute,
-    Ref<Context> p_default_values) {
+    Ref<Context> p_default_values)
+{
   UNUSED(p_target_class);
   UNUSED(p_attribute);
   p_default_values->B<StringLiteralArgument>()[B<Literal>("\"\"")];
@@ -52,7 +54,8 @@ GodotCategoryGenerator::do_generate_default_attribute_arguments(
 
 Ref<GeneratorError> GodotCategoryGenerator::do_generate(
     Ref<Class> p_target_class, Ref<GodotPropertyCategoryAttribute> p_attribute,
-    ClassGeneratorResult& r_result) {
+    ClassGeneratorResult& r_result)
+{
   using namespace GodotGeneratorUtils;
   using namespace AssumedParameterValues;
   Ref<Context> p_generated_body = r_result.generated_body;
@@ -62,8 +65,9 @@ Ref<GeneratorError> GodotCategoryGenerator::do_generate(
 
   Ref<Body> get_property_list_body = get_get_property_list_body(
       p_target_class, p_generated_body, p_generated_sources);
-  GEN_ERROR_COND(!get_property_list_body, p_attribute,
-                 "Failed to get _get_property_list body");
+  GEN_ERROR_COND(
+      !get_property_list_body, p_attribute,
+      "Failed to get _get_property_list body");
 
   get_property_list_body->B<Function>()[{
       B<Identifier>("p_list->push_back"),
@@ -78,7 +82,8 @@ Ref<GeneratorError> GodotCategoryGenerator::do_generate(
 Ref<GeneratorError>
 GodotGroupGenerator::do_generate_default_attribute_arguments(
     Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
-    Ref<Context> p_default_values) {
+    Ref<Context> p_default_values)
+{
   UNUSED(p_target_class);
   UNUSED(p_attribute);
   p_default_values->B<StringLiteralArgument>()[B<Literal>("\"\"")];
@@ -87,7 +92,8 @@ GodotGroupGenerator::do_generate_default_attribute_arguments(
 
 Ref<GeneratorError> GodotGroupGenerator::do_generate(
     Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
-    ClassGeneratorResult& r_result) {
+    ClassGeneratorResult& r_result)
+{
   Ref<Context> p_generated_body = r_result.generated_body;
   Ref<Context> p_generated_sources = r_result.generated_sources;
   Ref<Context> p_generated_global = r_result.generated_global;
@@ -97,8 +103,9 @@ Ref<GeneratorError> GodotGroupGenerator::do_generate(
 
   Ref<Body> get_property_list_body = get_get_property_list_body(
       p_target_class, p_generated_body, p_generated_sources);
-  GEN_ERROR_COND(!get_property_list_body, p_attribute,
-                 "Failed to get _get_property_list body");
+  GEN_ERROR_COND(
+      !get_property_list_body, p_attribute,
+      "Failed to get _get_property_list body");
 
   get_property_list_body->B<Function>()[{
       B<Identifier>("p_list->push_back"),
@@ -113,7 +120,8 @@ Ref<GeneratorError> GodotGroupGenerator::do_generate(
 Ref<GeneratorError>
 GodotSubgroupGenerator::do_generate_default_attribute_arguments(
     Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
-    Ref<Context> p_default_values) {
+    Ref<Context> p_default_values)
+{
   UNUSED(p_target_class);
   UNUSED(p_attribute);
   p_default_values->B<StringLiteralArgument>()[B<Literal>("\"\"")];
@@ -122,7 +130,8 @@ GodotSubgroupGenerator::do_generate_default_attribute_arguments(
 
 Ref<GeneratorError> GodotSubgroupGenerator::do_generate(
     Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
-    ClassGeneratorResult& r_result) {
+    ClassGeneratorResult& r_result)
+{
   Ref<Context> p_generated_body = r_result.generated_body;
   Ref<Context> p_generated_sources = r_result.generated_sources;
   Ref<Context> p_generated_global = r_result.generated_global;
@@ -133,8 +142,9 @@ Ref<GeneratorError> GodotSubgroupGenerator::do_generate(
   const Ref<Body> get_property_list_body = get_get_property_list_body(
       p_target_class, p_generated_body, p_generated_sources);
 
-  GEN_ERROR_COND(!get_property_list_body, p_attribute,
-                 "Failed to get _get_property_list body");
+  GEN_ERROR_COND(
+      !get_property_list_body, p_attribute,
+      "Failed to get _get_property_list body");
 
   get_property_list_body->B<Function>()[{
       B<Identifier>("p_list->push_back"),
@@ -146,4 +156,4 @@ Ref<GeneratorError> GodotSubgroupGenerator::do_generate(
   return GeneratorError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

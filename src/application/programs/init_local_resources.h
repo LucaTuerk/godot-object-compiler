@@ -35,14 +35,16 @@
 #pragma once
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class InitLocalResources : public IProgram {
+class InitLocalResources : public IProgram
+{
   PROGRAM(InitLocalResources, "init/local_resources");
   PROG_NO_ARGS
 
- public:
+public:
   Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

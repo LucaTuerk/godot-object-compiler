@@ -36,15 +36,17 @@
 #include "library/generator/attribute_parameter_type.h"
 #include "library/generator/generator.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GodotMacroIncludeGenerator : public IGenerator {
+class GodotMacroIncludeGenerator : public IGenerator
+{
   GENERATOR(GodotMacroIncludeGenerator);
 
- public:
+public:
   Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) override;
 
- private:
+private:
   static bool generate_macros(const Ref<Context>& p_write_to);
 
   static bool generate_attribute_parameter_type(
@@ -56,4 +58,4 @@ class GodotMacroIncludeGenerator : public IGenerator {
       const Vector<Ref<IAttributeParameterType>>& p_params);
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -42,9 +42,11 @@
 #include "library/tree/output/output.h"
 #include "library/type_db.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Vector<Vector<Size>> find_all_subsets(Size n) {
+Vector<Vector<Size>> find_all_subsets(Size n)
+{
   if (n == 0) {
     return {{}};
   }
@@ -61,16 +63,20 @@ Vector<Vector<Size>> find_all_subsets(Size n) {
   return result;
 }
 
-bool GodotMacroIncludeGenerator::generate_macros(
-    const Ref<Context>& p_write_to) {
-  p_write_to->add_child(Output::Define("GOC_BODY_COMBINE_INNER",
-                                       {Output::Text("A"), Output::Text("B"),
-                                        Output::Text("C"), Output::Text("D")},
-                                       "A##B##C##D"));
-  p_write_to->add_child(Output::Define("GOC_BODY_COMBINE",
-                                       {Output::Text("A"), Output::Text("B"),
-                                        Output::Text("C"), Output::Text("D")},
-                                       "GOC_BODY_COMBINE_INNER(A, B, C, D)"));
+bool GodotMacroIncludeGenerator::generate_macros(const Ref<Context>& p_write_to)
+{
+  p_write_to->add_child(
+      Output::Define(
+          "GOC_BODY_COMBINE_INNER",
+          {Output::Text("A"), Output::Text("B"), Output::Text("C"),
+           Output::Text("D")},
+          "A##B##C##D"));
+  p_write_to->add_child(
+      Output::Define(
+          "GOC_BODY_COMBINE",
+          {Output::Text("A"), Output::Text("B"), Output::Text("C"),
+           Output::Text("D")},
+          "GOC_BODY_COMBINE_INNER(A, B, C, D)"));
   String generated_content =
       "GOC_BODY_COMBINE(GOC_GENERATED_, __LINE__, _, GOC_FILE_ID())()";
 
@@ -79,11 +85,14 @@ bool GodotMacroIncludeGenerator::generate_macros(
     String res_file = "res://" + path_concat_ext("doc", macro, "txt");
     if (Resources::instance()->has_resource(res_file)) {
       Ref<Context> params_docu = Output::Params({});
-      Ref<Context> comment = Output::DocComment(Output::Lines(
-          {Output::Text(Resources::instance()->load_text_resource(res_file)),
-           Output::NewLine(),
-           Output::Spaces({Output::BoldText("Available Parameters: "),
-                           params_docu->as<Output::OutputNode>()})}));
+      Ref<Context> comment = Output::DocComment(
+          Output::Lines(
+              {Output::Text(
+                   Resources::instance()->load_text_resource(res_file)),
+               Output::NewLine(),
+               Output::Spaces(
+                   {Output::BoldText("Available Parameters: "),
+                    params_docu->as<Output::OutputNode>()})}));
       p_write_to->add_child(comment);
 
       Size index = 0;
@@ -109,24 +118,26 @@ bool GodotMacroIncludeGenerator::generate_macros(
     if (attr->is<GeneratedBodyAttribute>() ||
         attr->is<GeneratedGlobalAttribute>()) {
       p_write_to->add_child(
-          Output::Define(macro, {Output::Text("...")},
-                         generated_content +
-                             "; static_assert( [](){ using namespace "
-                             "GOC_Macros; return " +
-                             macro + "_prototype(__VA_ARGS__);},\"\")"));
+          Output::Define(
+              macro, {Output::Text("...")},
+              generated_content +
+                  "; static_assert( [](){ using namespace "
+                  "GOC_Macros; return " +
+                  macro + "_prototype(__VA_ARGS__);},\"\")"));
     } else {
-      p_write_to->add_child(Output::Define(
-          macro, {Output::Text("...")},
-          "static_assert( [](){ using namespace GOC_Macros; return " + macro +
-              "_prototype(__VA_ARGS__);},\"\")"));
+      p_write_to->add_child(
+          Output::Define(
+              macro, {Output::Text("...")},
+              "static_assert( [](){ using namespace GOC_Macros; return " +
+                  macro + "_prototype(__VA_ARGS__);},\"\")"));
     }
   }
   return true;
 }
 
 bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
-    const Ref<IAttributeParameterType>& p_type,
-    const Ref<Context>& p_write_to) {
+    const Ref<IAttributeParameterType>& p_type, const Ref<Context>& p_write_to)
+{
   if (p_type->is_builtin()) {
     return true;
   }
@@ -146,8 +157,9 @@ bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
     type_documentation->add_child(Output::NewLine());
   }
   type_documentation->add_child(
-      Output::Spaces({Output::BoldText("Possible Values:"),
-                      value_names_documentation->as<Output::OutputNode>()}));
+      Output::Spaces(
+          {Output::BoldText("Possible Values:"),
+           value_names_documentation->as<Output::OutputNode>()}));
 
   p_write_to->add_child(Output::DocComment(type_documentation));
   p_write_to->B<Output::SnippetNode>("class " + type_name + " {};");
@@ -157,10 +169,11 @@ bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
     p_write_to->B<Function>()[{
         B<ConstExpression>(), B<Type>()[B<Identifier>(type_name)],
         B<Identifier>("operator |"),
-        B<Parameters>()[{B<Parameter>()[{B<Type>()[B<Identifier>(type_name)],
-                                         B<Identifier>(" a")}],
-                         B<Parameter>()[{B<Type>()[B<Identifier>(type_name)],
-                                         B<Identifier>(" b")}]}],
+        B<Parameters>()[{
+            B<Parameter>()[{
+                B<Type>()[B<Identifier>(type_name)], B<Identifier>(" a")}],
+            B<Parameter>()[{
+                B<Type>()[B<Identifier>(type_name)], B<Identifier>(" b")}]}],
         B<Body>()[Output::Return("{}")]}];
   }
 
@@ -195,25 +208,28 @@ bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
       for (const auto& argument : arguments) {
         if (argument.type == IAttributeParameterType::ARG_STRING) {
           Ref<Parameter> parameter;
-          parameters->add_child(R<Parameter>(&parameter)[{
-              B<Type>()[{B<Const>(), B<Identifier>("char"), B<Pointer>()}],
-              B<Identifier>(argument.name),
-          }]);
+          parameters->add_child(
+              R<Parameter>(&parameter)[{
+                  B<Type>()[{B<Const>(), B<Identifier>("char"), B<Pointer>()}],
+                  B<Identifier>(argument.name),
+              }]);
           if (argument.optional) {
             parameter->B<Literal>("\"\"");
           }
         } else if (argument.type == IAttributeParameterType::ARG_INTEGER) {
           Ref<Parameter> parameter;
-          parameters->add_child(R<Parameter>(&parameter)[{
-              B<Type>()[B<Identifier>("int")],
-              B<Identifier>(argument.name),
-          }]);
+          parameters->add_child(
+              R<Parameter>(&parameter)[{
+                  B<Type>()[B<Identifier>("int")],
+                  B<Identifier>(argument.name),
+              }]);
           if (argument.optional) {
             parameter->B<Literal>("0");
           }
         } else {
-          PANIC("Unimplemented IAttributeParameterType %d",
-                static_cast<int>(argument.type));
+          PANIC(
+              "Unimplemented IAttributeParameterType %d",
+              static_cast<int>(argument.type));
         }
       }
     }
@@ -225,7 +241,8 @@ bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
 
 bool GodotMacroIncludeGenerator::generate_prototype_methods(
     const Ref<Context>& p_write_to, const String& p_macro,
-    const Vector<Ref<IAttributeParameterType>>& p_params) {
+    const Vector<Ref<IAttributeParameterType>>& p_params)
+{
   Vector<Vector<Size>> subsets = find_all_subsets(p_params.size());
 
   p_write_to->B<Function>()[{
@@ -253,10 +270,10 @@ bool GodotMacroIncludeGenerator::generate_prototype_methods(
         B<Output::EnclosingNode>("<", ">").with_child_ref<Output::ListNode>(
             &template_params, ", ", false, false)}];
 
-    p_write_to
-        ->B<Function>()[{B<ConstExpression>(), B<Type>()[B<Identifier>("bool")],
-                         B<Identifier>(p_macro + "_prototype"),
-                         R<Parameters>(&params), R<Body>(&body)}];
+    p_write_to->B<Function>()[{
+        B<ConstExpression>(), B<Type>()[B<Identifier>("bool")],
+        B<Identifier>(p_macro + "_prototype"), R<Parameters>(&params),
+        R<Body>(&body)}];
 
     p_write_to->add_child(Output::NewLine());
 
@@ -268,9 +285,10 @@ bool GodotMacroIncludeGenerator::generate_prototype_methods(
     for (Size curr = 0; curr < size - 1; ++curr) {
       for (Size cmp = curr + 1; cmp < size; ++cmp) {
         body->add_child(
-            Output::FmtText("static_assert(!std::is_same_v<T%d,T%d>, "
-                            "\"Duplicate argument types %d and %d\");",
-                            curr + 1, cmp + 1, curr + 1, cmp + 1));
+            Output::FmtText(
+                "static_assert(!std::is_same_v<T%d,T%d>, "
+                "\"Duplicate argument types %d and %d\");",
+                curr + 1, cmp + 1, curr + 1, cmp + 1));
       }
     }
 
@@ -285,8 +303,9 @@ bool GodotMacroIncludeGenerator::generate_prototype_methods(
   return true;
 }
 
-Ref<Context> GodotMacroIncludeGenerator::generate(Ref<Context> p_tree,
-                                                  Ref<Node> p_entry_point) {
+Ref<Context> GodotMacroIncludeGenerator::generate(
+    Ref<Context> p_tree, Ref<Node> p_entry_point)
+{
   UNUSED(p_tree);
 
   Ref<Context> entry = p_entry_point->as<Context>();
@@ -324,4 +343,4 @@ Ref<Context> GodotMacroIncludeGenerator::generate(Ref<Context> p_tree,
   return entry;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

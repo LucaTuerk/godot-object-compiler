@@ -39,14 +39,17 @@
 #include "library/tree/syntax/field.h"
 #include "library/tree/syntax/misc_keywords.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool OperatorHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool OperatorHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type == "operator_cast";
 }
 
-ParserStep OperatorHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                                   Ref<Context>& r_current_target) {
+ParserStep OperatorHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   UNUSED(p_current_src);
   if (r_current_target->is<Field>()) {
     Ref<Context> parent = r_current_target->get_parent();
@@ -59,4 +62,4 @@ ParserStep OperatorHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   return ParserStep::StepInto();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

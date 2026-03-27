@@ -35,12 +35,14 @@
 #pragma once
 #include "node.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Literal : public Node {
+class Literal : public Node
+{
   NODE_TYPE(Literal);
 
- public:
+public:
   explicit Literal(const String& content) : content(content) {}
 
   static Ref<Literal> StringLiteral(const String& content);
@@ -55,4 +57,4 @@ class Literal : public Node {
   String content;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

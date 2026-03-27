@@ -37,7 +37,8 @@
 #include "context.h"
 #include "library/core/lazy.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class Field;
 class Function;
@@ -45,10 +46,11 @@ class Class;
 class Enum;
 class Body;
 
-class Namespace : public NamedContext {
+class Namespace : public NamedContext
+{
   NODE_TYPE(Namespace);
 
- public:
+public:
   /* collections */
   LAZY(Namespace, Vector<Ref<Namespace>>, namespaces);
   LAZY(Namespace, Vector<Ref<Namespace>>, child_namespaces);
@@ -60,4 +62,4 @@ class Namespace : public NamedContext {
   LAZY(Namespace, Vector<Ref<Function>>, functions);
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -37,69 +37,81 @@
 #include "library/core/string_utilities.h"
 #include "test_registry.h"
 
-GOC_TEST(StringReplace) {
+GOC_TEST(StringReplace)
+{
   using namespace GodotObjectCompiler;
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringTrim) {
+GOC_TEST(StringTrim)
+{
   using namespace GodotObjectCompiler;
 
   GOC_TEST_EQ(string_trim("  content   "), "content", "Failed to trim string.")
-  GOC_TEST_EQ(string_trim("  c content   "), "c content",
-              "Failed to trim string.")
-  GOC_TEST_EQ(string_trim("  content content   "), "content content",
-              "Failed to trim string.")
-  GOC_TEST_EQ(string_trim(" \n\t  content  \n\t"), "content",
-              "Failed to trim string.")
+  GOC_TEST_EQ(
+      string_trim("  c content   "), "c content", "Failed to trim string.")
+  GOC_TEST_EQ(
+      string_trim("  content content   "), "content content",
+      "Failed to trim string.")
+  GOC_TEST_EQ(
+      string_trim(" \n\t  content  \n\t"), "content", "Failed to trim string.")
 
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringShinkInnerSpace) {
+GOC_TEST(StringShinkInnerSpace)
+{
   using namespace GodotObjectCompiler;
-  GOC_TEST_EQ(string_shrink_inner_space("a     b     c   d   e   f  g"),
-              "a b c d e f g", "Failed to shrink inner space.")
-  GOC_TEST_EQ(string_shrink_inner_space("a   \n  b   \n  c   d   e \t  f \r g"),
-              "a b c d e f g", "Failed to shrink inner space.")
+  GOC_TEST_EQ(
+      string_shrink_inner_space("a     b     c   d   e   f  g"),
+      "a b c d e f g", "Failed to shrink inner space.")
+  GOC_TEST_EQ(
+      string_shrink_inner_space("a   \n  b   \n  c   d   e \t  f \r g"),
+      "a b c d e f g", "Failed to shrink inner space.")
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringContains) {
+GOC_TEST(StringContains)
+{
   using namespace GodotObjectCompiler;
-  GOC_TEST_ASSERT(string_contains("abc", "b"),
-                  "Failed to determine string contains.")
-  GOC_TEST_ASSERT(!string_contains("abc", "d"),
-                  "Failed to determine string contains.")
+  GOC_TEST_ASSERT(
+      string_contains("abc", "b"), "Failed to determine string contains.")
+  GOC_TEST_ASSERT(
+      !string_contains("abc", "d"), "Failed to determine string contains.")
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringSuffix) {
+GOC_TEST(StringSuffix)
+{
   using namespace GodotObjectCompiler;
-  GOC_TEST_ASSERT(string_suffix("abcdefg", "efg"),
-                  "Failed to determine string suffix.")
-  GOC_TEST_ASSERT(!string_suffix("abcdefg", "abc"),
-                  "Failed to determine string suffix.")
+  GOC_TEST_ASSERT(
+      string_suffix("abcdefg", "efg"), "Failed to determine string suffix.")
+  GOC_TEST_ASSERT(
+      !string_suffix("abcdefg", "abc"), "Failed to determine string suffix.")
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringPrefix) {
+GOC_TEST(StringPrefix)
+{
   using namespace GodotObjectCompiler;
-  GOC_TEST_ASSERT(string_prefix("abcdefg", "abc"),
-                  "Failed to determine string prefix.")
-  GOC_TEST_ASSERT(!string_prefix("abcdefg", "efg"),
-                  "Failed to determine string prefix.")
+  GOC_TEST_ASSERT(
+      string_prefix("abcdefg", "abc"), "Failed to determine string prefix.")
+  GOC_TEST_ASSERT(
+      !string_prefix("abcdefg", "efg"), "Failed to determine string prefix.")
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringVectorCombine) {
+GOC_TEST(StringVectorCombine)
+{
   using namespace GodotObjectCompiler;
-  GOC_TEST_EQ(string_vector_combine({"a", "b", "c"}, ","), "a,b,c",
-              "Failed to combine string vector.");
+  GOC_TEST_EQ(
+      string_vector_combine({"a", "b", "c"}, ","), "a,b,c",
+      "Failed to combine string vector.");
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringSplit) {
+GOC_TEST(StringSplit)
+{
   using namespace GodotObjectCompiler;
   Vector<String> split = string_split("a,b,c", ",");
   GOC_TEST_EQ(split.size(), 3, "Invalid split count.")
@@ -121,26 +133,35 @@ GOC_TEST(StringSplit) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringMacroToPascal) {
+GOC_TEST(StringMacroToPascal)
+{
   using namespace GodotObjectCompiler;
-  GOC_TEST_EQ(macro_case_to_pascal_case("TEST_VALUE"), "TestValue",
-              "Failed to convert to pascal case.")
-  GOC_TEST_EQ(macro_case_to_pascal_case("TEST_VALUE_123"), "TestValue123",
-              "Failed to convert to pascal case.")
-  GOC_TEST_EQ(macro_case_to_pascal_case("TESTVALUE123"), "Testvalue123",
-              "Failed to convert to pascal case.")
+  GOC_TEST_EQ(
+      macro_case_to_pascal_case("TEST_VALUE"), "TestValue",
+      "Failed to convert to pascal case.")
+  GOC_TEST_EQ(
+      macro_case_to_pascal_case("TEST_VALUE_123"), "TestValue123",
+      "Failed to convert to pascal case.")
+  GOC_TEST_EQ(
+      macro_case_to_pascal_case("TESTVALUE123"), "Testvalue123",
+      "Failed to convert to pascal case.")
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(StringEnumToExposedName) {
+GOC_TEST(StringEnumToExposedName)
+{
   using namespace GodotObjectCompiler;
-  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TEST_VALUE"), "Test Value",
-              "Failed to convert to exposed enum name.")
-  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TEST_VALUE_123_Test"),
-              "Test Value 123 Test", "Failed to convert to exposed enum name.")
-  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TESTVALUE12345"),
-              "Testvalue 12345", "Failed to convert to  exposed enum name.")
-  GOC_TEST_EQ(cpp_enum_case_to_exposed_enum_case("TESTVALUE123TEST"),
-              "Testvalue 123 Test", "Failed to convert to  exposed enum name.")
+  GOC_TEST_EQ(
+      cpp_enum_case_to_exposed_enum_case("TEST_VALUE"), "Test Value",
+      "Failed to convert to exposed enum name.")
+  GOC_TEST_EQ(
+      cpp_enum_case_to_exposed_enum_case("TEST_VALUE_123_Test"),
+      "Test Value 123 Test", "Failed to convert to exposed enum name.")
+  GOC_TEST_EQ(
+      cpp_enum_case_to_exposed_enum_case("TESTVALUE12345"), "Testvalue 12345",
+      "Failed to convert to  exposed enum name.")
+  GOC_TEST_EQ(
+      cpp_enum_case_to_exposed_enum_case("TESTVALUE123TEST"),
+      "Testvalue 123 Test", "Failed to convert to  exposed enum name.")
   return TEST_RESULT_SUCCESS;
 };

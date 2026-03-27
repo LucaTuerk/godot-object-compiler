@@ -39,12 +39,14 @@
 #include "library/core/string_writer.h"
 #include "library_godot/assumptions.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 Ref<GeneratorError>
 GodotFunctionGenerator::do_generate_default_attribute_arguments(
     Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
-    Ref<Context> p_default_values) {
+    Ref<Context> p_default_values)
+{
   UNUSED(p_target_class);
   UNUSED(p_attribute);
   p_default_values->add_children(
@@ -65,7 +67,8 @@ GodotFunctionGenerator::do_generate_default_attribute_arguments(
 
 Ref<GeneratorError> GodotFunctionGenerator::do_generate(
     Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
-    ClassGeneratorResult& r_result) {
+    ClassGeneratorResult& r_result)
+{
   Ref<Context> p_generated_body = r_result.generated_body;
   Ref<Context> p_generated_sources = r_result.generated_sources;
   Ref<Context> p_generated_global = r_result.generated_global;
@@ -74,17 +77,19 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(
   UNUSED(p_generated_global);
 
   const Ref<Node> target_node = p_attribute->resolve_target();
-  GEN_ERROR_COND(target_node == nullptr, p_target_class,
-                 "Could not resolve target node for function macro.");
+  GEN_ERROR_COND(
+      target_node == nullptr, p_target_class,
+      "Could not resolve target node for function macro.");
 
   const Ref<Function> target_function = target_node->as<Function>();
-  GEN_ERROR_COND(target_function == nullptr, p_target_class,
-                 "Resolved not for function macro is not a function.");
+  GEN_ERROR_COND(
+      target_function == nullptr, p_target_class,
+      "Resolved not for function macro is not a function.");
 
   const Ref<Literal> name_literal =
       p_attribute->arguments()->find_chain<Literal, StringLiteralArgument>();
-  GEN_ERROR_COND(name_literal == nullptr, p_attribute,
-                 "Failed to find name literal.");
+  GEN_ERROR_COND(
+      name_literal == nullptr, p_attribute, "Failed to find name literal.");
 
   String function_name = target_function->name();
   if (String unwrapped; name_literal->unwrap_string_literal(unwrapped)) {
@@ -93,30 +98,34 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(
 
   const Ref<GodotRpcModeArgument> rpc_mode_argument =
       p_attribute->arguments()->find_child<GodotRpcModeArgument>();
-  GEN_ERROR_COND(rpc_mode_argument == nullptr, p_attribute,
-                 "Failed to find rpc mode argument.");
+  GEN_ERROR_COND(
+      rpc_mode_argument == nullptr, p_attribute,
+      "Failed to find rpc mode argument.");
 
   const Ref<GodotVirtualArgument> virtual_argument =
       p_attribute->arguments()->find_child<GodotVirtualArgument>();
-  GEN_ERROR_COND(virtual_argument == nullptr, p_attribute,
-                 "Failed to find virtual argument.");
+  GEN_ERROR_COND(
+      virtual_argument == nullptr, p_attribute,
+      "Failed to find virtual argument.");
 
   const Ref<Body> bind_methods_body =
       GodotGeneratorUtils::get_bind_methods_body(
           p_target_class, p_generated_body, p_generated_sources);
 
   const Ref<Parameters> parameters = target_function->parameters();
-  GEN_ERROR_COND(!parameters, p_target_class,
-                 "Function does not name parameters, this was probably "
-                 "parsed as a function call. Abort");
+  GEN_ERROR_COND(
+      !parameters, p_target_class,
+      "Function does not name parameters, this was probably "
+      "parsed as a function call. Abort");
 
   Ref<Context> generated_public_members, generated_protected_members,
       generated_private_members;
-  GEN_ERROR_COND(GodotGeneratorUtils::unzip_generated_body(
-                     p_generated_body, generated_public_members,
-                     generated_protected_members,
-                     generated_private_members) != GeneratorError::OK,
-                 p_target_class, "Failed to find generated body groups");
+  GEN_ERROR_COND(
+      GodotGeneratorUtils::unzip_generated_body(
+          p_generated_body, generated_public_members,
+          generated_protected_members,
+          generated_private_members) != GeneratorError::OK,
+      p_target_class, "Failed to find generated body groups");
 
   const Vector<String> parameter_names =
       vector_transform<Ref<Parameter>, String>(
@@ -134,20 +143,22 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(
       });
 
   if (target_function->is_static()) {
-    bind_methods_body->add_child(GodotGeneratorUtils::bind_static_method(
-        p_target_class->name(), function_name, target_function->name(),
-        parameter_names, default_values));
+    bind_methods_body->add_child(
+        GodotGeneratorUtils::bind_static_method(
+            p_target_class->name(), function_name, target_function->name(),
+            parameter_names, default_values));
   } else if (virtual_argument->is_script_virtual()) {
-    Ref<GeneratorError> error =
-        generate_virtual(p_target_class, function_name, target_function,
-                         p_attribute, bind_methods_body, r_result);
+    Ref<GeneratorError> error = generate_virtual(
+        p_target_class, function_name, target_function, p_attribute,
+        bind_methods_body, r_result);
     if (error != GeneratorError::OK) {
       return error;
     }
   } else {
-    bind_methods_body->add_child(GodotGeneratorUtils::bind_method(
-        p_target_class->name(), function_name, target_function->name(),
-        parameter_names, default_values));
+    bind_methods_body->add_child(
+        GodotGeneratorUtils::bind_method(
+            p_target_class->name(), function_name, target_function->name(),
+            parameter_names, default_values));
   }
 
   if (rpc_mode_argument->rpc_mode() != AssumedParameterValues::Disabled()) {
@@ -163,22 +174,24 @@ Ref<GeneratorError> GodotFunctionGenerator::do_generate(
     }
   }
 
-  generated_public_members->add_child(Output::FmtText(
-      "%s %s_callable{this, \"%s\"};",
-      AssumedGodotTypes::Callable().type->qualified_name().c_str(),
-      target_function->name().c_str(), target_function->name().c_str()));
+  generated_public_members->add_child(
+      Output::FmtText(
+          "%s %s_callable{this, \"%s\"};",
+          AssumedGodotTypes::Callable().type->qualified_name().c_str(),
+          target_function->name().c_str(), target_function->name().c_str()));
 
   const Ref<Body> function_names_body =
-      GodotGeneratorUtils::get_function_names_body(p_target_class,
-                                                   p_generated_body);
-  GEN_ERROR_COND(!function_names_body, p_attribute,
-                 "Failed to get function names body.");
-  function_names_body->add_child(Output::Text(
-      format("static const %s& %s() {static const %s sn = \"%s\"; return sn; }",
-             AssumedGodotTypes::StringName().type->qualified_name().c_str(),
-             target_function->name().c_str(),
-             AssumedGodotTypes::StringName().type->qualified_name().c_str(),
-             target_function->name().c_str())));
+      GodotGeneratorUtils::get_function_names_body(
+          p_target_class, p_generated_body);
+  GEN_ERROR_COND(
+      !function_names_body, p_attribute, "Failed to get function names body.");
+  function_names_body->add_child(
+      Output::Text(format(
+          "static const %s& %s() {static const %s sn = \"%s\"; return sn; }",
+          AssumedGodotTypes::StringName().type->qualified_name().c_str(),
+          target_function->name().c_str(),
+          AssumedGodotTypes::StringName().type->qualified_name().c_str(),
+          target_function->name().c_str())));
 
   r_result.header_includes.insert(AssumedGodotTypes::StringName().type->header);
   r_result.header_includes.insert(AssumedGodotTypes::Callable().type->header);
@@ -189,7 +202,8 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
     const Ref<Class>& p_target_class, const String& p_bind_name,
     const Ref<Function>& p_target_function,
     const Ref<GodotFunctionAttribute>& p_attribute,
-    const Ref<Context>& p_bind_methods_body, ClassGeneratorResult& r_result) {
+    const Ref<Context>& p_bind_methods_body, ClassGeneratorResult& r_result)
+{
   Ref<Context> p_generated_body = r_result.generated_body;
   Ref<Context> p_generated_sources = r_result.generated_sources;
   Ref<Context> p_generated_global = r_result.generated_global;
@@ -197,8 +211,8 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
 
   Ref<GodotVirtualArgument> virtual_argument =
       p_attribute->arguments()->find_child<GodotVirtualArgument>();
-  GEN_ERROR_COND(!virtual_argument, p_attribute,
-                 "Failed to get virtual argument.");
+  GEN_ERROR_COND(
+      !virtual_argument, p_attribute, "Failed to get virtual argument.");
 
   StreamWriter writer;
   writer.write("GDVIRTUAL");
@@ -207,16 +221,18 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
   GEN_ERROR_COND(!function_type, p_attribute, "Failed to get function type.");
   function_type = function_type->qualified();
 
-  GEN_ERROR_COND(!p_target_function->parameters(), p_target_function,
-                 "Failed to get target function parameters.")
+  GEN_ERROR_COND(
+      !p_target_function->parameters(), p_target_function,
+      "Failed to get target function parameters.")
 
   Ref<Context> generated_public_members, generated_protected_members,
       generated_private_members;
-  GEN_ERROR_COND(GodotGeneratorUtils::unzip_generated_body(
-                     p_generated_body, generated_public_members,
-                     generated_protected_members,
-                     generated_private_members) != GeneratorError::OK,
-                 p_target_class, "Failed to find generated body groups");
+  GEN_ERROR_COND(
+      GodotGeneratorUtils::unzip_generated_body(
+          p_generated_body, generated_public_members,
+          generated_protected_members,
+          generated_private_members) != GeneratorError::OK,
+      p_target_class, "Failed to find generated body groups");
 
   Vector<String> parameter_names = vector_transform<Ref<Parameter>, String>(
       p_target_function->parameters()->find_children<Parameter>(),
@@ -252,8 +268,9 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
       {macro},
       "Assume that a macro with name \"" + macro + "\" exists in the TypeDB."};
   GDVIRTUAL.validate(ExecutionContext::instance()->get_type_db());
-  GEN_ERROR_COND(GDVIRTUAL.is_invalid(), p_target_function,
-                 "Invalid macro " + macro + ". Was not found.");
+  GEN_ERROR_COND(
+      GDVIRTUAL.is_invalid(), p_target_function,
+      "Invalid macro " + macro + ". Was not found.");
 
   String virtual_name = format("_%s", p_bind_name.c_str());
   String virtual_caller_name = virtual_name;
@@ -281,8 +298,8 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
   Ref<Parameters> func_parameters;
   Ref<Function> func_implementation = B<Function>()[{
       function_type->clone(),
-      B<Identifier>(p_target_class->qualified_name() +
-                    "::" + virtual_caller_name),
+      B<Identifier>(
+          p_target_class->qualified_name() + "::" + virtual_caller_name),
       R<Parameters>(&func_parameters),
       R<Body>(&func_body),
   }];
@@ -291,8 +308,8 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
     for (const Ref<Parameter>& parameter :
          p_target_function->parameters()->find_children<Parameter>()) {
       Ref<Type> parameter_type = parameter->type();
-      GEN_ERROR_COND(!parameter_type, p_attribute,
-                     "Failed to get paramter type.");
+      GEN_ERROR_COND(
+          !parameter_type, p_attribute, "Failed to get paramter type.");
       parameter_type = parameter_type->qualified();
 
       func_parameters->B<Parameter>()[{
@@ -315,14 +332,14 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
       R<Arguments>(&virtual_call_arguments)[B<Argument>()[B<Identifier>(
           virtual_name)]]}];
 
-  func_body->add_child(Output::If(
-      condition,
-      {B<Output::ListNode>(
-          " ", false,
-          false)[{Output::Text("return"),
-                  B<Function>()[{B<Identifier>(p_target_function->name()),
-                                 R<Arguments>(&call_arguments)}]
-                               [Output::Semicolon()]}]}));
+  func_body->add_child(
+      Output::If(
+          condition,
+          {B<Output::ListNode>(" ", false, false)[{
+              Output::Text("return"),
+              B<Function>()[{
+                  B<Identifier>(p_target_function->name()),
+                  R<Arguments>(&call_arguments)}][Output::Semicolon()]}]}));
 
   if (!is_void) {
     func_body->create_child<Output::SnippetNode>("return return_value;");
@@ -337,8 +354,8 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
   for (const Ref<Parameter>& parameter :
        p_target_function->parameters()->find_children<Parameter>()) {
     Ref<Type> parameter_type = parameter->type();
-    GEN_ERROR_COND(!parameter_type, p_target_function,
-                   "Failed to get parameter type.");
+    GEN_ERROR_COND(
+        !parameter_type, p_target_function, "Failed to get parameter type.");
     parameter_type = parameter_type->qualified();
 
     arguments->B<Argument>()[B<Identifier>(
@@ -353,31 +370,33 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
   }
 
   Ref<AccessSpecifier::Type> type = p_target_function->access_specifier_type();
-  GEN_ERROR_COND(type == nullptr, p_target_function,
-                 "Failed to get target function access specifier.");
+  GEN_ERROR_COND(
+      type == nullptr, p_target_function,
+      "Failed to get target function access specifier.");
 
   Ref<Context> generated_target = nullptr;
   switch (*type) {
-    case AccessSpecifier::PUBLIC:
-      generated_target = generated_public_members;
-      break;
-    case AccessSpecifier::PRIVATE:
-      generated_target = generated_private_members;
-      break;
-    case AccessSpecifier::PROTECTED:
-      generated_target = generated_protected_members;
-      break;
+  case AccessSpecifier::PUBLIC:
+    generated_target = generated_public_members;
+    break;
+  case AccessSpecifier::PRIVATE:
+    generated_target = generated_private_members;
+    break;
+  case AccessSpecifier::PROTECTED:
+    generated_target = generated_protected_members;
+    break;
   }
-  GEN_ERROR_COND(generated_target == nullptr, p_target_function,
-                 "Failed to get generated target access specfier context.");
+  GEN_ERROR_COND(
+      generated_target == nullptr, p_target_function,
+      "Failed to get generated target access specfier context.");
 
   p_generated_sources->add_child(func_implementation);
   generated_target->add_children({virtual_caller, gdvirtual});
   p_bind_methods_body->add_children(
       {gdvirtual_bind,
-       GodotGeneratorUtils::bind_method_as(p_target_class->name(), p_bind_name,
-                                           virtual_caller_name, parameter_names,
-                                           default_values)});
+       GodotGeneratorUtils::bind_method_as(
+           p_target_class->name(), p_bind_name, virtual_caller_name,
+           parameter_names, default_values)});
 
   r_result.header_includes.insert(GDVIRTUAL().type->header);
   r_result.source_includes.insert(
@@ -394,19 +413,20 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(
     const Ref<GodotRpcTransferModeArgument>& p_transport_mode,
     const Ref<GodotRpcSyncArgument>& p_sync,
     const Ref<GodotRpcChannelArgument>& p_channel,
-    ClassGeneratorResult& r_result) {
+    ClassGeneratorResult& r_result)
+{
   Ref<Context> p_generated_body = r_result.generated_body;
   Ref<Context> p_generated_sources = r_result.generated_sources;
   PANIC_COND(!p_target_class, "Target class not found");
   GEN_ERROR_COND(!p_rpc_mode, p_target_class, "Target rpc mode not found");
-  GEN_ERROR_COND(!p_transport_mode, p_target_class,
-                 "Target rpc transport mode not found");
+  GEN_ERROR_COND(
+      !p_transport_mode, p_target_class, "Target rpc transport mode not found");
   GEN_ERROR_COND(!p_sync, p_target_class, "Target rpc sync not found");
   GEN_ERROR_COND(!p_channel, p_target_class, "Target rpc channel not found");
-  GEN_ERROR_COND(!p_generated_body, p_target_class,
-                 "Generated body not found.");
-  GEN_ERROR_COND(!p_generated_sources, p_target_class,
-                 "Generated sources not found.");
+  GEN_ERROR_COND(
+      !p_generated_body, p_target_class, "Generated body not found.");
+  GEN_ERROR_COND(
+      !p_generated_sources, p_target_class, "Generated sources not found.");
 
   const Ref<Body> notification_body =
       GodotGeneratorUtils::get_notification_body(
@@ -426,10 +446,11 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(
           "opts[\"transfer_mode\"] = %s::%s;",
           AssumedGodotTypes::MultiplayerPeer().type->qualified_name().c_str(),
           p_transport_mode->transfer_mode().c_str()),
-      Output::FmtText("opts[\"call_local\"] = %s;",
-                      (p_sync->rpc_sync() == AssumedParameterValues::CallLocal()
-                           ? "true"
-                           : "false")),
+      Output::FmtText(
+          "opts[\"call_local\"] = %s;",
+          (p_sync->rpc_sync() == AssumedParameterValues::CallLocal()
+               ? "true"
+               : "false")),
       Output::FmtText("opts[\"channel\"] = %d;", p_channel->channel()),
       Output::FmtText("rpc_config(\"%s\", opts);", p_function_name.c_str()),
   }];
@@ -442,4 +463,4 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(
   return GeneratorError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

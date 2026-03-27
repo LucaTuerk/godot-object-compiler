@@ -39,36 +39,38 @@
 #include "library/tree/syntax/node.h"
 #include "library/tree/syntax/parser_error.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class INodeHandler;
 class TreeSitterNode;
 struct ParserContext;
 
-class IParser {
- public:
+class IParser
+{
+public:
   virtual ~IParser() = default;
-  virtual Ref<ParserError> parse(const String& p_input,
-                                 Ref<Context> r_target) = 0;
+  virtual Ref<ParserError>
+  parse(const String& p_input, Ref<Context> r_target) = 0;
 };
 
-class TreeSitterParser : public IParser {
- public:
+class TreeSitterParser : public IParser
+{
+public:
   ~TreeSitterParser() = default;
 
   Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target);
 
   Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
 
-  template <typename T>
-  static bool register_handler(const String& p_name);
+  template <typename T> static bool register_handler(const String& p_name);
 
   static String strip_known_macro_contents(
       const String& p_input, Dictionary<Size, String>& r_parameters);
 
   void set_parse_attributes(bool p_parse_attributes);
 
- private:
+private:
   bool parse_attributes = true;
   bool input_is_path = false;
   static inline HashSet<String> _registered_handlers;
@@ -76,7 +78,8 @@ class TreeSitterParser : public IParser {
 };
 
 template <typename T>
-bool TreeSitterParser::register_handler(const String& p_name) {
+bool TreeSitterParser::register_handler(const String& p_name)
+{
   if (_registered_handlers.find(p_name) != _registered_handlers.end()) {
     return false;
   }
@@ -85,13 +88,13 @@ bool TreeSitterParser::register_handler(const String& p_name) {
   return true;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
-#define HANDLER_ERROR(...)                           \
-  node_new<ParserError>(ERROR, format(__VA_ARGS__)); \
+#define HANDLER_ERROR(...)                                                     \
+  node_new<ParserError>(ERROR, format(__VA_ARGS__));                           \
   return ParserStep::StepOver();
 
-#define HANDLER_ERROR_COND(condition, ...) \
-  if ((condition)) {                       \
-    HANDLER_ERROR(__VA_ARGS__)             \
+#define HANDLER_ERROR_COND(condition, ...)                                     \
+  if ((condition)) {                                                           \
+    HANDLER_ERROR(__VA_ARGS__)                                                 \
   }

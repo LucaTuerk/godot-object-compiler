@@ -38,9 +38,11 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Ref<ProgramError> Clear::run(ApplicationContext& p_context) {
+Ref<ProgramError> Clear::run(ApplicationContext& p_context)
+{
   ClearCache clear_cache;
   if (Ref<ProgramError> clear_cache_error = clear_cache.run(p_context);
       clear_cache_error != ProgramError::OK) {
@@ -58,14 +60,16 @@ Ref<ProgramError> Clear::run(ApplicationContext& p_context) {
   return ProgramError::OK;
 }
 
-Ref<ProgramError> ClearGenerated::run(ApplicationContext& p_context) {
+Ref<ProgramError> ClearGenerated::run(ApplicationContext& p_context)
+{
   for (const String& entry : directory_entries(p_context.paths_generated)) {
     PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
   }
   return ProgramError::OK;
 }
 
-Ref<ProgramError> ClearCache::run(ApplicationContext& p_context) {
+Ref<ProgramError> ClearCache::run(ApplicationContext& p_context)
+{
   for (const String& entry : directory_entries(p_context.paths_cache)) {
     if (string_contains(entry, ".readonly")) {
       continue;
@@ -77,7 +81,8 @@ Ref<ProgramError> ClearCache::run(ApplicationContext& p_context) {
   return ProgramError::OK;
 }
 
-Ref<ProgramError> ClearImportedTypeDB::run(ApplicationContext& p_context) {
+Ref<ProgramError> ClearImportedTypeDB::run(ApplicationContext& p_context)
+{
   for (const String& entry :
        directory_entries(p_context.paths_readonly_cache)) {
     PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
@@ -86,4 +91,4 @@ Ref<ProgramError> ClearImportedTypeDB::run(ApplicationContext& p_context) {
   return ProgramError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

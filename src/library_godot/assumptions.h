@@ -38,9 +38,11 @@
 #include "library/tree/syntax/enum.h"
 #include "library/type_db.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-namespace AssumedGodotTypes {
+namespace AssumedGodotTypes
+{
 
 inline Assumption<AssumeType<Class>> ClassDB{
     {"ClassDB"},
@@ -254,6 +256,6 @@ inline Assumption<AssumeType<Class>> PropertyInfo{
 
 bool validate_assumptions();
 
-}  // namespace AssumedGodotTypes
+} // namespace AssumedGodotTypes
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

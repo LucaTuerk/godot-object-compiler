@@ -36,23 +36,26 @@
 #pragma once
 #include "library/generator/attribute_parameter_type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GodotVirtualArgument : public Argument {
+class GodotVirtualArgument : public Argument
+{
   NODE_TYPE(GodotVirtualArgument);
 
- public:
+public:
   bool is_script_virtual() const;
   bool is_required() const;
 };
 
-class GodotVirtualParameterType : public IAttributeParameterType {
+class GodotVirtualParameterType : public IAttributeParameterType
+{
   PARAM_TYPE(GodotVirtualParameterType, GodotVirtualArgument);
 
- public:
+public:
   String get_return_type() override;
   Vector<String> get_value_names() override;
   Vector<Argument> get_arguments() override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

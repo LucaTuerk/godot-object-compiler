@@ -36,27 +36,31 @@
 #include "context.h"
 #include "literal.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class EnumValue;
 
-class Enum : public NamedContext {
+class Enum : public NamedContext
+{
   NODE_TYPE(Enum);
 
- public:
+public:
   LAZY(Enum, Vector<Ref<EnumValue>>, values);
   LAZY(Enum, Vector<String>, value_names);
 };
 
-class EnumValues : public Context {
+class EnumValues : public Context
+{
   NODE_TYPE(EnumValues);
 };
 
-class EnumValue : public NamedContext {
+class EnumValue : public NamedContext
+{
   NODE_TYPE(EnumValue);
 
- public:
+public:
   LAZY(EnumValue, Ref<Literal>, literal);
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

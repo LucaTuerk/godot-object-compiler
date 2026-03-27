@@ -36,10 +36,12 @@
 
 #include "virtual_functions.generated.h"
 
-namespace Tests {
+namespace Tests
+{
 GODOT_CLASS();
 
-class VirtualFunctions : Node {
+class VirtualFunctions : Node
+{
   GODOT_GENERATED_BODY();
 
   GODOT_FUNCTION(ScriptVirtual);
@@ -174,5 +176,5 @@ class VirtualFunctions : Node {
   GODOT_FUNCTION(ScriptVirtual);
   Ref<Resource> resource_function();
 };
-}  // namespace Tests
+} // namespace Tests
 GODOT_GENERATED_GLOBAL();

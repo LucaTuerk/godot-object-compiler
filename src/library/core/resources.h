@@ -36,13 +36,16 @@
 #pragma once
 #include "core.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Resources {
- public:
+class Resources
+{
+public:
   using ResourcePack = Dictionary<String, const char*>;
 
-  static Resources* instance() {
+  static Resources* instance()
+  {
     static Resources instance;
     return &instance;
   }
@@ -55,8 +58,8 @@ class Resources {
 
   [[nodiscard]] bool has_resource(const String& p_path) const;
 
- private:
+private:
   Vector<ResourcePack*> _loaded_packs;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

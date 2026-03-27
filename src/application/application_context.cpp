@@ -40,9 +40,11 @@
 #include "library/core/permissions.h"
 #include "library/core/string_utilities.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool ApplicationContext::set_from_project(const Project& p_project) {
+bool ApplicationContext::set_from_project(const Project& p_project)
+{
   project_target = p_project.project_target;
   paths_root = path_absolute(p_project.paths_root);
   paths_generated = path_absolute(p_project.paths_generated);
@@ -69,15 +71,18 @@ bool ApplicationContext::set_from_project(const Project& p_project) {
     }
   }
 
-  std::transform(paths_include->begin(), paths_include->end(),
-                 paths_include->begin(), &path_absolute);
-  std::transform(files_input->begin(), files_input->end(), files_input->begin(),
-                 &path_absolute);
+  std::transform(
+      paths_include->begin(), paths_include->end(), paths_include->begin(),
+      &path_absolute);
+  std::transform(
+      files_input->begin(), files_input->end(), files_input->begin(),
+      &path_absolute);
   return validate();
 }
 
 bool ApplicationContext::set_from_application_arguments(
-    Vector<String>& p_application_arguments) {
+    Vector<String>& p_application_arguments)
+{
   auto prefix_extract = [](const String& p_str, const String& p_long,
                            const String& p_short, String& r_out) {
     if (string_prefix(p_str, p_long)) {
@@ -125,19 +130,22 @@ bool ApplicationContext::set_from_application_arguments(
   paths_generated = path_absolute(paths_generated);
 
   if (files_input.has_value()) {
-    std::transform(files_input->begin(), files_input->end(),
-                   files_input->begin(), &path_absolute);
+    std::transform(
+        files_input->begin(), files_input->end(), files_input->begin(),
+        &path_absolute);
   }
 
   if (paths_include.has_value()) {
-    std::transform(paths_include->begin(), paths_include->end(),
-                   paths_include->begin(), &path_absolute);
+    std::transform(
+        paths_include->begin(), paths_include->end(), paths_include->begin(),
+        &path_absolute);
   }
 
   return validate();
 }
 
-bool ApplicationContext::validate() const {
+bool ApplicationContext::validate() const
+{
   bool success = true;
   Permissions::instance()->clear();
   Permissions::instance()->add_write_path(paths_goc);
@@ -155,20 +163,20 @@ bool ApplicationContext::validate() const {
 
   if (!directory_exits(paths_cache)) {
     if (!create_dir_recursive(paths_cache)) {
-      print_err(
-          format("Invalid cache path \"%s\". Could not find or "
-                 "create directory.",
-                 paths_cache.c_str()));
+      print_err(format(
+          "Invalid cache path \"%s\". Could not find or "
+          "create directory.",
+          paths_cache.c_str()));
       success = false;
     }
   }
 
   if (!directory_exits(paths_generated)) {
     if (!create_dir_recursive(paths_generated)) {
-      print_err(
-          format("Invalid generated path \"%s\". Could not find or "
-                 "create directory.",
-                 paths_generated.c_str()));
+      print_err(format(
+          "Invalid generated path \"%s\". Could not find or "
+          "create directory.",
+          paths_generated.c_str()));
       success = false;
     }
   }
@@ -176,8 +184,8 @@ bool ApplicationContext::validate() const {
   if (files_input.has_value()) {
     for (const String& file : *files_input) {
       if (!file_exists(file)) {
-        print_err(format("Invalid input file \"%s\". File does not exist.",
-                         file.c_str()));
+        print_err(format(
+            "Invalid input file \"%s\". File does not exist.", file.c_str()));
         success = false;
       }
     }
@@ -186,8 +194,9 @@ bool ApplicationContext::validate() const {
   if (paths_include.has_value()) {
     for (const String& include_path : *paths_include) {
       if (!directory_exits(include_path)) {
-        print_err(format("Invalid include path\"%s\". Path is not a directory.",
-                         include_path.c_str()));
+        print_err(format(
+            "Invalid include path\"%s\". Path is not a directory.",
+            include_path.c_str()));
       }
     }
   }
@@ -195,4 +204,4 @@ bool ApplicationContext::validate() const {
   return success;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

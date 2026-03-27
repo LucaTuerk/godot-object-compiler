@@ -51,9 +51,11 @@
 #include "library/tree/syntax/namespace.h"
 #include "library_godot/assumptions.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String resource_variable_name(const String& p_path) {
+String resource_variable_name(const String& p_path)
+{
   String result = p_path;
   result = string_replace(result, "/", "_");
   result = string_replace(result, ".", "_");
@@ -62,8 +64,8 @@ String resource_variable_name(const String& p_path) {
   return result;
 }
 
-String GenerateResources::rst_header(const String& p_text,
-                                     char p_punctioation) {
+String GenerateResources::rst_header(const String& p_text, char p_punctioation)
+{
   StreamWriter writer;
   writer.write(p_text);
   writer.write("\n");
@@ -72,7 +74,8 @@ String GenerateResources::rst_header(const String& p_text,
   return writer.get_string();
 }
 
-String GenerateResources::rst_table(const Table& table) {
+String GenerateResources::rst_table(const Table& table)
+{
   Vector<Size> per_column_length;
   Vector<Size> per_row_height;
 
@@ -144,16 +147,18 @@ String GenerateResources::rst_table(const Table& table) {
   return writer.get_string();
 }
 
-Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
+Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context)
+{
   GenerateTypeDB generate_type_db;
   PROG_ERR_PASS_ON(generate_type_db.run(p_context));
-  PROG_ERR_COND(!(AssumedGodotTypes::validate_assumptions() &&
-                  AssumedParameterValues::validate_assumptions()),
-                "Failed to validate some assumptions on available Godot "
-                "types and macros, probably because the TypeDB "
-                "generator has not found the relevant files.\n"
-                "Ensure godot-cpp include path are known to goc via the -I= "
-                "flag or in the .goc_project file.");
+  PROG_ERR_COND(
+      !(AssumedGodotTypes::validate_assumptions() &&
+        AssumedParameterValues::validate_assumptions()),
+      "Failed to validate some assumptions on available Godot "
+      "types and macros, probably because the TypeDB "
+      "generator has not found the relevant files.\n"
+      "Ensure godot-cpp include path are known to goc via the -I= "
+      "flag or in the .goc_project file.");
 
   Permissions::instance()->add_write_path("resources");
   Permissions::instance()->add_write_path("docs");
@@ -206,20 +211,20 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
           path_concat_ext("resources/doc", param->get_return_type(), "txt");
 
       create_dir_recursive(param_res_doc_dir);
-      write_initial_file_content(param_res_doc_path,
-                                 "No documentation available");
+      write_initial_file_content(
+          param_res_doc_path, "No documentation available");
 
       for (const auto& value_name : param->get_value_names()) {
         auto value_doc_path =
             path_concat_ext(param_res_doc_dir, value_name, "txt");
-        write_initial_file_content(value_doc_path,
-                                   "No documentation available");
+        write_initial_file_content(
+            value_doc_path, "No documentation available");
 
         table.push_back({value_name, read_file(value_doc_path)});
       }
 
-      String param_doc_path = path_concat_ext("docs/macros/parameters/",
-                                              param->get_return_type(), "rst");
+      String param_doc_path = path_concat_ext(
+          "docs/macros/parameters/", param->get_return_type(), "rst");
       create_dir_recursive(path_base(param_doc_path));
 
       StreamWriter writer;
@@ -249,8 +254,9 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
 
     Ref<Output::ListNode> values;
     body->add_children(
-        {Output::FmtText("constexpr char %s[] = ",
-                         resource_variable_name(relative).c_str()),
+        {Output::FmtText(
+             "constexpr char %s[] = ",
+             resource_variable_name(relative).c_str()),
          B<Body>()[R<Output::ListNode>(&values, ", ", false, false)],
          Output::Semicolon()});
 
@@ -277,8 +283,9 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
       String relative = path_relative(file, path_cwd());
       String res_path = "res://" + path_relative(relative, "resources");
       values->add_child(
-          Output::FmtText("{\"%s\", &%s[0]}", res_path.c_str(),
-                          resource_variable_name(relative).c_str()));
+          Output::FmtText(
+              "{\"%s\", &%s[0]}", res_path.c_str(),
+              resource_variable_name(relative).c_str()));
     }
   }
 
@@ -298,5 +305,5 @@ Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context) {
   return ProgramError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 #endif

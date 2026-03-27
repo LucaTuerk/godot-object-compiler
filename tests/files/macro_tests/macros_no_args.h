@@ -36,7 +36,8 @@
 
 GODOT_CLASS();
 
-class A {
+class A
+{
   GODOT_GENERATED_BODY();
 
   GODOT_CATEGORY();

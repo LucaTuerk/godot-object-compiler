@@ -36,7 +36,8 @@
 #pragma once
 #include "generator/attribute_parameter_type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class Attribute;
 class ClassGenerator;
@@ -48,12 +49,13 @@ enum AttributeParameterType {
   MEMBER_FUNCTION,
 };
 
-class IAttributeParameters {
- public:
+class IAttributeParameters
+{
+public:
   virtual ~IAttributeParameters() = default;
 
   enum ReturnType {
-    FLAG,  // Parameters of this type can be | combined
+    FLAG, // Parameters of this type can be | combined
     SINGULAR,
   };
 
@@ -64,15 +66,18 @@ class IAttributeParameters {
   virtual Vector<ParameterType> parameters() = 0;
 };
 
-class AttributeDB {
- private:
-  struct Private {};
+class AttributeDB
+{
+private:
+  struct Private {
+  };
 
- public:
+public:
   using CreationFunc = Ref<Attribute> (*)();
 
-  bool register_attribute(const String& p_class_name, const String& p_macro,
-                          CreationFunc p_creator);
+  bool register_attribute(
+      const String& p_class_name, const String& p_macro,
+      CreationFunc p_creator);
 
   bool register_attribute_parameter(
       const String& p_class_name,
@@ -82,8 +87,8 @@ class AttributeDB {
 
   Result<Attribute> create_for_macro(const String& p_macro);
 
-  Vector<Ref<IAttributeParameterType>> get_parameters_for_macro(
-      const String& p_macro);
+  Vector<Ref<IAttributeParameterType>>
+  get_parameters_for_macro(const String& p_macro);
 
   template <typename AttributeT, typename ParamT>
   Ref<ParamT> get_parameter_type();
@@ -92,15 +97,15 @@ class AttributeDB {
 
   Vector<String> get_all_macros();
 
-  bool register_class_generator(const String& p_generator_name,
-                                Ref<ClassGenerator> p_generator);
+  bool register_class_generator(
+      const String& p_generator_name, Ref<ClassGenerator> p_generator);
 
   [[nodiscard]] const Vector<Ref<ClassGenerator>>& class_generators() const;
 
   AttributeDB(Private) {}
   AttributeDB() = delete;
 
- private:
+private:
   HashSet<String> _registered_generator_names;
   Vector<Ref<ClassGenerator>> _class_generators;
 
@@ -114,7 +119,8 @@ class AttributeDB {
 };
 
 template <typename AttributeT, typename ParamT>
-Ref<ParamT> AttributeDB::get_parameter_type() {
+Ref<ParamT> AttributeDB::get_parameter_type()
+{
   const String attribute_type_name = AttributeT::get_type_static();
 
   const auto itr = _parameters.find(attribute_type_name);
@@ -128,32 +134,35 @@ Ref<ParamT> AttributeDB::get_parameter_type() {
     return val->get_type() == ParamT::get_type_static();
   });
   if (params_itr == params.end()) {
-    PANIC("Unknown parameter type %s for attribute type %s",
-          ParamT::get_type_static().c_str(), attribute_type_name.c_str());
+    PANIC(
+        "Unknown parameter type %s for attribute type %s",
+        ParamT::get_type_static().c_str(), attribute_type_name.c_str());
   }
 
   Ref<ParamT> param = std::dynamic_pointer_cast<ParamT>(*params_itr);
   if (!param) {
-    PANIC("Failed to convert parameter to requested type %s",
-          ParamT::get_type_static().c_str());
+    PANIC(
+        "Failed to convert parameter to requested type %s",
+        ParamT::get_type_static().c_str());
   }
 
   return param;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
-#define ATTRIBUTE_DEFAULT_MACRO(macro)                                      \
-  static Ref<Attribute> attribute_create_static() {                         \
-    return create_static()->as<Attribute>();                                \
-  }                                                                         \
-  static inline bool attribute_registered =                                 \
-      ExecutionContext::instance()->get_attribute_db()->register_attribute( \
+#define ATTRIBUTE_DEFAULT_MACRO(macro)                                         \
+  static Ref<Attribute> attribute_create_static()                              \
+  {                                                                            \
+    return create_static()->as<Attribute>();                                   \
+  }                                                                            \
+  static inline bool attribute_registered =                                    \
+      ExecutionContext::instance()->get_attribute_db()->register_attribute(    \
           get_type_static(), #macro, &attribute_create_static);
 
-#define ATTRIBUTE_REGISTER_PARAMETERS(type)                 \
-  static inline bool type##_parameter_registered =          \
-      ExecutionContext::instance()                          \
-          ->get_attribute_db()                              \
-          ->register_attribute_parameter(get_type_static(), \
-                                         type##ParameterType::instance());
+#define ATTRIBUTE_REGISTER_PARAMETERS(type)                                    \
+  static inline bool type##_parameter_registered =                             \
+      ExecutionContext::instance()                                             \
+          ->get_attribute_db()                                                 \
+          ->register_attribute_parameter(                                      \
+              get_type_static(), type##ParameterType::instance());

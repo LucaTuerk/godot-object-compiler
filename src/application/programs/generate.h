@@ -36,14 +36,16 @@
 #pragma once
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Generate : public IProgram {
+class Generate : public IProgram
+{
   PROGRAM(Generate, "generate");
   PROG_NO_ARGS
 
- public:
+public:
   Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

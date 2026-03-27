@@ -39,10 +39,13 @@
 #include "file_system_utilities.h"
 #include "string_writer.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String string_replace(const String& p_target, const String& p_search_str,
-                      const String& p_replace_with) {
+String string_replace(
+    const String& p_target, const String& p_search_str,
+    const String& p_replace_with)
+{
   std::stringstream strstr;
 
   const Size length = p_search_str.length();
@@ -60,8 +63,10 @@ String string_replace(const String& p_target, const String& p_search_str,
   return strstr.str();
 }
 
-String extract_lines(const String& p_content, Size p_start_line,
-                     Size p_end_line, Size p_highlight_line) {
+String extract_lines(
+    const String& p_content, Size p_start_line, Size p_end_line,
+    Size p_highlight_line)
+{
   std::stringstream content_stream(p_content);
   std::stringstream target_stream;
 
@@ -83,27 +88,33 @@ String extract_lines(const String& p_content, Size p_start_line,
   return target_stream.str();
 }
 
-String string_trim(const String& p_content) {
+String string_trim(const String& p_content)
+{
   return string_trim_left(string_trim_right(p_content));
 }
 
-String string_trim_left(const String& p_content) {
+String string_trim_left(const String& p_content)
+{
   String ret = p_content;
-  auto itr = std::find_if(ret.begin(), ret.end(),
-                          [](unsigned char c) { return !is_whitespace(c); });
+  auto itr = std::find_if(ret.begin(), ret.end(), [](unsigned char c) {
+    return !is_whitespace(c);
+  });
   ret.erase(ret.begin(), itr);
   return ret;
 }
 
-String string_trim_right(const String& p_content) {
+String string_trim_right(const String& p_content)
+{
   String ret = p_content;
-  auto itr = std::find_if(ret.rbegin(), ret.rend(),
-                          [](unsigned char c) { return !is_whitespace(c); });
+  auto itr = std::find_if(ret.rbegin(), ret.rend(), [](unsigned char c) {
+    return !is_whitespace(c);
+  });
   ret.erase(itr.base(), ret.end());
   return ret;
 }
 
-String string_pad_right(const String& p_content, char p_padding, Size p_size) {
+String string_pad_right(const String& p_content, char p_padding, Size p_size)
+{
   if (p_content.size() >= p_size) {
     return p_content;
   }
@@ -117,7 +128,8 @@ String string_pad_right(const String& p_content, char p_padding, Size p_size) {
   return writer.get_string();
 }
 
-String string_pad_left(const String& p_content, char p_padding, Size p_size) {
+String string_pad_left(const String& p_content, char p_padding, Size p_size)
+{
   if (p_content.size() >= p_size) {
     return p_content;
   }
@@ -131,7 +143,8 @@ String string_pad_left(const String& p_content, char p_padding, Size p_size) {
   return writer.get_string();
 }
 
-String string_shrink_inner_space(const String& p_content) {
+String string_shrink_inner_space(const String& p_content)
+{
   StreamWriter writer;
   Size whitespace_count = 0;
   for (char c : p_content) {
@@ -148,14 +161,17 @@ String string_shrink_inner_space(const String& p_content) {
   return writer.get_string();
 }
 
-int string_to_int(const String& p_content) {
+int string_to_int(const String& p_content)
+{
   int result;
-  PANIC_COND(!string_to_int(p_content, result),
-             "Failed to convert \"%s\" to int.", p_content.c_str());
+  PANIC_COND(
+      !string_to_int(p_content, result), "Failed to convert \"%s\" to int.",
+      p_content.c_str());
   return result;
 }
 
-bool string_to_int(const String& p_content, int& r_result) {
+bool string_to_int(const String& p_content, int& r_result)
+{
   try {
     size_t idx = 0;
     if (string_prefix(p_content, "0b")) {
@@ -171,7 +187,8 @@ bool string_to_int(const String& p_content, int& r_result) {
   }
 }
 
-void string_get_2d_size(const String& p_content, Size& p_x, Size& p_y) {
+void string_get_2d_size(const String& p_content, Size& p_x, Size& p_y)
+{
   const Vector<String> split = string_split(p_content, "\n");
 
   p_x = 0;
@@ -183,7 +200,8 @@ void string_get_2d_size(const String& p_content, Size& p_x, Size& p_y) {
   }
 }
 
-String char_times_n(char p_char, Size p_n) {
+String char_times_n(char p_char, Size p_n)
+{
   StreamWriter writer;
   for (Size i = 0; i < p_n; ++i) {
     writer.write_generic(p_char);
@@ -191,7 +209,8 @@ String char_times_n(char p_char, Size p_n) {
   return writer.get_string();
 }
 
-String macro_case_to_pascal_case(const String& p_content) {
+String macro_case_to_pascal_case(const String& p_content)
+{
   std::stringstream strstr;
 
   Size start = 0;
@@ -200,8 +219,9 @@ String macro_case_to_pascal_case(const String& p_content) {
     end = p_content.find('_', start);
 
     for (Size i = start; i < std::min(end, p_content.length()); ++i) {
-      strstr << ((i == start) ? static_cast<char>(std::toupper(p_content[i]))
-                              : static_cast<char>(std::tolower(p_content[i])));
+      strstr
+          << ((i == start) ? static_cast<char>(std::toupper(p_content[i]))
+                           : static_cast<char>(std::tolower(p_content[i])));
     }
 
     start = end + 1;
@@ -210,7 +230,8 @@ String macro_case_to_pascal_case(const String& p_content) {
   return strstr.str();
 }
 
-String cpp_enum_case_to_exposed_enum_case(const String& p_content) {
+String cpp_enum_case_to_exposed_enum_case(const String& p_content)
+{
   StreamWriter writer;
 
   enum Type { NONE, SPACE, DIGIT, LETTER };
@@ -239,8 +260,9 @@ String cpp_enum_case_to_exposed_enum_case(const String& p_content) {
   return writer.get_string();
 }
 
-Vector<String> string_split(const String& p_content, const String& p_delimiter,
-                            bool p_leave_empty) {
+Vector<String> string_split(
+    const String& p_content, const String& p_delimiter, bool p_leave_empty)
+{
   Vector<String> result;
 
   Size start = 0;
@@ -255,8 +277,9 @@ Vector<String> string_split(const String& p_content, const String& p_delimiter,
 
   if (p_leave_empty &&
       (result.empty() ||
-       std::all_of(result.begin(), result.end(),
-                   [](const String& string) { return string.empty(); }))) {
+       std::all_of(result.begin(), result.end(), [](const String& string) {
+         return string.empty();
+       }))) {
     return {};
   } else if (result.empty()) {
     result.emplace_back(p_content);
@@ -265,7 +288,8 @@ Vector<String> string_split(const String& p_content, const String& p_delimiter,
   return result;
 }
 
-Vector<String> string_split_length(const String& p_content, Size length) {
+Vector<String> string_split_length(const String& p_content, Size length)
+{
   if (p_content.empty()) {
     return {""};
   }
@@ -281,13 +305,15 @@ Vector<String> string_split_length(const String& p_content, Size length) {
 
 String format(const String& p_format_string) { return p_format_string; }
 
-String hash_string(Hash p_hash) {
+String hash_string(Hash p_hash)
+{
   std::stringstream strstr;
   strstr << p_hash;
   return strstr.str();
 }
 
-String generate_random_string(size_t p_length) {
+String generate_random_string(size_t p_length)
+{
   const std::string characters =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   std::random_device random_device;
@@ -302,35 +328,41 @@ String generate_random_string(size_t p_length) {
   return writer.get_string();
 }
 
-bool string_contains(const String& p_content, const String& p_check) {
+bool string_contains(const String& p_content, const String& p_check)
+{
   return p_content.find(p_check) != String::npos;
 }
 
-bool string_suffix(const String& p_content, const String& p_suffix) {
+bool string_suffix(const String& p_content, const String& p_suffix)
+{
   return p_content.rfind(p_suffix) == p_content.size() - p_suffix.size();
 }
 
-bool string_prefix(const String& p_content, const String& p_prefix) {
+bool string_prefix(const String& p_content, const String& p_prefix)
+{
   return p_content.find(p_prefix) == 0;
 }
 
-bool string_enclosed_by(const String& p_content, const String& p_enclosing) {
+bool string_enclosed_by(const String& p_content, const String& p_enclosing)
+{
   return string_prefix(p_content, p_enclosing) &&
          string_suffix(p_content, p_enclosing);
 }
 
-bool string_only_contains(const String& p_content, char p_char) {
+bool string_only_contains(const String& p_content, char p_char)
+{
   if (p_content.empty()) {
     return false;
   }
 
-  return std::all_of(p_content.begin(), p_content.end(),
-                     [p_char](char c) { return c == p_char; });
+  return std::all_of(p_content.begin(), p_content.end(), [p_char](char c) {
+    return c == p_char;
+  });
   ;
 }
 
-String string_vector_combine(const Vector<String>& p_vector,
-                             String p_delimiter) {
+String string_vector_combine(const Vector<String>& p_vector, String p_delimiter)
+{
   StreamWriter writer;
   for (Size i = 0; i < p_vector.size(); i++) {
     if (i != 0) {
@@ -341,11 +373,13 @@ String string_vector_combine(const Vector<String>& p_vector,
   return writer.get_string();
 }
 
-bool is_whitespace(char p_char) {
+bool is_whitespace(char p_char)
+{
   return std::isspace(static_cast<unsigned char>(p_char));
 }
 
-String input(const String& p_prompt, const String& p_default_value) {
+String input(const String& p_prompt, const String& p_default_value)
+{
   String result;
   if (p_default_value.empty()) {
     std::cout << p_prompt;
@@ -360,10 +394,12 @@ String input(const String& p_prompt, const String& p_default_value) {
   return result;
 }
 
-Vector<String> read_lines(const String& p_path) {
+Vector<String> read_lines(const String& p_path)
+{
   String absolute = path_absolute(p_path);
-  PANIC_COND(!file_exists(absolute), "Trying to read non-existing file \"%s\"",
-             absolute.c_str());
+  PANIC_COND(
+      !file_exists(absolute), "Trying to read non-existing file \"%s\"",
+      absolute.c_str());
 
   Vector<String> result;
   std::ifstream ifs{p_path};
@@ -375,4 +411,4 @@ Vector<String> read_lines(const String& p_path) {
   return result;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

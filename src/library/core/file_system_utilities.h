@@ -36,7 +36,8 @@
 #pragma once
 #include "core.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 Vector<String> directory_files(const String& p_path);
 
@@ -52,8 +53,8 @@ Vector<String> read_lines(const String& p_path);
 
 void write_file(const String& p_path, const String& p_content);
 
-void write_initial_file_content(const String& p_path,
-                                const String& p_initial_content);
+void write_initial_file_content(
+    const String& p_path, const String& p_initial_content);
 
 bool create_dir_recursive(const String& p_path);
 
@@ -75,8 +76,8 @@ String path_base(const String& p_path);
 
 String path_concat(const String& p_left, const String& p_right);
 
-String path_concat_ext(const String& p_dir, const String& p_filename,
-                       const String& p_extension);
+String path_concat_ext(
+    const String& p_dir, const String& p_filename, const String& p_extension);
 
 String path_relative(const String& p_path, const String& p_base);
 
@@ -90,8 +91,8 @@ String path_stem(const String& p_path);
 
 char path_seperator();
 
-bool path_is_descendant(const String& p_possible_ancestor,
-                        const String& p_possible_child);
+bool path_is_descendant(
+    const String& p_possible_ancestor, const String& p_possible_child);
 
 bool could_be_path(const String& p_path);
 
@@ -101,4 +102,4 @@ bool could_be_file_path(const String& p_path);
 
 String header_path(const String& p_include_path, const String& p_file_path);
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -40,7 +40,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(InvalidPropertiesGracefulExit) {
+GOC_INTEGRATION_TEST(InvalidPropertiesGracefulExit)
+{
   // return TEST_RESULT_IGNORED; // TODO: FIX
 
   for (const String& file :

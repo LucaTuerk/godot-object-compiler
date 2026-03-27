@@ -37,9 +37,11 @@
 
 #include "library/core/string_utilities.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool Programs::register_program(const Ref<IProgram>& p_program) {
+bool Programs::register_program(const Ref<IProgram>& p_program)
+{
   if (_registered_programs.find(p_program->program_name()) !=
       _registered_programs.end()) {
     return false;
@@ -52,7 +54,8 @@ bool Programs::register_program(const Ref<IProgram>& p_program) {
 
 Ref<IProgram> Programs::find_program(
     const Vector<String>& p_application_arguments,
-    Vector<String>& r_program_arguments) {
+    Vector<String>& r_program_arguments)
+{
   Ref<IProgram> found_program;
 
   for (const auto& [path, program] : _programs) {
@@ -73,11 +76,13 @@ Ref<IProgram> Programs::find_program(
   return found_program;
 }
 
-const Dictionary<ProgramPath, Ref<IProgram>>& Programs::get_programs() {
+const Dictionary<ProgramPath, Ref<IProgram>>& Programs::get_programs()
+{
   return _programs;
 }
 
-Size Programs::overlap(const ProgramPath& a, const ProgramPath& b) {
+Size Programs::overlap(const ProgramPath& a, const ProgramPath& b)
+{
   Size overlap = 0;
   for (Size i = 0; i < a.size() && i < b.size(); i++) {
     if (a[i] != b[i]) {
@@ -88,4 +93,4 @@ Size Programs::overlap(const ProgramPath& a, const ProgramPath& b) {
   return overlap;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

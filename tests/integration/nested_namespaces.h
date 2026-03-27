@@ -39,7 +39,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(GenerateNestedNamespaces) {
+GOC_INTEGRATION_TEST(GenerateNestedNamespaces)
+{
   GOC_INTEGRATION_TEST_GEN_FILE(
       "tests/files/integration_tests/nested_namespaces.h");
 

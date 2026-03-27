@@ -35,14 +35,16 @@
 
 #include "application/programs/program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class ImportTypeDB : public IProgram {
+class ImportTypeDB : public IProgram
+{
   PROGRAM(ImportTypeDB, "import/type_db");
 
- public:
+public:
   bool validate_arguments(ApplicationContext& p_context) override;
   Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

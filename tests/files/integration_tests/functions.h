@@ -36,10 +36,12 @@
 
 #include "functions.generated.h"
 
-namespace Tests {
+namespace Tests
+{
 GODOT_CLASS();
 
-class Functions : Node {
+class Functions : Node
+{
   GODOT_GENERATED_BODY();
 
   GODOT_FUNCTION();
@@ -177,6 +179,6 @@ class Functions : Node {
   GODOT_FUNCTION();
   Ref<Resource> resource_function();
 };
-}  // namespace Tests
+} // namespace Tests
 
 GODOT_GENERATED_GLOBAL();

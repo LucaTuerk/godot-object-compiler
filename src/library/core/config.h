@@ -37,10 +37,12 @@
 #include "library/core/core.h"
 #include "reader_writer.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Config : public IStructuredWriter, public IStructuredReader {
- public:
+class Config : public IStructuredWriter, public IStructuredReader
+{
+public:
   Config();
   ~Config() override = default;
 
@@ -52,7 +54,7 @@ class Config : public IStructuredWriter, public IStructuredReader {
 
   bool read_from_file(const String& p_path) override;
 
- protected:
+protected:
   void _write_to_section(const String& p_section) override;
 
   void _write(const String& p_key, const String& p_value) override;
@@ -61,7 +63,7 @@ class Config : public IStructuredWriter, public IStructuredReader {
 
   String _read(const String& p_key) override;
 
- private:
+private:
   Size _find_section_index(const String& p_key);
 
   Size _current_section;
@@ -70,4 +72,4 @@ class Config : public IStructuredWriter, public IStructuredReader {
   Dictionary<Size, Dictionary<String, String>> config_values;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

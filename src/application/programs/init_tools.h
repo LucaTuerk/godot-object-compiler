@@ -36,14 +36,16 @@
 #pragma once
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class InitTools : public IProgram {
+class InitTools : public IProgram
+{
   PROJECTLESS_PROGRAM(InitTools, "init/tools")
 
- public:
+public:
   bool validate_arguments(ApplicationContext& p_context) override;
   Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -43,35 +43,41 @@
 #include "library/tree/syntax/function.h"
 #include "library/tree/syntax/literal.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool FieldHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
-  return p_current_src->type_in({"field_declaration", "declaration",
-                                 "function_definition", "expression_statement",
-                                 "call_expression"});
+bool FieldHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
+  return p_current_src->type_in(
+      {"field_declaration", "declaration", "function_definition",
+       "expression_statement", "call_expression"});
 }
 
-ParserStep FieldHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                                Ref<Context>& r_current_target) {
+ParserStep FieldHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   if (p_current_src->type == "call_expression") {
     r_current_target->B<Literal>(p_current_src->content());
     return ParserStep::StepOver();
   } else if (p_current_src->type_in({"expression_statement", "declaration"})) {
     Ref<TreeSitterNode> identifier =
-        p_current_src->find_descendant<TreeSitterNode>(BFS,
-                                                       type_is("identifier"));
+        p_current_src->find_descendant<TreeSitterNode>(
+            BFS, type_is("identifier"));
     if (identifier &&
         ExecutionContext::instance()->get_attribute_db()->is_known_macro(
             identifier->content())) {
-      return handle_known_attribute(p_current_src, r_current_target,
-                                    identifier->content());
+      return handle_known_attribute(
+          p_current_src, r_current_target, identifier->content());
     }
-  } else if (p_current_src->find_descendant(
-                 BFS, type_is("function_declarator")) != nullptr) {
+  } else if (
+      p_current_src->find_descendant(BFS, type_is("function_declarator")) !=
+      nullptr) {
     r_current_target = r_current_target->B<Function>();
-  } else if (p_current_src->find_descendant(
-                 BFS, type_in({"class_specifier", "struct_specifier",
-                               "enum_specifier"})) != nullptr) {
+  } else if (
+      p_current_src->find_descendant(
+          BFS,
+          type_in({"class_specifier", "struct_specifier", "enum_specifier"})) !=
+      nullptr) {
   } else {
     r_current_target = r_current_target->B<Field>();
   }
@@ -80,12 +86,13 @@ ParserStep FieldHandler::handle(const Ref<TreeSitterNode>& p_current_src,
 
 ParserStep FieldHandler::handle_known_attribute(
     const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target,
-    const String& macro) {
+    const String& macro)
+{
   Result<Attribute> attribute_result =
       ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
-  HANDLER_ERROR_COND(attribute_result.has_error(),
-                     "Failed to create attribute for known macro %s",
-                     macro.c_str());
+  HANDLER_ERROR_COND(
+      attribute_result.has_error(),
+      "Failed to create attribute for known macro %s", macro.c_str());
   Ref<Attribute> attribute = attribute_result.get_result();
 
   current_target->add_child(attribute);
@@ -113,13 +120,15 @@ ParserStep FieldHandler::handle_known_attribute(
 
       if (error != ParserError::OK) {
         attribute->remove_all_children();
-        attribute->add_child(node_new<ParserError>(
-            error->error_level, "TreeSitterParser",
-            format("Failed to parse attribute arguments.\n%s",
-                   error->message.c_str()),
-            current_src->context->file_path,
-            current_src->context->original_buffer, attribute->line,
-            current_src->start_point.column + 1));
+        attribute->add_child(
+            node_new<ParserError>(
+                error->error_level, "TreeSitterParser",
+                format(
+                    "Failed to parse attribute arguments.\n%s",
+                    error->message.c_str()),
+                current_src->context->file_path,
+                current_src->context->original_buffer, attribute->line,
+                current_src->start_point.column + 1));
         error->set_handled();
       }
     }
@@ -127,4 +136,4 @@ ParserStep FieldHandler::handle_known_attribute(
   return ParserStep::StepOver();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

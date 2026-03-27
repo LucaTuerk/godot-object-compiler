@@ -38,34 +38,42 @@
 #include "library/tree/syntax/enum.h"
 #include "test_registry.h"
 
-GOC_TEST(EnumValues) {
+GOC_TEST(EnumValues)
+{
   using namespace GodotObjectCompiler;
   GOC_TEST_PARSE_FILE("tests/files/enum_tests/enum_values.h")
 
   Ref<Enum> enum1 = global_namespace->find_descendant<Enum>(
       BFS, NamedContextPredicates::name<Enum>("TestEnum1"));
   GOC_TEST_ASSERT(enum1, "Failed to find TestEnum1");
-  GOC_TEST_ASSERT(vector_contains(enum1->value_names(), "VALUE_A"),
-                  "Failed to find TestEnum1::VALUE_A")
-  GOC_TEST_ASSERT(vector_contains(enum1->value_names(), "VALUE_B"),
-                  "Failed to find TestEnum1::VALUE_B")
-  GOC_TEST_ASSERT(vector_contains(enum1->value_names(), "VALUE_C"),
-                  "Failed to find TestEnum1::VALUE_C")
+  GOC_TEST_ASSERT(
+      vector_contains(enum1->value_names(), "VALUE_A"),
+      "Failed to find TestEnum1::VALUE_A")
+  GOC_TEST_ASSERT(
+      vector_contains(enum1->value_names(), "VALUE_B"),
+      "Failed to find TestEnum1::VALUE_B")
+  GOC_TEST_ASSERT(
+      vector_contains(enum1->value_names(), "VALUE_C"),
+      "Failed to find TestEnum1::VALUE_C")
 
   Ref<Enum> enum2 = global_namespace->find_descendant<Enum>(
       BFS, NamedContextPredicates::name<Enum>("TestEnum2"));
   GOC_TEST_ASSERT(enum2, "Failed to find TestEnum2");
-  GOC_TEST_ASSERT(vector_contains(enum2->value_names(), "VALUE_D"),
-                  "Failed to find TestEnum1::VALUE_D")
-  GOC_TEST_ASSERT(vector_contains(enum2->value_names(), "VALUE_E"),
-                  "Failed to find TestEnum1::VALUE_E")
-  GOC_TEST_ASSERT(vector_contains(enum2->value_names(), "VALUE_F"),
-                  "Failed to find TestEnum1::VALUE_F")
+  GOC_TEST_ASSERT(
+      vector_contains(enum2->value_names(), "VALUE_D"),
+      "Failed to find TestEnum1::VALUE_D")
+  GOC_TEST_ASSERT(
+      vector_contains(enum2->value_names(), "VALUE_E"),
+      "Failed to find TestEnum1::VALUE_E")
+  GOC_TEST_ASSERT(
+      vector_contains(enum2->value_names(), "VALUE_F"),
+      "Failed to find TestEnum1::VALUE_F")
 
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(EnumValueAssign) {
+GOC_TEST(EnumValueAssign)
+{
   using namespace GodotObjectCompiler;
   GOC_TEST_PARSE_FILE("tests/files/enum_tests/enum_value_assign.h")
 

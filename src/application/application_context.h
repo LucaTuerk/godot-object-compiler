@@ -37,12 +37,14 @@
 #include "library/core/core.h"
 #include "project.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class IProgram;
 
-class ApplicationContext {
- public:
+class ApplicationContext
+{
+public:
   String project_name;
   ProjectTarget project_target = ProjectTarget::TARGET_GDEXTENSION;
 
@@ -64,4 +66,4 @@ class ApplicationContext {
   bool validate() const;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

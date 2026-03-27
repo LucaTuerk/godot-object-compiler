@@ -40,50 +40,58 @@
 #include "literal.h"
 #include "member.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class Type;
 
-class Arguments : public Context {
+class Arguments : public Context
+{
   NODE_TYPE(Arguments);
 };
 
-class Argument : public Context {
+class Argument : public Context
+{
   NODE_TYPE(Argument);
 };
 
-class Parameters : public Context {
+class Parameters : public Context
+{
   NODE_TYPE(Parameters);
 };
 
-class TemplateParameters : public Context {
+class TemplateParameters : public Context
+{
   NODE_TYPE(TemplateParameters);
 };
 
-class TemplateArguments : public Context {
+class TemplateArguments : public Context
+{
   NODE_TYPE(TemplateArguments);
 };
 
-class Parameter : public NamedContext {
+class Parameter : public NamedContext
+{
   NODE_TYPE(Parameter);
 
- public:
+public:
   LAZY(Parameter, Ref<Type>, type)
   LAZY(Parameter, Ref<Literal>, default_value);
 };
 
-class Function : public Member {
+class Function : public Member
+{
   NODE_TYPE(Function);
 
- public:
+public:
   /* child nodes */
   LAZY(Function, Ref<Type>, type);
   LAZY(Function, Ref<Parameters>, parameters);
   LAZY(Function, Ref<Arguments>, arguments);
   LAZY(Function, Vector<Ref<Literal>>, default_values);
 
- public:
+public:
   bool copy_to(const Ref<Node>& p_other) const override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

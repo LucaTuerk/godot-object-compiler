@@ -37,7 +37,8 @@
 #include "library/core/core.h"
 #include "library/core/reader_writer.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 enum ProjectTarget {
   TARGET_MODULE,
@@ -62,10 +63,10 @@ struct Project {
 
   bool write_to_file(const String& p_path);
 
- private:
+private:
   static Vector<String> from_comma_separated_string(const String& p_str);
 
   String to_comma_separated_string(const Vector<String>& p_str);
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

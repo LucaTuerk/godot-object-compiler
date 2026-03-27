@@ -37,15 +37,18 @@
 
 #include "parser_context.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-TreeSitterNode::Point::Point(const TSPoint& point) {
+TreeSitterNode::Point::Point(const TSPoint& point)
+{
   row = point.row;
   column = point.column;
 }
 
-TreeSitterNode::TreeSitterNode(const TSNode& node,
-                               ParserContext* parser_context) {
+TreeSitterNode::TreeSitterNode(
+    const TSNode& node, ParserContext* parser_context)
+{
   context = parser_context;
   type = ts_node_type(node);
   start_byte = ts_node_start_byte(node);
@@ -56,8 +59,8 @@ TreeSitterNode::TreeSitterNode(const TSNode& node,
 
 String TreeSitterNode::to_string() const { return type; }
 
-bool TreeSitterNode::type_in(
-    std::initializer_list<String>&& p_type_names) const {
+bool TreeSitterNode::type_in(std::initializer_list<String>&& p_type_names) const
+{
   return std::find(p_type_names.begin(), p_type_names.end(), type) !=
          p_type_names.end();
 }
@@ -66,7 +69,8 @@ bool TreeSitterNode::is_handled() const { return handled; }
 
 void TreeSitterNode::set_handled(bool p_handled) { this->handled = p_handled; }
 
-bool TreeSitterNode::copy_to(const Ref<Node>& p_other) const {
+bool TreeSitterNode::copy_to(const Ref<Node>& p_other) const
+{
   COPY_GUARD(TreeSitterNode, Context)
 
   target->context = context;
@@ -78,8 +82,9 @@ bool TreeSitterNode::copy_to(const Ref<Node>& p_other) const {
   return true;
 }
 
-String TreeSitterNode::_content_lazy_get() const {
+String TreeSitterNode::_content_lazy_get() const
+{
   return context->buffer.substr(start_byte, end_byte - start_byte);
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

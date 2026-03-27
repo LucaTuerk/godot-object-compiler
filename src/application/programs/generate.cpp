@@ -39,9 +39,11 @@
 #include "generate_type_db.h"
 #include "library/core/file_system_utilities.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Ref<ProgramError> Generate::run(ApplicationContext& p_context) {
+Ref<ProgramError> Generate::run(ApplicationContext& p_context)
+{
   GenerateTypeDB generate_type_db;
   Ref<ProgramError> generate_type_db_error = generate_type_db.run(p_context);
   if (generate_type_db_error != ProgramError::OK) {
@@ -57,4 +59,4 @@ Ref<ProgramError> Generate::run(ApplicationContext& p_context) {
   return ProgramError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

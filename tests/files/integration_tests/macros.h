@@ -37,15 +37,16 @@
 #include "macros.generated.h"
 
 GODOT_CLASS(GodotClass, LevelScene);
-class A {
+class A
+{
   GODOT_GENERATED_BODY();
 
   GODOT_CATEGORY("A");
   GODOT_GROUP("B");
   GODOT_SUBGROUP("C");
 
-  GODOT_PROPERTY(VariantTypeInt, HintNone(), UsageDefault, PublicGet,
-                 PrivateSet);
+  GODOT_PROPERTY(
+      VariantTypeInt, HintNone(), UsageDefault, PublicGet, PrivateSet);
   int property;
 
   GODOT_FUNCTION(NoVirtual, Disabled, Reliable, CallRemote, Channel(0));

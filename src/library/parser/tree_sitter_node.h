@@ -38,14 +38,16 @@
 #include "library/core/string_utilities.h"
 #include "library/tree/syntax/context.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 struct ParserContext;
 
-class TreeSitterNode : public Context {
+class TreeSitterNode : public Context
+{
   NODE_TYPE(TreeSitterNode);
 
- public:
+public:
   struct Point {
     Size row = 0;
     Size column = 0;
@@ -77,28 +79,32 @@ class TreeSitterNode : public Context {
   LAZY(TreeSitterNode, String, content);
 };
 
-inline Predicate<TreeSitterNode> type_is(const String& p_type) {
+inline Predicate<TreeSitterNode> type_is(const String& p_type)
+{
   return [p_type](Ref<TreeSitterNode> node) { return node->type == p_type; };
 }
 
-inline Predicate<TreeSitterNode> type_suffix(const String& p_suffix) {
+inline Predicate<TreeSitterNode> type_suffix(const String& p_suffix)
+{
   return [p_suffix](Ref<TreeSitterNode> node) {
     return string_suffix(node->type, p_suffix);
   };
 }
 
-inline Predicate<TreeSitterNode> type_contains(const String& p_search) {
+inline Predicate<TreeSitterNode> type_contains(const String& p_search)
+{
   return [p_search](Ref<TreeSitterNode> node) {
     return string_contains(node->type, p_search);
   };
 }
 
-inline Predicate<TreeSitterNode> type_in(
-    std::initializer_list<String>&& p_types) {
+inline Predicate<TreeSitterNode>
+type_in(std::initializer_list<String>&& p_types)
+{
   return [p_types](Ref<TreeSitterNode> node) {
     return std::find(p_types.begin(), p_types.end(), node->type) !=
            p_types.end();
   };
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

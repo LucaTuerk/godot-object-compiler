@@ -39,12 +39,14 @@
 #include "library/core/core.h"
 #include "library/tree/syntax/function.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class Argument;
 
-class IAttributeParameterType : public IAssumptionValidator<String> {
- public:
+class IAttributeParameterType : public IAssumptionValidator<String>
+{
+public:
   virtual ~IAttributeParameterType() = default;
 
   enum ArgumentType {
@@ -74,12 +76,13 @@ class IAttributeParameterType : public IAssumptionValidator<String> {
 
   virtual bool is_builtin() { return false; }
 
-  AssumptionState validate_assumption(
-      Assumption<std::string>& p_assumption) override;
+  AssumptionState
+  validate_assumption(Assumption<std::string>& p_assumption) override;
 };
 
-inline AssumptionState IAttributeParameterType::validate_assumption(
-    Assumption<String>& p_assumption) {
+inline AssumptionState
+IAttributeParameterType::validate_assumption(Assumption<String>& p_assumption)
+{
   if (Vector<String> values = get_value_names(); !vector_contains(
           values, UNSAFE_VALUE_EXTRACTOR::GET_VERY_UNSAFELY(p_assumption))) {
     return STATE_INVALID;
@@ -88,18 +91,20 @@ inline AssumptionState IAttributeParameterType::validate_assumption(
   return STATE_VALID;
 }
 
-#define PARAM_TYPE(param_type, argument_type)                     \
- public:                                                          \
-  static Ref<param_type> instance() {                             \
-    static Ref<param_type> instance = make_ref<param_type>();     \
-    return instance;                                              \
-  }                                                               \
-  String get_type() override { return #param_type; }              \
-  static String get_type_static() { return #param_type; }         \
-  Ref<GodotObjectCompiler::Argument> create_argument() override { \
-    return node_new<argument_type>();                             \
-  }                                                               \
-                                                                  \
- private:
+#define PARAM_TYPE(param_type, argument_type)                                  \
+public:                                                                        \
+  static Ref<param_type> instance()                                            \
+  {                                                                            \
+    static Ref<param_type> instance = make_ref<param_type>();                  \
+    return instance;                                                           \
+  }                                                                            \
+  String get_type() override { return #param_type; }                           \
+  static String get_type_static() { return #param_type; }                      \
+  Ref<GodotObjectCompiler::Argument> create_argument() override                \
+  {                                                                            \
+    return node_new<argument_type>();                                          \
+  }                                                                            \
+                                                                               \
+private:
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

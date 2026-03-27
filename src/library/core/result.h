@@ -36,13 +36,14 @@
 #pragma once
 #include "core.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 class Error;
 class Node;
 
-template <typename ResultT, typename ErrorT = Error>
-class Result {
- public:
+template <typename ResultT, typename ErrorT = Error> class Result
+{
+public:
   Result(const Ref<ResultT>& p_result);
   Result(const Ref<ErrorT>& p_error);
 
@@ -54,31 +55,35 @@ class Result {
   bool has_error() const;
   bool has_result() const;
 
- private:
+private:
   bool _has_result = false;
   Ref<Node> _data;
 };
 
 template <typename ResultT, typename ErrorT>
-Result<ResultT, ErrorT>::Result(const Ref<ResultT>& p_result) {
+Result<ResultT, ErrorT>::Result(const Ref<ResultT>& p_result)
+{
   _data = p_result;
   _has_result = true;
 }
 
 template <typename ResultT, typename ErrorT>
-Result<ResultT, ErrorT>::Result(const Ref<ErrorT>& p_error) {
+Result<ResultT, ErrorT>::Result(const Ref<ErrorT>& p_error)
+{
   _data = p_error;
   _has_result = false;
 }
 
 template <typename ResultT, typename ErrorT>
-Ref<ResultT> Result<ResultT, ErrorT>::get_result() const {
+Ref<ResultT> Result<ResultT, ErrorT>::get_result() const
+{
   PANIC_COND(!_has_result, "Invalid result access.");
   return std::dynamic_pointer_cast<ResultT>(_data);
 }
 
 template <typename ResultT, typename ErrorT>
-bool Result<ResultT, ErrorT>::get_result(Ref<ResultT>& r_result) const {
+bool Result<ResultT, ErrorT>::get_result(Ref<ResultT>& r_result) const
+{
   if (!_has_result) {
     r_result = nullptr;
     return false;
@@ -88,13 +93,15 @@ bool Result<ResultT, ErrorT>::get_result(Ref<ResultT>& r_result) const {
 }
 
 template <typename ResultT, typename ErrorT>
-Ref<ErrorT> Result<ResultT, ErrorT>::get_error() const {
+Ref<ErrorT> Result<ResultT, ErrorT>::get_error() const
+{
   PANIC_COND(_has_result, "Invalid error access.");
   return std::dynamic_pointer_cast<ErrorT>(_data);
 }
 
 template <typename ResultT, typename ErrorT>
-bool Result<ResultT, ErrorT>::get_error(Ref<ErrorT>& r_error) const {
+bool Result<ResultT, ErrorT>::get_error(Ref<ErrorT>& r_error) const
+{
   if (_has_result) {
     r_error = nullptr;
     return false;
@@ -104,18 +111,20 @@ bool Result<ResultT, ErrorT>::get_error(Ref<ErrorT>& r_error) const {
 }
 
 template <typename ResultT, typename ErrorT>
-bool Result<ResultT, ErrorT>::has_error() const {
+bool Result<ResultT, ErrorT>::has_error() const
+{
   return !_has_result;
 }
 
 template <typename ResultT, typename ErrorT>
-bool Result<ResultT, ErrorT>::has_result() const {
+bool Result<ResultT, ErrorT>::has_result() const
+{
   return _has_result;
 }
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
-#define RESULT_ERROR_PASS_ON(type, result, unwrapped_name) \
-  if (result.has_error()) {                                \
-    return ERROR_CAST(type, result.get_error());           \
-  }                                                        \
+#define RESULT_ERROR_PASS_ON(type, result, unwrapped_name)                     \
+  if (result.has_error()) {                                                    \
+    return ERROR_CAST(type, result.get_error());                               \
+  }                                                                            \
   auto unwrapped_name = result.get_result();

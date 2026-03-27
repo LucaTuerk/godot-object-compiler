@@ -37,7 +37,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_TEST(AddChildrenTest) {
+GOC_TEST(AddChildrenTest)
+{
   Ref<Context> context = node_new<Context>();
 
   for (Size i = 0; i < 1000; ++i) {
@@ -52,7 +53,8 @@ GOC_TEST(AddChildrenTest) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(RemoveChildrenTest) {
+GOC_TEST(RemoveChildrenTest)
+{
   Ref<Context> context = node_new<Context>();
 
   for (Size i = 0; i < 1000; ++i) {
@@ -69,7 +71,8 @@ GOC_TEST(RemoveChildrenTest) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(ReparentTest) {
+GOC_TEST(ReparentTest)
+{
   Ref<Context> a = node_new<Context>();
   Ref<Context> b = node_new<Context>();
 
@@ -88,7 +91,8 @@ GOC_TEST(ReparentTest) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(NeighborsTest) {
+GOC_TEST(NeighborsTest)
+{
   Ref<Context> context = node_new<Context>();
 
   for (Size i = 0; i < 1000; ++i) {

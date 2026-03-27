@@ -36,12 +36,14 @@
 #include "library/core/config.h"
 #include "node.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class AccessSpecifier : public Node {
+class AccessSpecifier : public Node
+{
   NODE_TYPE(AccessSpecifier);
 
- public:
+public:
   enum Type { PUBLIC, PRIVATE, PROTECTED };
 
   explicit AccessSpecifier(Type type) : type(type) {}
@@ -53,4 +55,4 @@ class AccessSpecifier : public Node {
   Type type = PUBLIC;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

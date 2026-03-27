@@ -37,10 +37,12 @@
 #include "library/core/core.h"
 #include "tree_sitter_node.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class ParserStep {
- public:
+class ParserStep
+{
+public:
   enum StepType {
     TYPE_NONE,
     TYPE_UNDECIDED,
@@ -62,58 +64,66 @@ class ParserStep {
   [[nodiscard]] bool is_step_out() const;
   bool is_go_to(Ref<TreeSitterNode>& p_target) const;
 
- private:
+private:
   ParserStep(StepType type, const Ref<TreeSitterNode>& goto_target)
-      : type(type), goto_target(goto_target) {}
+      : type(type), goto_target(goto_target)
+  {
+  }
 
   StepType type = TYPE_NONE;
   Ref<TreeSitterNode> goto_target = nullptr;
 };
 
-class INodeHandler {
- public:
+class INodeHandler
+{
+public:
   virtual ~INodeHandler() = default;
 
   virtual String get_type() = 0;
-  virtual bool handles_node(
-      [[maybe_unused]] const Ref<TreeSitterNode>& p_current_src) = 0;
+  virtual bool
+  handles_node([[maybe_unused]] const Ref<TreeSitterNode>& p_current_src) = 0;
   virtual ParserStep handle(
       [[maybe_unused]] const Ref<TreeSitterNode>& p_current_src,
       [[maybe_unused]] Ref<Context>& r_current_target) = 0;
 };
 
-template <typename T>
-class SkipHandler : public INodeHandler {
- public:
+template <typename T> class SkipHandler : public INodeHandler
+{
+public:
   bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
-  ParserStep handle(const Ref<TreeSitterNode>& p_current_src,
-                    Ref<Context>& r_current_target) override;
+  ParserStep handle(
+      const Ref<TreeSitterNode>& p_current_src,
+      Ref<Context>& r_current_target) override;
+};
+
+template <typename T> class IntoHandler : public INodeHandler
+{
+public:
+  bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
+  ParserStep handle(
+      const Ref<TreeSitterNode>& p_current_src,
+      Ref<Context>& r_current_target) override;
+};
+
+template <typename T, typename G> class GenerateHandler : public INodeHandler
+{
+public:
+  bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
+  ParserStep handle(
+      const Ref<TreeSitterNode>& p_current_src,
+      Ref<Context>& r_current_target) override;
 };
 
 template <typename T>
-class IntoHandler : public INodeHandler {
- public:
-  bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
-  ParserStep handle(const Ref<TreeSitterNode>& p_current_src,
-                    Ref<Context>& r_current_target) override;
-};
-
-template <typename T, typename G>
-class GenerateHandler : public INodeHandler {
- public:
-  bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
-  ParserStep handle(const Ref<TreeSitterNode>& p_current_src,
-                    Ref<Context>& r_current_target) override;
-};
-
-template <typename T>
-bool SkipHandler<T>::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool SkipHandler<T>::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type == T::skip_type;
 }
 
 template <typename T>
-ParserStep SkipHandler<T>::handle(const Ref<TreeSitterNode>& p_current_src,
-                                  Ref<Context>& r_current_target) {
+ParserStep SkipHandler<T>::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   UNUSED(p_current_src);
   UNUSED(r_current_target);
 
@@ -121,13 +131,15 @@ ParserStep SkipHandler<T>::handle(const Ref<TreeSitterNode>& p_current_src,
 }
 
 template <typename T>
-bool IntoHandler<T>::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool IntoHandler<T>::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type == T::into_type;
 }
 
 template <typename T>
-ParserStep IntoHandler<T>::handle(const Ref<TreeSitterNode>& p_current_src,
-                                  Ref<Context>& r_current_target) {
+ParserStep IntoHandler<T>::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   UNUSED(p_current_src);
   UNUSED(r_current_target);
 
@@ -136,24 +148,26 @@ ParserStep IntoHandler<T>::handle(const Ref<TreeSitterNode>& p_current_src,
 
 template <typename T, typename G>
 bool GenerateHandler<T, G>::handles_node(
-    const Ref<TreeSitterNode>& p_current_src) {
+    const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type == T::generate_type;
 }
 
 template <typename T, typename G>
 ParserStep GenerateHandler<T, G>::handle(
-    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   UNUSED(p_current_src);
   r_current_target->create_child<G>();
   return T::next_step;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
-#define NODE_HANDLER(name)                       \
- public:                                         \
-  String get_type() override { return #name; }   \
-                                                 \
- private:                                        \
-  static inline bool __registered__##name##___ = \
+#define NODE_HANDLER(name)                                                     \
+public:                                                                        \
+  String get_type() override { return #name; }                                 \
+                                                                               \
+private:                                                                       \
+  static inline bool __registered__##name##___ =                               \
       TreeSitterParser::register_handler<name>(#name);

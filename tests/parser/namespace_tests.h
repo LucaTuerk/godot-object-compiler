@@ -38,7 +38,8 @@
 #include "library/tree/syntax//namespace.h"
 #include "test_registry.h"
 
-GOC_TEST(ParserSimpleNamespace) {
+GOC_TEST(ParserSimpleNamespace)
+{
   using namespace GodotObjectCompiler;
   TreeSitterParser parser;
 
@@ -48,14 +49,15 @@ GOC_TEST(ParserSimpleNamespace) {
 
   Vector<Ref<Namespace>> namespaces =
       global_namespace->find_children<Namespace>(true);
-  GOC_TEST_EQ(namespaces.size(), 1,
-              "Invalid namespace count in parsed result!");
+  GOC_TEST_EQ(
+      namespaces.size(), 1, "Invalid namespace count in parsed result!");
 
   GOC_TEST_EQ(namespaces[0]->name(), "A", "Invalid name for parsed namespace!");
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(ParserNestedNamespace) {
+GOC_TEST(ParserNestedNamespace)
+{
   using namespace GodotObjectCompiler;
   TreeSitterParser parser;
 
@@ -66,8 +68,8 @@ GOC_TEST(ParserNestedNamespace) {
 
   Vector<Ref<Namespace>> namespaces =
       global_namespace->find_children<Namespace>(true);
-  GOC_TEST_EQ(namespaces.size(), 2,
-              "Invalid namespace count in parsed result!");
+  GOC_TEST_EQ(
+      namespaces.size(), 2, "Invalid namespace count in parsed result!");
 
   Ref<Namespace> namespacesA = global_namespace->find_descendant<Namespace>(
       BFS, NamedContextPredicates::name<Namespace>("A"));
@@ -75,13 +77,15 @@ GOC_TEST(ParserNestedNamespace) {
   Ref<Namespace> namespacesB = global_namespace->find_descendant<Namespace>(
       BFS, NamedContextPredicates::name<Namespace>("B"));
   GOC_TEST_ASSERT(namespacesB, "Failed to find inner namespace of name B");
-  GOC_TEST_EQ(namespacesB->qualified_name(), "A::B",
-              "Invalid qualified name for inner namespace B")
+  GOC_TEST_EQ(
+      namespacesB->qualified_name(), "A::B",
+      "Invalid qualified name for inner namespace B")
 
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(ParseNestedNamespaces2) {
+GOC_TEST(ParseNestedNamespaces2)
+{
   using namespace GodotObjectCompiler;
   using namespace NamedContextPredicates;
   GOC_TEST_PARSE_FILE("tests/files/namespace_tests/10_nested_namespaces.h")
@@ -122,26 +126,28 @@ GOC_TEST(ParseNestedNamespaces2) {
   GOC_TEST_ASSERT(I, "Failed to find namespace I.")
   GOC_TEST_ASSERT(J, "Failed to find namespace J.")
 
-  GOC_TEST_EQ(A->qualified_name(), "A",
-              "Invalid qualified name for namespace A");
-  GOC_TEST_EQ(B->qualified_name(), "A::B",
-              "Invalid qualified name for namespace B");
-  GOC_TEST_EQ(C->qualified_name(), "A::B::C",
-              "Invalid qualified name for namespace C");
-  GOC_TEST_EQ(D->qualified_name(), "A::D",
-              "Invalid qualified name for namespace D");
-  GOC_TEST_EQ(E->qualified_name(), "A::E",
-              "Invalid qualified name for namespace E");
-  GOC_TEST_EQ(F->qualified_name(), "F",
-              "Invalid qualified name for namespace F");
-  GOC_TEST_EQ(G->qualified_name(), "F::G",
-              "Invalid qualified name for namespace G");
-  GOC_TEST_EQ(H->qualified_name(), "F::G::H",
-              "Invalid qualified name for namespace H");
-  GOC_TEST_EQ(I->qualified_name(), "F::G::H::I",
-              "Invalid qualified name for namespace I");
-  GOC_TEST_EQ(J->qualified_name(), "F::G::H::J",
-              "Invalid qualified name for namespace J");
+  GOC_TEST_EQ(
+      A->qualified_name(), "A", "Invalid qualified name for namespace A");
+  GOC_TEST_EQ(
+      B->qualified_name(), "A::B", "Invalid qualified name for namespace B");
+  GOC_TEST_EQ(
+      C->qualified_name(), "A::B::C", "Invalid qualified name for namespace C");
+  GOC_TEST_EQ(
+      D->qualified_name(), "A::D", "Invalid qualified name for namespace D");
+  GOC_TEST_EQ(
+      E->qualified_name(), "A::E", "Invalid qualified name for namespace E");
+  GOC_TEST_EQ(
+      F->qualified_name(), "F", "Invalid qualified name for namespace F");
+  GOC_TEST_EQ(
+      G->qualified_name(), "F::G", "Invalid qualified name for namespace G");
+  GOC_TEST_EQ(
+      H->qualified_name(), "F::G::H", "Invalid qualified name for namespace H");
+  GOC_TEST_EQ(
+      I->qualified_name(), "F::G::H::I",
+      "Invalid qualified name for namespace I");
+  GOC_TEST_EQ(
+      J->qualified_name(), "F::G::H::J",
+      "Invalid qualified name for namespace J");
 
   return TEST_RESULT_SUCCESS;
 };

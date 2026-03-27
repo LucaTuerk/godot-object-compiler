@@ -1,6 +1,8 @@
-BasedOnStyle: Google
+BasedOnStyle: LLVM
 Standard: c++17
 PointerAlignment: Left
+AlignAfterOpenBracket: AlwaysBreak
+BreakBeforeBraces: Linux
 TypenameMacros:
   - GOC_TEST
   - GOC_INTEGRATION_TEST

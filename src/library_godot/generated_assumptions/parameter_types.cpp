@@ -41,9 +41,12 @@
 #include "library_godot/attributes/godot_rpc.h"
 #include "library_godot/attributes/godot_variant_type.h"
 #include "library_godot/attributes/godot_virtual.h"
-namespace GodotObjectCompiler {
-namespace AssumedParameterValues {
-bool validate_assumptions() {
+namespace GodotObjectCompiler
+{
+namespace AssumedParameterValues
+{
+bool validate_assumptions()
+{
   bool success = true;
 
   {
@@ -250,5 +253,5 @@ bool validate_assumptions() {
   }
   return success;
 }
-}  // namespace AssumedParameterValues
-}  // namespace GodotObjectCompiler
+} // namespace AssumedParameterValues
+} // namespace GodotObjectCompiler

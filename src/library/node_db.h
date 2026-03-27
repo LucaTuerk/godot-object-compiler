@@ -35,26 +35,27 @@
 #pragma once
 #include "core/core.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class Node;
 class ExecutionContext;
 
-class NodeDB {
- private:
-  struct Private {};
+class NodeDB
+{
+private:
+  struct Private {
+  };
 
- public:
+public:
   UID request_id_change(UID p_from, UID p_to = INVALID_ID);
 
-  template <typename T, typename... Args>
-  Ref<T> create(Args&&... p_args);
+  template <typename T, typename... Args> Ref<T> create(Args&&... p_args);
 
   template <typename T, typename... Args>
   Ref<T> create_with_id(UID p_uid, Args&&... p_args);
 
-  template <typename T>
-  Ref<T> get(UID p_uid);
+  template <typename T> Ref<T> get(UID p_uid);
 
   using NodeCreator = Creator<Node>;
 
@@ -66,7 +67,7 @@ class NodeDB {
   NodeDB(Private) {}
   ~NodeDB();
 
- private:
+private:
   static inline HashSet<UID> _uids{};
 
   static UID _generate_unique_id();
@@ -80,14 +81,15 @@ class NodeDB {
   friend ExecutionContext;
 };
 
-template <typename T, typename... Args>
-Ref<T> NodeDB::create(Args&&... p_args) {
-  return create_with_id<T, Args...>(_generate_unique_id(),
-                                    std::forward<Args>(p_args)...);
+template <typename T, typename... Args> Ref<T> NodeDB::create(Args&&... p_args)
+{
+  return create_with_id<T, Args...>(
+      _generate_unique_id(), std::forward<Args>(p_args)...);
 }
 
 template <typename T, typename... Args>
-Ref<T> NodeDB::create_with_id(UID p_uid, Args&&... p_args) {
+Ref<T> NodeDB::create_with_id(UID p_uid, Args&&... p_args)
+{
   p_uid = p_uid == INVALID_ID ? _generate_unique_id() : p_uid;
 
   if (const auto itr = _nodes.find(p_uid); itr != _nodes.end()) {
@@ -103,8 +105,8 @@ Ref<T> NodeDB::create_with_id(UID p_uid, Args&&... p_args) {
   return node;
 }
 
-template <typename T>
-Ref<T> NodeDB::get(UID p_uid) {
+template <typename T> Ref<T> NodeDB::get(UID p_uid)
+{
   if (p_uid == INVALID_ID) {
     return nullptr;
   }
@@ -116,4 +118,4 @@ Ref<T> NodeDB::get(UID p_uid) {
   return nullptr;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

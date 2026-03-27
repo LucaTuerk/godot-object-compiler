@@ -36,7 +36,8 @@
 #pragma once
 #include "core.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 String hash_string(Hash p_hash);
 
@@ -54,14 +55,16 @@ bool string_enclosed_by(const String& p_content, const String& p_prefix);
 
 bool string_only_contains(const String& p_content, char p_char);
 
-String string_vector_combine(const Vector<String>& p_vector,
-                             String p_delimiter);
+String
+string_vector_combine(const Vector<String>& p_vector, String p_delimiter);
 
-String string_replace(const String& p_target, const String& p_search_str,
-                      const String& p_replace_with);
+String string_replace(
+    const String& p_target, const String& p_search_str,
+    const String& p_replace_with);
 
-String extract_lines(const String& p_content, Size p_start_line,
-                     Size p_end_line, Size p_highlight_line);
+String extract_lines(
+    const String& p_content, Size p_start_line, Size p_end_line,
+    Size p_highlight_line);
 
 String string_trim(const String& p_content);
 
@@ -87,9 +90,10 @@ String macro_case_to_pascal_case(const String& p_content);
 
 String cpp_enum_case_to_exposed_enum_case(const String& p_content);
 
-Vector<String> string_split(const String& p_content, const String& p_delimiter,
-                            bool p_leave_empty = false);
+Vector<String> string_split(
+    const String& p_content, const String& p_delimiter,
+    bool p_leave_empty = false);
 
 Vector<String> string_split_length(const String& p_content, Size length);
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

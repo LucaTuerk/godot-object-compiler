@@ -42,14 +42,17 @@
 #include "library/tree/syntax/node.h"
 #include "library/tree/syntax/parser_error.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool ErrorHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool ErrorHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type == "ERROR";
 }
 
-ParserStep ErrorHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                                Ref<Context>& r_current_target) {
+ParserStep ErrorHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   Vector<Ref<TreeSitterNode>> children =
       p_current_src->find_children<TreeSitterNode>();
 
@@ -63,8 +66,9 @@ ParserStep ErrorHandler::handle(const Ref<TreeSitterNode>& p_current_src,
     return ParserStep::StepOver();
   }
 
-  if (std::all_of(children.begin(), children.end(),
-                  type_in({"function_declarator", "field_declarator"}))) {
+  if (std::all_of(
+          children.begin(), children.end(),
+          type_in({"function_declarator", "field_declarator"}))) {
     return ParserStep::StepOver();
   }
 
@@ -76,4 +80,4 @@ ParserStep ErrorHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   return ParserStep::StepOver();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -46,14 +46,17 @@
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool Help::validate_arguments(ApplicationContext& p_context) {
+bool Help::validate_arguments(ApplicationContext& p_context)
+{
   UNUSED(p_context);
   return true;
 }
 
-Ref<ProgramError> Help::run(ApplicationContext& p_context) {
+Ref<ProgramError> Help::run(ApplicationContext& p_context)
+{
   UNUSED(p_context);
 
   Dictionary<ProgramPath, Ref<IProgram>> programs =
@@ -66,25 +69,29 @@ Ref<ProgramError> Help::run(ApplicationContext& p_context) {
   };
 
   struct ProgramPathHash {
-    size_t operator()(const ProgramPath& path) const {
+    size_t operator()(const ProgramPath& path) const
+    {
       return std::hash<String>()(string_vector_combine(path, ""));
     }
   };
 
   Vector<Pair<ProgramPath, Ref<IProgram>>> programs_sorted;
-  std::copy(programs.begin(), programs.end(),
-            std::back_inserter(programs_sorted));
+  std::copy(
+      programs.begin(), programs.end(), std::back_inserter(programs_sorted));
   std::sort(programs_sorted.begin(), programs_sorted.end(), cmp);
 
   if (p_context.program_arguments.empty()) {
-    print_title(format("Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION,
-                       GOC_MINOR_VERSION, GOC_VERSION_NAME),
-                100);
+    print_title(
+        format(
+            "Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION,
+            GOC_MINOR_VERSION, GOC_VERSION_NAME),
+        100);
     print_ln("");
 
     if (Resources::instance()->has_resource("res://help/header_content.txt")) {
-      print_ln(Resources::instance()->load_text_resource(
-          "res://help/header_content.txt"));
+      print_ln(
+          Resources::instance()->load_text_resource(
+              "res://help/header_content.txt"));
     }
 
     print_title("PROGRAMS", 100);
@@ -137,8 +144,8 @@ Ref<ProgramError> Help::run(ApplicationContext& p_context) {
     }
 
     print_ln("");
-    print_help_columns({30, identifier_writer.get_string()},
-                       {70, get_help_text(path)});
+    print_help_columns(
+        {30, identifier_writer.get_string()}, {70, get_help_text(path)});
 
     written.insert(path);
   }
@@ -146,7 +153,8 @@ Ref<ProgramError> Help::run(ApplicationContext& p_context) {
   return ProgramError::OK;
 }
 
-void Help::print_title(const String& p_title, Size width) {
+void Help::print_title(const String& p_title, Size width)
+{
   if (p_title.size() + 4 >= width) {
     print_ln(p_title);
   }
@@ -168,7 +176,8 @@ void Help::print_title(const String& p_title, Size width) {
   print_ln(writer.get_string());
 }
 
-String Help::get_help_text(const ProgramPath& p_path) {
+String Help::get_help_text(const ProgramPath& p_path)
+{
   if (p_path.empty()) {
     return "";
   }
@@ -181,7 +190,8 @@ String Help::get_help_text(const ProgramPath& p_path) {
   return Resources::instance()->load_text_resource(res_path);
 }
 
-void Help::print_help_columns(const Column& column1, const Column& column2) {
+void Help::print_help_columns(const Column& column1, const Column& column2)
+{
   Vector<String> rows1;
   Vector<String> rows2;
 
@@ -207,4 +217,4 @@ void Help::print_help_columns(const Column& column1, const Column& column2) {
   }
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

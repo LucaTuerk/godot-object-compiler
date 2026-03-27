@@ -36,9 +36,11 @@
 
 #include "properties_emit_changed.generated.h"
 
-namespace Tests {
+namespace Tests
+{
 GODOT_CLASS();
-class PropertiesEmitChanged : public Node {
+class PropertiesEmitChanged : public Node
+{
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY(EmitChanged());
@@ -183,6 +185,6 @@ class PropertiesEmitChanged : public Node {
   GODOT_PROPERTY(EmitChanged());
   Enum enum_property = ENUM_VALUE;
 };
-}  // namespace Tests
+} // namespace Tests
 
 GODOT_GENERATED_GLOBAL();

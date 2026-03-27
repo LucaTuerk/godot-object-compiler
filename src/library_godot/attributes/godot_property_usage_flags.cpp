@@ -41,28 +41,34 @@
 #include "library/type_db.h"
 #include "library_godot/assumptions.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 IAttributeParameterType::FeatureFlags
-GodotPropertyUsageFlagsParameterType::get_features() {
+GodotPropertyUsageFlagsParameterType::get_features()
+{
   return FEATURE_FLAG;
 }
 
-String GodotPropertyUsageFlagsParameterType::get_return_type() {
+String GodotPropertyUsageFlagsParameterType::get_return_type()
+{
   return "GOC_PropertyUsageFlags";
 }
 
-Vector<String> GodotPropertyUsageFlagsParameterType::get_value_names() {
+Vector<String> GodotPropertyUsageFlagsParameterType::get_value_names()
+{
   return value_names();
 }
 
 Vector<IAttributeParameterType::Argument>
-GodotPropertyUsageFlagsParameterType::get_arguments() {
+GodotPropertyUsageFlagsParameterType::get_arguments()
+{
   return {};
 }
 
 bool GodotPropertyUsageFlagsParameterType::get_godot_usage_flag_for_value_name(
-    const String& p_name, String& r_usage_flag) {
+    const String& p_name, String& r_usage_flag)
+{
   _value_names_lazy.poke();
 
   if (const auto itr = _godot_usage_flags.find(p_name);
@@ -74,7 +80,8 @@ bool GodotPropertyUsageFlagsParameterType::get_godot_usage_flag_for_value_name(
   return false;
 }
 
-Vector<String> GodotPropertyUsageFlagsParameterType::_value_names_lazy_get() {
+Vector<String> GodotPropertyUsageFlagsParameterType::_value_names_lazy_get()
+{
   const Ref<Enum> prop_use_enum =
       AssumedGodotTypes::PropertyUsageFlagsEnum().type;
   if (!prop_use_enum) {
@@ -91,8 +98,9 @@ Vector<String> GodotPropertyUsageFlagsParameterType::_value_names_lazy_get() {
   return return_value;
 }
 
-String GodotPropertyUsageFlagsArgument::_godot_property_usage_flag_lazy_get()
-    const {
+String
+GodotPropertyUsageFlagsArgument::_godot_property_usage_flag_lazy_get() const
+{
   const auto ptype = GodotPropertyUsageFlagsParameterType::instance();
 
   Ref<Identifier> identifier = find_child<Identifier>();
@@ -101,11 +109,11 @@ String GodotPropertyUsageFlagsArgument::_godot_property_usage_flag_lazy_get()
   }
 
   String usage_flag;
-  if (!ptype->get_godot_usage_flag_for_value_name(identifier->name,
-                                                  usage_flag)) {
+  if (!ptype->get_godot_usage_flag_for_value_name(
+          identifier->name, usage_flag)) {
     PANIC("Malformed PropertUsageFlagsArgument.");
   }
   return usage_flag;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

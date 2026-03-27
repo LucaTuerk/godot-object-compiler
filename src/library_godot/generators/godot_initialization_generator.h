@@ -38,12 +38,14 @@
 #include "library/tree/syntax/parser_error.h"
 #include "library_godot/attributes/godot_attributes.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class Class;
 
-class IGodotInitializationGenerator {
- public:
+class IGodotInitializationGenerator
+{
+public:
   virtual ~IGodotInitializationGenerator() = default;
 
   virtual Ref<GeneratorError> generate_initialization(
@@ -52,4 +54,4 @@ class IGodotInitializationGenerator {
       Ref<Context> p_uninitialize_content) = 0;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

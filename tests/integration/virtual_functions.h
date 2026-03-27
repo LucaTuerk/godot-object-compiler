@@ -40,7 +40,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(GenerateVirtualFunctionBinds) {
+GOC_INTEGRATION_TEST(GenerateVirtualFunctionBinds)
+{
   GOC_INTEGRATION_TEST_GEN_FILE(
       "tests/files/integration_tests/virtual_functions.h");
 
@@ -82,11 +83,11 @@ GOC_INTEGRATION_TEST(GenerateVirtualFunctionBinds) {
   GOC_ASSERT_FUNC_BOUND("packed_color_array_function");
   GOC_ASSERT_VIRTUAL_BOUND("packed_color_array_function", "PackedColorArray");
   GOC_ASSERT_FUNC_BOUND("packed_float32_array_function");
-  GOC_ASSERT_VIRTUAL_BOUND("packed_float32_array_function",
-                           "PackedFloat32Array");
+  GOC_ASSERT_VIRTUAL_BOUND(
+      "packed_float32_array_function", "PackedFloat32Array");
   GOC_ASSERT_FUNC_BOUND("packed_float64_array_function");
-  GOC_ASSERT_VIRTUAL_BOUND("packed_float64_array_function",
-                           "PackedFloat64Array");
+  GOC_ASSERT_VIRTUAL_BOUND(
+      "packed_float64_array_function", "PackedFloat64Array");
   GOC_ASSERT_FUNC_BOUND("packed_int32_array_function");
   GOC_ASSERT_VIRTUAL_BOUND("packed_int32_array_function", "PackedInt32Array");
   GOC_ASSERT_FUNC_BOUND("packed_int64_array_function");
@@ -94,14 +95,14 @@ GOC_INTEGRATION_TEST(GenerateVirtualFunctionBinds) {
   GOC_ASSERT_FUNC_BOUND("packed_string_array_function");
   GOC_ASSERT_VIRTUAL_BOUND("packed_string_array_function", "PackedStringArray");
   GOC_ASSERT_FUNC_BOUND("packed_vector2_array_function");
-  GOC_ASSERT_VIRTUAL_BOUND("packed_vector2_array_function",
-                           "PackedVector2Array");
+  GOC_ASSERT_VIRTUAL_BOUND(
+      "packed_vector2_array_function", "PackedVector2Array");
   GOC_ASSERT_FUNC_BOUND("packed_vector3_array_function");
-  GOC_ASSERT_VIRTUAL_BOUND("packed_vector3_array_function",
-                           "PackedVector3Array");
+  GOC_ASSERT_VIRTUAL_BOUND(
+      "packed_vector3_array_function", "PackedVector3Array");
   GOC_ASSERT_FUNC_BOUND("packed_vector4_array_function");
-  GOC_ASSERT_VIRTUAL_BOUND("packed_vector4_array_function",
-                           "PackedVector4Array");
+  GOC_ASSERT_VIRTUAL_BOUND(
+      "packed_vector4_array_function", "PackedVector4Array");
   GOC_ASSERT_FUNC_BOUND("plane_function");
   GOC_ASSERT_VIRTUAL_BOUND("plane_function", "Plane");
   GOC_ASSERT_FUNC_BOUND("projection_function");

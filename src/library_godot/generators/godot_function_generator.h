@@ -37,21 +37,23 @@
 #include "library/generator/generator.h"
 #include "library_godot/attributes/godot_attributes.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GodotFunctionGenerator : public IClassGenerator<GodotFunctionAttribute> {
+class GodotFunctionGenerator : public IClassGenerator<GodotFunctionAttribute>
+{
   GENERATOR(GodotFunctionGenerator)
 
- public:
+public:
   Ref<GeneratorError> do_generate_default_attribute_arguments(
       Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
       Ref<Context> p_default_values) override;
 
-  Ref<GeneratorError> do_generate(Ref<Class> p_target_class,
-                                  Ref<GodotFunctionAttribute> p_attribute,
-                                  ClassGeneratorResult& r_result) override;
+  Ref<GeneratorError> do_generate(
+      Ref<Class> p_target_class, Ref<GodotFunctionAttribute> p_attribute,
+      ClassGeneratorResult& r_result) override;
 
- private:
+private:
   static Ref<GeneratorError> generate_virtual(
       const Ref<Class>& p_target_class, const String& p_bind_name,
       const Ref<Function>& p_target_function,
@@ -69,4 +71,4 @@ class GodotFunctionGenerator : public IClassGenerator<GodotFunctionAttribute> {
 
 REGISTER_CLASS_GENERATOR(GodotFunctionGenerator)
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -35,7 +35,8 @@
 
 #include "node_handler.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 ParserStep ParserStep::Undecided() { return {TYPE_UNDECIDED, nullptr}; }
 
@@ -45,7 +46,8 @@ ParserStep ParserStep::StepOver() { return {TYPE_STEP_OVER, nullptr}; }
 
 ParserStep ParserStep::StepOut() { return {TYPE_STEP_OUT, nullptr}; }
 
-ParserStep ParserStep::GoTo(const Ref<TreeSitterNode>& target) {
+ParserStep ParserStep::GoTo(const Ref<TreeSitterNode>& target)
+{
   return {TYPE_GO_TO, target};
 }
 
@@ -57,7 +59,8 @@ bool ParserStep::is_step_over() const { return type == TYPE_STEP_OVER; }
 
 bool ParserStep::is_step_out() const { return type == TYPE_STEP_OUT; }
 
-bool ParserStep::is_go_to(Ref<TreeSitterNode>& p_target) const {
+bool ParserStep::is_go_to(Ref<TreeSitterNode>& p_target) const
+{
   const bool result = type == TYPE_GO_TO;
   if (result) {
     p_target = goto_target;
@@ -65,4 +68,4 @@ bool ParserStep::is_go_to(Ref<TreeSitterNode>& p_target) const {
   return result;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

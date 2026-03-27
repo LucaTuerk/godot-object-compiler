@@ -43,7 +43,8 @@
 
 #define x3(x) x, x, x
 
-GOC_TEST(ClassSimple) {
+GOC_TEST(ClassSimple)
+{
   using namespace GodotObjectCompiler;
   GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_class.h");
 
@@ -55,7 +56,8 @@ GOC_TEST(ClassSimple) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(ClassSimpleInheritance) {
+GOC_TEST(ClassSimpleInheritance)
+{
   using namespace GodotObjectCompiler;
   GOC_TEST_PARSE_FILE("tests/files/class_tests/simple_inheritance.h");
 
@@ -88,7 +90,8 @@ GOC_TEST(ClassSimpleInheritance) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(ClassMemberFunctions) {
+GOC_TEST(ClassMemberFunctions)
+{
   using namespace GodotObjectCompiler;
   GOC_TEST_PARSE_FILE("tests/files/class_tests/member_functions.h");
 
@@ -116,12 +119,12 @@ GOC_TEST(ClassMemberFunctions) {
       GOC_TEST_ASSERT(func->type(), "Failed to get return type");
       GOC_TEST_EQ(func->name(), names[i], "Wrong function name.")
 
-      GOC_TEST_EQ(func->type()->type_name(), return_types[i],
-                  "Wrong return type.")
+      GOC_TEST_EQ(
+          func->type()->type_name(), return_types[i], "Wrong return type.")
       if (!parameters[i].empty()) {
         GOC_TEST_ASSERT(func->parameters(), "Failed to get function arguments.")
-        GOC_TEST_EQ(func->parameters()->get_child_count(), 1,
-                    "Wrong parameter count.")
+        GOC_TEST_EQ(
+            func->parameters()->get_child_count(), 1, "Wrong parameter count.")
 
         Ref<Parameter> parameter =
             func->parameters()->get_child(0)->as<Parameter>();
@@ -130,8 +133,8 @@ GOC_TEST(ClassMemberFunctions) {
         Ref<Type> parameter_type = parameter->type();
         GOC_TEST_ASSERT(parameter_type, "Failed to get parameter type.")
 
-        GOC_TEST_EQ(parameter_type->type_name(), parameters[i],
-                    "Wrong parameter type.")
+        GOC_TEST_EQ(
+            parameter_type->type_name(), parameters[i], "Wrong parameter type.")
       }
       i++;
     }
@@ -140,7 +143,8 @@ GOC_TEST(ClassMemberFunctions) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(ClassMemberFields) {
+GOC_TEST(ClassMemberFields)
+{
   using namespace GodotObjectCompiler;
   GOC_TEST_PARSE_FILE("tests/files/class_tests/member_fields.h");
 
@@ -172,8 +176,9 @@ GOC_TEST(ClassMemberFields) {
       GOC_TEST_ASSERT(field->type(), "Failed to get field type");
       GOC_TEST_EQ(field->name(), names[i], "Wrong field name.")
       GOC_TEST_EQ(field->type()->type_name(), types[i], "Wrong field type.")
-      GOC_TEST_EQ(*field->access_specifier_type(), access_specifier[j],
-                  "Wrong access specifier.");
+      GOC_TEST_EQ(
+          *field->access_specifier_type(), access_specifier[j],
+          "Wrong access specifier.");
       i++;
       j++;
     }
@@ -182,7 +187,8 @@ GOC_TEST(ClassMemberFields) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(TemplateClass) {
+GOC_TEST(TemplateClass)
+{
   GOC_TEST_PARSE_FILE("tests/files/class_tests/template_class.h");
 
   Ref<Class> template_class = global_namespace->find_descendant<Class>(
@@ -192,8 +198,8 @@ GOC_TEST(TemplateClass) {
   Ref<TemplateParameters> template_parameters =
       template_class->find_child<TemplateParameters>();
   GOC_TEST_ASSERT(template_parameters, "TemplateParameters not found.");
-  GOC_TEST_EQ(template_parameters->get_child_count(), 1,
-              "Wrong parameter count.");
+  GOC_TEST_EQ(
+      template_parameters->get_child_count(), 1, "Wrong parameter count.");
 
   return TEST_RESULT_SUCCESS;
 };

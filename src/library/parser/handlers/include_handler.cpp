@@ -38,14 +38,17 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/include.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool IncludeHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool IncludeHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type == "preproc_include";
 }
 
-ParserStep IncludeHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                                  Ref<Context>& r_current_target) {
+ParserStep IncludeHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   Ref<TreeSitterNode> path = p_current_src->find_descendant(
       BFS, type_in({"string_content", "system_lib_string"}));
   HANDLER_ERROR_COND(!path, "Failed to get include path.")
@@ -59,4 +62,4 @@ ParserStep IncludeHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   return ParserStep::StepOver();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

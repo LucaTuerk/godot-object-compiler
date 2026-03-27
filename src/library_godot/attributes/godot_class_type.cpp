@@ -39,23 +39,28 @@
 #include "library/tree/syntax/define.h"
 #include "library_godot/assumptions.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String GodotClassTypeParameterType::get_return_type() {
+String GodotClassTypeParameterType::get_return_type()
+{
   return "GOC_GodotClassType";
 }
 
-Vector<String> GodotClassTypeParameterType::get_value_names() {
+Vector<String> GodotClassTypeParameterType::get_value_names()
+{
   return value_names();
 }
 
 Vector<IAttributeParameterType::Argument>
-GodotClassTypeParameterType::get_arguments() {
+GodotClassTypeParameterType::get_arguments()
+{
   return {};
 }
 
 bool GodotClassTypeParameterType::get_macro_for_value_name(
-    const String& p_value_name, String& r_macro) {
+    const String& p_value_name, String& r_macro)
+{
   _value_names_lazy.poke();
 
   const auto itr = _value_name_to_macro.find(p_value_name);
@@ -68,7 +73,8 @@ bool GodotClassTypeParameterType::get_macro_for_value_name(
   return true;
 }
 
-Vector<String> GodotClassTypeParameterType::_value_names_lazy_get() {
+Vector<String> GodotClassTypeParameterType::_value_names_lazy_get()
+{
   Vector<String> godot_macros = {
       AssumedGodotTypes::GDREGISTER_CLASS().type->name(),
       AssumedGodotTypes::GDREGISTER_VIRTUAL_CLASS().type->name(),
@@ -88,4 +94,4 @@ Vector<String> GodotClassTypeParameterType::_value_names_lazy_get() {
   return value_names;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

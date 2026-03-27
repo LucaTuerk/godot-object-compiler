@@ -34,18 +34,19 @@
 /**************************************************************************/
 #pragma once
 
-class A {
- public:
+class A
+{
+public:
   int a;
   bool b;
   A* c;
 
- protected:
+protected:
   int d;
   bool e;
   A* f;
 
- private:
+private:
   int g;
   bool h;
   A* i;

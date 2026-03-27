@@ -39,15 +39,18 @@
 #include "library/tree/syntax/access_specifier.h"
 #include "library/tree/syntax/class.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 bool AccessSpecifierHandler::handles_node(
-    const Ref<TreeSitterNode>& p_current_src) {
+    const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type == "access_specifier";
 }
 
 ParserStep AccessSpecifierHandler::handle(
-    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) {
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   if (r_current_target->is<BaseClasses>()) {
     // We don't care about base class access specifiers for now, so keep it
     // clean an skip here.
@@ -67,4 +70,4 @@ ParserStep AccessSpecifierHandler::handle(
   return ParserStep::StepOver();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

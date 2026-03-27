@@ -41,23 +41,28 @@
 #include "library/type_db.h"
 #include "library_godot/assumptions.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String GodotPropertyHintParameterType::get_return_type() {
+String GodotPropertyHintParameterType::get_return_type()
+{
   return "GOC_PropertyHint";
 }
 
-Vector<String> GodotPropertyHintParameterType::get_value_names() {
+Vector<String> GodotPropertyHintParameterType::get_value_names()
+{
   return value_names();
 }
 
 Vector<IAttributeParameterType::Argument>
-GodotPropertyHintParameterType::get_arguments() {
+GodotPropertyHintParameterType::get_arguments()
+{
   return {{ARG_STRING, "const char*", "p_hint_string", true}};
 }
 
 bool GodotPropertyHintParameterType::get_godot_hint_for_value_name(
-    const String& p_name, String& r_macro) {
+    const String& p_name, String& r_macro)
+{
   _value_names_lazy.poke();
 
   if (const auto itr = _godot_hint_types.find(p_name);
@@ -69,7 +74,8 @@ bool GodotPropertyHintParameterType::get_godot_hint_for_value_name(
   return false;
 }
 
-Vector<String> GodotPropertyHintParameterType::_value_names_lazy_get() {
+Vector<String> GodotPropertyHintParameterType::_value_names_lazy_get()
+{
   Ref<Enum> prop_hint_enum = AssumedGodotTypes::PropertyHintEnum().type;
   if (!prop_hint_enum) {
     return {};
@@ -85,7 +91,8 @@ Vector<String> GodotPropertyHintParameterType::_value_names_lazy_get() {
   return return_value;
 }
 
-String GodotPropertyHintArgument::_godot_property_hint_lazy_get() const {
+String GodotPropertyHintArgument::_godot_property_hint_lazy_get() const
+{
   const auto ptype = GodotPropertyHintParameterType::instance();
   String hint;
   if (const Ref<Identifier> identifier = find_child<Identifier>();
@@ -96,7 +103,8 @@ String GodotPropertyHintArgument::_godot_property_hint_lazy_get() const {
   PANIC("Malformed property hint argument");
 }
 
-String GodotPropertyHintArgument::_hint_string_lazy_get() const {
+String GodotPropertyHintArgument::_hint_string_lazy_get() const
+{
   const Ref<Arguments> arguments = find_child<Arguments>();
   if (!arguments) {
     return "\"\"";
@@ -115,7 +123,8 @@ String GodotPropertyHintArgument::_hint_string_lazy_get() const {
   return literal->content;
 }
 
-String GodotPropertyHintArgument::_hint_content_lazy_get() const {
+String GodotPropertyHintArgument::_hint_content_lazy_get() const
+{
   const String hint = hint_string();
   if (hint.size() < 2) {
     return "";
@@ -124,4 +133,4 @@ String GodotPropertyHintArgument::_hint_content_lazy_get() const {
   return hint.substr(1, hint.size() - 2);
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

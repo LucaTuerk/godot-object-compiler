@@ -40,25 +40,31 @@
 #include "modifiers.h"
 #include "struct.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool Member::_is_virtual_lazy_get() const {
+bool Member::_is_virtual_lazy_get() const
+{
   return find_child<Virtual>() != nullptr;
 }
 
-bool Member::_is_override_lazy_get() const {
+bool Member::_is_override_lazy_get() const
+{
   return find_child<Override>() != nullptr;
 }
 
-bool Member::_is_static_lazy_get() const {
+bool Member::_is_static_lazy_get() const
+{
   return find_child<Static>() != nullptr;
 }
 
-bool Member::_is_const_lazy_get() const {
+bool Member::_is_const_lazy_get() const
+{
   return find_child<Const>() != nullptr;
 }
 
-Ref<AccessSpecifier::Type> Member::_access_specifier_type_lazy_get() const {
+Ref<AccessSpecifier::Type> Member::_access_specifier_type_lazy_get() const
+{
   if (!get_parent()) {
     return nullptr;
   }
@@ -82,22 +88,26 @@ Ref<AccessSpecifier::Type> Member::_access_specifier_type_lazy_get() const {
   return make_ref<AccessSpecifier::Type>(specifier->type);
 }
 
-bool Member::_is_public_member_lazy_get() const {
+bool Member::_is_public_member_lazy_get() const
+{
   return access_specifier_type() &&
          *access_specifier_type() == AccessSpecifier::PUBLIC;
 }
 
-bool Member::_is_protected_member_lazy_get() const {
+bool Member::_is_protected_member_lazy_get() const
+{
   return access_specifier_type() &&
          *access_specifier_type() == AccessSpecifier::PROTECTED;
 }
 
-bool Member::_is_private_member_lazy_get() const {
+bool Member::_is_private_member_lazy_get() const
+{
   return access_specifier_type() &&
          *access_specifier_type() == AccessSpecifier::PRIVATE;
 }
 
-bool Member::copy_to(const Ref<Node>& p_other) const {
+bool Member::copy_to(const Ref<Node>& p_other) const
+{
   COPY_GUARD(Member, NamedContext);
   COPY_LAZY(access_specifier_type);
   COPY_LAZY(is_private_member);
@@ -106,4 +116,4 @@ bool Member::copy_to(const Ref<Node>& p_other) const {
   return true;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

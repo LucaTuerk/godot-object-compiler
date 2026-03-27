@@ -37,15 +37,17 @@
 #include "node.h"
 #include "type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Field : public Member {
+class Field : public Member
+{
   NODE_TYPE(Field);
 
- public:
+public:
   LAZY(Field, Ref<Type>, type);
   LAZY(Field, bool, is_mutable);
   LAZY(Field, bool, is_volatile);
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

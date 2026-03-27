@@ -38,17 +38,21 @@
 #include "library/core/core.h"
 #include "library/core/file_system_utilities.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool ImportTypeDB::validate_arguments(ApplicationContext& p_context) {
+bool ImportTypeDB::validate_arguments(ApplicationContext& p_context)
+{
   return p_context.program_arguments.size() == 1 &&
          could_be_dir_path(p_context.program_arguments[0]);
 }
 
-Ref<ProgramError> ImportTypeDB::run(ApplicationContext& p_context) {
-  PROG_ERR_COND(p_context.program_arguments.size() != 1,
-                "Invalid argument count. Expected path to the type_db "
-                "directory to import.");
+Ref<ProgramError> ImportTypeDB::run(ApplicationContext& p_context)
+{
+  PROG_ERR_COND(
+      p_context.program_arguments.size() != 1,
+      "Invalid argument count. Expected path to the type_db "
+      "directory to import.");
 
   const String& import_path = p_context.program_arguments[0];
 
@@ -63,15 +67,17 @@ Ref<ProgramError> ImportTypeDB::run(ApplicationContext& p_context) {
         path_concat(p_context.paths_readonly_cache, relative_path);
     String base = path_base(destination_path);
 
-    PROG_ERR_COND(!directory_exits(base) && !create_dir_recursive(base),
-                  "Import failed. Could not create target directory at \"%s\".",
-                  base.c_str());
-    PROG_ERR_COND(!copy_file(file, destination_path),
-                  "Failed to copy file \"%s\" to \"%s\"", file.c_str(),
-                  destination_path.c_str());
+    PROG_ERR_COND(
+        !directory_exits(base) && !create_dir_recursive(base),
+        "Import failed. Could not create target directory at \"%s\".",
+        base.c_str());
+    PROG_ERR_COND(
+        !copy_file(file, destination_path),
+        "Failed to copy file \"%s\" to \"%s\"", file.c_str(),
+        destination_path.c_str());
   }
 
   return ProgramError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

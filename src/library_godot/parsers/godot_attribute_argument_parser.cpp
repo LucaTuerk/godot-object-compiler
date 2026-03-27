@@ -40,16 +40,18 @@
 #include "library/tree/syntax/identifier.h"
 #include "library_godot/attributes/string_literal_parameter_type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_arguments(
-    const String& p_content, Ref<Context> p_target) {
+    const String& p_content, Ref<Context> p_target)
+{
   const Ref<Attribute> attribute = weak_attribute.lock();
 
   if (!attribute) {
-    return node_new<ParserError>(ERROR,
-                                 "Invalid attribute parser for . "
-                                 "Associated attribute has exited scope.");
+    return node_new<ParserError>(
+        ERROR, "Invalid attribute parser for . "
+               "Associated attribute has exited scope.");
   }
 
   const Vector<String> arguments = split_arguments(p_content);
@@ -68,17 +70,18 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_arguments(
               ->get_parameters_for_macro(property_macro);
       arguments.size() > types.size()) {
     return node_new<ParserError>(
-        ERROR,
-        format("Invalid argument count, expected at most %d but found %d",
-               types.size(), arguments.size()));
+        ERROR, format(
+                   "Invalid argument count, expected at most %d but found %d",
+                   types.size(), arguments.size()));
   }
 
   for (const String& argument : arguments) {
     for (const String& single : split_flags(argument)) {
       if (single.empty()) {
         return node_new<ParserError>(
-            ERROR, format("Invalid empty sub argument found in argument \"%s\"",
-                          argument.c_str()));
+            ERROR, format(
+                       "Invalid empty sub argument found in argument \"%s\"",
+                       argument.c_str()));
       }
 
       Ref<ParserError> error = parse_attribute_argument(single, p_target);
@@ -93,7 +96,8 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_arguments(
 }
 
 Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_argument(
-    const String& p_content, Ref<Context> p_target) {
+    const String& p_content, Ref<Context> p_target)
+{
   const Ref<Attribute> attribute = weak_attribute.lock();
   if (!attribute) {
     return node_new<ParserError>(
@@ -110,8 +114,9 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_argument(
           ->get_parameters_for_macro(property_macro);
   if (types.empty()) {
     return node_new<ParserError>(
-        ERROR, format("No valid parameter types found for attribute %s",
-                      attribute->get_type().c_str()));
+        ERROR, format(
+                   "No valid parameter types found for attribute %s",
+                   attribute->get_type().c_str()));
   }
 
   bool no_match = true;
@@ -164,10 +169,10 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_argument(
 
     if (arguments.size() > parameters.size()) {
       return node_new<ParserError>(
-          ERROR,
-          format("Invalid inner argument count for \"%s\", expected at "
-                 "most %d but found %d",
-                 p_content.c_str(), parameters.size(), arguments.size()));
+          ERROR, format(
+                     "Invalid inner argument count for \"%s\", expected at "
+                     "most %d but found %d",
+                     p_content.c_str(), parameters.size(), arguments.size()));
     }
 
     if (parameters.size() > arguments.size()) {
@@ -181,10 +186,11 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_argument(
       Size diff = parameters.size() - arguments.size();
       if (diff > optional_count) {
         return node_new<ParserError>(
-            ERROR, format("Invalid inner argument count %d for \"%s\", "
-                          "expected %d parameters with %d being optional.",
-                          arguments.size(), p_content.c_str(),
-                          parameters.size(), optional_count));
+            ERROR, format(
+                       "Invalid inner argument count %d for \"%s\", "
+                       "expected %d parameters with %d being optional.",
+                       arguments.size(), p_content.c_str(), parameters.size(),
+                       optional_count));
       }
     }
 
@@ -194,38 +200,41 @@ Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_argument(
           error != ParserError::OK) {
         error->set_handled();
         return node_new<ParserError>(
-            ERROR,
-            format("Failed to parse argument \"%s\". %s", p_content.c_str(),
-                   attribute->get_type().c_str(), error->message.c_str()));
+            ERROR, format(
+                       "Failed to parse argument \"%s\". %s", p_content.c_str(),
+                       attribute->get_type().c_str(), error->message.c_str()));
       }
     }
   }
 
   if (no_match) {
     return node_new<ParserError>(
-        ERROR, format("Failed to find matching argument type with value "
-                      "name \"%s\" for attribute %s",
-                      p_content.c_str(), attribute->get_type().c_str()));
+        ERROR, format(
+                   "Failed to find matching argument type with value "
+                   "name \"%s\" for attribute %s",
+                   p_content.c_str(), attribute->get_type().c_str()));
   }
   return ParserError::OK;
 }
 
 Ref<ParserError> GodotAttributeArgumentParser::parse_inner_arguments(
     const String& p_content, const Ref<Context>& p_target,
-    const IAttributeParameterType::Argument& p_parameter) {
+    const IAttributeParameterType::Argument& p_parameter)
+{
   switch (p_parameter.type) {
-    case IAttributeParameterType::ARG_STRING:
-      p_target->B<Argument>()[B<Literal>(p_content)];
-      break;
-    case IAttributeParameterType::ARG_INTEGER:
-      p_target->B<Argument>()[B<Literal>(p_content)];
-      break;
-    default:
-      PANIC("Unimplemented IAttributeParameterType %d",
-            static_cast<int>(p_parameter.type));
+  case IAttributeParameterType::ARG_STRING:
+    p_target->B<Argument>()[B<Literal>(p_content)];
+    break;
+  case IAttributeParameterType::ARG_INTEGER:
+    p_target->B<Argument>()[B<Literal>(p_content)];
+    break;
+  default:
+    PANIC(
+        "Unimplemented IAttributeParameterType %d",
+        static_cast<int>(p_parameter.type));
   }
 
   return ParserError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

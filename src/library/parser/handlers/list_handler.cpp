@@ -40,15 +40,18 @@
 #include "library/tree/syntax/function.h"
 #include "library/tree/syntax/literal.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool ListHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool ListHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   // TODO: Should the be string_suffix?
   return string_contains(p_current_src->type, "list");
 }
 
-ParserStep ListHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                               Ref<Context>& r_current_target) {
+ParserStep ListHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   if (r_current_target->is<Attribute>()) {
     // Parameters are handled by attributes parser.
     return ParserStep::StepOver();
@@ -72,4 +75,4 @@ ParserStep ListHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   return ParserStep::StepInto();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

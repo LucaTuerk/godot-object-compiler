@@ -36,12 +36,14 @@
 
 #include "node.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Identifier : public Node {
+class Identifier : public Node
+{
   NODE_TYPE(Identifier);
 
- public:
+public:
   explicit Identifier(String name) : name(std::move(name)) {}
 
   bool copy_to(const Ref<Node>& p_other) const override;
@@ -51,4 +53,4 @@ class Identifier : public Node {
   String name;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

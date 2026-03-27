@@ -40,30 +40,36 @@
 #include "struct.h"
 #include "type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 Ref<Type> Function::_type_lazy_get() const { return find_child<Type>(); }
 
-Ref<Parameters> Function::_parameters_lazy_get() const {
+Ref<Parameters> Function::_parameters_lazy_get() const
+{
   return find_child<Parameters>();
 }
 
-Ref<Arguments> Function::_arguments_lazy_get() const {
+Ref<Arguments> Function::_arguments_lazy_get() const
+{
   return find_child<Arguments>();
 }
 
-bool Function::copy_to(const Ref<Node>& p_other) const {
+bool Function::copy_to(const Ref<Node>& p_other) const
+{
   COPY_GUARD(Function, Member);
   return true;
 }
 
 Ref<Type> Parameter::_type_lazy_get() const { return find_child<Type>(); }
 
-Ref<Literal> Parameter::_default_value_lazy_get() const {
+Ref<Literal> Parameter::_default_value_lazy_get() const
+{
   return find_child<Literal>();
 }
 
-Vector<Ref<Literal>> Function::_default_values_lazy_get() const {
+Vector<Ref<Literal>> Function::_default_values_lazy_get() const
+{
   Vector<Ref<Literal>> default_value_literals;
   if (!parameters()) {
     return {};
@@ -79,4 +85,4 @@ Vector<Ref<Literal>> Function::_default_values_lazy_get() const {
   return default_value_literals;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

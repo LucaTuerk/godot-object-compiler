@@ -37,30 +37,33 @@
 #include "library/generator/attribute_parameter_type.h"
 #include "library/tree/syntax/function.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GodotVariantTypeArgument : public Argument {
+class GodotVariantTypeArgument : public Argument
+{
   NODE_TYPE(GodotVariantTypeArgument);
 
   LAZY(GodotVariantTypeArgument, String, godot_variant_type)
 };
 
-class GodotVariantTypeParameterType : public IAttributeParameterType {
+class GodotVariantTypeParameterType : public IAttributeParameterType
+{
   PARAM_TYPE(GodotVariantTypeParameterType, GodotVariantTypeArgument)
 
- public:
+public:
   String get_return_type() override;
 
   Vector<String> get_value_names() override;
 
   Vector<Argument> get_arguments() override;
 
-  bool get_variant_type_for_value_name(const String& p_value_name,
-                                       String& r_variant_type);
+  bool get_variant_type_for_value_name(
+      const String& p_value_name, String& r_variant_type);
 
- private:
+private:
   LAZY_MUT(GodotVariantTypeParameterType, Vector<String>, value_names)
   Dictionary<String, String> _value_name_to_godot_variant_type;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -50,9 +50,11 @@
 #include "tree/syntax/node.h"
 #include "tree/syntax/type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-void dump_node(IStructuredWriter* writer, Ref<Node> node, bool is_root) {
+void dump_node(IStructuredWriter* writer, Ref<Node> node, bool is_root)
+{
   writer->write_to_section(node->get_id());
   node->write_to(writer);
 
@@ -68,13 +70,15 @@ void dump_node(IStructuredWriter* writer, Ref<Node> node, bool is_root) {
   }
 }
 
-bool ConfigNodeReaderWriter::write_to_file(Ref<Node> node, const String& path) {
+bool ConfigNodeReaderWriter::write_to_file(Ref<Node> node, const String& path)
+{
   Config config;
   dump_node(&config, node, true);
   return config.write_to_file(path);
 }
 
-Result<Node> ConfigNodeReaderWriter::read_from_file(const String& path) {
+Result<Node> ConfigNodeReaderWriter::read_from_file(const String& path)
+{
   Config config;
   Dictionary<UID, Ref<Node>> local;
   HashSet<UID> was_existing;
@@ -149,25 +153,27 @@ Result<Node> ConfigNodeReaderWriter::read_from_file(const String& path) {
   return root;
 }
 
-void TypeDB::set_cache_directory(const String& path) {
+void TypeDB::set_cache_directory(const String& path)
+{
   _cache_directory = path;
   _readonly_cache_directory = path_concat(path, ".readonly");
 }
 
-String TypeDB::_get_cache_file_path(const String& p_qualified_name,
-                                    CacheType p_cache_type,
-                                    Size p_template_argument_count) const {
+String TypeDB::_get_cache_file_path(
+    const String& p_qualified_name, CacheType p_cache_type,
+    Size p_template_argument_count) const
+{
   switch (p_cache_type) {
-    case CacheType::READONLY_CACHE: {
-      return path_concat(
-          _readonly_cache_directory,
-          mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
-    } break;
-    case CacheType::READWRITE_CACHE: {
-      return path_concat(
-          _cache_directory,
-          mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
-    } break;
+  case CacheType::READONLY_CACHE: {
+    return path_concat(
+        _readonly_cache_directory,
+        mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
+  } break;
+  case CacheType::READWRITE_CACHE: {
+    return path_concat(
+        _cache_directory,
+        mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
+  } break;
   }
 
   PANIC("Unhandled cache type.");
@@ -175,43 +181,44 @@ String TypeDB::_get_cache_file_path(const String& p_qualified_name,
 
 String TypeDB::_get_attribute_cache_file_path(
     const String& p_qualified_name, const String& p_attribute_name,
-    CacheType p_cache_type, Size p_template_argument_count) const {
+    CacheType p_cache_type, Size p_template_argument_count) const
+{
   switch (p_cache_type) {
-    case CacheType::READONLY_CACHE: {
-      const String base =
-          path_concat(_readonly_cache_directory,
-                      mangle_name(p_qualified_name, p_template_argument_count));
-      return path_concat(base,
-                         format("attr_%s.gocdb", p_attribute_name.c_str()));
-    }
-    case CacheType::READWRITE_CACHE: {
-      const String base =
-          path_concat(_cache_directory,
-                      mangle_name(p_qualified_name, p_template_argument_count));
-      return path_concat(base,
-                         format("attr_%s.gocdb", p_attribute_name.c_str()));
-    } break;
+  case CacheType::READONLY_CACHE: {
+    const String base = path_concat(
+        _readonly_cache_directory,
+        mangle_name(p_qualified_name, p_template_argument_count));
+    return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
+  }
+  case CacheType::READWRITE_CACHE: {
+    const String base = path_concat(
+        _cache_directory,
+        mangle_name(p_qualified_name, p_template_argument_count));
+    return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
+  } break;
   }
   PANIC("Unhandled cache type.");
 }
 
-void TypeDB::save_type_data(const Ref<NamedContext>& p_type,
-                            const String& p_generated_from) const {
+void TypeDB::save_type_data(
+    const Ref<NamedContext>& p_type, const String& p_generated_from) const
+{
   String path;
   if (Ref<TemplateParameters> parameters =
           p_type->find_child<TemplateParameters>();
       parameters != nullptr) {
-    path = _get_cache_file_path(p_type->qualified_name(),
-                                CacheType::READWRITE_CACHE,
-                                parameters->get_child_count());
+    path = _get_cache_file_path(
+        p_type->qualified_name(), CacheType::READWRITE_CACHE,
+        parameters->get_child_count());
   } else {
-    path = _get_cache_file_path(p_type->qualified_name(),
-                                CacheType::READWRITE_CACHE);
+    path = _get_cache_file_path(
+        p_type->qualified_name(), CacheType::READWRITE_CACHE);
   }
 
   if (string_contains(path, INVALID_NAME)) {
-    PRINT_ERROR("Failed to get cache path for type \"%s\"",
-                p_type->qualified_name().c_str());
+    PRINT_ERROR(
+        "Failed to get cache path for type \"%s\"",
+        p_type->qualified_name().c_str());
     return;
   }
 
@@ -221,14 +228,15 @@ void TypeDB::save_type_data(const Ref<NamedContext>& p_type,
   }
 
   if (Writer writer; writer.write_to_file(p_type, path)) {
-    ExecutionContext::instance()->register_generated_file(path,
-                                                          p_generated_from);
+    ExecutionContext::instance()->register_generated_file(
+        path, p_generated_from);
   }
 }
 
-void TypeDB::save_type_attribute(const Ref<NamedContext>& p_type,
-                                 const Ref<Attribute>& p_attribute,
-                                 const String& p_generated_from) const {
+void TypeDB::save_type_attribute(
+    const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute,
+    const String& p_generated_from) const
+{
   String path;
   if (Ref<TemplateParameters> parameters =
           p_type->find_child<TemplateParameters>();
@@ -237,15 +245,15 @@ void TypeDB::save_type_attribute(const Ref<NamedContext>& p_type,
         p_type->qualified_name(), p_attribute->get_type(),
         CacheType::READWRITE_CACHE, parameters->get_child_count());
   } else {
-    path = _get_attribute_cache_file_path(p_type->qualified_name(),
-                                          p_attribute->get_type(),
-                                          CacheType::READWRITE_CACHE);
+    path = _get_attribute_cache_file_path(
+        p_type->qualified_name(), p_attribute->get_type(),
+        CacheType::READWRITE_CACHE);
   }
 
   if (string_contains(path, INVALID_NAME)) {
-    PRINT_ERROR("Failed to get cache path for attribute \"%s\" on type \"%s\"",
-                p_attribute->get_type().c_str(),
-                p_attribute->qualified_name().c_str());
+    PRINT_ERROR(
+        "Failed to get cache path for attribute \"%s\" on type \"%s\"",
+        p_attribute->get_type().c_str(), p_attribute->qualified_name().c_str());
     return;
   }
 
@@ -255,15 +263,15 @@ void TypeDB::save_type_attribute(const Ref<NamedContext>& p_type,
   }
 
   if (Writer writer; writer.write_to_file(p_attribute, path)) {
-    ExecutionContext::instance()->register_generated_file(path,
-                                                          p_generated_from);
+    ExecutionContext::instance()->register_generated_file(
+        path, p_generated_from);
   }
 }
 
-Result<Node> TypeDB::_get_type_data(const String& p_qualified_name,
-                                    Size p_template_argument_count,
-                                    const Ref<Namespace>& p_from_namespace,
-                                    CacheType p_cache_type) {
+Result<Node> TypeDB::_get_type_data(
+    const String& p_qualified_name, Size p_template_argument_count,
+    const Ref<Namespace>& p_from_namespace, CacheType p_cache_type)
+{
   Reader reader;
 
   for (const String& name :
@@ -299,17 +307,18 @@ Result<Node> TypeDB::_get_type_data(const String& p_qualified_name,
     }
   }
 
-  ERROR_COND(p_from_namespace != nullptr,
-             "Could not find type \"%s\" in namespace \"%s\"",
-             p_qualified_name.c_str(),
-             p_from_namespace->qualified_name().c_str());
+  ERROR_COND(
+      p_from_namespace != nullptr,
+      "Could not find type \"%s\" in namespace \"%s\"",
+      p_qualified_name.c_str(), p_from_namespace->qualified_name().c_str());
   ERROR("Could not find type \"%s\"", p_qualified_name.c_str());
 }
 
 Result<Attribute> TypeDB::_get_type_attribute(
     const String& p_qualified_name, const String& p_attribute_name,
     Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace,
-    CacheType cache_type) {
+    CacheType cache_type)
+{
   Reader reader;
 
   for (const String& name :
@@ -345,20 +354,23 @@ Result<Attribute> TypeDB::_get_type_attribute(
     }
   }
 
-  ERROR("Could not find attribute \"%s\" for type \"%s\"",
-        p_attribute_name.c_str(), p_qualified_name.c_str());
+  ERROR(
+      "Could not find attribute \"%s\" for type \"%s\"",
+      p_attribute_name.c_str(), p_qualified_name.c_str());
 }
 
-Result<Node> TypeDB::get_type_data(const String& qualified_name,
-                                   Size template_argument_count,
-                                   const Ref<Namespace>& from_namespace) {
-  Result<Node> found_result =
-      _get_type_data(qualified_name, template_argument_count, from_namespace,
-                     CacheType::READWRITE_CACHE);
+Result<Node> TypeDB::get_type_data(
+    const String& qualified_name, Size template_argument_count,
+    const Ref<Namespace>& from_namespace)
+{
+  Result<Node> found_result = _get_type_data(
+      qualified_name, template_argument_count, from_namespace,
+      CacheType::READWRITE_CACHE);
   if (found_result.has_error()) {
     found_result.get_error()->set_handled();
-    found_result = _get_type_data(qualified_name, template_argument_count,
-                                  from_namespace, CacheType::READONLY_CACHE);
+    found_result = _get_type_data(
+        qualified_name, template_argument_count, from_namespace,
+        CacheType::READONLY_CACHE);
   }
   RESULT_ERROR_PASS_ON(Error, found_result, found);
   return found;
@@ -366,7 +378,8 @@ Result<Node> TypeDB::get_type_data(const String& qualified_name,
 
 Result<Attribute> TypeDB::get_type_attribute(
     const String& p_qualified_name, const String& p_attribute_name,
-    Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace) {
+    Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace)
+{
   Result<Attribute> found_result = _get_type_attribute(
       p_qualified_name, p_attribute_name, p_template_parameter_count,
       p_from_namespace, CacheType::READWRITE_CACHE);
@@ -381,24 +394,28 @@ Result<Attribute> TypeDB::get_type_attribute(
   return found;
 }
 
-Result<Node> TypeDB::get_type_data(const Ref<Type>& type,
-                                   const Ref<Namespace>& from_namespace) {
-  return get_type_data(type->name(), type->template_argument_count(),
-                       from_namespace);
+Result<Node> TypeDB::get_type_data(
+    const Ref<Type>& type, const Ref<Namespace>& from_namespace)
+{
+  return get_type_data(
+      type->name(), type->template_argument_count(), from_namespace);
 }
 
-String TypeDB::mangle_name(const String& qualified_name,
-                           Size template_parameter_count) {
+String
+TypeDB::mangle_name(const String& qualified_name, Size template_parameter_count)
+{
   if (qualified_name.empty() ||
-      std::any_of(qualified_name.begin(), qualified_name.end() - 1,
-                  [](char c) { return std::iscntrl(c); })) {
+      std::any_of(qualified_name.begin(), qualified_name.end() - 1, [](char c) {
+        return std::iscntrl(c);
+      })) {
     return INVALID_NAME;
   }
 
   Vector<String> parts = string_split(qualified_name, "::");
 
-  auto itr = std::find_if(parts.begin(), parts.end(),
-                          [](const String& part) { return !part.empty(); });
+  auto itr = std::find_if(parts.begin(), parts.end(), [](const String& part) {
+    return !part.empty();
+  });
   if (itr == parts.end()) {
     return INVALID_NAME;
   }
@@ -471,12 +488,14 @@ String TypeDB::mangle_name(const String& qualified_name,
     return qualified_name;
   }
 
-  return format("%s_T_ARGS_%d_", name_writer.get_string().c_str(),
-                template_parameter_count);
+  return format(
+      "%s_T_ARGS_%d_", name_writer.get_string().c_str(),
+      template_parameter_count);
 }
 
 Vector<String> TypeDB::resolve_possible_namespaces(
-    const String& qualified_name, const Ref<Namespace>& from_namespace) {
+    const String& qualified_name, const Ref<Namespace>& from_namespace)
+{
   Vector<String> result;
 
   if (from_namespace == nullptr) {
@@ -499,23 +518,27 @@ Vector<String> TypeDB::resolve_possible_namespaces(
   return result;
 }
 
-AssumptionState TypeDB::validate_assumption(
-    Assumption<AssumeType<Enum>>& p_assumption) {
+AssumptionState
+TypeDB::validate_assumption(Assumption<AssumeType<Enum>>& p_assumption)
+{
   return validate_t<Enum>(p_assumption);
 }
 
-AssumptionState TypeDB::validate_assumption(
-    Assumption<AssumeType<Class>>& p_assumption) {
+AssumptionState
+TypeDB::validate_assumption(Assumption<AssumeType<Class>>& p_assumption)
+{
   return validate_t<Class>(p_assumption);
 }
 
-AssumptionState TypeDB::validate_assumption(
-    Assumption<AssumeType<Define>>& p_assumption) {
+AssumptionState
+TypeDB::validate_assumption(Assumption<AssumeType<Define>>& p_assumption)
+{
   return validate_t<Define>(p_assumption);
 }
 
-AssumptionState TypeDB::validate_assumption(
-    Assumption<AssumeType<EnumValue>>& p_assumption) {
+AssumptionState
+TypeDB::validate_assumption(Assumption<AssumeType<EnumValue>>& p_assumption)
+{
   Vector<String> namespaces = string_split(p_assumption().name, "::");
   if (namespaces.size() == 1) {
     PRINT_ERROR(
@@ -543,4 +566,4 @@ AssumptionState TypeDB::validate_assumption(
   return STATE_VALID;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

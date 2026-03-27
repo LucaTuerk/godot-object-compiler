@@ -43,17 +43,19 @@
 #include "library/tree/syntax/struct.h"
 #include "library/tree/syntax/type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-auto TypeHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
-    -> bool {
-  return p_current_src->type_in({"primitive_type", "qualified_identifier",
-                                 "type_identifier", "trailing_return_type",
-                                 "template_type"});
+auto TypeHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) -> bool
+{
+  return p_current_src->type_in(
+      {"primitive_type", "qualified_identifier", "type_identifier",
+       "trailing_return_type", "template_type"});
 }
 
-ParserStep TypeHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                               Ref<Context>& r_current_target) {
+ParserStep TypeHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   if ((r_current_target->is<Class>() || r_current_target->is<Struct>() ||
        r_current_target->is<Enum>()) &&
       (r_current_target->find_child<Identifier>() == nullptr)) {
@@ -95,4 +97,4 @@ ParserStep TypeHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   }
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

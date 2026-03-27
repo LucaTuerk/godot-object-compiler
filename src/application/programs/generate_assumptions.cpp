@@ -59,28 +59,31 @@
 #include "library_godot/attributes/godot_virtual.h"
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Ref<Node> generate_value_name_assumption(const String& return_type,
-                                         const String& value_name) {
-  String format =
-      "inline Assumption<String> VALUE_NAME {\n"
-      "\"VALUE_NAME\",\n"
-      "\"Assume that the value \\\"VALUE_NAME\\\" exists in the "
-      "RETURN_TYPE generated type.\"\n"
-      "};";
+Ref<Node> generate_value_name_assumption(
+    const String& return_type, const String& value_name)
+{
+  String format = "inline Assumption<String> VALUE_NAME {\n"
+                  "\"VALUE_NAME\",\n"
+                  "\"Assume that the value \\\"VALUE_NAME\\\" exists in the "
+                  "RETURN_TYPE generated type.\"\n"
+                  "};";
 
   format = string_replace(format, "VALUE_NAME", value_name);
   format = string_replace(format, "RETURN_TYPE", return_type);
   return Output::Text(format);
 }
 
-Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
+Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context)
+{
   UNUSED(p_context);
 
   GenerateTypeDB generate_type_db;
-  PROG_ERR_COND(generate_type_db.run(p_context) != ProgramError::OK,
-                "Failed to generate the type db.");
+  PROG_ERR_COND(
+      generate_type_db.run(p_context) != ProgramError::OK,
+      "Failed to generate the type db.");
 
   Permissions::instance()->add_write_path(
       "src/library_godot/generated_assumptions");
@@ -108,8 +111,9 @@ Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
       Output::PragmaOnce(), Output::Include("library/core/assumption.h"),
       B<Namespace>()[{
           B<Identifier>("GodotObjectCompiler"),
-          B<Body>()[B<Namespace>()[{B<Identifier>("AssumedParameterValues"),
-                                    R<Body>(&header_body)}]]}]}];
+          B<Body>()[B<Namespace>()[{
+              B<Identifier>("AssumedParameterValues"),
+              R<Body>(&header_body)}]]}]}];
 
   Ref<Context> source_content = B<Context>()[{
       Output::Include("parameter_types.h"),
@@ -121,8 +125,9 @@ Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
       Output::Include("library_godot/attributes/godot_rpc.h"),
       B<Namespace>()[{
           B<Identifier>("GodotObjectCompiler"),
-          B<Body>()[B<Namespace>()[{B<Identifier>("AssumedParameterValues"),
-                                    R<Body>(&source_body)}]]}]}];
+          B<Body>()[B<Namespace>()[{
+              B<Identifier>("AssumedParameterValues"),
+              R<Body>(&source_body)}]]}]}];
 
   for (const Ref<IAttributeParameterType>& parameter_type : parameter_types) {
     for (const String& value_name : parameter_type->get_value_names()) {
@@ -132,28 +137,30 @@ Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
   }
 
   Ref<Body> validate_body;
-  header_body->B<Function>()[{B<Type>()[B<Identifier>("bool")],
-                              B<Identifier>("validate_assumptions"),
-                              B<Parameters>(), Output::Semicolon()}];
+  header_body->B<Function>()[{
+      B<Type>()[B<Identifier>("bool")], B<Identifier>("validate_assumptions"),
+      B<Parameters>(), Output::Semicolon()}];
 
-  source_body->B<Function>()[{B<Type>()[B<Identifier>("bool")],
-                              B<Identifier>("validate_assumptions"),
-                              B<Parameters>(), R<Body>(&validate_body)}];
+  source_body->B<Function>()[{
+      B<Type>()[B<Identifier>("bool")], B<Identifier>("validate_assumptions"),
+      B<Parameters>(), R<Body>(&validate_body)}];
 
   validate_body->add_child(Output::Text("bool success = true;"));
 
   for (const Ref<IAttributeParameterType>& parameter_type : parameter_types) {
     Ref<Body> inner_body = validate_body->B<Body>();
     String format = "Ref<PARAM_TYPE> validator = make_ref<PARAM_TYPE>();";
-    inner_body->add_child(Output::Text(
-        string_replace(format, "PARAM_TYPE", parameter_type->get_type())));
+    inner_body->add_child(
+        Output::Text(
+            string_replace(format, "PARAM_TYPE", parameter_type->get_type())));
 
     for (const String& value_name : parameter_type->get_value_names()) {
       String validate_format =
           "success &= VALUE_NAME.validate(validator.get()) == "
           "STATE_VALID;";
-      inner_body->add_child(Output::Text(
-          string_replace(validate_format, "VALUE_NAME", value_name)));
+      inner_body->add_child(
+          Output::Text(
+              string_replace(validate_format, "VALUE_NAME", value_name)));
     }
   }
   validate_body->add_child(Output::Text("return success;"));
@@ -163,17 +170,19 @@ Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
   FileWriter source_writer(source_path, true);
 
   transformator
-      .transform(B<Output::EnclosingNode>(
-          "// clang-format off\n", "\n//clang-format on")[header_content])
+      .transform(
+          B<Output::EnclosingNode>(
+              "// clang-format off\n", "\n//clang-format on")[header_content])
       ->get_output(&header_writer);
 
   transformator
-      .transform(B<Output::EnclosingNode>(
-          "// clang-format off\n", "\n//clang-format on")[source_content])
+      .transform(
+          B<Output::EnclosingNode>(
+              "// clang-format off\n", "\n//clang-format on")[source_content])
       ->get_output(&source_writer);
 
   return ProgramError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 #endif

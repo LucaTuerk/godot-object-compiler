@@ -40,13 +40,16 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/all.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool ParserContext::is_valid() const {
+bool ParserContext::is_valid() const
+{
   return current_src && !current_src->empty();
 }
 
-ParserContext::ParserContext(const String& input) {
+ParserContext::ParserContext(const String& input)
+{
   original_buffer = input;
   buffer = input;
   current_target =
@@ -67,21 +70,24 @@ ParserContext::ParserContext(const String& input) {
   ts_parser_delete(parser);
 }
 
-ParserContext ParserContext::from_path(const String& p_path) {
+ParserContext ParserContext::from_path(const String& p_path)
+{
   ParserContext result{read_file(p_path)};
   result.file_path = p_path;
   return result;
 }
 
-Result<TreeSitterNode> ParserContext::create_tree(TSTree* p_tree) {
+Result<TreeSitterNode> ParserContext::create_tree(TSTree* p_tree)
+{
   TSNode ts_root = ts_tree_root_node(p_tree);
-  ERROR_COND(ts_node_is_null(ts_root),
-             "Root node is null in parsed TreeSitter tree.");
+  ERROR_COND(
+      ts_node_is_null(ts_root), "Root node is null in parsed TreeSitter tree.");
 
   return create_node(ts_root);
 }
 
-Ref<TreeSitterNode> ParserContext::create_node(TSNode p_ts_node) {
+Ref<TreeSitterNode> ParserContext::create_node(TSNode p_ts_node)
+{
   if (ts_node_is_null(p_ts_node) ||
       String(ts_node_type(p_ts_node)) == "comment") {
     return nullptr;
@@ -97,4 +103,4 @@ Ref<TreeSitterNode> ParserContext::create_node(TSNode p_ts_node) {
   return node;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

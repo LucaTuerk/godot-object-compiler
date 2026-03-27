@@ -38,7 +38,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(BindEnums) {
+GOC_INTEGRATION_TEST(BindEnums)
+{
   GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/enums.h");
 
   GOC_ASSERT_ENUM_BOUND("RegularEnum", "REGULAR_VALUE_1", "REGULAR_VALUE_2");

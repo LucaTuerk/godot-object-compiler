@@ -39,17 +39,21 @@
 #include "library/tree/predicates.h"
 #include "library_godot/parsers/godot_attribute_argument_parser.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Ref<IAttributeArgumentParser> GodotAttributeWithParams::get_argument_parser() {
+Ref<IAttributeArgumentParser> GodotAttributeWithParams::get_argument_parser()
+{
   return make_ref<GodotAttributeArgumentParser>(this->as<Attribute>());
 }
 
-Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() const {
+Ref<Arguments> GodotAttributeWithParams::_arguments_lazy_get() const
+{
   return find_child<Arguments>();
 }
 
-String get_string_literal_content(const Ref<const Attribute>& p_attribute) {
+String get_string_literal_content(const Ref<const Attribute>& p_attribute)
+{
   const Ref<Literal> literal =
       p_attribute->find_chain<Literal, Arguments, StringLiteralArgument>();
   if (!literal) {
@@ -66,19 +70,23 @@ String get_string_literal_content(const Ref<const Attribute>& p_attribute) {
   return literal->content.substr(1, literal->content.size() - 2);
 }
 
-String GodotPropertyCategoryAttribute::_literal_content_lazy_get() const {
+String GodotPropertyCategoryAttribute::_literal_content_lazy_get() const
+{
   return get_string_literal_content(const_as<Attribute>());
 }
 
-String GodotPropertyGroupAttribute::_literal_content_lazy_get() const {
+String GodotPropertyGroupAttribute::_literal_content_lazy_get() const
+{
   return get_string_literal_content(const_as<Attribute>());
 }
 
-String GodotPropertySubgroupAttribute::_literal_content_lazy_get() const {
+String GodotPropertySubgroupAttribute::_literal_content_lazy_get() const
+{
   return get_string_literal_content(const_as<Attribute>());
 }
 
-Ref<Field> GodotPropertyAttribute::TargetField() {
+Ref<Field> GodotPropertyAttribute::TargetField()
+{
   Ref<Arguments> args = arguments();
   if (!args) {
     return nullptr;
@@ -99,7 +107,8 @@ Ref<Field> GodotPropertyAttribute::TargetField() {
   return nullptr;
 }
 
-Opt<GodotCustomPropertyBind> GodotPropertyAttribute::CustomBind() {
+Opt<GodotCustomPropertyBind> GodotPropertyAttribute::CustomBind()
+{
   Ref<Arguments> args = arguments();
   if (!args) {
     return std::nullopt;
@@ -157,15 +166,15 @@ Opt<GodotCustomPropertyBind> GodotPropertyAttribute::CustomBind() {
   }};
 }
 
-bool GodotPropertyAttribute::_verify_target_class(Ref<Node> p_resolved) const {
+bool GodotPropertyAttribute::_verify_target_class(Ref<Node> p_resolved) const
+{
   Ref<Arguments> args = arguments();
   if (!args) {
     return false;
   }
 
-  Ref<Identifier> get_set_identifier =
-      args->find_chain<Identifier, Arguments,
-                       GodotCustomPropertyGetSetArgument>();
+  Ref<Identifier> get_set_identifier = args->find_chain<
+      Identifier, Arguments, GodotCustomPropertyGetSetArgument>();
   if (!get_set_identifier ||
       get_set_identifier->name ==
           GodotCustomPropertyGetSetParameterType::AutoGetSet) {
@@ -174,15 +183,15 @@ bool GodotPropertyAttribute::_verify_target_class(Ref<Node> p_resolved) const {
   return true;
 }
 
-Attribute::Target GodotPropertyAttribute::_get_target() const {
+Attribute::Target GodotPropertyAttribute::_get_target() const
+{
   Ref<Arguments> args = arguments();
   if (!args) {
     return NONE;
   }
 
-  Ref<Identifier> get_set_identifier =
-      args->find_chain<Identifier, Arguments,
-                       GodotCustomPropertyGetSetArgument>();
+  Ref<Identifier> get_set_identifier = args->find_chain<
+      Identifier, Arguments, GodotCustomPropertyGetSetArgument>();
   if (!get_set_identifier ||
       get_set_identifier->name ==
           GodotCustomPropertyGetSetParameterType::AutoGetSet) {
@@ -191,4 +200,4 @@ Attribute::Target GodotPropertyAttribute::_get_target() const {
   return NONE;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

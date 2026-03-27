@@ -36,71 +36,86 @@
 
 #include "nested_namespaces.generated.h"
 
-namespace Tests {
-namespace A {
+namespace Tests
+{
+namespace A
+{
 
 GODOT_CLASS();
-class classA : public Object {
+class classA : public Object
+{
   GODOT_GENERATED_BODY();
   GODOT_PROPERTY();
   int propA = 0;
 };
-namespace B {
+namespace B
+{
 GODOT_CLASS();
-class classAB : public Object {
+class classAB : public Object
+{
   GODOT_GENERATED_BODY();
   GODOT_PROPERTY();
   int propAB = 0;
 };
-}  // namespace B
-}  // namespace A
+} // namespace B
+} // namespace A
 
-namespace C {
+namespace C
+{
 
 GODOT_CLASS();
-class classC : public Object {
+class classC : public Object
+{
   GODOT_GENERATED_BODY();
   GODOT_PROPERTY();
   int propC = 0;
 };
-namespace D {
+namespace D
+{
 
 GODOT_CLASS();
-class classCD : public Object {
+class classCD : public Object
+{
   GODOT_GENERATED_BODY();
   GODOT_PROPERTY();
   int propCD = 0;
 };
-}  // namespace D
-}  // namespace C
+} // namespace D
+} // namespace C
 
-namespace E {
+namespace E
+{
 
 GODOT_CLASS();
-class classE : public Object {
+class classE : public Object
+{
   GODOT_GENERATED_BODY();
   GODOT_PROPERTY();
   int propE = 0;
 };
-namespace F {
+namespace F
+{
 
 GODOT_CLASS();
-class classEF : public Object {
+class classEF : public Object
+{
   GODOT_GENERATED_BODY();
   GODOT_PROPERTY();
   int propEF = 0;
 };
-namespace G {
+namespace G
+{
 
 GODOT_CLASS();
-class classEFG : public Object {
+class classEFG : public Object
+{
   GODOT_GENERATED_BODY();
   GODOT_PROPERTY();
   int propEFG = 0;
 };
 
-}  // namespace G
-}  // namespace F
-}  // namespace E
-}  // namespace Tests
+} // namespace G
+} // namespace F
+} // namespace E
+} // namespace Tests
 GODOT_GENERATED_GLOBAL();

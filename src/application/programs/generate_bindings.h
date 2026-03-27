@@ -36,13 +36,15 @@
 #pragma once
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GenerateBindings : public IProgram {
+class GenerateBindings : public IProgram
+{
   PROGRAM(GenerateBindings, "generate/bindings")
   PROG_NO_ARGS
 
- public:
+public:
   String file_id(const String& p_file_name);
 
   String generated_macro_name(const String& p_header, Size p_line);
@@ -50,4 +52,4 @@ class GenerateBindings : public IProgram {
   Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

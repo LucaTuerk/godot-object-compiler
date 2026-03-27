@@ -35,19 +35,21 @@
 #pragma once
 #include "test_registry.h"
 
-#define GOC_TEST_ASSERT_CREATE_TYPE(node_type)                           \
-  {                                                                      \
-    Ref<Node> created =                                                  \
-        ExecutionContext::instance()->get_node_db()->create(#node_type); \
-    GOC_TEST_ASSERT(created, "Failed to create node of type \"%s\"",     \
-                    #node_type);                                         \
-    GOC_TEST_EQ(created->get_type(), String(#node_type),                 \
-                "Failed to create node of type \"%s\"", #node_type);     \
+#define GOC_TEST_ASSERT_CREATE_TYPE(node_type)                                 \
+  {                                                                            \
+    Ref<Node> created =                                                        \
+        ExecutionContext::instance()->get_node_db()->create(#node_type);       \
+    GOC_TEST_ASSERT(                                                           \
+        created, "Failed to create node of type \"%s\"", #node_type);          \
+    GOC_TEST_EQ(                                                               \
+        created->get_type(), String(#node_type),                               \
+        "Failed to create node of type \"%s\"", #node_type);                   \
   }
 
 using namespace GodotObjectCompiler;
 
-GOC_TEST(CreateTest) {
+GOC_TEST(CreateTest)
+{
   GOC_TEST_ASSERT_CREATE_TYPE(Node)
   GOC_TEST_ASSERT_CREATE_TYPE(AccessSpecifier)
   GOC_TEST_ASSERT_CREATE_TYPE(Context)
@@ -98,7 +100,8 @@ GOC_TEST(CreateTest) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(NodeIDTest) {
+GOC_TEST(NodeIDTest)
+{
   Ref<Context> context = node_new<Context>();
 
   for (Size i = 0; i < 1000; ++i) {
@@ -117,14 +120,15 @@ GOC_TEST(NodeIDTest) {
   for (Size uid = 0; uid < 1000; ++uid) {
     Ref<Node> node =
         ExecutionContext::instance()->get_node_db()->get<Node>(uid);
-    GOC_TEST_EQ(node, context->get_child(uid), "Invalid node found for id %d",
-                uid);
+    GOC_TEST_EQ(
+        node, context->get_child(uid), "Invalid node found for id %d", uid);
   }
 
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_TEST(NodeIDRemovedTest) {
+GOC_TEST(NodeIDRemovedTest)
+{
   Vector<UID> uids;
 
   for (Size i = 0; i < 1000; ++i) {

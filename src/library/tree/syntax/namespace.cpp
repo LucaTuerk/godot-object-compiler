@@ -40,9 +40,11 @@
 #include "field.h"
 #include "function.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Vector<Ref<Namespace>> Namespace::_namespaces_lazy_get() const {
+Vector<Ref<Namespace>> Namespace::_namespaces_lazy_get() const
+{
   Vector<Ref<Namespace>> reversed;
   Ref<Context> current = get_parent();
 
@@ -61,7 +63,8 @@ Vector<Ref<Namespace>> Namespace::_namespaces_lazy_get() const {
   return result;
 }
 
-Vector<Ref<Namespace>> Namespace::_child_namespaces_lazy_get() const {
+Vector<Ref<Namespace>> Namespace::_child_namespaces_lazy_get() const
+{
   Vector<Ref<Namespace>> _namespaces;
 
   for (const Ref<Node>& child : _children) {
@@ -73,28 +76,34 @@ Vector<Ref<Namespace>> Namespace::_child_namespaces_lazy_get() const {
   return _namespaces;
 }
 
-Vector<Ref<Field>> Namespace::_fields_lazy_get() const {
+Vector<Ref<Field>> Namespace::_fields_lazy_get() const
+{
   return body() ? body()->find_children<Field>() : Vector<Ref<Field>>();
 }
 
-Vector<Ref<Function>> Namespace::_functions_lazy_get() const {
+Vector<Ref<Function>> Namespace::_functions_lazy_get() const
+{
   return body() ? body()->find_children<Function>() : Vector<Ref<Function>>();
 }
 
-Vector<Ref<Class>> Namespace::_classes_lazy_get() const {
+Vector<Ref<Class>> Namespace::_classes_lazy_get() const
+{
   return body() ? body()->find_children<Class>() : Vector<Ref<Class>>();
 }
 
-Vector<Ref<Class>> Namespace::_classes_recursive_lazy_get() const {
+Vector<Ref<Class>> Namespace::_classes_recursive_lazy_get() const
+{
   return body() ? body()->find_children<Class>(true) : Vector<Ref<Class>>();
 }
 
-Vector<Ref<Enum>> Namespace::_enums_lazy_get() const {
+Vector<Ref<Enum>> Namespace::_enums_lazy_get() const
+{
   return body() ? body()->find_children<Enum>() : Vector<Ref<Enum>>();
 }
 
-Vector<Ref<Enum>> Namespace::_enums_recursive_lazy_get() const {
+Vector<Ref<Enum>> Namespace::_enums_recursive_lazy_get() const
+{
   return body() ? body()->find_children<Enum>(true) : Vector<Ref<Enum>>();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

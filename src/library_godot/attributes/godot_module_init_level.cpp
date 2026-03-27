@@ -39,24 +39,29 @@
 #include "library/type_db.h"
 #include "library_godot/assumptions.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String GodotModuleInitializationLevelParameterType::get_return_type() {
+String GodotModuleInitializationLevelParameterType::get_return_type()
+{
   return "GOC_ModuleInitializationLevel";
 }
 
-Vector<String> GodotModuleInitializationLevelParameterType::get_value_names() {
+Vector<String> GodotModuleInitializationLevelParameterType::get_value_names()
+{
   return value_names();
 }
 
 Vector<IAttributeParameterType::Argument>
-GodotModuleInitializationLevelParameterType::get_arguments() {
+GodotModuleInitializationLevelParameterType::get_arguments()
+{
   return {};
 }
 
 bool GodotModuleInitializationLevelParameterType::
-    get_godot_init_level_for_value_name(const String& p_value_name,
-                                        String& r_godot_init_level) {
+    get_godot_init_level_for_value_name(
+        const String& p_value_name, String& r_godot_init_level)
+{
   _value_names_lazy.poke();
 
   auto itr = _godot_init_levels.find(p_value_name);
@@ -70,7 +75,8 @@ bool GodotModuleInitializationLevelParameterType::
 }
 
 Vector<String>
-GodotModuleInitializationLevelParameterType::_value_names_lazy_get() {
+GodotModuleInitializationLevelParameterType::_value_names_lazy_get()
+{
   using namespace AssumedGodotTypes;
 
   Ref<Enum> init_level_enum = ModuleInitializationLevel().type;
@@ -89,4 +95,4 @@ GodotModuleInitializationLevelParameterType::_value_names_lazy_get() {
   return return_value;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

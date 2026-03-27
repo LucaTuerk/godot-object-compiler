@@ -42,9 +42,11 @@
 #include "library/type_db.h"
 #include "namespace.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool Context::copy_to(const Ref<Node>& p_other) const {
+bool Context::copy_to(const Ref<Node>& p_other) const
+{
   COPY_GUARD(Context, Node);
 
   for (const Ref<Node>& child : _children) {
@@ -58,7 +60,8 @@ bool Context::copy_to(const Ref<Node>& p_other) const {
   return true;
 }
 
-void Context::add_child(Ref<Node> p_child) {
+void Context::add_child(Ref<Node> p_child)
+{
   PANIC_COND(p_child == nullptr, "Trying to add null child.");
 
   if (this == p_child->get_parent().get()) {
@@ -78,13 +81,15 @@ void Context::add_child(Ref<Node> p_child) {
   _children.push_back(p_child);
 }
 
-void Context::add_child_before(Ref<Node> p_child, Ref<Node> p_existing) {
+void Context::add_child_before(Ref<Node> p_child, Ref<Node> p_existing)
+{
   auto itr = std::find(_children.begin(), _children.end(), p_existing);
   PANIC_COND(p_child == nullptr, "Trying to add null child.");
   PANIC_COND(p_existing == nullptr, "Existing child is null.");
   PANIC_COND(p_child->get_parent() != nullptr, "Child is already parented");
-  PANIC_COND(itr == _children.end(),
-             "Cannot insert child after existing child. Was not found.");
+  PANIC_COND(
+      itr == _children.end(),
+      "Cannot insert child after existing child. Was not found.");
 
   _children.insert(itr, p_child);
   Index index = p_existing->_index;
@@ -94,7 +99,8 @@ void Context::add_child_before(Ref<Node> p_child, Ref<Node> p_existing) {
   }
 }
 
-void Context::add_children(std::initializer_list<Ref<Node>>&& p_children) {
+void Context::add_children(std::initializer_list<Ref<Node>>&& p_children)
+{
   for (const Ref<Node>& child : p_children) {
     add_child(child);
   }
@@ -102,7 +108,8 @@ void Context::add_children(std::initializer_list<Ref<Node>>&& p_children) {
 
 Size Context::get_child_count() const { return _children.size(); }
 
-Size Context::get_descendant_count() const {
+Size Context::get_descendant_count() const
+{
   Size count = 0;
   for (const Ref<Node>& child : _children) {
     if (const Ref<Context>& context_child = child->as<Context>()) {
@@ -114,7 +121,8 @@ Size Context::get_descendant_count() const {
   return count;
 }
 
-Ref<Node> Context::get_child(SignedIndex p_idx) const {
+Ref<Node> Context::get_child(SignedIndex p_idx) const
+{
   Index actual_idx = p_idx;
   if (p_idx < 0) {
     actual_idx = _children.size() + p_idx;
@@ -129,7 +137,8 @@ Ref<Node> Context::get_child(SignedIndex p_idx) const {
   return *itr;
 }
 
-Ref<Node> Context::get_child_strict(SignedIndex p_idx) const {
+Ref<Node> Context::get_child_strict(SignedIndex p_idx) const
+{
   if (p_idx < 0 || static_cast<Size>(p_idx) >= _children.size()) {
     return nullptr;
   }
@@ -143,8 +152,9 @@ Context::ChildIterator Context::begin() { return _children.begin(); }
 
 Context::ChildIterator Context::end() { return _children.end(); }
 
-Context::ChildIterator Context::remove_child(
-    decltype(_children)::iterator p_itr) {
+Context::ChildIterator
+Context::remove_child(decltype(_children)::iterator p_itr)
+{
   const Ref<Node> child = *p_itr;
   p_itr = _children.erase(p_itr);
   child->_index = 0;
@@ -160,7 +170,8 @@ Context::ChildIterator Context::remove_child(
 }
 
 Context::ChildIterator Context::reparent_child(
-    decltype(_children)::iterator p_itr, Ref<Context> p_new_parent) {
+    decltype(_children)::iterator p_itr, Ref<Context> p_new_parent)
+{
   if (p_itr != _children.end()) {
     Ref<Node> child = *p_itr;
     p_itr = remove_child(p_itr);
@@ -171,7 +182,8 @@ Context::ChildIterator Context::reparent_child(
   return _children.end();
 }
 
-void Context::remove_all_children() {
+void Context::remove_all_children()
+{
   while (!_children.empty()) {
     Ref<Node> child = _children.back();
     _children.pop_back();
@@ -179,14 +191,16 @@ void Context::remove_all_children() {
   }
 }
 
-void Context::remove_child(const Ref<Node>& p_child) {
+void Context::remove_child(const Ref<Node>& p_child)
+{
   const auto itr = std::find(_children.begin(), _children.end(), p_child);
   remove_child(itr);
 }
 
-void Context::replace_child(const Ref<Node>& p_child,
-                            const Ref<Node>& p_new_child,
-                            bool p_take_children) {
+void Context::replace_child(
+    const Ref<Node>& p_child, const Ref<Node>& p_new_child,
+    bool p_take_children)
+{
   auto itr = std::find(_children.begin(), _children.end(), p_child);
   if (itr != _children.end()) {
     *itr = p_new_child;
@@ -216,11 +230,13 @@ void Context::replace_child(const Ref<Node>& p_child,
 
 bool Context::empty() const { return _children.empty(); }
 
-void Context::write_to(IStructuredWriter* p_writer) {
+void Context::write_to(IStructuredWriter* p_writer)
+{
   Node::write_to(p_writer);
 }
 
-String NamedContext::_name_lazy_get() const {
+String NamedContext::_name_lazy_get() const
+{
   Ref<Identifier> identifier = find_child<Identifier>();
   if (!identifier) {
     return "";
@@ -230,7 +246,8 @@ String NamedContext::_name_lazy_get() const {
 
 Ref<Body> NamedContext::_body_lazy_get() const { return find_child<Body>(); }
 
-String NamedContext::_qualified_name_lazy_get() const {
+String NamedContext::_qualified_name_lazy_get() const
+{
   StreamWriter writer;
 
   if (Ref<Namespace> ns = find_ancestor<Namespace>()) {
@@ -245,7 +262,8 @@ String NamedContext::_qualified_name_lazy_get() const {
   return writer.get_string();
 }
 
-bool NamedContext::copy_to(const Ref<Node>& p_other) const {
+bool NamedContext::copy_to(const Ref<Node>& p_other) const
+{
   COPY_GUARD(NamedContext, Context);
   COPY_LAZY(name);
   COPY_LAZY(qualified_name);
@@ -254,7 +272,8 @@ bool NamedContext::copy_to(const Ref<Node>& p_other) const {
   return true;
 }
 
-void NamedContext::read_from(IStructuredReader* p_reader) {
+void NamedContext::read_from(IStructuredReader* p_reader)
+{
   Context::read_from(p_reader);
   _name_lazy = p_reader->read<String, String>("_name");
   _qualified_name_lazy = p_reader->read<String, String>("_qualified_name");
@@ -263,7 +282,8 @@ void NamedContext::read_from(IStructuredReader* p_reader) {
   header = p_reader->read<String, String>("header");
 }
 
-void NamedContext::write_to(IStructuredWriter* p_writer) {
+void NamedContext::write_to(IStructuredWriter* p_writer)
+{
   Context::write_to(p_writer);
   p_writer->write<String, String>("_name", name());
   p_writer->write<String, String>("_qualified_name", qualified_name());
@@ -272,7 +292,8 @@ void NamedContext::write_to(IStructuredWriter* p_writer) {
   p_writer->write<String, String>("header", header);
 }
 
-Vector<String> NamedContext::_namespaces_names_lazy_get() const {
+Vector<String> NamedContext::_namespaces_names_lazy_get() const
+{
   Vector<String> names;
   Ref<const NamedContext> current = this->const_as<NamedContext>();
   if (current->is<Namespace>()) {
@@ -293,14 +314,16 @@ Vector<String> NamedContext::_namespaces_names_lazy_get() const {
   return reversed;
 }
 
-String NamedContext::_mangled_name_lazy_get() const {
+String NamedContext::_mangled_name_lazy_get() const
+{
   Size template_parameter_count = 0;
   for (const Ref<Node>& child : _children) {
     if (const Ref<TemplateParameters> parameters =
             child->as<TemplateParameters>()) {
       template_parameter_count = parameters->get_child_count();
-    } else if (const Ref<TemplateArguments> arguments =
-                   child->as<TemplateArguments>()) {
+    } else if (
+        const Ref<TemplateArguments> arguments =
+            child->as<TemplateArguments>()) {
       template_parameter_count = arguments->get_child_count();
     }
   }
@@ -308,4 +331,4 @@ String NamedContext::_mangled_name_lazy_get() const {
   return TypeDB::mangle_name(qualified_name(), template_parameter_count);
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

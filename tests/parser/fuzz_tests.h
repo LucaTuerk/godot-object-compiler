@@ -39,7 +39,8 @@
 #include "library/tree/syntax/parser_error.h"
 #include "test_registry.h"
 
-GOC_TEST(ParserRandStringFuzz) {
+GOC_TEST(ParserRandStringFuzz)
+{
   using namespace GodotObjectCompiler;
 
   TreeSitterParser parser;

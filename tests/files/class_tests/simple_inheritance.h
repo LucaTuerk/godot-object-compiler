@@ -34,8 +34,14 @@
 /**************************************************************************/
 #pragma once
 
-class A {};
+class A
+{
+};
 
-class B : public A {};
+class B : public A
+{
+};
 
-class C : public B {};
+class C : public B
+{
+};

@@ -43,16 +43,19 @@
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/all.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Ref<ParserError> TreeSitterParser::parse_file(const String& p_path,
-                                              Ref<Context> r_target) {
+Ref<ParserError>
+TreeSitterParser::parse_file(const String& p_path, Ref<Context> r_target)
+{
   input_is_path = true;
   return parse(path_absolute(p_path), std::move(r_target));
 }
 
-Ref<ParserError> TreeSitterParser::parse(const String& p_input,
-                                         Ref<Context> r_target) {
+Ref<ParserError>
+TreeSitterParser::parse(const String& p_input, Ref<Context> r_target)
+{
   Dictionary<Size, String> stripped_parameters;
   Dictionary<UID, UID> before_node;
   HashSet<UID> handled;
@@ -91,9 +94,9 @@ Ref<ParserError> TreeSitterParser::parse(const String& p_input,
 
   auto global_namespace = r_target->as<Namespace>();
   if (!global_namespace || !global_namespace->qualified_name().empty()) {
-    return node_new<ParserError>(ERROR,
-                                 "TreeSitterParser: Invalid target node, "
-                                 "expected to be the global namespace.");
+    return node_new<ParserError>(
+        ERROR, "TreeSitterParser: Invalid target node, "
+               "expected to be the global namespace.");
   }
 
   auto recall = [&]() {
@@ -122,13 +125,14 @@ Ref<ParserError> TreeSitterParser::parse(const String& p_input,
         for (const Ref<INodeHandler>& node_handler : _handlers) {
           if (node_handler->handles_node(context.current_src)) {
             Ref<Context> before = context.current_target;
-            step = node_handler->handle(context.current_src,
-                                        context.current_target);
+            step = node_handler->handle(
+                context.current_src, context.current_target);
 
-            PANIC_COND(!context.current_target->has_parent(),
-                       "Invalid orphan parser target after call to "
-                       "NodeHandler %s",
-                       node_handler->get_type().c_str())
+            PANIC_COND(
+                !context.current_target->has_parent(),
+                "Invalid orphan parser target after call to "
+                "NodeHandler %s",
+                node_handler->get_type().c_str())
 
             if (before != context.current_target) {
               before_node[context.current_src->get_id()] = before->get_id();
@@ -190,7 +194,8 @@ Ref<ParserError> TreeSitterParser::parse(const String& p_input,
 // TreeSitter does not handle macro parameters well
 // but it works if the parameters are empty, so strip them before processing
 String TreeSitterParser::strip_known_macro_contents(
-    const String& p_input, Dictionary<Size, String>& r_parameters) {
+    const String& p_input, Dictionary<Size, String>& r_parameters)
+{
   String local_input = p_input;
   Vector<String> macros =
       ExecutionContext::instance()->get_attribute_db()->get_all_macros();
@@ -279,8 +284,9 @@ String TreeSitterParser::strip_known_macro_contents(
   return local_input;
 }
 
-void TreeSitterParser::set_parse_attributes(bool p_parse_attributes) {
+void TreeSitterParser::set_parse_attributes(bool p_parse_attributes)
+{
   parse_attributes = p_parse_attributes;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

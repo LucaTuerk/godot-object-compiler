@@ -35,11 +35,14 @@
 #pragma once
 #include "core.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Permissions {
- public:
-  static Permissions* instance() {
+class Permissions
+{
+public:
+  static Permissions* instance()
+  {
     static Permissions instance;
     return &instance;
   }
@@ -52,8 +55,8 @@ class Permissions {
 
   void ensure_is_allowed_write_path(const String& p_path);
 
- private:
+private:
   HashSet<String> allowed_write_paths;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -38,20 +38,23 @@
 #include "library/core/lazy.h"
 #include "namespace.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class Field;
 class Function;
 class Body;
 
-class BaseClasses : public Context {
+class BaseClasses : public Context
+{
   NODE_TYPE(BaseClasses);
 };
 
-class Class : public Namespace {
+class Class : public Namespace
+{
   NODE_TYPE(Class);
 
- public:
+public:
   LAZY(Class, Size, template_parameter_count);
   /* collections */
   LAZY(Class, Vector<String>, direct_bases_names);
@@ -70,9 +73,9 @@ class Class : public Namespace {
   LAZY(Class, Vector<Ref<Field>>, protected_member_fields);
   LAZY(Class, Vector<Ref<Field>>, private_member_fields);
 
- public:
+public:
   bool has_function_named(const String& name) const;
   bool copy_to(const Ref<Node>& p_other) const override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

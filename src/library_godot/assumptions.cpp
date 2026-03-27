@@ -34,10 +34,13 @@
 /**************************************************************************/
 #include "assumptions.h"
 
-namespace GodotObjectCompiler {
-namespace AssumedGodotTypes {
+namespace GodotObjectCompiler
+{
+namespace AssumedGodotTypes
+{
 
-bool validate_assumptions() {
+bool validate_assumptions()
+{
   bool success = true;
 
   success &= ClassDB.validate(ExecutionContext::instance()->get_type_db()) ==
@@ -116,5 +119,5 @@ bool validate_assumptions() {
   return success;
 }
 
-}  // namespace AssumedGodotTypes
-}  // namespace GodotObjectCompiler
+} // namespace AssumedGodotTypes
+} // namespace GodotObjectCompiler

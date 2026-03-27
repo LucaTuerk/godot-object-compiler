@@ -40,14 +40,17 @@
 #include "library/tree/syntax/function.h"
 #include "library/tree/syntax/identifier.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool DefineHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool DefineHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type_in({"preproc_def", "preproc_function_def"});
 }
 
-ParserStep DefineHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                                 Ref<Context>& r_current_target) {
+ParserStep DefineHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   Ref<TreeSitterNode> identifier =
       p_current_src->find_child<TreeSitterNode>(0, type_is("identifier"));
   if (identifier) {
@@ -60,4 +63,4 @@ ParserStep DefineHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   return ParserStep::StepOver();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

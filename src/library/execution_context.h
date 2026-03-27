@@ -35,7 +35,8 @@
 #pragma once
 #include "core/core.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class NodeDB;
 class AttributeDB;
@@ -55,9 +56,11 @@ enum ErrorDetail {
 
 String error_level_to_string(ErrorLevel level);
 
-class ExecutionContext {
- public:
-  static ExecutionContext* instance() {
+class ExecutionContext
+{
+public:
+  static ExecutionContext* instance()
+  {
     static ExecutionContext singleton = ExecutionContext();
     return &singleton;
   }
@@ -70,8 +73,8 @@ class ExecutionContext {
 
   const Vector<String>& get_remove_macros();
 
-  void register_generated_file(const String& p_generated_path,
-                               const String& p_generated_from_path);
+  void register_generated_file(
+      const String& p_generated_path, const String& p_generated_from_path);
 
   bool load_generated_from_file(const String& p_path);
 
@@ -119,7 +122,7 @@ class ExecutionContext {
 
   void test_force_clear_modified_time(const String& p_path);
 
- private:
+private:
   void init();
 
   static Hash get_path_hash(const String& p_absolute_path);
@@ -143,14 +146,14 @@ class ExecutionContext {
   ErrorDetail _error_detail;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 
-#define PRINT_LEVEL(level, ...)                                     \
-  if (ExecutionContext::instance()->get_error_level() >= (level)) { \
-    if (level != ERROR)                                             \
-      fmt_print_ln(__VA_ARGS__);                                    \
-    else                                                            \
-      fmt_print_err(__VA_ARGS__);                                   \
+#define PRINT_LEVEL(level, ...)                                                \
+  if (ExecutionContext::instance()->get_error_level() >= (level)) {            \
+    if (level != ERROR)                                                        \
+      fmt_print_ln(__VA_ARGS__);                                               \
+    else                                                                       \
+      fmt_print_err(__VA_ARGS__);                                              \
   }
 
 #define PRINT_ERROR(...) PRINT_LEVEL(ERROR, __VA_ARGS__)

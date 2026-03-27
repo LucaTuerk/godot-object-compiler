@@ -41,9 +41,11 @@
 #include "library/core/string_utilities.h"
 #include "namespace.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Ref<Node> Node::clone() const {
+Ref<Node> Node::clone() const
+{
   if (Ref<Node> new_node = create(); copy_to(new_node)) {
     new_node->_tag = _tag;
     return new_node;
@@ -51,14 +53,16 @@ Ref<Node> Node::clone() const {
   PANIC("Failed to clone node of type %s", get_type().c_str());
 }
 
-void Node::write_to(IStructuredWriter* p_writer) {
+void Node::write_to(IStructuredWriter* p_writer)
+{
   Ref<Context> parent = get_parent();
   p_writer->write("_class", get_type());
   p_writer->write("_id", get_id());
   p_writer->write("_parent", parent ? parent->get_id() : INVALID_ID);
 }
 
-void Node::read_from(IStructuredReader* p_reader) {
+void Node::read_from(IStructuredReader* p_reader)
+{
   UID before = _id;
   UID new_id = p_reader->read<String, UID>("_id");
   if (before != new_id) {
@@ -69,7 +73,8 @@ void Node::read_from(IStructuredReader* p_reader) {
 
 bool Node::has_parent() const { return _parent.lock() != nullptr; }
 
-bool Node::has_next_sibling() const {
+bool Node::has_next_sibling() const
+{
   return has_parent() && _index != get_parent()->get_child_count() - 1;
 }
 
@@ -79,13 +84,15 @@ void Node::set_tag(const String& p_tag) { _tag = p_tag; }
 
 String Node::get_tag() const { return _tag; }
 
-String Node::pretty_print() const {
+String Node::pretty_print() const
+{
   Size dummy;
   return print_pretty_and_get_child_line(nullptr, dummy);
 }
 
-String Node::print_pretty_and_get_child_line(const Ref<Node>& p_child,
-                                             Size& p_line) const {
+String Node::print_pretty_and_get_child_line(
+    const Ref<Node>& p_child, Size& p_line) const
+{
   String result;
   String line_prefix;
 
@@ -139,7 +146,8 @@ UID Node::get_id() const { return _id; }
 
 Index Node::get_index() const { return _index; }
 
-Index Node::get_depth() const {
+Index Node::get_depth() const
+{
   Ref<const Node> current = shared_from_this();
   Size i = 0;
 
@@ -155,7 +163,8 @@ Index Node::get_depth() const {
 
 Ref<Context> Node::get_parent() const { return _parent.lock(); }
 
-Ref<Node> Node::get_root() {
+Ref<Node> Node::get_root()
+{
   if (!_root) {
     Ref<Node> current = shared_from_this();
     while (current) {
@@ -167,14 +176,16 @@ Ref<Node> Node::get_root() {
   return _root ? _root : shared_from_this();
 }
 
-void Node::reparent(const Ref<Context>& p_new_parent) {
+void Node::reparent(const Ref<Context>& p_new_parent)
+{
   if (Ref<Context> parent = get_parent()) {
     parent->remove_child(shared_from_this());
   }
   p_new_parent->add_child(shared_from_this());
 }
 
-Ref<Node> Node::get_sibling(int p_offset) const {
+Ref<Node> Node::get_sibling(int p_offset) const
+{
   const Ref<Context> parent = get_parent();
   if (parent == nullptr) {
     return nullptr;
@@ -187,4 +198,4 @@ Ref<Node> Node::get_next_sibling() const { return get_sibling(+1); }
 
 Ref<Node> Node::get_previous_sibling() const { return get_sibling(-1); }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

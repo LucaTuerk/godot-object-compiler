@@ -42,28 +42,32 @@
 #include "library/core/resources.h"
 #include "library/core/string_utilities.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Ref<ProgramError> Init::run(ApplicationContext& p_context) {
+Ref<ProgramError> Init::run(ApplicationContext& p_context)
+{
   Vector<String> files = directory_files(path_cwd());
-  bool project_exists = std::any_of(
-      files.begin(), files.end(),
-      [](const String& path) { return string_suffix(path, "goc_project"); });
+  bool project_exists =
+      std::any_of(files.begin(), files.end(), [](const String& path) {
+        return string_suffix(path, "goc_project");
+      });
 
-  PROG_ERR_COND(project_exists,
-                "A GOC project already exists at this location");
+  PROG_ERR_COND(
+      project_exists, "A GOC project already exists at this location");
 
-  print_ln(format("\nInitializing project at location \"%s\"\n",
-                  path_cwd().c_str()));
+  print_ln(format(
+      "\nInitializing project at location \"%s\"\n", path_cwd().c_str()));
   String project_name = input("|- Enter Project Name: ");
 
   print_ln("|  Paths:");
   String root_folder = input("   |- Sources Root (default: \"%s\"): ", "src");
   String goc_folder = input("   |- GOC Root: (default: \"%s\"): ", ".goc");
-  String generate_folder = input("   |- GOC Generated (default: \"%s\"): ",
-                                 path_concat(goc_folder, "generated"));
-  String cache_root = input("   |- GOC Cache (default: \"%s\"): ",
-                            path_concat(goc_folder, "cache"));
+  String generate_folder = input(
+      "   |- GOC Generated (default: \"%s\"): ",
+      path_concat(goc_folder, "generated"));
+  String cache_root = input(
+      "   |- GOC Cache (default: \"%s\"): ", path_concat(goc_folder, "cache"));
   String godot_cpp_root =
       input("   |- godot-cpp (default: \"%s\"): ", "godot-cpp");
 
@@ -88,17 +92,17 @@ Ref<ProgramError> Init::run(ApplicationContext& p_context) {
     project.paths_root = root_folder;
     project.paths_generated = generate_folder;
     project.paths_cache = cache_root;
-    project.godot_include_paths = {path_concat(godot_cpp_root, "include"),
-                                   path_concat(godot_cpp_root, "gen/include")};
+    project.godot_include_paths = {
+        path_concat(godot_cpp_root, "include"),
+        path_concat(godot_cpp_root, "gen/include")};
 
     String project_file_path = format("%s.goc_project", project_name.c_str());
     project.write_to_file(project_file_path);
 
     if (!p_context.set_from_project(project)) {
       return make_ref<ProgramError>(
-          ERROR,
-          "Failed to setup ApplicationContext from provided "
-          "project settings. Abort!");
+          ERROR, "Failed to setup ApplicationContext from provided "
+                 "project settings. Abort!");
     }
 
     Ref<ProgramError> init_resources_error =
@@ -111,4 +115,4 @@ Ref<ProgramError> Init::run(ApplicationContext& p_context) {
   return ProgramError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

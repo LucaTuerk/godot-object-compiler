@@ -38,20 +38,25 @@
 
 #include "godot_custom_property_bind.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String GodotCustomPropertyGetSetParameterType::get_return_type() {
+String GodotCustomPropertyGetSetParameterType::get_return_type()
+{
   return "GOC_CustomPropertyGetSet";
 }
 
-Vector<String> GodotCustomPropertyGetSetParameterType::get_value_names() {
+Vector<String> GodotCustomPropertyGetSetParameterType::get_value_names()
+{
   return {AutoGetSet, GetSet};
 }
 
 Vector<IAttributeParameterType::Argument>
-GodotCustomPropertyGetSetParameterType::get_arguments() {
-  return {{ARG_STRING, "const char*", "p_getter_name", false},
-          {ARG_STRING, "const char*", "p_setter_name", false}};
+GodotCustomPropertyGetSetParameterType::get_arguments()
+{
+  return {
+      {ARG_STRING, "const char*", "p_getter_name", false},
+      {ARG_STRING, "const char*", "p_setter_name", false}};
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

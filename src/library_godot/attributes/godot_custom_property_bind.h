@@ -36,7 +36,8 @@
 #include "library/generator/attribute_parameter_type.h"
 #include "library/tree/syntax/function.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 struct GodotCustomPropertyBind {
   String property_name;
@@ -46,15 +47,17 @@ struct GodotCustomPropertyBind {
   Ref<Function> setter;
 };
 
-class GodotCustomPropertyGetSetArgument : public Argument {
+class GodotCustomPropertyGetSetArgument : public Argument
+{
   NODE_TYPE(GodotCustomPropertyGetSetArgument);
 };
 
-class GodotCustomPropertyGetSetParameterType : public IAttributeParameterType {
-  PARAM_TYPE(GodotCustomPropertyGetSetParameterType,
-             GodotCustomPropertyGetSetArgument)
+class GodotCustomPropertyGetSetParameterType : public IAttributeParameterType
+{
+  PARAM_TYPE(
+      GodotCustomPropertyGetSetParameterType, GodotCustomPropertyGetSetArgument)
 
- public:
+public:
   static inline const char* AutoGetSet = "AutoGetSet";
   static inline const char* GetSet = "GetSet";
 
@@ -64,4 +67,4 @@ class GodotCustomPropertyGetSetParameterType : public IAttributeParameterType {
 
   Vector<Argument> get_arguments() override;
 };
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

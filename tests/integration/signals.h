@@ -40,7 +40,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(GenerateSignalBinds) {
+GOC_INTEGRATION_TEST(GenerateSignalBinds)
+{
   GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/signals.h");
 
   GOC_ASSERT_QUALIFIED_NAME("Tests::Signals", generated_source);
@@ -63,19 +64,19 @@ GOC_INTEGRATION_TEST(GenerateSignalBinds) {
   GOC_ASSERT_SIGNAL_BOUND("object_signal", "OBJECT");
   GOC_ASSERT_SIGNAL_BOUND("packed_byte_array_signal", "PACKED_BYTE_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND("packed_color_array_signal", "PACKED_COLOR_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_float32_array_signal",
-                          "PACKED_FLOAT32_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_float64_array_signal",
-                          "PACKED_FLOAT64_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_float32_array_signal", "PACKED_FLOAT32_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_float64_array_signal", "PACKED_FLOAT64_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND("packed_int32_array_signal", "PACKED_INT32_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND("packed_int64_array_signal", "PACKED_INT64_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND("packed_string_array_signal", "PACKED_STRING_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_vector2_array_signal",
-                          "PACKED_VECTOR2_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_vector3_array_signal",
-                          "PACKED_VECTOR3_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_vector4_array_signal",
-                          "PACKED_VECTOR4_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_vector2_array_signal", "PACKED_VECTOR2_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_vector3_array_signal", "PACKED_VECTOR3_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_vector4_array_signal", "PACKED_VECTOR4_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND("plane_signal", "PLANE");
   GOC_ASSERT_SIGNAL_BOUND("projection_signal", "PROJECTION");
   GOC_ASSERT_SIGNAL_BOUND("quaternion_signal", "QUATERNION");

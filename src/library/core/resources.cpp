@@ -37,13 +37,16 @@
 
 #include "string_utilities.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-void Resources::load_pack(ResourcePack* p_pack) {
+void Resources::load_pack(ResourcePack* p_pack)
+{
   _loaded_packs.push_back(p_pack);
 }
 
-Vector<String> Resources::resources_recursive(const String& p_path) const {
+Vector<String> Resources::resources_recursive(const String& p_path) const
+{
   Vector<String> res;
   for (const ResourcePack* pack : _loaded_packs) {
     for (const auto& [res_path, _] : *pack) {
@@ -55,7 +58,8 @@ Vector<String> Resources::resources_recursive(const String& p_path) const {
   return res;
 }
 
-String Resources::load_text_resource(const String& p_path) const {
+String Resources::load_text_resource(const String& p_path) const
+{
   for (ResourcePack* pack : _loaded_packs) {
     if (auto itr = pack->find(p_path); itr != pack->end()) {
       return String(itr->second);
@@ -64,7 +68,8 @@ String Resources::load_text_resource(const String& p_path) const {
   return "";
 }
 
-bool Resources::has_resource(const String& p_path) const {
+bool Resources::has_resource(const String& p_path) const
+{
   for (ResourcePack* pack : _loaded_packs) {
     if (auto itr = pack->find(p_path); itr != pack->end()) {
       return true;
@@ -73,4 +78,4 @@ bool Resources::has_resource(const String& p_path) const {
   return false;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

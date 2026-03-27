@@ -40,7 +40,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(GenerateFunctionBinds) {
+GOC_INTEGRATION_TEST(GenerateFunctionBinds)
+{
   GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/functions.h");
 
   GOC_ASSERT_QUALIFIED_NAME("Tests::Functions", generated_source);

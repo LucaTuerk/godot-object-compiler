@@ -34,5 +34,6 @@
 /**************************************************************************/
 #pragma once
 
-template <typename T>
-class TemplateClass {};
+template <typename T> class TemplateClass
+{
+};

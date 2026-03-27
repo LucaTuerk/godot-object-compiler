@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 
-class ValidNonGenerated : public Object {
+class ValidNonGenerated : public Object
+{
   GDCLASS(Valid, Object);
 };

@@ -40,7 +40,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(GenerateClasses) {
+GOC_INTEGRATION_TEST(GenerateClasses)
+{
   for (const String& path :
        directory_files("tests/files/integration_tests/godot_class")) {
     if (string_contains(path, "invalid")) {

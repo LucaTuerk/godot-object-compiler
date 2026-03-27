@@ -38,7 +38,8 @@
 
 GODOT_CLASS();
 
-class Invalid : Node {
+class Invalid : Node
+{
   GODOT_GENERATED_BODY();
 
   GODOT_ENUM();

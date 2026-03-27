@@ -38,12 +38,14 @@
 #include "library/generator/generator.h"
 #include "library_godot/attributes/godot_attributes.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GodotPropertyGenerator : public IClassGenerator<GodotPropertyAttribute> {
+class GodotPropertyGenerator : public IClassGenerator<GodotPropertyAttribute>
+{
   GENERATOR(GodotPropertyGenerator);
 
- public:
+public:
   Ref<GeneratorError> check_for_property_type_errors(
       const Ref<Node>& p_target, const Ref<Type>& p_type,
       const Ref<Namespace>& p_from_namespace);
@@ -61,11 +63,11 @@ class GodotPropertyGenerator : public IClassGenerator<GodotPropertyAttribute> {
       Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute,
       Ref<Context> p_default_values) override;
 
-  Ref<GeneratorError> do_generate(Ref<Class> p_target_class,
-                                  Ref<GodotPropertyAttribute> p_attribute,
-                                  ClassGeneratorResult& r_result) override;
+  Ref<GeneratorError> do_generate(
+      Ref<Class> p_target_class, Ref<GodotPropertyAttribute> p_attribute,
+      ClassGeneratorResult& r_result) override;
 };
 
 REGISTER_CLASS_GENERATOR(GodotPropertyGenerator);
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

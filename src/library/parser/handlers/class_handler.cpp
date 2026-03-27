@@ -39,14 +39,17 @@
 #include "library/tree/syntax/function.h"
 #include "library/tree/syntax/identifier.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool ClassHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool ClassHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type_in({"class_specifier", "base_class_clause"});
 }
 
-ParserStep ClassHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                                Ref<Context>& r_current_target) {
+ParserStep ClassHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   if (p_current_src->type == "class_specifier") {
     Ref<TreeSitterNode> found = p_current_src->find_descendant<TreeSitterNode>(
         BFS, type_is("field_declaration_list"));
@@ -78,4 +81,4 @@ ParserStep ClassHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   return ParserStep::StepInto();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

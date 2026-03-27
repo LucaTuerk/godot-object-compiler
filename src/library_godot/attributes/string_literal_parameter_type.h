@@ -36,21 +36,24 @@
 #pragma once
 #include "library/generator/attribute_parameter_type.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class StringLiteralArgument : public Argument {
+class StringLiteralArgument : public Argument
+{
   NODE_TYPE(StringLiteralArgument);
 
   LAZY(StringLiteralArgument, String, content);
 };
 
-class StringLiteralParameterType : public IAttributeParameterType {
+class StringLiteralParameterType : public IAttributeParameterType
+{
   PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
- public:
+public:
   String get_return_type() override;
   Vector<String> get_value_names() override;
   Vector<Argument> get_arguments() override;
   bool is_builtin() override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

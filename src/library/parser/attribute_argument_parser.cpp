@@ -37,10 +37,12 @@
 
 #include "library/core/string_utilities.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Vector<String> IAttributeArgumentParser::split_arguments(
-    const String& p_content) {
+Vector<String>
+IAttributeArgumentParser::split_arguments(const String& p_content)
+{
   std::stringstream strstr;
   Vector<String> result;
 
@@ -88,9 +90,9 @@ Vector<String> IAttributeArgumentParser::split_arguments(
   return result;
 }
 
-void IAttributeArgumentParser::split_outer_inner(const String& p_content,
-                                                 String& r_outer,
-                                                 String& r_inner) {
+void IAttributeArgumentParser::split_outer_inner(
+    const String& p_content, String& r_outer, String& r_inner)
+{
   std::stringstream inner_strm;
   std::stringstream outer_strm;
   r_outer = "";
@@ -124,10 +126,11 @@ void IAttributeArgumentParser::split_outer_inner(const String& p_content,
   r_inner = string_trim(inner_strm.str());
 }
 
-Vector<String> IAttributeArgumentParser::split_flags(const String& p_content) {
+Vector<String> IAttributeArgumentParser::split_flags(const String& p_content)
+{
   Vector<String> split = string_split(p_content, "|");
   std::transform(split.cbegin(), split.cend(), split.begin(), &string_trim);
   return split;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

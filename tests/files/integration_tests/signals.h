@@ -36,10 +36,12 @@
 
 #include "signals.generated.h"
 
-namespace Tests {
+namespace Tests
+{
 GODOT_CLASS();
 
-class Signals : Node {
+class Signals : Node
+{
   GODOT_GENERATED_BODY();
 
   GODOT_SIGNAL();
@@ -177,6 +179,6 @@ class Signals : Node {
   GODOT_SIGNAL();
   void resource_signal(Ref<Resource> p_param);
 };
-}  // namespace Tests
+} // namespace Tests
 
 GODOT_GENERATED_GLOBAL();

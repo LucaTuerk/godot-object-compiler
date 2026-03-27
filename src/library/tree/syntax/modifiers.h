@@ -36,62 +36,77 @@
 
 #include "node.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Virtual : public Node {
+class Virtual : public Node
+{
   NODE_TYPE(Virtual);
 };
 
-class Static : public Node {
+class Static : public Node
+{
   NODE_TYPE(Static);
 };
 
-class Inline : public Node {
+class Inline : public Node
+{
   NODE_TYPE(Inline);
 };
 
-class Override : public Node {
+class Override : public Node
+{
   NODE_TYPE(Override);
 };
 
-class TypeQualifier : public Node {
+class TypeQualifier : public Node
+{
   NODE_TYPE(TypeQualifier);
 };
 
-class SigndednessModifier : public Node {
+class SigndednessModifier : public Node
+{
   NODE_TYPE(SigndednessModifier);
 };
 
-class Const : public TypeQualifier {
+class Const : public TypeQualifier
+{
   NODE_TYPE(Const);
 };
 
-class Mutable : public TypeQualifier {
+class Mutable : public TypeQualifier
+{
   NODE_TYPE(Mutable);
 };
 
-class Volatile : public TypeQualifier {
+class Volatile : public TypeQualifier
+{
   NODE_TYPE(Volatile);
 };
 
-class ConstExpression : public TypeQualifier {
+class ConstExpression : public TypeQualifier
+{
   NODE_TYPE(ConstExpression);
 };
 
-class Unsigned : public SigndednessModifier {
+class Unsigned : public SigndednessModifier
+{
   NODE_TYPE(Unsigned);
 };
 
-class Signed : public SigndednessModifier {
+class Signed : public SigndednessModifier
+{
   NODE_TYPE(Signed);
 };
 
-class Short : public SigndednessModifier {
+class Short : public SigndednessModifier
+{
   NODE_TYPE(Short);
 };
 
-class Long : public SigndednessModifier {
+class Long : public SigndednessModifier
+{
   NODE_TYPE(Long);
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

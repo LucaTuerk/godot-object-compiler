@@ -37,9 +37,11 @@
 
 #include "tree/syntax/node.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-UID NodeDB::request_id_change(UID p_from, UID p_to) {
+UID NodeDB::request_id_change(UID p_from, UID p_to)
+{
   if (p_from == INVALID_ID) {
     print_err(
         "Trying to change a node id from invalid id. This is not "
@@ -67,7 +69,8 @@ UID NodeDB::request_id_change(UID p_from, UID p_to) {
 
 NodeDB::~NodeDB() {}
 
-Ref<Node> NodeDB::create(const String& p_type) {
+Ref<Node> NodeDB::create(const String& p_type)
+{
   NodeDB* db = ExecutionContext::instance()->get_node_db();
 
   auto itr = db->_node_constructors.find(p_type);
@@ -79,12 +82,14 @@ Ref<Node> NodeDB::create(const String& p_type) {
   return itr->second();
 }
 
-bool NodeDB::register_node_constructor(const String& p_name,
-                                       NodeCreator p_creator) {
+bool NodeDB::register_node_constructor(
+    const String& p_name, NodeCreator p_creator)
+{
   return _node_constructors.try_emplace(p_name, p_creator).second;
 }
 
-UID NodeDB::_generate_unique_id() {
+UID NodeDB::_generate_unique_id()
+{
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_int_distribution<uint64_t> dis;
@@ -100,4 +105,4 @@ UID NodeDB::_generate_unique_id() {
 
 bool NodeDB::_has_uid(UID p_uid) { return _uids.find(p_uid) != _uids.end(); }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

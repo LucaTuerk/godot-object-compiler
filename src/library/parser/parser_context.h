@@ -37,7 +37,8 @@
 #include "library/core/core.h"
 #include "library/tree/syntax/node.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class TreeSitterNode;
 
@@ -70,8 +71,8 @@ struct ParserContext {
   Result<TreeSitterNode> create_tree(TSTree* p_tree);
   Ref<TreeSitterNode> create_node(TSNode p_ts_node);
 
- private:
+private:
   bool _invalid = true;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

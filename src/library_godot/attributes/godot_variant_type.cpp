@@ -41,23 +41,28 @@
 #include "library/type_db.h"
 #include "library_godot/assumptions.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String GodotVariantTypeParameterType::get_return_type() {
+String GodotVariantTypeParameterType::get_return_type()
+{
   return "GOC_VariantType";
 }
 
-Vector<String> GodotVariantTypeParameterType::get_value_names() {
+Vector<String> GodotVariantTypeParameterType::get_value_names()
+{
   return value_names();
 }
 
 Vector<IAttributeParameterType::Argument>
-GodotVariantTypeParameterType::get_arguments() {
+GodotVariantTypeParameterType::get_arguments()
+{
   return {};
 }
 
 bool GodotVariantTypeParameterType::get_variant_type_for_value_name(
-    const String& p_value_name, String& r_variant_type) {
+    const String& p_value_name, String& r_variant_type)
+{
   _value_names_lazy.poke();
 
   const auto itr = _value_name_to_godot_variant_type.find(p_value_name);
@@ -70,7 +75,8 @@ bool GodotVariantTypeParameterType::get_variant_type_for_value_name(
   return true;
 }
 
-Vector<String> GodotVariantTypeParameterType::_value_names_lazy_get() {
+Vector<String> GodotVariantTypeParameterType::_value_names_lazy_get()
+{
   Ref<Enum> variant_type_enum = AssumedGodotTypes::VariantTypeEnum().type;
   if (!variant_type_enum) {
     return {};
@@ -86,7 +92,8 @@ Vector<String> GodotVariantTypeParameterType::_value_names_lazy_get() {
   return results;
 }
 
-String GodotVariantTypeArgument::_godot_variant_type_lazy_get() const {
+String GodotVariantTypeArgument::_godot_variant_type_lazy_get() const
+{
   auto ptype = GodotVariantTypeParameterType::instance();
 
   const Ref<Identifier> identifier = find_child<Identifier>();
@@ -102,4 +109,4 @@ String GodotVariantTypeArgument::_godot_variant_type_lazy_get() const {
   return variant_type;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

@@ -37,12 +37,14 @@
 #include "access_specifier.h"
 #include "context.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Member : public NamedContext {
+class Member : public NamedContext
+{
   NODE_TYPE(Member);
 
- public:
+public:
   /* info */
   LAZY(Member, bool, is_virtual);
   LAZY(Member, bool, is_override);
@@ -53,8 +55,8 @@ class Member : public NamedContext {
   LAZY(Member, bool, is_protected_member);
   LAZY(Member, bool, is_private_member);
 
- public:
+public:
   bool copy_to(const Ref<Node>& p_other) const override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

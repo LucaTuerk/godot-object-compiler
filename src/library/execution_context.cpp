@@ -46,36 +46,40 @@
 #include "node_db.h"
 #include "type_db.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 ExecutionContext::ExecutionContext() { init(); }
 
-void ExecutionContext::test_force_clear_modified_time(const String& p_path) {
+void ExecutionContext::test_force_clear_modified_time(const String& p_path)
+{
   String absolute = path_absolute(p_path);
   clear_generated_files(p_path);
   _last_modified_times.erase(absolute);
   _out_last_modified_times.erase(absolute);
 }
 
-String error_level_to_string(ErrorLevel level) {
+String error_level_to_string(ErrorLevel level)
+{
   switch (level) {
-    case ERROR:
-      return "Error";
-      break;
-    case WARNING:
-      return "Warning";
-      break;
-    case INFO:
-      return "Info";
-      break;
-    case VERBOSE:
-      return "Verbose";
-      break;
+  case ERROR:
+    return "Error";
+    break;
+  case WARNING:
+    return "Warning";
+    break;
+  case INFO:
+    return "Info";
+    break;
+  case VERBOSE:
+    return "Verbose";
+    break;
   }
   return "";
 }
 
-void ExecutionContext::init() {
+void ExecutionContext::init()
+{
   _node_db = make_ref<NodeDB>(NodeDB::Private());
   _attribute_db = make_ref<AttributeDB>(AttributeDB::Private());
   _type_db = make_ref<TypeDB>(TypeDB::Private());
@@ -88,30 +92,36 @@ void ExecutionContext::init() {
 
 NodeDB* ExecutionContext::get_node_db() const { return _node_db.get(); }
 
-AttributeDB* ExecutionContext::get_attribute_db() const {
+AttributeDB* ExecutionContext::get_attribute_db() const
+{
   return _attribute_db.get();
 }
 
 TypeDB* ExecutionContext::get_type_db() const { return _type_db.get(); }
 
-const Vector<String>& ExecutionContext::get_remove_macros() {
+const Vector<String>& ExecutionContext::get_remove_macros()
+{
   return _remove_macros;
 }
 
-void ExecutionContext::set_remove_macros(const Vector<String>& p_value) {
+void ExecutionContext::set_remove_macros(const Vector<String>& p_value)
+{
   _remove_macros = p_value;
 }
 
-const Vector<String>& ExecutionContext::get_include_paths() {
+const Vector<String>& ExecutionContext::get_include_paths()
+{
   return _include_paths;
 }
 
-void ExecutionContext::set_include_paths(const Vector<String>& p_value) {
+void ExecutionContext::set_include_paths(const Vector<String>& p_value)
+{
   _include_paths = p_value;
 }
 
-void ExecutionContext::set_error_level(ErrorLevel p_level,
-                                       ErrorDetail p_error_detail) {
+void ExecutionContext::set_error_level(
+    ErrorLevel p_level, ErrorDetail p_error_detail)
+{
   _error_level = p_level;
   _error_detail = p_error_detail;
 }
@@ -120,24 +130,27 @@ ErrorLevel ExecutionContext::get_error_level() const { return _error_level; }
 
 ErrorDetail ExecutionContext::get_error_detail() const { return _error_detail; }
 
-void ExecutionContext::print(ErrorLevel p_level,
-                             const String& p_message) const {
+void ExecutionContext::print(ErrorLevel p_level, const String& p_message) const
+{
   if (p_level >= _error_level) {
     print_ln(p_message);
   }
 }
 
-Hash ExecutionContext::get_path_hash(const String& p_absolute_path) {
+Hash ExecutionContext::get_path_hash(const String& p_absolute_path)
+{
   Hasher<String> hasher;
   return hasher(p_absolute_path);
 }
 
 void ExecutionContext::register_generated_file(
-    const String& p_generated_path, const String& p_generated_from_path) {
+    const String& p_generated_path, const String& p_generated_from_path)
+{
   _generated_from[p_generated_from_path].push_back(p_generated_path);
 }
 
-bool ExecutionContext::load_generated_from_file(const String& p_path) {
+bool ExecutionContext::load_generated_from_file(const String& p_path)
+{
   Config config;
   if (!config.read_from_file(p_path)) {
     return false;
@@ -157,7 +170,8 @@ bool ExecutionContext::load_generated_from_file(const String& p_path) {
   return true;
 }
 
-bool ExecutionContext::save_generated_from_file(const String& p_path) {
+bool ExecutionContext::save_generated_from_file(const String& p_path)
+{
   Config config;
 
   for (const auto& [path, generated] : _generated_from) {
@@ -170,12 +184,14 @@ bool ExecutionContext::save_generated_from_file(const String& p_path) {
 
 void ExecutionContext::clear_generated_from() { _generated_from.clear(); }
 
-void ExecutionContext::clear_last_modified_times() {
+void ExecutionContext::clear_last_modified_times()
+{
   _last_modified_times.clear();
   _out_last_modified_times.clear();
 }
 
-void ExecutionContext::regenerate_file(const String& p_path) {
+void ExecutionContext::regenerate_file(const String& p_path)
+{
   _last_modified_times.erase(p_path);
   _out_last_modified_times.erase(p_path);
 
@@ -190,15 +206,17 @@ void ExecutionContext::regenerate_file(const String& p_path) {
   _generated_from.erase(p_path);
 }
 
-void ExecutionContext::clean_generated_files() {
+void ExecutionContext::clean_generated_files()
+{
   auto itr = _generated_from.begin();
   while (itr != _generated_from.end()) {
     const auto& [path, generated_files] = *itr;
 
     if (!file_exists(path)) {
       for (const String& generated_file : generated_files) {
-        PRINT_VERBOSE("Removing orphan \"%s\", generated from \"%s\"",
-                      generated_file.c_str(), path.c_str());
+        PRINT_VERBOSE(
+            "Removing orphan \"%s\", generated from \"%s\"",
+            generated_file.c_str(), path.c_str());
         if (file_exists(generated_file)) {
           remove_file(generated_file);
         }
@@ -218,7 +236,8 @@ void ExecutionContext::clean_generated_files() {
   }
 }
 
-bool ExecutionContext::clear_generated_files(const String& p_path) {
+bool ExecutionContext::clear_generated_files(const String& p_path)
+{
   auto itr = _generated_from.find(p_path);
 
   if (itr == _generated_from.end()) {
@@ -227,8 +246,9 @@ bool ExecutionContext::clear_generated_files(const String& p_path) {
 
   for (const String& generated : itr->second) {
     if (file_exists(generated)) {
-      PRINT_VERBOSE("Removing orphan \"%s\", generated from \"%s\"",
-                    generated.c_str(), p_path.c_str());
+      PRINT_VERBOSE(
+          "Removing orphan \"%s\", generated from \"%s\"", generated.c_str(),
+          p_path.c_str());
       remove_file(generated);
     }
   }
@@ -236,7 +256,8 @@ bool ExecutionContext::clear_generated_files(const String& p_path) {
   return true;
 }
 
-bool ExecutionContext::load_last_modified_times_file(const String& p_path) {
+bool ExecutionContext::load_last_modified_times_file(const String& p_path)
+{
   Config config;
   if (!config.read_from_file(p_path)) {
     return false;
@@ -258,7 +279,8 @@ bool ExecutionContext::load_last_modified_times_file(const String& p_path) {
   return true;
 }
 
-bool ExecutionContext::save_last_modified_times_file(const String& p_path) {
+bool ExecutionContext::save_last_modified_times_file(const String& p_path)
+{
   Config config;
 
   for (const auto& [path, last_modified] : _out_last_modified_times) {
@@ -269,7 +291,8 @@ bool ExecutionContext::save_last_modified_times_file(const String& p_path) {
   return config.write_to_file(p_path);
 }
 
-bool ExecutionContext::file_modified(const String& p_path, bool p_update_time) {
+bool ExecutionContext::file_modified(const String& p_path, bool p_update_time)
+{
   String absolute = path_absolute(p_path);
 
   Size last_modified = file_write_time(absolute);
@@ -293,17 +316,20 @@ bool ExecutionContext::file_modified(const String& p_path, bool p_update_time) {
   return modified;
 }
 
-void ExecutionContext::set_usings(const Vector<String>& p_value) {
+void ExecutionContext::set_usings(const Vector<String>& p_value)
+{
   _usings = p_value;
 }
 
 const Vector<String>& ExecutionContext::get_usings() { return _usings; }
 
-void ExecutionContext::add_using(const String& p_value) {
+void ExecutionContext::add_using(const String& p_value)
+{
   _usings.push_back(p_value);
 }
 
-void ExecutionContext::remove_using(const String& p_value) {
+void ExecutionContext::remove_using(const String& p_value)
+{
   if (auto itr = std::find(_usings.begin(), _usings.end(), p_value);
       itr != _usings.end()) {
     _usings.erase(itr);
@@ -312,4 +338,4 @@ void ExecutionContext::remove_using(const String& p_value) {
 
 void ExecutionContext::clear_usings() { _usings.clear(); }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

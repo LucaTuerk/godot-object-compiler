@@ -44,14 +44,17 @@
 #include "library/core/string_utilities.h"
 #include "library/execution_context.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool ExportTypeDB::validate_arguments(ApplicationContext& p_context) {
+bool ExportTypeDB::validate_arguments(ApplicationContext& p_context)
+{
   return p_context.program_arguments.size() == 1 &&
          could_be_dir_path(p_context.program_arguments[0]);
 }
 
-Ref<ProgramError> ExportTypeDB::run(ApplicationContext& p_context) {
+Ref<ProgramError> ExportTypeDB::run(ApplicationContext& p_context)
+{
   PROG_ERR_COND(
       p_context.program_arguments.size() != 1,
       "Invalid argument count. Expected directory path to export TypeDB to.");
@@ -91,12 +94,13 @@ Ref<ProgramError> ExportTypeDB::run(ApplicationContext& p_context) {
     String relative_path = path_relative(file, p_context.paths_cache);
     String destination_path = path_concat(export_dir, relative_path);
 
-    PROG_ERR_COND(!copy_file(file, destination_path),
-                  "Failed to copy file \"%s\" to \"%s\"", file.c_str(),
-                  destination_path.c_str());
+    PROG_ERR_COND(
+        !copy_file(file, destination_path),
+        "Failed to copy file \"%s\" to \"%s\"", file.c_str(),
+        destination_path.c_str());
   }
 
   return ProgramError::OK;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

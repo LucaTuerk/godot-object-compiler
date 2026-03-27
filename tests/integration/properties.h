@@ -40,7 +40,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_INTEGRATION_TEST(GeneratePropertyBinds) {
+GOC_INTEGRATION_TEST(GeneratePropertyBinds)
+{
   GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/properties.h");
 
   GOC_ASSERT_QUALIFIED_NAME("Tests::Properties", generated_source)
@@ -63,19 +64,19 @@ GOC_INTEGRATION_TEST(GeneratePropertyBinds) {
   GOC_ASSERT_PROP_BOUND("object_property", "OBJECT");
   GOC_ASSERT_PROP_BOUND("packed_byte_array_property", "PACKED_BYTE_ARRAY");
   GOC_ASSERT_PROP_BOUND("packed_color_array_property", "PACKED_COLOR_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_float32_array_property",
-                        "PACKED_FLOAT32_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_float64_array_property",
-                        "PACKED_FLOAT64_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_float32_array_property", "PACKED_FLOAT32_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_float64_array_property", "PACKED_FLOAT64_ARRAY");
   GOC_ASSERT_PROP_BOUND("packed_int32_array_property", "PACKED_INT32_ARRAY");
   GOC_ASSERT_PROP_BOUND("packed_int64_array_property", "PACKED_INT64_ARRAY");
   GOC_ASSERT_PROP_BOUND("packed_string_array_property", "PACKED_STRING_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_vector2_array_property",
-                        "PACKED_VECTOR2_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_vector3_array_property",
-                        "PACKED_VECTOR3_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_vector4_array_property",
-                        "PACKED_VECTOR4_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector2_array_property", "PACKED_VECTOR2_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector3_array_property", "PACKED_VECTOR3_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector4_array_property", "PACKED_VECTOR4_ARRAY");
   GOC_ASSERT_PROP_BOUND("plane_property", "PLANE");
   GOC_ASSERT_PROP_BOUND("projection_property", "PROJECTION");
   GOC_ASSERT_PROP_BOUND("quaternion_property", "QUATERNION");
@@ -99,12 +100,13 @@ GOC_INTEGRATION_TEST(GeneratePropertyBinds) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChangedValue) {
+GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChangedValue)
+{
   GOC_INTEGRATION_TEST_GEN_FILE(
       "tests/files/integration_tests/properties_emit_changed_value.h");
 
-  GOC_ASSERT_QUALIFIED_NAME("Tests::PropertiesEmitChangedValue",
-                            generated_source)
+  GOC_ASSERT_QUALIFIED_NAME(
+      "Tests::PropertiesEmitChangedValue", generated_source)
   GOC_ASSERT_PROP_BOUND("aabb_property", "AABB");
   GOC_ASSERT_SIGNAL_BOUND("aabb_property_changed", "AABB");
   GOC_ASSERT_PROP_BOUND("array_property", "ARRAY");
@@ -136,40 +138,40 @@ GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChangedValue) {
   GOC_ASSERT_PROP_BOUND("object_property", "OBJECT");
   GOC_ASSERT_SIGNAL_BOUND("object_property_changed", "OBJECT");
   GOC_ASSERT_PROP_BOUND("packed_byte_array_property", "PACKED_BYTE_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_byte_array_property_changed",
-                          "PACKED_BYTE_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_byte_array_property_changed", "PACKED_BYTE_ARRAY");
   GOC_ASSERT_PROP_BOUND("packed_color_array_property", "PACKED_COLOR_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_color_array_property_changed",
-                          "PACKED_COLOR_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_float32_array_property",
-                        "PACKED_FLOAT32_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_float32_array_property_changed",
-                          "PACKED_FLOAT32_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_float64_array_property",
-                        "PACKED_FLOAT64_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_float64_array_property_changed",
-                          "PACKED_FLOAT64_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_color_array_property_changed", "PACKED_COLOR_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_float32_array_property", "PACKED_FLOAT32_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_float32_array_property_changed", "PACKED_FLOAT32_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_float64_array_property", "PACKED_FLOAT64_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_float64_array_property_changed", "PACKED_FLOAT64_ARRAY");
   GOC_ASSERT_PROP_BOUND("packed_int32_array_property", "PACKED_INT32_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_int32_array_property_changed",
-                          "PACKED_INT32_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_int32_array_property_changed", "PACKED_INT32_ARRAY");
   GOC_ASSERT_PROP_BOUND("packed_int64_array_property", "PACKED_INT64_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_int64_array_property_changed",
-                          "PACKED_INT64_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_int64_array_property_changed", "PACKED_INT64_ARRAY");
   GOC_ASSERT_PROP_BOUND("packed_string_array_property", "PACKED_STRING_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_string_array_property_changed",
-                          "PACKED_STRING_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_vector2_array_property",
-                        "PACKED_VECTOR2_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_vector2_array_property_changed",
-                          "PACKED_VECTOR2_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_vector3_array_property",
-                        "PACKED_VECTOR3_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_vector3_array_property_changed",
-                          "PACKED_VECTOR3_ARRAY");
-  GOC_ASSERT_PROP_BOUND("packed_vector4_array_property",
-                        "PACKED_VECTOR4_ARRAY");
-  GOC_ASSERT_SIGNAL_BOUND("packed_vector4_array_property_changed",
-                          "PACKED_VECTOR4_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_string_array_property_changed", "PACKED_STRING_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector2_array_property", "PACKED_VECTOR2_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_vector2_array_property_changed", "PACKED_VECTOR2_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector3_array_property", "PACKED_VECTOR3_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_vector3_array_property_changed", "PACKED_VECTOR3_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector4_array_property", "PACKED_VECTOR4_ARRAY");
+  GOC_ASSERT_SIGNAL_BOUND(
+      "packed_vector4_array_property_changed", "PACKED_VECTOR4_ARRAY");
   GOC_ASSERT_PROP_BOUND("plane_property", "PLANE");
   GOC_ASSERT_SIGNAL_BOUND("plane_property_changed", "PLANE");
   GOC_ASSERT_PROP_BOUND("projection_property", "PROJECTION");
@@ -212,7 +214,8 @@ GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChangedValue) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChanged) {
+GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChanged)
+{
   GOC_INTEGRATION_TEST_GEN_FILE(
       "tests/files/integration_tests/properties_emit_changed.h");
 
@@ -253,11 +256,11 @@ GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChanged) {
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_byte_array_property_changed")
   GOC_ASSERT_PROP_BOUND("packed_color_array_property", "PACKED_COLOR_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_color_array_property_changed")
-  GOC_ASSERT_PROP_BOUND("packed_float32_array_property",
-                        "PACKED_FLOAT32_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_float32_array_property", "PACKED_FLOAT32_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_float32_array_property_changed")
-  GOC_ASSERT_PROP_BOUND("packed_float64_array_property",
-                        "PACKED_FLOAT64_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_float64_array_property", "PACKED_FLOAT64_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_float64_array_property_changed")
   GOC_ASSERT_PROP_BOUND("packed_int32_array_property", "PACKED_INT32_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_int32_array_property_changed")
@@ -265,14 +268,14 @@ GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChanged) {
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_int64_array_property_changed")
   GOC_ASSERT_PROP_BOUND("packed_string_array_property", "PACKED_STRING_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_string_array_property_changed")
-  GOC_ASSERT_PROP_BOUND("packed_vector2_array_property",
-                        "PACKED_VECTOR2_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector2_array_property", "PACKED_VECTOR2_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_vector2_array_property_changed")
-  GOC_ASSERT_PROP_BOUND("packed_vector3_array_property",
-                        "PACKED_VECTOR3_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector3_array_property", "PACKED_VECTOR3_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_vector3_array_property_changed")
-  GOC_ASSERT_PROP_BOUND("packed_vector4_array_property",
-                        "PACKED_VECTOR4_ARRAY");
+  GOC_ASSERT_PROP_BOUND(
+      "packed_vector4_array_property", "PACKED_VECTOR4_ARRAY");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("packed_vector4_array_property_changed")
   GOC_ASSERT_PROP_BOUND("plane_property", "PLANE");
   GOC_ASSERT_SIGNAL_BOUND_NO_ARGS("plane_property_changed")
@@ -316,7 +319,8 @@ GOC_INTEGRATION_TEST(GeneratePropertyBindsEmitChanged) {
   return TEST_RESULT_SUCCESS;
 };
 
-GOC_INTEGRATION_TEST(GenerateCustomPropertyBinds) {
+GOC_INTEGRATION_TEST(GenerateCustomPropertyBinds)
+{
   GOC_INTEGRATION_TEST_GEN_FILE(
       "tests/files/integration_tests/custom_properties.h");
 
@@ -336,26 +340,26 @@ GOC_INTEGRATION_TEST(GenerateCustomPropertyBinds) {
   GOC_ASSERT_CUSTOM_PROP_BOUND("long_property", "INT");
   GOC_ASSERT_CUSTOM_PROP_BOUND("node_path_property", "NODE_PATH");
   GOC_ASSERT_CUSTOM_PROP_BOUND("object_property", "OBJECT");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_byte_array_property",
-                               "PACKED_BYTE_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_color_array_property",
-                               "PACKED_COLOR_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_float32_array_property",
-                               "PACKED_FLOAT32_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_float64_array_property",
-                               "PACKED_FLOAT64_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_int32_array_property",
-                               "PACKED_INT32_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_int64_array_property",
-                               "PACKED_INT64_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_string_array_property",
-                               "PACKED_STRING_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_vector2_array_property",
-                               "PACKED_VECTOR2_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_vector3_array_property",
-                               "PACKED_VECTOR3_ARRAY");
-  GOC_ASSERT_CUSTOM_PROP_BOUND("packed_vector4_array_property",
-                               "PACKED_VECTOR4_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_byte_array_property", "PACKED_BYTE_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_color_array_property", "PACKED_COLOR_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_float32_array_property", "PACKED_FLOAT32_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_float64_array_property", "PACKED_FLOAT64_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_int32_array_property", "PACKED_INT32_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_int64_array_property", "PACKED_INT64_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_string_array_property", "PACKED_STRING_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_vector2_array_property", "PACKED_VECTOR2_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_vector3_array_property", "PACKED_VECTOR3_ARRAY");
+  GOC_ASSERT_CUSTOM_PROP_BOUND(
+      "packed_vector4_array_property", "PACKED_VECTOR4_ARRAY");
   GOC_ASSERT_CUSTOM_PROP_BOUND("plane_property", "PLANE");
   GOC_ASSERT_CUSTOM_PROP_BOUND("projection_property", "PROJECTION");
   GOC_ASSERT_CUSTOM_PROP_BOUND("quaternion_property", "QUATERNION");

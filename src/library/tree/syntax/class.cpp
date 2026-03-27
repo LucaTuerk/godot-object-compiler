@@ -40,9 +40,11 @@
 #include "library/type_db.h"
 #include "library_godot/attributes/godot_attributes.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-Vector<String> Class::_direct_bases_names_lazy_get() const {
+Vector<String> Class::_direct_bases_names_lazy_get() const
+{
   Vector<String> result;
 
   const Ref<BaseClasses> base_classes = find_child<BaseClasses>();
@@ -57,7 +59,8 @@ Vector<String> Class::_direct_bases_names_lazy_get() const {
   return result;
 }
 
-Vector<Ref<Class>> Class::_base_classes_lazy_get() {
+Vector<Ref<Class>> Class::_base_classes_lazy_get()
+{
   Vector<Ref<Identifier>> identifiers;
 
   const Ref<BaseClasses> bases = find_child<BaseClasses>();
@@ -78,7 +81,8 @@ Vector<Ref<Class>> Class::_base_classes_lazy_get() {
   return result;
 }
 
-String Class::_first_base_qualifed_name_lazy_get() const {
+String Class::_first_base_qualifed_name_lazy_get() const
+{
   Vector<Ref<Class>> bases = base_classes();
   if (bases.empty()) {
     return "";
@@ -86,7 +90,8 @@ String Class::_first_base_qualifed_name_lazy_get() const {
   return bases[0]->qualified_name();
 }
 
-Vector<Ref<Attribute>> Class::_attributes_lazy_get() const {
+Vector<Ref<Attribute>> Class::_attributes_lazy_get() const
+{
   Vector<Ref<Attribute>> attributes;
   if (!body()) {
     return attributes;
@@ -101,11 +106,13 @@ Vector<Ref<Attribute>> Class::_attributes_lazy_get() const {
   return attributes;
 }
 
-bool Class::_has_generated_class_attribute_lazy_get() const {
+bool Class::_has_generated_class_attribute_lazy_get() const
+{
   return find_descendant<GodotGeneratedBodyAttribute>() != nullptr;
 }
 
-bool Class::has_function_named(const String& name) const {
+bool Class::has_function_named(const String& name) const
+{
   for (const Ref<Function>& member_function : member_functions()) {
     if (member_function->name() == name) {
       return true;
@@ -114,13 +121,15 @@ bool Class::has_function_named(const String& name) const {
   return false;
 }
 
-bool Class::copy_to(const Ref<Node>& p_other) const {
+bool Class::copy_to(const Ref<Node>& p_other) const
+{
   COPY_GUARD(Class, Namespace);
   // COPY_LAZY(base_classes);
   return true;
 }
 
-Vector<Ref<Function>> Class::_member_functions_lazy_get() const {
+Vector<Ref<Function>> Class::_member_functions_lazy_get() const
+{
   if (!body()) {
     return {};
   }
@@ -128,7 +137,8 @@ Vector<Ref<Function>> Class::_member_functions_lazy_get() const {
   return body()->find_children<Function>();
 }
 
-Vector<Ref<Function>> Class::_public_member_functions_lazy_get() const {
+Vector<Ref<Function>> Class::_public_member_functions_lazy_get() const
+{
   Vector<Ref<Function>> result;
   for (const Ref<Function>& member_function : member_functions()) {
     if (member_function->is_public_member()) {
@@ -138,7 +148,8 @@ Vector<Ref<Function>> Class::_public_member_functions_lazy_get() const {
   return result;
 }
 
-Vector<Ref<Function>> Class::_protected_member_functions_lazy_get() const {
+Vector<Ref<Function>> Class::_protected_member_functions_lazy_get() const
+{
   Vector<Ref<Function>> result;
   for (const Ref<Function>& member_function : member_functions()) {
     if (member_function->is_protected_member()) {
@@ -148,7 +159,8 @@ Vector<Ref<Function>> Class::_protected_member_functions_lazy_get() const {
   return result;
 }
 
-Vector<Ref<Function>> Class::_private_member_functions_lazy_get() const {
+Vector<Ref<Function>> Class::_private_member_functions_lazy_get() const
+{
   Vector<Ref<Function>> result;
   for (const Ref<Function>& member_function : member_functions()) {
     if (member_function->is_private_member()) {
@@ -158,7 +170,8 @@ Vector<Ref<Function>> Class::_private_member_functions_lazy_get() const {
   return result;
 }
 
-Vector<Ref<Field>> Class::_member_fields_lazy_get() const {
+Vector<Ref<Field>> Class::_member_fields_lazy_get() const
+{
   if (!body()) {
     return {};
   }
@@ -166,7 +179,8 @@ Vector<Ref<Field>> Class::_member_fields_lazy_get() const {
   return body()->find_children<Field>();
 }
 
-Vector<Ref<Field>> Class::_public_member_fields_lazy_get() const {
+Vector<Ref<Field>> Class::_public_member_fields_lazy_get() const
+{
   Vector<Ref<Field>> result;
   for (const Ref<Field>& member_field : member_fields()) {
     if (member_field->is_public_member()) {
@@ -176,7 +190,8 @@ Vector<Ref<Field>> Class::_public_member_fields_lazy_get() const {
   return result;
 }
 
-Vector<Ref<Field>> Class::_protected_member_fields_lazy_get() const {
+Vector<Ref<Field>> Class::_protected_member_fields_lazy_get() const
+{
   Vector<Ref<Field>> result;
   for (const Ref<Field>& member_field : member_fields()) {
     if (member_field->is_protected_member()) {
@@ -186,7 +201,8 @@ Vector<Ref<Field>> Class::_protected_member_fields_lazy_get() const {
   return result;
 }
 
-Vector<Ref<Field>> Class::_private_member_fields_lazy_get() const {
+Vector<Ref<Field>> Class::_private_member_fields_lazy_get() const
+{
   Vector<Ref<Field>> result;
   for (const Ref<Field>& member_field : member_fields()) {
     if (member_field->is_private_member()) {
@@ -196,7 +212,8 @@ Vector<Ref<Field>> Class::_private_member_fields_lazy_get() const {
   return result;
 }
 
-Size Class::_template_parameter_count_lazy_get() const {
+Size Class::_template_parameter_count_lazy_get() const
+{
   Ref<TemplateParameters> template_parameters =
       find_child<TemplateParameters>();
   if (!template_parameters) {
@@ -205,4 +222,4 @@ Size Class::_template_parameter_count_lazy_get() const {
   return template_parameters->get_child_count();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

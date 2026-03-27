@@ -36,15 +36,18 @@
 #include "library/parser/node_handler.h"
 #include "library/parser/parser.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class NamespaceHandler : public INodeHandler {
+class NamespaceHandler : public INodeHandler
+{
   NODE_HANDLER(NamespaceHandler);
 
- public:
+public:
   bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
-  ParserStep handle(const Ref<TreeSitterNode>& p_current_src,
-                    Ref<Context>& r_current_target) override;
+  ParserStep handle(
+      const Ref<TreeSitterNode>& p_current_src,
+      Ref<Context>& r_current_target) override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

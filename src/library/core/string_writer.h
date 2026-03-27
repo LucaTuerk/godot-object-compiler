@@ -36,39 +36,41 @@
 #include "library/core/core.h"
 #include "reader_writer.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class StreamWriter : public IStringWriter {
- public:
+class StreamWriter : public IStringWriter
+{
+public:
   void write(const String& p_value) override;
 
   String get_string() override;
 
   Size current_length() override;
 
- private:
+private:
   std::stringstream _stream;
   Size _current_length = 0;
 };
 
-class FileWriter : public IStringWriter {
- public:
+class FileWriter : public IStringWriter
+{
+public:
   FileWriter(const FileWriter& other) = delete;
 
   FileWriter(FileWriter&& other) noexcept
-      : IStringWriter(std::move(other)),
-        _path(std::move(other._path)),
+      : IStringWriter(std::move(other)), _path(std::move(other._path)),
         _do_not_write_same_content(other._do_not_write_same_content),
-        _generated(other._generated),
-        _moved(false),
-        _stream(std::move(other._stream)),
-        _file(std::move(other._file)) {
+        _generated(other._generated), _moved(false),
+        _stream(std::move(other._stream)), _file(std::move(other._file))
+  {
     other._moved = true;
   }
 
   FileWriter& operator=(const FileWriter& other) = delete;
 
-  FileWriter& operator=(FileWriter&& other) noexcept {
+  FileWriter& operator=(FileWriter&& other) noexcept
+  {
     if (this == &other) {
       return *this;
     }
@@ -83,13 +85,13 @@ class FileWriter : public IStringWriter {
     return *this;
   }
 
-  explicit FileWriter(const String& path,
-                      bool do_not_write_same_content = true);
+  explicit FileWriter(
+      const String& path, bool do_not_write_same_content = true);
 
   ~FileWriter() override;
 
-  static FileWriter generated(const String& path,
-                              const String& p_generated_from);
+  static FileWriter
+  generated(const String& path, const String& p_generated_from);
 
   void write(const String& p_value) override;
 
@@ -97,7 +99,7 @@ class FileWriter : public IStringWriter {
 
   Size current_length() override;
 
- private:
+private:
   FileWriter(const String& path, const String& initial_content);
 
   static String _generated_header(const String& p_file_name);
@@ -110,4 +112,4 @@ class FileWriter : public IStringWriter {
   std::fstream _file;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

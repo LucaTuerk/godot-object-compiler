@@ -37,7 +37,8 @@
 
 using namespace GodotObjectCompiler;
 
-GOC_TEST(Results) {
+GOC_TEST(Results)
+{
   Ref<Node> node = node_new<Node>();
   Ref<Error> error = node_new<Error>();
 

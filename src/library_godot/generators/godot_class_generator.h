@@ -38,26 +38,28 @@
 #include "library/generator/generator.h"
 #include "library_godot/attributes/godot_attributes.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 class GodotClassGenerator : public IClassGenerator<GodotClassAttribute>,
-                            public IGodotInitializationGenerator {
+                            public IGodotInitializationGenerator
+{
   GENERATOR(GodotClassGenerator);
 
- public:
+public:
   Ref<GeneratorError> generate_initialization(
       Ref<Class> p_target_class, Ref<GodotClassAttribute> p_class_attribute,
       Ref<Context> p_initialize_content,
       Ref<Context> p_uninitialize_content) override;
 
- private:
+private:
   Ref<GeneratorError> do_generate_default_attribute_arguments(
       Ref<Class> p_target_class, Ref<GodotClassAttribute> p_attribute,
       Ref<Context> p_default_values) override;
 
-  Ref<GeneratorError> do_generate(Ref<Class> p_target_class,
-                                  Ref<GodotClassAttribute> p_attribute,
-                                  ClassGeneratorResult& r_result) override;
+  Ref<GeneratorError> do_generate(
+      Ref<Class> p_target_class, Ref<GodotClassAttribute> p_attribute,
+      ClassGeneratorResult& r_result) override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

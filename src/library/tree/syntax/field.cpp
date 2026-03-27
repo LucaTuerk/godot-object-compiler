@@ -36,16 +36,19 @@
 
 #include "modifiers.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
 Ref<Type> Field::_type_lazy_get() const { return find_descendant<Type>(); }
 
-bool Field::_is_mutable_lazy_get() const {
+bool Field::_is_mutable_lazy_get() const
+{
   return find_descendant<Mutable>() != nullptr;
 }
 
-bool Field::_is_volatile_lazy_get() const {
+bool Field::_is_volatile_lazy_get() const
+{
   return find_descendant<Volatile>() != nullptr;
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

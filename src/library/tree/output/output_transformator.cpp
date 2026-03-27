@@ -37,20 +37,22 @@
 
 #include "library/core/string_writer.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-#define ADD_TRANSFORM_CHILDREN(from, into)                  \
-  for (Ref<Node> child : *from) {                           \
-    Ref<Output::OutputNode> transformed = transform(child); \
-    into->add_child(transformed);                           \
+#define ADD_TRANSFORM_CHILDREN(from, into)                                     \
+  for (Ref<Node> child : *from) {                                              \
+    Ref<Output::OutputNode> transformed = transform(child);                    \
+    into->add_child(transformed);                                              \
   }
 
-#define ADD_TEXT_IF_TYPE(type, text) \
-  if (p_tree->is<type>()) {          \
-    return Output::Text(text);       \
+#define ADD_TEXT_IF_TYPE(type, text)                                           \
+  if (p_tree->is<type>()) {                                                    \
+    return Output::Text(text);                                                 \
   }
 
-Ref<Output::OutputNode> OutputTransformator::transform(Ref<Node> p_tree) {
+Ref<Output::OutputNode> OutputTransformator::transform(Ref<Node> p_tree)
+{
   if (p_tree == nullptr) {
     return Output::Text("");
   }
@@ -80,40 +82,42 @@ Ref<Output::OutputNode> OutputTransformator::transform(Ref<Node> p_tree) {
            Output::Text(format(" : public %s", base_names[0].c_str())),
            transform(_class->body()), Output::Semicolon()});
     }
-    ERR_COND(!base_names.empty(),
-             "Classes with multiple inheritance are not supported by the "
-             "OutputTransformator");
-    return Output::Spaces({Output::Text(specifier),
-                           Output::Text(_class->name()),
-                           transform(_class->body()), Output::Semicolon()});
+    ERR_COND(
+        !base_names.empty(),
+        "Classes with multiple inheritance are not supported by the "
+        "OutputTransformator");
+    return Output::Spaces(
+        {Output::Text(specifier), Output::Text(_class->name()),
+         transform(_class->body()), Output::Semicolon()});
   }
 
   if (Ref<Namespace> _namespace = p_tree->as<Namespace>()) {
     if (_namespace->name().empty()) {
       Ref<Output::ListNode> into = Output::Lines({});
-      ERR_COND(_namespace->body() == nullptr,
-               "Failed to get global namespace body.");
+      ERR_COND(
+          _namespace->body() == nullptr,
+          "Failed to get global namespace body.");
 
       ADD_TRANSFORM_CHILDREN(_namespace->body(), into);
       return into;
     }
 
-    return Output::Spaces({Output::Text("namespace"),
-                           Output::Text(_namespace->name()),
-                           transform(_namespace->body())});
+    return Output::Spaces(
+        {Output::Text("namespace"), Output::Text(_namespace->name()),
+         transform(_namespace->body())});
   }
 
   if (Ref<AccessSpecifier> access_specifier = p_tree->as<AccessSpecifier>()) {
     switch (access_specifier->type) {
-      case AccessSpecifier::PUBLIC:
-        return Output::Text("public:");
-        break;
-      case AccessSpecifier::PRIVATE:
-        return Output::Text("private:");
-        break;
-      case AccessSpecifier::PROTECTED:
-        return Output::Text("protected:");
-        break;
+    case AccessSpecifier::PUBLIC:
+      return Output::Text("public:");
+      break;
+    case AccessSpecifier::PRIVATE:
+      return Output::Text("private:");
+      break;
+    case AccessSpecifier::PROTECTED:
+      return Output::Text("protected:");
+      break;
     }
   }
 
@@ -227,7 +231,8 @@ Ref<Output::OutputNode> OutputTransformator::transform(Ref<Node> p_tree) {
 }
 
 void OutputTransformator::replace_non_output_children(
-    const Ref<Output::OutputNode>& p_node) {
+    const Ref<Output::OutputNode>& p_node)
+{
   if (const Ref<Context> context = std::dynamic_pointer_cast<Context>(p_node)) {
     for (const Ref<Node>& child : *context) {
       if (Ref<Output::OutputNode> output_child =
@@ -243,4 +248,4 @@ void OutputTransformator::replace_non_output_children(
   }
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

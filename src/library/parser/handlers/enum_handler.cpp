@@ -41,15 +41,18 @@
 #include "library/tree/syntax/identifier.h"
 #include "library/tree/syntax/literal.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-bool EnumHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
+bool EnumHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+{
   return p_current_src->type_in(
       {"enum_specifier", "enumerator_list", "enumerator"});
 }
 
-ParserStep EnumHandler::handle(const Ref<TreeSitterNode>& p_current_src,
-                               Ref<Context>& r_current_target) {
+ParserStep EnumHandler::handle(
+    const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+{
   if (p_current_src->type == "enum_specifier") {
     r_current_target = r_current_target->create_child<Enum>();
   }
@@ -82,4 +85,4 @@ ParserStep EnumHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   return ParserStep::StepInto();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

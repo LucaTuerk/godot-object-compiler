@@ -36,13 +36,15 @@
 #ifdef DEV_BUILD
 #include "program.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class GenerateResources : public IProgram {
+class GenerateResources : public IProgram
+{
   PROGRAM(GenerateResources, "generate/resources");
   PROG_NO_ARGS
 
- public:
+public:
   using TableRow = Vector<String>;
   using Table = Vector<TableRow>;
 
@@ -52,5 +54,5 @@ class GenerateResources : public IProgram {
   Ref<ProgramError> run(ApplicationContext& p_context) override;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler
 #endif

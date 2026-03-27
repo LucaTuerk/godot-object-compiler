@@ -42,7 +42,8 @@
 
 using namespace GodotObjectCompiler;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
   Vector<String> args;
   for (int i = 1; i < argc; i++) {
     args.emplace_back(argv[i]);

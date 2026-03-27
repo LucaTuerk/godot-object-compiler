@@ -38,9 +38,11 @@
 #include "library/core/string_writer.h"
 #include "library/execution_context.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-String Parser::Helpers::remove_macros(const String& p_input) {
+String Parser::Helpers::remove_macros(const String& p_input)
+{
   StreamWriter writer;
   for (String line : string_split(p_input, "\n")) {
     if (!string_prefix(string_trim(line), "#")) {
@@ -56,4 +58,4 @@ String Parser::Helpers::remove_macros(const String& p_input) {
   return writer.get_string();
 }
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

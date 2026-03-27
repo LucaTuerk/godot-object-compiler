@@ -38,7 +38,8 @@
 #include "invalid_properties/custom_non_variant_type.generated.h"
 
 GODOT_CLASS();
-class Invalid : Node {
+class Invalid : Node
+{
   GODOT_GENERATED_BODY();
 
   GODOT_PROPERTY("property", GetSet("get_property", "set_property"));

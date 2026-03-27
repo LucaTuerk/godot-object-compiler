@@ -34,8 +34,9 @@
 /**************************************************************************/
 #pragma once
 
-class A {
- public:
+class A
+{
+public:
   int a();
   bool b();
   A* c();
@@ -44,7 +45,7 @@ class A {
   bool e(bool param);
   A* f(A* param);
 
- protected:
+protected:
   int g();
   bool h();
   A* i();
@@ -53,7 +54,7 @@ class A {
   bool k(bool param);
   A* l(A* param);
 
- private:
+private:
   int m();
   bool n();
   A* o();

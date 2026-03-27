@@ -36,15 +36,19 @@
 
 #include "context.h"
 
-namespace GodotObjectCompiler {
+namespace GodotObjectCompiler
+{
 
-class Include : public Context {
+class Include : public Context
+{
   NODE_TYPE(Include);
 
- public:
+public:
   Include(String include_path, bool is_system_include)
       : is_system_include(is_system_include),
-        include_path(std::move(include_path)) {}
+        include_path(std::move(include_path))
+  {
+  }
 
   String to_string() const override;
   void read_from(IStructuredReader* p_reader) override;
@@ -55,4 +59,4 @@ class Include : public Context {
   String include_path;
 };
 
-}  // namespace GodotObjectCompiler
+} // namespace GodotObjectCompiler

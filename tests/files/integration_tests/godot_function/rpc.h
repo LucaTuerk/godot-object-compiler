@@ -38,7 +38,8 @@
 
 GODOT_CLASS();
 
-class Rpc : public Node {
+class Rpc : public Node
+{
   GODOT_GENERATED_BODY();
 
   GODOT_FUNCTION(Authority);
