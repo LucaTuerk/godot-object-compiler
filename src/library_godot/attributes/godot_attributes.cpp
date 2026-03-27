@@ -147,6 +147,7 @@ Opt<GodotCustomPropertyBind> GodotPropertyAttribute::CustomBind() {
       0, NamedContextPredicates::name<Function>(getter_name.c_str()));
   Ref<Function> setter = containing_class->body()->find_child<Function>(
       0, NamedContextPredicates::name<Function>(setter_name.c_str()));
+
   return {{
       property_name,
       getter_name,

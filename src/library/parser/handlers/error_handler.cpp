@@ -56,10 +56,9 @@ ParserStep ErrorHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   if (children.size() >= 2 && children[0]->type == "#define" &&
       children[1]->type == "identifier") {
     Ref<Define> define =
-        r_current_target->build_child<Define>().with_child<Identifier>(
-            children[1]->content());
+        r_current_target->B<Define>()[B<Identifier>(children[1]->content())];
     if (children.size() >= 3 && children[2]->type == "preproc_params") {
-      define->build_child<Parameters>();
+      define->B<Parameters>();
     }
     return ParserStep::StepOver();
   }

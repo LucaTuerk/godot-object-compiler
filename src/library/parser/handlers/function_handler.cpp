@@ -54,7 +54,7 @@ bool FieldHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
 ParserStep FieldHandler::handle(const Ref<TreeSitterNode>& p_current_src,
                                 Ref<Context>& r_current_target) {
   if (p_current_src->type == "call_expression") {
-    r_current_target->build_child<Literal>(p_current_src->content());
+    r_current_target->B<Literal>(p_current_src->content());
     return ParserStep::StepOver();
   } else if (p_current_src->type_in({"expression_statement", "declaration"})) {
     Ref<TreeSitterNode> identifier =
@@ -68,12 +68,12 @@ ParserStep FieldHandler::handle(const Ref<TreeSitterNode>& p_current_src,
     }
   } else if (p_current_src->find_descendant(
                  BFS, type_is("function_declarator")) != nullptr) {
-    r_current_target = r_current_target->build_child<Function>();
+    r_current_target = r_current_target->B<Function>();
   } else if (p_current_src->find_descendant(
                  BFS, type_in({"class_specifier", "struct_specifier",
                                "enum_specifier"})) != nullptr) {
   } else {
-    r_current_target = r_current_target->build_child<Field>();
+    r_current_target = r_current_target->B<Field>();
   }
   return ParserStep::StepInto();
 }
@@ -97,7 +97,7 @@ ParserStep FieldHandler::handle_known_attribute(
     auto itr =
         current_src->context->stripped_parameters.find(current_src->start_byte);
     if (itr != current_src->context->stripped_parameters.end()) {
-      attribute->build_child<UnparsedAttributeArguments>(itr->second);
+      attribute->B<UnparsedAttributeArguments>(itr->second);
     }
     return ParserStep::StepOver();
   }

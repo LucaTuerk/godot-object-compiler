@@ -51,9 +51,9 @@ ParserStep IncludeHandler::handle(const Ref<TreeSitterNode>& p_current_src,
   HANDLER_ERROR_COND(!path, "Failed to get include path.")
 
   if (path->type == "preproc_include") {
-    r_current_target->create_child<Include>(path->content(), false);
+    r_current_target->B<Include>(path->content(), false);
   } else {
-    r_current_target->create_child<Include>(path->content(), true);
+    r_current_target->B<Include>(path->content(), true);
   }
 
   return ParserStep::StepOver();

@@ -57,11 +57,11 @@ ParserStep AccessSpecifierHandler::handle(
   const String content = p_current_src->content();
 
   if (content == "public") {
-    r_current_target->build_child<AccessSpecifier>(AccessSpecifier::PUBLIC);
+    r_current_target->B<AccessSpecifier>(AccessSpecifier::PUBLIC);
   } else if (content == "private") {
-    r_current_target->build_child<AccessSpecifier>(AccessSpecifier::PRIVATE);
+    r_current_target->B<AccessSpecifier>(AccessSpecifier::PRIVATE);
   } else if (content == "protected") {
-    r_current_target->build_child<AccessSpecifier>(AccessSpecifier::PROTECTED);
+    r_current_target->B<AccessSpecifier>(AccessSpecifier::PROTECTED);
   }
 
   return ParserStep::StepOver();

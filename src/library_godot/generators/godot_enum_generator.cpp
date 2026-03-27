@@ -45,8 +45,8 @@ Ref<GeneratorError> GodotEnumGenerator::do_generate_default_attribute_arguments(
     Ref<Context> p_default_values) {
   UNUSED(p_target_class);
   UNUSED(p_attribute);
-  p_default_values->build_child<EnumGeneratorOptionsArgument>()
-      .with_child<Identifier>(EnumGeneratorOptionsArgument::EnumDefault);
+  p_default_values->B<EnumGeneratorOptionsArgument>()[B<Identifier>(
+      EnumGeneratorOptionsArgument::EnumDefault)];
   return GeneratorError::OK;
 }
 
@@ -95,23 +95,18 @@ Ref<GeneratorError> GodotEnumGenerator::do_generate(
             p_target_class, p_generated_body, p_generated_sources);
 
     for (const String& name : target_enum->value_names()) {
-      bind_methods_body->build_child<Function>()
-          .with_children({
-              build<Identifier>(bind_define->name()),
-              build<Arguments>().with_child(
-                  build<Argument>().with_child(Output::Text(name))),
-          })
-          .with_child(Output::Semicolon());
+      bind_methods_body->B<Function>()[{
+          B<Identifier>(bind_define->name()),
+          B<Arguments>()[B<Argument>()[Output::Text(name)]],
+      }][Output::Semicolon()];
     }
   }
 
-  p_generated_global->build_child<Function>()
-      .with_children({
-          build<Identifier>(cast_define->name()),
-          build<Arguments>().with_child(build<Argument>().with_child(
-              Output::Text(target_enum->qualified_name()))),
-      })
-      .with_child(Output::Semicolon());
+  p_generated_global->B<Function>()[{
+      B<Identifier>(cast_define->name()),
+      B<Arguments>()[B<Argument>()[Output::Text(
+          target_enum->qualified_name())]],
+  }][Output::Semicolon()];
 
   r_result.header_includes.insert(cast_define->header);
   r_result.source_includes.insert(bind_define->header);

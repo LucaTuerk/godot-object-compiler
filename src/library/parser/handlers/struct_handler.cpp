@@ -46,7 +46,7 @@ bool StructHandler::handles_node(const Ref<TreeSitterNode>& p_current_src) {
 ParserStep StructHandler::handle(const Ref<TreeSitterNode>& p_current_src,
                                  Ref<Context>& r_current_target) {
   UNUSED(p_current_src);
-  r_current_target = r_current_target->build_child<Struct>();
+  r_current_target = r_current_target->B<Struct>();
   return ParserStep::StepInto();
 }
 

@@ -125,26 +125,20 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context) {
 
   register_types_header->add_children(
       {Output::NewLine(),
-       build<Function>()
-           .with_children(
-               {build<Type>().with_child<Identifier>("void"),
-                build<Identifier>(register_method_name),
-                build<Parameters>().with_child(build<Parameter>().with_children(
-                    {build<Type>().with_child<Identifier>(
-                         AssumedGodotTypes::ModuleInitializationLevel()
-                             .type->qualified_name()),
-                     build<Identifier>("p_level")}))})
-           .with_child(Output::Semicolon()),
-       build<Function>()
-           .with_children(
-               {build<Type>().with_child<Identifier>("void"),
-                build<Identifier>(unregister_method_name),
-                build<Parameters>().with_child(build<Parameter>().with_children(
-                    {build<Type>().with_child<Identifier>(
-                         AssumedGodotTypes::ModuleInitializationLevel()
-                             .type->qualified_name()),
-                     build<Identifier>("p_level")}))})
-           .with_child(Output::Semicolon())});
+       B<Function>()[{B<Type>()[B<Identifier>("void")],
+                      B<Identifier>(register_method_name),
+                      B<Parameters>()[B<Parameter>()[{
+                          B<Type>()[B<Identifier>(
+                              AssumedGodotTypes::ModuleInitializationLevel()
+                                  .type->qualified_name())],
+                          B<Identifier>("p_level")}]]}][Output::Semicolon()],
+       B<Function>()[{B<Type>()[B<Identifier>("void")],
+                      B<Identifier>(unregister_method_name),
+                      B<Parameters>()[B<Parameter>()[{
+                          B<Type>()[B<Identifier>(
+                              AssumedGodotTypes::ModuleInitializationLevel()
+                                  .type->qualified_name())],
+                          B<Identifier>("p_level")}]]}][Output::Semicolon()]});
 
   Ref<Body> register_body;
   Ref<Body> unregister_body;
@@ -152,24 +146,22 @@ Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context) {
   register_types_source->add_children(
       {Output::Include(format("%s.h", register_file_name.c_str())),
        register_class_includes, Output::NewLine(),
-       build<Function>().with_children(
-           {build<Type>().with_child<Identifier>("void"),
-            build<Identifier>(register_method_name),
-            build<Parameters>().with_child(build<Parameter>().with_children(
-                {build<Type>().with_child<Identifier>(
-                     AssumedGodotTypes::ModuleInitializationLevel()
-                         .type->qualified_name()),
-                 build<Identifier>("p_level")})),
-            build_ref<Body>(&register_body)}),
-       build<Function>().with_children(
-           {build<Type>().with_child<Identifier>("void"),
-            build<Identifier>(unregister_method_name),
-            build<Parameters>().with_child(build<Parameter>().with_children(
-                {build<Type>().with_child<Identifier>(
-                     AssumedGodotTypes::ModuleInitializationLevel()
-                         .type->qualified_name()),
-                 build<Identifier>("p_level")})),
-            build_ref<Body>(&unregister_body)})});
+       B<Function>()[{B<Type>()[B<Identifier>("void")],
+                      B<Identifier>(register_method_name),
+                      B<Parameters>()[B<Parameter>()[{
+                          B<Type>()[B<Identifier>(
+                              AssumedGodotTypes::ModuleInitializationLevel()
+                                  .type->qualified_name())],
+                          B<Identifier>("p_level")}]],
+                      R<Body>(&register_body)}],
+       B<Function>()[{B<Type>()[B<Identifier>("void")],
+                      B<Identifier>(unregister_method_name),
+                      B<Parameters>()[B<Parameter>()[{
+                          B<Type>()[B<Identifier>(
+                              AssumedGodotTypes::ModuleInitializationLevel()
+                                  .type->qualified_name())],
+                          B<Identifier>("p_level")}]],
+                      R<Body>(&unregister_body)}]});
 
   HashSet<String> processed;
   HashSet<String> register_includes;

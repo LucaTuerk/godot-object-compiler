@@ -48,23 +48,18 @@ GodotFunctionGenerator::do_generate_default_attribute_arguments(
   UNUSED(p_target_class);
   UNUSED(p_attribute);
   p_default_values->add_children(
-      {build<StringLiteralArgument>().with_child<Literal>(""),
-       build<GodotVirtualArgument>()
-           .with_child<Identifier>(AssumedParameterValues::NoVirtual())
-           .with_child<Arguments>(),
-       build<GodotRpcModeArgument>()
-           .with_child<Identifier>(AssumedParameterValues::Disabled())
-           .with_child<Arguments>(),
-       build<GodotRpcSyncArgument>()
-           .with_child<Identifier>(AssumedParameterValues::CallRemote())
-           .with_child<Arguments>(),
-       build<GodotRpcTransferModeArgument>()
-           .with_child<Identifier>(AssumedParameterValues::Reliable())
-           .with_child<Arguments>(),
-       build<GodotRpcChannelArgument>().with_children(
-           {build<Identifier>("Channel"),
-            build<Arguments>().with_child(
-                build<Argument>().with_child<Literal>("0"))})});
+      {B<StringLiteralArgument>()[B<Literal>("")],
+       B<GodotVirtualArgument>()[B<Identifier>(
+           AssumedParameterValues::NoVirtual())][B<Arguments>()],
+       B<GodotRpcModeArgument>()[B<Identifier>(
+           AssumedParameterValues::Disabled())][B<Arguments>()],
+       B<GodotRpcSyncArgument>()[B<Identifier>(
+           AssumedParameterValues::CallRemote())][B<Arguments>()],
+       B<GodotRpcTransferModeArgument>()[B<Identifier>(
+           AssumedParameterValues::Reliable())][B<Arguments>()],
+       B<GodotRpcChannelArgument>()[{
+           B<Identifier>("Channel"),
+           B<Arguments>()[B<Argument>()[B<Literal>("0")]]}]});
   return GeneratorError::OK;
 }
 
@@ -264,43 +259,33 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
   String virtual_caller_name = virtual_name;
 
   Ref<Arguments> arguments;
-  Ref<Function> gdvirtual =
-      build<Function>()
-          .with_children({
-              build<Identifier>(GDVIRTUAL().type->qualified_name()),
-              build_ref<Arguments>(&arguments),
-          })
-          .with_child(Output::Semicolon());
+  Ref<Function> gdvirtual = B<Function>()[{
+      B<Identifier>(GDVIRTUAL().type->qualified_name()),
+      R<Arguments>(&arguments),
+  }][Output::Semicolon()];
 
-  Ref<Function> virtual_caller =
-      build<Function>()
-          .with_children({
-              function_type->clone(),
-              build<Identifier>(virtual_caller_name),
-              p_target_function->parameters()->clone(),
-          })
-          .with_child(Output::Semicolon());
+  Ref<Function> virtual_caller = B<Function>()[{
+      function_type->clone(),
+      B<Identifier>(virtual_caller_name),
+      p_target_function->parameters()->clone(),
+  }][Output::Semicolon()];
 
   Ref<Arguments> bind_arguments;
-  Ref<Function> gdvirtual_bind =
-      build<Function>()
-          .with_children(
-              {build<Identifier>(
-                   AssumedGodotTypes::GDVIRTUAL_BIND().type->name()),
-               build_ref<Arguments>(&bind_arguments)
-                   .with_child(
-                       build<Argument>().with_child<Identifier>(virtual_name))})
-          .with_child(Output::Semicolon());
+  Ref<Function> gdvirtual_bind = B<Function>()[{
+      B<Identifier>(AssumedGodotTypes::GDVIRTUAL_BIND().type->name()),
+      R<Arguments>(
+          &bind_arguments)[B<Argument>()[B<Identifier>(virtual_name)]]}]
+                                              [Output::Semicolon()];
 
   Ref<Body> func_body;
   Ref<Parameters> func_parameters;
-  Ref<Function> func_implementation = build<Function>().with_children({
+  Ref<Function> func_implementation = B<Function>()[{
       function_type->clone(),
-      build<Identifier>(p_target_class->qualified_name() +
-                        "::" + virtual_caller_name),
-      build_ref<Parameters>(&func_parameters),
-      build_ref<Body>(&func_body),
-  });
+      B<Identifier>(p_target_class->qualified_name() +
+                    "::" + virtual_caller_name),
+      R<Parameters>(&func_parameters),
+      R<Body>(&func_body),
+  }];
 
   if (p_target_function->parameters()) {
     for (const Ref<Parameter>& parameter :
@@ -310,10 +295,10 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
                      "Failed to get paramter type.");
       parameter_type = parameter_type->qualified();
 
-      func_parameters->build_child<Parameter>().with_children({
+      func_parameters->B<Parameter>()[{
           parameter_type->clone(),
-          build<Identifier>(parameter->name()),
-      });
+          B<Identifier>(parameter->name()),
+      }];
     }
   }
 
@@ -324,34 +309,31 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
 
   Ref<Arguments> virtual_call_arguments;
   Ref<Arguments> call_arguments;
-  Ref<Function> condition = build<Function>().with_children(
-      {Output::Text("!"),
-       build<Identifier>(AssumedGodotTypes::GDVIRTUAL_CALL().type->name()),
-       build_ref<Arguments>(&virtual_call_arguments)
-           .with_child(
-               build<Argument>().with_child<Identifier>(virtual_name))});
+  Ref<Function> condition = B<Function>()[{
+      Output::Text("!"),
+      B<Identifier>(AssumedGodotTypes::GDVIRTUAL_CALL().type->name()),
+      R<Arguments>(&virtual_call_arguments)[B<Argument>()[B<Identifier>(
+          virtual_name)]]}];
 
   func_body->add_child(Output::If(
       condition,
-      {build<Output::ListNode>(" ", false, false)
-           .with_children(
-               {Output::Text("return"),
-                build<Function>()
-                    .with_children(
-                        {build<Identifier>(p_target_function->name()),
-                         build_ref<Arguments>(&call_arguments)})
-                    .with_child(Output::Semicolon())})}));
+      {B<Output::ListNode>(
+          " ", false,
+          false)[{Output::Text("return"),
+                  B<Function>()[{B<Identifier>(p_target_function->name()),
+                                 R<Arguments>(&call_arguments)}]
+                               [Output::Semicolon()]}]}));
 
   if (!is_void) {
     func_body->create_child<Output::SnippetNode>("return return_value;");
   }
 
   if (!is_void) {
-    arguments->build_child<Argument>().with_child<Identifier>(
-        function_type->type_name_unmodified_ptr());
+    arguments->B<Argument>()[B<Identifier>(
+        function_type->type_name_unmodified_ptr())];
   }
 
-  arguments->build_child<Argument>().with_child<Identifier>(virtual_name);
+  arguments->B<Argument>()[B<Identifier>(virtual_name)];
   for (const Ref<Parameter>& parameter :
        p_target_function->parameters()->find_children<Parameter>()) {
     Ref<Type> parameter_type = parameter->type();
@@ -359,19 +341,15 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_virtual(
                    "Failed to get parameter type.");
     parameter_type = parameter_type->qualified();
 
-    arguments->build_child<Argument>().with_child<Identifier>(
-        parameter_type->type_name_unmodified_ptr());
-    bind_arguments->build_child<Argument>().with_child(
-        Output::StringLiteral(parameter->name()));
-    virtual_call_arguments->build_child<Argument>().with_child<Identifier>(
-        parameter->name());
-    call_arguments->build_child<Argument>().with_child<Identifier>(
-        parameter->name());
+    arguments->B<Argument>()[B<Identifier>(
+        parameter_type->type_name_unmodified_ptr())];
+    bind_arguments->B<Argument>()[Output::StringLiteral(parameter->name())];
+    virtual_call_arguments->B<Argument>()[B<Identifier>(parameter->name())];
+    call_arguments->B<Argument>()[B<Identifier>(parameter->name())];
   }
 
   if (!is_void) {
-    virtual_call_arguments->build_child<Argument>().with_child<Identifier>(
-        "return_value");
+    virtual_call_arguments->B<Argument>()[B<Identifier>("return_value")];
   }
 
   Ref<AccessSpecifier::Type> type = p_target_function->access_specifier_type();
@@ -436,7 +414,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(
   const Ref<Body> condition_body = GodotGeneratorUtils::get_if_body(
       notification_body, "p_notification == NOTIFICATION_ENTER_TREE");
 
-  condition_body->add_child(build<Body>().with_children({
+  condition_body->B<Body>()[{
       Output::FmtText(
           "%s opts;",
           AssumedGodotTypes::Dictionary().type->qualified_name().c_str()),
@@ -454,7 +432,7 @@ Ref<GeneratorError> GodotFunctionGenerator::generate_rpc(
                            : "false")),
       Output::FmtText("opts[\"channel\"] = %d;", p_channel->channel()),
       Output::FmtText("rpc_config(\"%s\", opts);", p_function_name.c_str()),
-  }));
+  }];
 
   r_result.source_includes.insert(AssumedGodotTypes::Dictionary().type->header);
   r_result.source_includes.insert(

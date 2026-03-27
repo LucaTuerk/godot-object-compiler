@@ -46,8 +46,7 @@ GodotCategoryGenerator::do_generate_default_attribute_arguments(
     Ref<Context> p_default_values) {
   UNUSED(p_target_class);
   UNUSED(p_attribute);
-  p_default_values->build_child<StringLiteralArgument>().with_child<Literal>(
-      "\"\"");
+  p_default_values->B<StringLiteralArgument>()[B<Literal>("\"\"")];
   return GeneratorError::OK;
 }
 
@@ -66,16 +65,13 @@ Ref<GeneratorError> GodotCategoryGenerator::do_generate(
   GEN_ERROR_COND(!get_property_list_body, p_attribute,
                  "Failed to get _get_property_list body");
 
-  get_property_list_body->build_child<Function>()
-      .with_children(
-          {build<Identifier>("p_list->push_back"),
-           build<Arguments>().with_children(
-               {build<Argument>().with_child(build_property_info(
-                   build_variant_type_argument(VariantTypeNil()),
-                   build_property_hint_argument(HintNone()),
-                   {build_property_usage_flags_argument(UsageCategory())},
-                   p_attribute->literal_content(), r_result))})})
-      .with_child(Output::Semicolon());
+  get_property_list_body->B<Function>()[{
+      B<Identifier>("p_list->push_back"),
+      B<Arguments>()[{B<Argument>()[build_property_info(
+          build_variant_type_argument(VariantTypeNil()),
+          build_property_hint_argument(HintNone()),
+          {build_property_usage_flags_argument(UsageCategory())},
+          p_attribute->literal_content(), r_result)]}]}][Output::Semicolon()];
   return GeneratorError::OK;
 }
 
@@ -85,8 +81,7 @@ GodotGroupGenerator::do_generate_default_attribute_arguments(
     Ref<Context> p_default_values) {
   UNUSED(p_target_class);
   UNUSED(p_attribute);
-  p_default_values->build_child<StringLiteralArgument>().with_child<Literal>(
-      "\"\"");
+  p_default_values->B<StringLiteralArgument>()[B<Literal>("\"\"")];
   return GeneratorError::OK;
 }
 
@@ -105,16 +100,13 @@ Ref<GeneratorError> GodotGroupGenerator::do_generate(
   GEN_ERROR_COND(!get_property_list_body, p_attribute,
                  "Failed to get _get_property_list body");
 
-  get_property_list_body->build_child<Function>()
-      .with_children(
-          {build<Identifier>("p_list->push_back"),
-           build<Arguments>().with_children(
-               {build<Argument>().with_child(build_property_info(
-                   build_variant_type_argument(VariantTypeNil()),
-                   build_property_hint_argument(HintNone()),
-                   {build_property_usage_flags_argument(UsageGroup())},
-                   p_attribute->literal_content(), r_result))})})
-      .with_child(Output::Semicolon());
+  get_property_list_body->B<Function>()[{
+      B<Identifier>("p_list->push_back"),
+      B<Arguments>()[{B<Argument>()[build_property_info(
+          build_variant_type_argument(VariantTypeNil()),
+          build_property_hint_argument(HintNone()),
+          {build_property_usage_flags_argument(UsageGroup())},
+          p_attribute->literal_content(), r_result)]}]}][Output::Semicolon()];
   return GeneratorError::OK;
 }
 
@@ -124,8 +116,7 @@ GodotSubgroupGenerator::do_generate_default_attribute_arguments(
     Ref<Context> p_default_values) {
   UNUSED(p_target_class);
   UNUSED(p_attribute);
-  p_default_values->build_child<StringLiteralArgument>().with_child<Literal>(
-      "\"\"");
+  p_default_values->B<StringLiteralArgument>()[B<Literal>("\"\"")];
   return GeneratorError::OK;
 }
 
@@ -145,16 +136,13 @@ Ref<GeneratorError> GodotSubgroupGenerator::do_generate(
   GEN_ERROR_COND(!get_property_list_body, p_attribute,
                  "Failed to get _get_property_list body");
 
-  get_property_list_body->build_child<Function>()
-      .with_children(
-          {build<Identifier>("p_list->push_back"),
-           build<Arguments>().with_children(
-               {build<Argument>().with_child(build_property_info(
-                   build_variant_type_argument(VariantTypeNil()),
-                   build_property_hint_argument(HintNone()),
-                   {build_property_usage_flags_argument(UsageSubgroup())},
-                   p_attribute->literal_content(), r_result))})})
-      .with_child(Output::Semicolon());
+  get_property_list_body->B<Function>()[{
+      B<Identifier>("p_list->push_back"),
+      B<Arguments>()[{B<Argument>()[build_property_info(
+          build_variant_type_argument(VariantTypeNil()),
+          build_property_hint_argument(HintNone()),
+          {build_property_usage_flags_argument(UsageSubgroup())},
+          p_attribute->literal_content(), r_result)]}]}][Output::Semicolon()];
   return GeneratorError::OK;
 }
 

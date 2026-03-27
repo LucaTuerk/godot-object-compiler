@@ -49,8 +49,7 @@ ParserStep PreprocessorHandler::handle(const Ref<TreeSitterNode>& p_current_src,
                                        Ref<Context>& r_current_target) {
   if (const Ref<TreeSitterNode> identifier =
           p_current_src->find_child(0, type_is("identifier"))) {
-    r_current_target->build_child<Define>().with_child<Identifier>(
-        identifier->content());
+    r_current_target->B<Define>()[B<Identifier>(identifier->content())];
   }
   return ParserStep::StepOver();
 }

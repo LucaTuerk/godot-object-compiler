@@ -104,27 +104,25 @@ Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
 
   Ref<Body> header_body;
   Ref<Body> source_body;
-  Ref<Context> header_content = build<Context>().with_children(
-      {Output::PragmaOnce(), Output::Include("library/core/assumption.h"),
-       build<Namespace>().with_children(
-           {build<Identifier>("GodotObjectCompiler"),
-            build<Body>().with_child(build<Namespace>().with_children(
-                {build<Identifier>("AssumedParameterValues"),
-                 build_ref<Body>(&header_body)}))})});
+  Ref<Context> header_content = B<Context>()[{
+      Output::PragmaOnce(), Output::Include("library/core/assumption.h"),
+      B<Namespace>()[{
+          B<Identifier>("GodotObjectCompiler"),
+          B<Body>()[B<Namespace>()[{B<Identifier>("AssumedParameterValues"),
+                                    R<Body>(&header_body)}]]}]}];
 
-  Ref<Context> source_content = build<Context>().with_children(
-      {Output::Include("parameter_types.h"),
-       Output::Include("library_godot/attributes/godot_class_type.h"),
-       Output::Include("library_godot/attributes/godot_module_init_level.h"),
-       Output::Include("library_godot/attributes/godot_variant_type.h"),
-       Output::Include("library_godot/attributes/godot_property_hint.h"),
-       Output::Include("library_godot/attributes/godot_property_usage_flags.h"),
-       Output::Include("library_godot/attributes/godot_rpc.h"),
-       build<Namespace>().with_children(
-           {build<Identifier>("GodotObjectCompiler"),
-            build<Body>().with_child(build<Namespace>().with_children(
-                {build<Identifier>("AssumedParameterValues"),
-                 build_ref<Body>(&source_body)}))})});
+  Ref<Context> source_content = B<Context>()[{
+      Output::Include("parameter_types.h"),
+      Output::Include("library_godot/attributes/godot_class_type.h"),
+      Output::Include("library_godot/attributes/godot_module_init_level.h"),
+      Output::Include("library_godot/attributes/godot_variant_type.h"),
+      Output::Include("library_godot/attributes/godot_property_hint.h"),
+      Output::Include("library_godot/attributes/godot_property_usage_flags.h"),
+      Output::Include("library_godot/attributes/godot_rpc.h"),
+      B<Namespace>()[{
+          B<Identifier>("GodotObjectCompiler"),
+          B<Body>()[B<Namespace>()[{B<Identifier>("AssumedParameterValues"),
+                                    R<Body>(&source_body)}]]}]}];
 
   for (const Ref<IAttributeParameterType>& parameter_type : parameter_types) {
     for (const String& value_name : parameter_type->get_value_names()) {
@@ -134,20 +132,18 @@ Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
   }
 
   Ref<Body> validate_body;
-  header_body->build_child<Function>().with_children(
-      {build<Type>().with_child<Identifier>("bool"),
-       build<Identifier>("validate_assumptions"), build<Parameters>(),
-       Output::Semicolon()});
+  header_body->B<Function>()[{B<Type>()[B<Identifier>("bool")],
+                              B<Identifier>("validate_assumptions"),
+                              B<Parameters>(), Output::Semicolon()}];
 
-  source_body->build_child<Function>().with_children(
-      {build<Type>().with_child<Identifier>("bool"),
-       build<Identifier>("validate_assumptions"), build<Parameters>(),
-       build_ref<Body>(&validate_body)});
+  source_body->B<Function>()[{B<Type>()[B<Identifier>("bool")],
+                              B<Identifier>("validate_assumptions"),
+                              B<Parameters>(), R<Body>(&validate_body)}];
 
   validate_body->add_child(Output::Text("bool success = true;"));
 
   for (const Ref<IAttributeParameterType>& parameter_type : parameter_types) {
-    Ref<Body> inner_body = validate_body->build_child<Body>();
+    Ref<Body> inner_body = validate_body->B<Body>();
     String format = "Ref<PARAM_TYPE> validator = make_ref<PARAM_TYPE>();";
     inner_body->add_child(Output::Text(
         string_replace(format, "PARAM_TYPE", parameter_type->get_type())));
@@ -167,15 +163,13 @@ Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context) {
   FileWriter source_writer(source_path, true);
 
   transformator
-      .transform(build<Output::EnclosingNode>("// clang-format off\n",
-                                              "\n//clang-format on")
-                     .with_child(header_content))
+      .transform(B<Output::EnclosingNode>(
+          "// clang-format off\n", "\n//clang-format on")[header_content])
       ->get_output(&header_writer);
 
   transformator
-      .transform(build<Output::EnclosingNode>("// clang-format off\n",
-                                              "\n//clang-format on")
-                     .with_child(source_content))
+      .transform(B<Output::EnclosingNode>(
+          "// clang-format off\n", "\n//clang-format on")[source_content])
       ->get_output(&source_writer);
 
   return ProgramError::OK;
