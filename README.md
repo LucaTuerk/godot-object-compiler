@@ -1,5 +1,5 @@
 
-![Header Image](./docs/img/docs_logo.svg)
+![Header Image](./docs/img/logo_header.svg)
 
 ___
 
