@@ -1,6 +1,5 @@
 
-![Header Image](./docs/img/docs_logo.svg)
-
+[<img src="./docs/img/logo_header.svg" width="100%" />](./docs/img/logo_header.svg)
 ___
 
 <p align='center'>
