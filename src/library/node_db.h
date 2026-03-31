@@ -39,7 +39,7 @@ namespace GodotObjectCompiler
 {
 
     class Node;
-    class ExecutionContext;
+    class LibraryContext;
 
     class NodeDB
     {
@@ -79,7 +79,7 @@ namespace GodotObjectCompiler
 
         Dictionary<String, NodeCreator> _node_constructors;
 
-        friend ExecutionContext;
+        friend LibraryContext;
     };
 
     template <typename T, typename... Args> Ref<T> NodeDB::create(Args&&... p_args)

@@ -66,7 +66,7 @@ namespace GodotObjectCompiler
         UID before = _id;
         UID new_id = p_reader->read<String, UID>("_id");
         if (before != new_id) {
-            _id = ExecutionContext::instance()->get_node_db()->request_id_change(before, new_id);
+            _id = LibraryContext::instance()->get_node_db()->request_id_change(before, new_id);
         }
     }
 

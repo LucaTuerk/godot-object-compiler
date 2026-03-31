@@ -45,7 +45,7 @@ namespace GodotObjectCompiler
 
     Error::~Error()
     {
-        if (!handled && ExecutionContext::instance()->get_error_level() >= error_level) {
+        if (!handled && LibraryContext::instance()->get_error_level() >= error_level) {
             print_err(message);
         }
     }
@@ -91,7 +91,7 @@ namespace GodotObjectCompiler
         writer.write(user_message);
         writer.write("\n");
 
-        if (ExecutionContext::instance()->get_error_detail() == ErrorDetail::FULL) {
+        if (LibraryContext::instance()->get_error_detail() == ErrorDetail::FULL) {
             writer.write("\nOccurred while processing node:\n");
 
             if (Ref<Context> parent = node->get_parent()) {
@@ -141,7 +141,7 @@ namespace GodotObjectCompiler
         writer.write(user_message);
         writer.write("\n");
 
-        if (ExecutionContext::instance()->get_error_detail() == ErrorDetail::FULL) {
+        if (LibraryContext::instance()->get_error_detail() == ErrorDetail::FULL) {
             writer.write("\nOccurred while processing source:\n");
             writer.write(extract_lines(
                 file_content, line - std::min(line, static_cast<Size>(3)), line + 3, line));

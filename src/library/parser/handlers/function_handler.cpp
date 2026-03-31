@@ -35,7 +35,7 @@
 #include "function_handler.h"
 
 #include "library/attribute_db.h"
-#include "library/execution_context.h"
+#include "library/library_context.h"
 #include "library/parser/node_handler.h"
 #include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/attribute.h"
@@ -62,7 +62,7 @@ namespace GodotObjectCompiler
         } else if (p_current_src->type_in({"expression_statement", "declaration"})) {
             Ref<TreeSitterNode> identifier =
                 p_current_src->find_descendant<TreeSitterNode>(BFS, type_is("identifier"));
-            if (identifier && ExecutionContext::instance()->get_attribute_db()->is_known_macro(
+            if (identifier && LibraryContext::instance()->get_attribute_db()->is_known_macro(
                                   identifier->content())) {
                 return handle_known_attribute(
                     p_current_src, r_current_target, identifier->content());
@@ -83,7 +83,7 @@ namespace GodotObjectCompiler
         const Ref<TreeSitterNode>& current_src, Ref<Context>& current_target, const String& macro)
     {
         Result<Attribute> attribute_result =
-            ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
+            LibraryContext::instance()->get_attribute_db()->create_for_macro(macro);
         HANDLER_ERROR_COND(
             attribute_result.has_error(), "Failed to create attribute for known macro %s",
             macro.c_str());

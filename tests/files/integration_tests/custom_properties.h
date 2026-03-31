@@ -40,7 +40,7 @@ namespace Tests
 {
     GODOT_CLASS();
 
-    class A : public Node
+    class CustomProperties : public Node
     {
         GODOT_GENERATED_BODY();
 

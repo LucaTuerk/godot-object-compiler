@@ -217,9 +217,8 @@ namespace GodotObjectCompiler
             UID child_uid = p_child->get_id();
             p_new_child->_index = p_child->_index;
             p_new_child->_parent = this->as<Context>();
-            p_child->_id =
-                ExecutionContext::instance()->get_node_db()->request_id_change(child_uid);
-            p_new_child->_id = ExecutionContext::instance()->get_node_db()->request_id_change(
+            p_child->_id = LibraryContext::instance()->get_node_db()->request_id_change(child_uid);
+            p_new_child->_id = LibraryContext::instance()->get_node_db()->request_id_change(
                 p_new_child->get_id(), child_uid);
             p_child->_parent = {};
 

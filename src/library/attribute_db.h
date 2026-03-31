@@ -68,7 +68,6 @@ namespace GodotObjectCompiler
 
     class AttributeDB
     {
-      private:
         struct Private {
         };
 
@@ -93,8 +92,8 @@ namespace GodotObjectCompiler
 
         Vector<String> get_all_macros();
 
-        bool
-        register_class_generator(const String& p_generator_name, Ref<ClassGenerator> p_generator);
+        bool register_class_generator(
+            const String& p_generator_name, const Ref<ClassGenerator>& p_generator);
 
         [[nodiscard]] const Vector<Ref<ClassGenerator>>& class_generators() const;
 
@@ -113,7 +112,7 @@ namespace GodotObjectCompiler
         Dictionary<String, CreationFunc> _creation_funcs;
         Dictionary<String, String> _macro_aliases;
 
-        friend ExecutionContext;
+        friend LibraryContext;
     };
 
     template <typename AttributeT, typename ParamT> Ref<ParamT> AttributeDB::get_parameter_type()
@@ -154,10 +153,14 @@ namespace GodotObjectCompiler
         return create_static()->as<Attribute>();                                                   \
     }                                                                                              \
     static inline bool attribute_registered =                                                      \
-        ExecutionContext::instance()->get_attribute_db()->register_attribute(                      \
-            get_type_static(), #macro, &attribute_create_static);
+        LibraryContext::add_register_callback([](LibraryContext* p_context) {                      \
+            p_context->get_attribute_db()->register_attribute(                                     \
+                get_type_static(), #macro, &attribute_create_static);                              \
+        });
 
 #define ATTRIBUTE_REGISTER_PARAMETERS(type)                                                        \
     static inline bool type##_parameter_registered =                                               \
-        ExecutionContext::instance()->get_attribute_db()->register_attribute_parameter(            \
-            get_type_static(), type##ParameterType::instance());
+        LibraryContext::add_register_callback([](LibraryContext* p_context) {                      \
+            p_context->get_attribute_db()->register_attribute_parameter(                           \
+                get_type_static(), type##ParameterType::instance());                               \
+        });

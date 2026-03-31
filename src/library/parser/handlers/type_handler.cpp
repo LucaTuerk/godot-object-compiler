@@ -74,7 +74,7 @@ namespace GodotObjectCompiler
         } else {
             if (Ref<PlaceholderType> placeholder =
                     r_current_target->find_child<PlaceholderType>()) {
-                type_node = ExecutionContext::instance()->get_node_db()->create<Type>();
+                type_node = LibraryContext::instance()->get_node_db()->create<Type>();
                 r_current_target->replace_child(placeholder, type_node);
             } else {
                 type_node = r_current_target->create_child<Type>();

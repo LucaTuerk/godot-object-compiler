@@ -46,26 +46,11 @@ bool generate_files(
     const String& p_path, String& r_generated_header, String& r_generated_source,
     String& r_register_header, String& r_register_source)
 {
+    Application application;
     const Vector<String> args = TestRegistry::instance()->get_test_application_arguments(
-        {"generate", format("-S=%s", p_path.c_str())});
-    ApplicationContext context;
-
-    if (Application::setup_context(args, context) != 0) {
-        print_err("Failed to setup context.");
-        Application::exit_gracefully(context, 1);
-        return false;
-    }
-
-    ExecutionContext::instance()->test_force_clear_modified_time(p_path);
-
-    if (Application::run_program(context) != 0) {
-        print_err("Failed to run program.");
-        Application::exit_gracefully(context, 1);
-        return false;
-    }
-
-    if (Application::cleanup_context(context) != 0) {
-        print_err("Failed to cleanup context.");
+        {"generate", "regenerate_bindings", format("-S=%s", p_path.c_str())});
+    if (application.run(args) != 0) {
+        print_err("Failed to generated files.");
         return false;
     }
 

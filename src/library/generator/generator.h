@@ -229,8 +229,9 @@ namespace GodotObjectCompiler
 
 #define REGISTER_CLASS_GENERATOR(type)                                                             \
     static inline bool _generator_##type##_registered =                                            \
-        ExecutionContext::instance()->get_attribute_db()->register_class_generator(                \
-            #type, make_ref<type>());
+        LibraryContext::add_register_callback([](LibraryContext* p_context) {                      \
+            p_context->get_attribute_db()->register_class_generator(#type, make_ref<type>());      \
+        });
 
 #define ERROR_NODE_LEVEL(error_type, error_level, ...)                                             \
     if constexpr (error_level == ErrorLevel::ERROR) {                                              \

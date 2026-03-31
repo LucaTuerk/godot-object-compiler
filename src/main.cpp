@@ -38,7 +38,7 @@
 #include "application/application.h"
 #include "application/programs/generate_resources.h"
 #include "library/core/core.h"
-#include "library/execution_context.h"
+#include "library/library_context.h"
 
 using namespace GodotObjectCompiler;
 
@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
         args.emplace_back(argv[i]);
     }
 
-    ExecutionContext::instance()->set_error_level(ERROR, FULL);
-    return Application::run(args);
+    Application application;
+    LibraryContext::instance()->set_error_level(ERROR, FULL);
+    return application.run(args);
 }

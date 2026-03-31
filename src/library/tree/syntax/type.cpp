@@ -139,7 +139,7 @@ namespace GodotObjectCompiler
         Ref<Namespace> namespace_ = find_ancestor<Namespace>();
         Ref<Identifier> identifier = result->find_child<Identifier>();
         Result<Node> type_result =
-            ExecutionContext::instance()->get_type_db()->get_type_data(result, namespace_);
+            LibraryContext::instance()->get_type_db()->get_type_data(result, namespace_);
         Ref<NamedContext> named =
             type_result.has_result() ? type_result.get_result()->as<NamedContext>() : nullptr;
         if (type_result.has_error()) {

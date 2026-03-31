@@ -60,11 +60,11 @@ namespace GodotObjectCompiler
         }
 
         const String property_macro =
-            ExecutionContext::instance()->get_attribute_db()->get_macro_for_attribute(
+            LibraryContext::instance()->get_attribute_db()->get_macro_for_attribute(
                 attribute->get_type());
 
         if (const Vector<Ref<IAttributeParameterType>> types =
-                ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(
+                LibraryContext::instance()->get_attribute_db()->get_parameters_for_macro(
                     property_macro);
             arguments.size() > types.size()) {
             return node_new<ParserError>(
@@ -104,10 +104,10 @@ namespace GodotObjectCompiler
         }
 
         const String property_macro =
-            ExecutionContext::instance()->get_attribute_db()->get_macro_for_attribute(
+            LibraryContext::instance()->get_attribute_db()->get_macro_for_attribute(
                 attribute->get_type());
         Vector<Ref<IAttributeParameterType>> types =
-            ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(
+            LibraryContext::instance()->get_attribute_db()->get_parameters_for_macro(
                 property_macro);
         if (types.empty()) {
             return node_new<ParserError>(

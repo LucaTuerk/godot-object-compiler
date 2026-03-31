@@ -37,7 +37,7 @@
 
 #define GOC_TEST_ASSERT_CREATE_TYPE(node_type)                                                     \
     {                                                                                              \
-        Ref<Node> created = ExecutionContext::instance()->get_node_db()->create(#node_type);       \
+        Ref<Node> created = LibraryContext::instance()->get_node_db()->create(#node_type);         \
         GOC_TEST_ASSERT(created, "Failed to create node of type \"%s\"", #node_type);              \
         GOC_TEST_EQ(                                                                               \
             created->get_type(), String(#node_type), "Failed to create node of type \"%s\"",       \
@@ -103,19 +103,19 @@ GOC_TEST(NodeIDTest)
     Ref<Context> context = node_new<Context>();
 
     for (Size i = 0; i < 1000; ++i) {
-        if (ExecutionContext::instance()->get_node_db()->get<Node>(i) != nullptr) {
+        if (LibraryContext::instance()->get_node_db()->get<Node>(i) != nullptr) {
             print_ln("Unlikely id collison in node id test. Ignore!");
             return TEST_RESULT_IGNORED;
         }
 
         Ref<Node> child = context->create_child<Node>();
         UID new_uid =
-            ExecutionContext::instance()->get_node_db()->request_id_change(child->get_id(), i);
+            LibraryContext::instance()->get_node_db()->request_id_change(child->get_id(), i);
         GOC_TEST_EQ(new_uid, i, "Could not change id.");
     }
 
     for (Size uid = 0; uid < 1000; ++uid) {
-        Ref<Node> node = ExecutionContext::instance()->get_node_db()->get<Node>(uid);
+        Ref<Node> node = LibraryContext::instance()->get_node_db()->get<Node>(uid);
         GOC_TEST_EQ(node, context->get_child(uid), "Invalid node found for id %d", uid);
     }
 
@@ -132,7 +132,7 @@ GOC_TEST(NodeIDRemovedTest)
     }
 
     for (auto& uid : uids) {
-        Ref<Node> node = ExecutionContext::instance()->get_node_db()->get<Node>(uid);
+        Ref<Node> node = LibraryContext::instance()->get_node_db()->get<Node>(uid);
         GOC_TEST_ASSERT(!node, "Deleted node is still accessible in the node db");
     }
 

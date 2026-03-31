@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* execution_context.h                                                    */
+/* library_context.h                                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,6 +32,7 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
 #include "core/core.h"
 
@@ -56,20 +57,28 @@ namespace GodotObjectCompiler
 
     String error_level_to_string(ErrorLevel level);
 
-    class ExecutionContext
+    class LibraryContext
     {
       public:
-        static ExecutionContext* instance()
+        static LibraryContext* instance()
         {
-            static ExecutionContext singleton = ExecutionContext();
+            static LibraryContext singleton = LibraryContext();
             return &singleton;
         }
 
-        NodeDB* get_node_db() const;
+        using RegisterCallback = std::function<void(LibraryContext*)>;
 
-        AttributeDB* get_attribute_db() const;
+        static bool add_register_callback(const RegisterCallback& callback);
 
-        TypeDB* get_type_db() const;
+        [[nodiscard]] NodeDB* get_node_db() const;
+
+        [[nodiscard]] AttributeDB* get_attribute_db() const;
+
+        [[nodiscard]] TypeDB* get_type_db() const;
+
+        [[nodiscard]] ErrorLevel get_error_level() const;
+
+        [[nodiscard]] ErrorDetail get_error_detail() const;
 
         const Vector<String>& get_remove_macros();
 
@@ -114,42 +123,41 @@ namespace GodotObjectCompiler
 
         void clear_usings();
 
-        ErrorLevel get_error_level() const;
-
-        ErrorDetail get_error_detail() const;
-
         void print(ErrorLevel p_level, const String& p_message) const;
 
-        void test_force_clear_modified_time(const String& p_path);
+        void force_regenerate(const String& p_path);
 
       private:
         void init();
 
         static Hash get_path_hash(const String& p_absolute_path);
 
-        ExecutionContext();
+        LibraryContext();
 
-        Ref<NodeDB> _node_db;
-        Ref<AttributeDB> _attribute_db;
-        Ref<TypeDB> _type_db;
+        Ref<NodeDB> node_db;
+        Ref<AttributeDB> attribute_db;
+        Ref<TypeDB> type_db;
 
         String cache_path;
-        Vector<String> _usings;
-        Vector<String> _input_files;
-        Vector<String> _remove_macros;
-        Vector<String> _include_paths;
-        Dictionary<String, Vector<String>> _generated_from;
-        Dictionary<String, Size> _last_modified_times;
-        Dictionary<String, Size> _out_last_modified_times;
+        Vector<String> usings;
+        Vector<String> input_files;
+        Vector<String> remove_macros;
+        Vector<String> include_paths;
+        Dictionary<String, Vector<String>> generated_from;
+        Dictionary<String, Size> last_modified_times;
+        Dictionary<String, Size> out_last_modified_times;
 
-        ErrorLevel _error_level;
-        ErrorDetail _error_detail;
+        ErrorLevel error_level;
+        ErrorDetail error_detail;
+
+        static inline Vector<RegisterCallback> register_callbacks;
+        friend class Application;
     };
 
 } // namespace GodotObjectCompiler
 
 #define PRINT_LEVEL(level, ...)                                                                    \
-    if (ExecutionContext::instance()->get_error_level() >= (level)) {                              \
+    if (LibraryContext::instance()->get_error_level() >= (level)) {                                \
         if (level != ERROR)                                                                        \
             fmt_print_ln(__VA_ARGS__);                                                             \
         else                                                                                       \

@@ -76,7 +76,7 @@ namespace GodotObjectCompiler
         String generated_content = "GOC_BODY_COMBINE(GOC_GENERATED_, __LINE__, _, GOC_FILE_ID())()";
 
         for (const String& macro :
-             ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
+             LibraryContext::instance()->get_attribute_db()->get_all_macros()) {
             String res_file = "res://" + path_concat_ext("doc", macro, "txt");
             if (Resources::instance()->has_resource(res_file)) {
                 Ref<Context> params_docu = Output::Params({});
@@ -90,8 +90,7 @@ namespace GodotObjectCompiler
 
                 Size index = 0;
                 Vector<Ref<IAttributeParameterType>> params =
-                    ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(
-                        macro);
+                    LibraryContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
                 for (const Ref<IAttributeParameterType>& param : params) {
                     if ((++index % 5) != 0) {
                         params_docu->add_child(Output::Text(param->get_return_type()));
@@ -102,7 +101,7 @@ namespace GodotObjectCompiler
             }
 
             Result<Attribute> attr_result =
-                ExecutionContext::instance()->get_attribute_db()->create_for_macro(macro);
+                LibraryContext::instance()->get_attribute_db()->create_for_macro(macro);
             PANIC_COND(attr_result.has_error(), "Failed to create macro attribute");
             Ref<Attribute> attr = attr_result.get_result();
 
@@ -298,9 +297,9 @@ namespace GodotObjectCompiler
 
         HashSet<String> generated_param_types;
         for (const String& macro :
-             ExecutionContext::instance()->get_attribute_db()->get_all_macros()) {
+             LibraryContext::instance()->get_attribute_db()->get_all_macros()) {
             Vector<Ref<IAttributeParameterType>> params =
-                ExecutionContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
+                LibraryContext::instance()->get_attribute_db()->get_parameters_for_macro(macro);
 
             for (const auto& param : params) {
                 if (generated_param_types.find(param->get_return_type()) ==

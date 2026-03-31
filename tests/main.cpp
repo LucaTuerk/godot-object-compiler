@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     }
 
     using namespace GodotObjectCompiler;
-    ExecutionContext::instance()->set_error_level(INFO, FULL);
+    LibraryContext::instance()->set_error_level(INFO, FULL);
     Permissions::instance()->add_write_path(".goc_tests");
 
     Size failed_count = 0;
@@ -91,11 +91,13 @@ int main(int argc, char* argv[])
         for (const auto& [test_name, test_functor] :
              TestRegistry::instance()->get_integration_tests()) {
             PRINT_INFO("Running test case \"%s\"", test_name.c_str());
-
-            const Vector<String> args =
-                TestRegistry::instance()->get_test_application_arguments({"generate", "type_db"});
-            Application::run(args); // we need the type db to run
-                                    // integration tests;
+            {
+                Application application;
+                const Vector<String> args =
+                    TestRegistry::instance()->get_test_application_arguments(
+                        {"generate", "type_db"});
+                PANIC_COND(application.run(args) != 0, "Failed to setup type db during test run.");
+            }
 
             all_count++;
             const TestResult result = test_functor();

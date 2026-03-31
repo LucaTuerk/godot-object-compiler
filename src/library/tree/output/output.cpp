@@ -193,7 +193,7 @@ namespace GodotObjectCompiler
         }
 
 #define ADD_CHILDREN_AND_RET(creator)                                                              \
-    auto result = ExecutionContext::instance()->get_node_db()->creator;                            \
+    auto result = LibraryContext::instance()->get_node_db()->creator;                              \
     for (const Ref<Node>& child : p_children) {                                                    \
         result->add_child(child);                                                                  \
     }                                                                                              \
@@ -271,29 +271,29 @@ namespace GodotObjectCompiler
 
         Ref<SnippetNode> Text(const String& p_content)
         {
-            return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(p_content);
+            return LibraryContext::instance()->get_node_db()->create<SnippetNode>(p_content);
         }
 
         Ref<SnippetNode> BoldText(const String& p_content)
         {
-            return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(
+            return LibraryContext::instance()->get_node_db()->create<SnippetNode>(
                 format("<b>%s</b>", p_content.c_str()));
         }
 
         Ref<SnippetNode> StringLiteral(const String& p_content)
         {
-            return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(
+            return LibraryContext::instance()->get_node_db()->create<SnippetNode>(
                 "\"" + p_content + "\"");
         }
 
         Ref<SnippetNode> Semicolon()
         {
-            return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(";");
+            return LibraryContext::instance()->get_node_db()->create<SnippetNode>(";");
         }
 
         Ref<SnippetNode> NewLine()
         {
-            return ExecutionContext::instance()->get_node_db()->create<SnippetNode>("\n");
+            return LibraryContext::instance()->get_node_db()->create<SnippetNode>("\n");
         }
 
         Ref<ListNode> ParamDecl(const String& p_type, const String& p_name)
@@ -390,7 +390,7 @@ namespace GodotObjectCompiler
 
         Ref<SnippetNode> Param(const String& p_name)
         {
-            return ExecutionContext::instance()->get_node_db()->create<SnippetNode>(p_name);
+            return LibraryContext::instance()->get_node_db()->create<SnippetNode>(p_name);
         }
 
         Ref<SnippetNode> Include(const String& p_path)

@@ -42,10 +42,13 @@ namespace GodotObjectCompiler
     class Generate : public IProgram
     {
         PROGRAM(Generate, "generate");
-        PROG_NO_ARGS
 
       public:
+        bool validate_arguments(ApplicationContext& p_context) override;
+
         Ref<ProgramError> run(ApplicationContext& p_context) override;
+
+        static HashSet<String> flags;
     };
 
 } // namespace GodotObjectCompiler

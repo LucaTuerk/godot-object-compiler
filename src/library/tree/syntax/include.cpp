@@ -34,7 +34,7 @@
 /**************************************************************************/
 #include "include.h"
 
-#include "library/execution_context.h"
+#include "library/library_context.h"
 #include "library/parser/parser.h"
 #include "library/tree/syntax/namespace.h"
 #include "library/type_db.h"
