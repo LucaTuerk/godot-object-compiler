@@ -100,8 +100,7 @@ namespace GodotObjectCompiler
   public:                                                                                          \
     static Ref<param_type> instance()                                                              \
     {                                                                                              \
-        static Ref<param_type> instance = make_ref<param_type>();                                  \
-        return instance;                                                                           \
+        return LibraryContext::instance()->get_singleton<param_type>();                            \
     }                                                                                              \
     String get_type() override                                                                     \
     {                                                                                              \

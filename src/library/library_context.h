@@ -62,8 +62,11 @@ namespace GodotObjectCompiler
       public:
         static LibraryContext* instance()
         {
-            static LibraryContext singleton = LibraryContext();
-            return &singleton;
+            static LibraryContext _instance = LibraryContext();
+            if (!_instance.initialized) {
+                _instance.init();
+            }
+            return &_instance;
         }
 
         using RegisterCallback = std::function<void(LibraryContext*)>;
@@ -81,6 +84,8 @@ namespace GodotObjectCompiler
         [[nodiscard]] ErrorDetail get_error_detail() const;
 
         const Vector<String>& get_remove_macros();
+
+        template <typename T> Ref<T> get_singleton();
 
         void register_generated_file(
             const String& p_generated_path, const String& p_generated_from_path);
@@ -128,31 +133,44 @@ namespace GodotObjectCompiler
         void force_regenerate(const String& p_path);
 
       private:
+        LibraryContext() = default;
         void init();
 
         static Hash get_path_hash(const String& p_absolute_path);
 
-        LibraryContext();
+        Ref<NodeDB> node_db = nullptr;
+        Ref<AttributeDB> attribute_db = nullptr;
+        Ref<TypeDB> type_db = nullptr;
+        Dictionary<TypeIndex, AnyType> generic_singletons;
 
-        Ref<NodeDB> node_db;
-        Ref<AttributeDB> attribute_db;
-        Ref<TypeDB> type_db;
+        String cache_path{};
+        Vector<String> usings{};
+        Vector<String> input_files{};
+        Vector<String> remove_macros{};
+        Vector<String> include_paths{};
+        Dictionary<String, Vector<String>> generated_from{};
+        Dictionary<String, Size> last_modified_times{};
+        Dictionary<String, Size> out_last_modified_times{};
 
-        String cache_path;
-        Vector<String> usings;
-        Vector<String> input_files;
-        Vector<String> remove_macros;
-        Vector<String> include_paths;
-        Dictionary<String, Vector<String>> generated_from;
-        Dictionary<String, Size> last_modified_times;
-        Dictionary<String, Size> out_last_modified_times;
-
-        ErrorLevel error_level;
-        ErrorDetail error_detail;
+        ErrorLevel error_level = ERROR;
+        ErrorDetail error_detail = FULL;
+        bool initialized = false;
 
         static inline Vector<RegisterCallback> register_callbacks;
         friend class Application;
     };
+
+    template <typename T> Ref<T> LibraryContext::get_singleton()
+    {
+        const auto itr = generic_singletons.find(typeid(T));
+        if (itr == generic_singletons.end()) {
+            Ref<T> singleton = make_ref<T>();
+            std::ignore = generic_singletons.insert({typeid(T), singleton});
+            return singleton;
+        }
+
+        return std::any_cast<Ref<T>>(itr->second);
+    }
 
 } // namespace GodotObjectCompiler
 

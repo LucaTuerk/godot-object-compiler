@@ -49,11 +49,6 @@
 namespace GodotObjectCompiler
 {
 
-    LibraryContext::LibraryContext()
-    {
-        init();
-    }
-
     void LibraryContext::force_regenerate(const String& p_path)
     {
         String absolute = path_absolute(p_path);
@@ -94,8 +89,10 @@ namespace GodotObjectCompiler
         generated_from = {};
         last_modified_times = {};
         out_last_modified_times = {};
+        generic_singletons = {};
         error_level = INFO;
         error_detail = FULL;
+        initialized = true;
 
         for (const RegisterCallback& callback : register_callbacks) {
             callback(this);
@@ -264,13 +261,13 @@ namespace GodotObjectCompiler
                 }
             }
 
-            itr++;
+            ++itr;
         }
     }
 
     bool LibraryContext::clear_generated_files(const String& p_path)
     {
-        auto itr = generated_from.find(p_path);
+        const auto itr = generated_from.find(p_path);
 
         if (itr == generated_from.end()) {
             return false;
@@ -323,8 +320,8 @@ namespace GodotObjectCompiler
 
     bool LibraryContext::file_modified(const String& p_path, bool p_update_time)
     {
-        String absolute = path_absolute(p_path);
-        Size last_modified = file_write_time(absolute);
+        const String absolute = path_absolute(p_path);
+        const Size last_modified = file_write_time(absolute);
 
         if (last_modified == 0) {
             return false;
@@ -332,8 +329,7 @@ namespace GodotObjectCompiler
 
         bool modified = false;
 
-        auto itr = last_modified_times.find(absolute);
-        if (itr == last_modified_times.end()) {
+        if (auto itr = last_modified_times.find(absolute); itr == last_modified_times.end()) {
             modified = true;
         } else {
             modified = itr->second != last_modified;
@@ -362,7 +358,8 @@ namespace GodotObjectCompiler
 
     void LibraryContext::remove_using(const String& p_value)
     {
-        if (auto itr = std::find(usings.begin(), usings.end(), p_value); itr != usings.end()) {
+        if (const auto itr = std::find(usings.begin(), usings.end(), p_value);
+            itr != usings.end()) {
             usings.erase(itr);
         }
     }
