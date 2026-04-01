@@ -60,14 +60,7 @@ namespace GodotObjectCompiler
     class LibraryContext
     {
       public:
-        static LibraryContext* instance()
-        {
-            static LibraryContext _instance = LibraryContext();
-            if (!_instance.initialized) {
-                _instance.init();
-            }
-            return &_instance;
-        }
+        static LibraryContext* instance();
 
         using RegisterCallback = std::function<void(LibraryContext*)>;
 

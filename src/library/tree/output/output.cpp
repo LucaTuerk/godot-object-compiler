@@ -39,6 +39,13 @@
 #include "library/core/string_writer.h"
 #include "output_transformator.h"
 
+#define ADD_CHILDREN_AND_RET(creator)                                                              \
+    auto result = LibraryContext::instance()->get_node_db()->creator;                              \
+    for (const Ref<Node>& child : p_children) {                                                    \
+        result->add_child(child);                                                                  \
+    }                                                                                              \
+    return result
+
 namespace GodotObjectCompiler
 {
     namespace Output
@@ -191,13 +198,6 @@ namespace GodotObjectCompiler
             target->content = content;
             return true;
         }
-
-#define ADD_CHILDREN_AND_RET(creator)                                                              \
-    auto result = LibraryContext::instance()->get_node_db()->creator;                              \
-    for (const Ref<Node>& child : p_children) {                                                    \
-        result->add_child(child);                                                                  \
-    }                                                                                              \
-    return result
 
         Ref<IndentNode> Indent(Size p_indent, std::initializer_list<Ref<Node>>&& p_children)
         {

@@ -76,6 +76,15 @@ namespace GodotObjectCompiler
         return "";
     }
 
+    LibraryContext* LibraryContext::instance()
+    {
+        static LibraryContext _instance = LibraryContext();
+        if (!_instance.initialized) {
+            _instance.init();
+        }
+        return &_instance;
+    }
+
     void LibraryContext::init()
     {
         node_db = make_ref<NodeDB>(NodeDB::Private());
