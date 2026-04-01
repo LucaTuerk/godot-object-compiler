@@ -41,16 +41,35 @@
 
 namespace GodotObjectCompiler
 {
+    static auto flag_regenerate_bindings = "regenerate_bindings";
+
+    HashSet<String> Generate::flags = {flag_regenerate_bindings};
+
+    bool Generate::validate_arguments(ApplicationContext& p_context)
+    {
+        return std::all_of(
+            p_context.program_arguments.begin(), p_context.program_arguments.end(),
+            [](const String& p_arg) { return flags.find(p_arg) != flags.end(); });
+    }
 
     Ref<ProgramError> Generate::run(ApplicationContext& p_context)
     {
         GenerateTypeDB generate_type_db;
+        GenerateBindings generate_bindings;
+
+        for (const String& argument : p_context.program_arguments) {
+            if (argument == flag_regenerate_bindings) {
+                for (const String& input_file : *p_context.files_input) {
+                    LibraryContext::instance()->force_regenerate(input_file);
+                }
+            }
+        }
+
         Ref<ProgramError> generate_type_db_error = generate_type_db.run(p_context);
         if (generate_type_db_error != ProgramError::OK) {
             return generate_type_db_error;
         }
 
-        GenerateBindings generate_bindings;
         Ref<ProgramError> generate_bindings_error = generate_bindings.run(p_context);
         if (generate_bindings_error != ProgramError::OK) {
             return generate_bindings_error;

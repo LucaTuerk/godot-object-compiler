@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* execution_context.cpp                                                  */
+/* library_context.cpp                                                    */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,7 +33,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "execution_context.h"
+#include "library_context.h"
 
 #include <algorithm>
 
@@ -49,17 +49,12 @@
 namespace GodotObjectCompiler
 {
 
-    ExecutionContext::ExecutionContext()
-    {
-        init();
-    }
-
-    void ExecutionContext::test_force_clear_modified_time(const String& p_path)
+    void LibraryContext::force_regenerate(const String& p_path)
     {
         String absolute = path_absolute(p_path);
         clear_generated_files(p_path);
-        _last_modified_times.erase(absolute);
-        _out_last_modified_times.erase(absolute);
+        last_modified_times.erase(absolute);
+        out_last_modified_times.erase(absolute);
     }
 
     String error_level_to_string(ErrorLevel level)
@@ -81,114 +76,140 @@ namespace GodotObjectCompiler
         return "";
     }
 
-    void ExecutionContext::init()
+    LibraryContext* LibraryContext::instance()
     {
-        _node_db = make_ref<NodeDB>(NodeDB::Private());
-        _attribute_db = make_ref<AttributeDB>(AttributeDB::Private());
-        _type_db = make_ref<TypeDB>(TypeDB::Private());
-        _include_paths = {};
-        _remove_macros = {};
-        _generated_from = {};
-        _last_modified_times = {};
-        _out_last_modified_times = {};
+        static LibraryContext _instance = LibraryContext();
+        if (!_instance.initialized) {
+            _instance.init();
+        }
+        return &_instance;
     }
 
-    NodeDB* ExecutionContext::get_node_db() const
+    void LibraryContext::init()
     {
-        return _node_db.get();
-    }
+        node_db = make_ref<NodeDB>(NodeDB::Private());
+        attribute_db = make_ref<AttributeDB>(AttributeDB::Private());
+        type_db = make_ref<TypeDB>(TypeDB::Private());
+        cache_path = {};
+        usings = {};
+        input_files = {};
+        remove_macros = {};
+        include_paths = {};
+        generated_from = {};
+        last_modified_times = {};
+        out_last_modified_times = {};
+        generic_singletons = {};
+        error_level = INFO;
+        error_detail = FULL;
+        initialized = true;
 
-    AttributeDB* ExecutionContext::get_attribute_db() const
-    {
-        return _attribute_db.get();
-    }
-
-    TypeDB* ExecutionContext::get_type_db() const
-    {
-        return _type_db.get();
-    }
-
-    const Vector<String>& ExecutionContext::get_remove_macros()
-    {
-        return _remove_macros;
-    }
-
-    void ExecutionContext::set_remove_macros(const Vector<String>& p_value)
-    {
-        _remove_macros = p_value;
-    }
-
-    const Vector<String>& ExecutionContext::get_include_paths()
-    {
-        return _include_paths;
-    }
-
-    void ExecutionContext::set_include_paths(const Vector<String>& p_value)
-    {
-        _include_paths = p_value;
-    }
-
-    void ExecutionContext::set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail)
-    {
-        _error_level = p_level;
-        _error_detail = p_error_detail;
-    }
-
-    ErrorLevel ExecutionContext::get_error_level() const
-    {
-        return _error_level;
-    }
-
-    ErrorDetail ExecutionContext::get_error_detail() const
-    {
-        return _error_detail;
-    }
-
-    void ExecutionContext::print(ErrorLevel p_level, const String& p_message) const
-    {
-        if (p_level >= _error_level) {
-            print_ln(p_message);
+        for (const RegisterCallback& callback : register_callbacks) {
+            callback(this);
         }
     }
 
-    Hash ExecutionContext::get_path_hash(const String& p_absolute_path)
+    bool LibraryContext::add_register_callback(const RegisterCallback& callback)
+    {
+        register_callbacks.push_back(callback);
+        return true;
+    }
+
+    Hash LibraryContext::get_path_hash(const String& p_absolute_path)
     {
         Hasher<String> hasher;
         return hasher(p_absolute_path);
     }
 
-    void ExecutionContext::register_generated_file(
-        const String& p_generated_path, const String& p_generated_from_path)
+    NodeDB* LibraryContext::get_node_db() const
     {
-        _generated_from[p_generated_from_path].push_back(p_generated_path);
+        return node_db.get();
     }
 
-    bool ExecutionContext::load_generated_from_file(const String& p_path)
+    AttributeDB* LibraryContext::get_attribute_db() const
+    {
+        return attribute_db.get();
+    }
+
+    TypeDB* LibraryContext::get_type_db() const
+    {
+        return type_db.get();
+    }
+
+    const Vector<String>& LibraryContext::get_remove_macros()
+    {
+        return remove_macros;
+    }
+
+    void LibraryContext::set_remove_macros(const Vector<String>& p_value)
+    {
+        remove_macros = p_value;
+    }
+
+    const Vector<String>& LibraryContext::get_include_paths()
+    {
+        return include_paths;
+    }
+
+    void LibraryContext::set_include_paths(const Vector<String>& p_value)
+    {
+        include_paths = p_value;
+    }
+
+    void LibraryContext::set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail)
+    {
+        error_level = p_level;
+        error_detail = p_error_detail;
+    }
+
+    ErrorLevel LibraryContext::get_error_level() const
+    {
+        return error_level;
+    }
+
+    ErrorDetail LibraryContext::get_error_detail() const
+    {
+        return error_detail;
+    }
+
+    void LibraryContext::print(ErrorLevel p_level, const String& p_message) const
+    {
+        if (p_level >= error_level) {
+            print_ln(p_message);
+        }
+    }
+
+    void LibraryContext::register_generated_file(
+        const String& p_generated_path, const String& p_generated_from_path)
+    {
+        generated_from[p_generated_from_path].push_back(p_generated_path);
+    }
+
+    bool LibraryContext::load_generated_from_file(const String& p_path)
     {
         Config config;
         if (!config.read_from_file(p_path)) {
             return false;
         }
 
-        _generated_from.clear();
+        generated_from.clear();
 
         for (const String& key : config.get_sections()) {
             config.read_from_section(key);
             if (config.has_config_value("generated_files")) {
                 Vector<String> generated =
                     string_split(config.read<String, String>("generated_files"), ";");
-                _generated_from.emplace(key, generated);
+                generated_from.emplace(key, generated);
             }
         }
 
         return true;
     }
 
-    bool ExecutionContext::save_generated_from_file(const String& p_path)
+    bool LibraryContext::save_generated_from_file(const String& p_path)
     {
         Config config;
 
-        for (const auto& [path, generated] : _generated_from) {
+        for (const auto& [path, generated] : generated_from) {
             config.write_to_section(path);
             config.write("generated_files", string_vector_combine(generated, ";"));
         }
@@ -196,37 +217,37 @@ namespace GodotObjectCompiler
         return config.write_to_file(p_path);
     }
 
-    void ExecutionContext::clear_generated_from()
+    void LibraryContext::clear_generated_from()
     {
-        _generated_from.clear();
+        generated_from.clear();
     }
 
-    void ExecutionContext::clear_last_modified_times()
+    void LibraryContext::clear_last_modified_times()
     {
-        _last_modified_times.clear();
-        _out_last_modified_times.clear();
+        last_modified_times.clear();
+        out_last_modified_times.clear();
     }
 
-    void ExecutionContext::regenerate_file(const String& p_path)
+    void LibraryContext::regenerate_file(const String& p_path)
     {
-        _last_modified_times.erase(p_path);
-        _out_last_modified_times.erase(p_path);
+        last_modified_times.erase(p_path);
+        out_last_modified_times.erase(p_path);
 
-        auto itr = _generated_from.find(p_path);
-        if (itr != _generated_from.end()) {
+        auto itr = generated_from.find(p_path);
+        if (itr != generated_from.end()) {
             for (const String& generated_file : itr->second) {
                 if (file_exists(generated_file)) {
                     read_file(p_path);
                 }
             }
         }
-        _generated_from.erase(p_path);
+        generated_from.erase(p_path);
     }
 
-    void ExecutionContext::clean_generated_files()
+    void LibraryContext::clean_generated_files()
     {
-        auto itr = _generated_from.begin();
-        while (itr != _generated_from.end()) {
+        auto itr = generated_from.begin();
+        while (itr != generated_from.end()) {
             const auto& [path, generated_files] = *itr;
 
             if (!file_exists(path)) {
@@ -238,7 +259,7 @@ namespace GodotObjectCompiler
                         remove_file(generated_file);
                     }
                 }
-                itr = _generated_from.erase(itr);
+                itr = generated_from.erase(itr);
                 continue;
             }
 
@@ -249,15 +270,15 @@ namespace GodotObjectCompiler
                 }
             }
 
-            itr++;
+            ++itr;
         }
     }
 
-    bool ExecutionContext::clear_generated_files(const String& p_path)
+    bool LibraryContext::clear_generated_files(const String& p_path)
     {
-        auto itr = _generated_from.find(p_path);
+        const auto itr = generated_from.find(p_path);
 
-        if (itr == _generated_from.end()) {
+        if (itr == generated_from.end()) {
             return false;
         }
 
@@ -269,36 +290,36 @@ namespace GodotObjectCompiler
                 remove_file(generated);
             }
         }
-        _generated_from.erase(p_path);
+        generated_from.erase(p_path);
         return true;
     }
 
-    bool ExecutionContext::load_last_modified_times_file(const String& p_path)
+    bool LibraryContext::load_last_modified_times_file(const String& p_path)
     {
         Config config;
         if (!config.read_from_file(p_path)) {
             return false;
         }
 
-        _last_modified_times.clear();
-        _out_last_modified_times.clear();
+        last_modified_times.clear();
+        out_last_modified_times.clear();
 
         for (const String& section : config.get_sections()) {
             config.read_from_section(section);
             if (config.has_config_value("last_modified")) {
-                _last_modified_times[section] = config.read<String, Size>("last_modified");
-                _out_last_modified_times[section] = config.read<String, Size>("last_modified");
+                last_modified_times[section] = config.read<String, Size>("last_modified");
+                out_last_modified_times[section] = config.read<String, Size>("last_modified");
             }
         }
 
         return true;
     }
 
-    bool ExecutionContext::save_last_modified_times_file(const String& p_path)
+    bool LibraryContext::save_last_modified_times_file(const String& p_path)
     {
         Config config;
 
-        for (const auto& [path, last_modified] : _out_last_modified_times) {
+        for (const auto& [path, last_modified] : out_last_modified_times) {
             config.write_to_section(path);
             config.write<String, Size>("last_modified", last_modified);
         }
@@ -306,11 +327,10 @@ namespace GodotObjectCompiler
         return config.write_to_file(p_path);
     }
 
-    bool ExecutionContext::file_modified(const String& p_path, bool p_update_time)
+    bool LibraryContext::file_modified(const String& p_path, bool p_update_time)
     {
-        String absolute = path_absolute(p_path);
-
-        Size last_modified = file_write_time(absolute);
+        const String absolute = path_absolute(p_path);
+        const Size last_modified = file_write_time(absolute);
 
         if (last_modified == 0) {
             return false;
@@ -318,44 +338,44 @@ namespace GodotObjectCompiler
 
         bool modified = false;
 
-        auto itr = _last_modified_times.find(absolute);
-        if (itr == _last_modified_times.end()) {
+        if (auto itr = last_modified_times.find(absolute); itr == last_modified_times.end()) {
             modified = true;
         } else {
-            modified = (*itr).second != last_modified;
+            modified = itr->second != last_modified;
         }
 
         if (p_update_time) {
-            _out_last_modified_times[absolute] = last_modified;
+            out_last_modified_times[absolute] = last_modified;
         }
         return modified;
     }
 
-    void ExecutionContext::set_usings(const Vector<String>& p_value)
+    void LibraryContext::set_usings(const Vector<String>& p_value)
     {
-        _usings = p_value;
+        usings = p_value;
     }
 
-    const Vector<String>& ExecutionContext::get_usings()
+    const Vector<String>& LibraryContext::get_usings()
     {
-        return _usings;
+        return usings;
     }
 
-    void ExecutionContext::add_using(const String& p_value)
+    void LibraryContext::add_using(const String& p_value)
     {
-        _usings.push_back(p_value);
+        usings.push_back(p_value);
     }
 
-    void ExecutionContext::remove_using(const String& p_value)
+    void LibraryContext::remove_using(const String& p_value)
     {
-        if (auto itr = std::find(_usings.begin(), _usings.end(), p_value); itr != _usings.end()) {
-            _usings.erase(itr);
+        if (const auto itr = std::find(usings.begin(), usings.end(), p_value);
+            itr != usings.end()) {
+            usings.erase(itr);
         }
     }
 
-    void ExecutionContext::clear_usings()
+    void LibraryContext::clear_usings()
     {
-        _usings.clear();
+        usings.clear();
     }
 
 } // namespace GodotObjectCompiler

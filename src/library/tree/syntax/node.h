@@ -37,7 +37,7 @@
 #include "library/core/core.h"
 #include "library/core/reader_writer.h"
 #include "library/core/result.h"
-#include "library/execution_context.h"
+#include "library/library_context.h"
 #include "library/node_db.h"
 
 namespace GodotObjectCompiler
@@ -71,7 +71,7 @@ namespace GodotObjectCompiler
 
         virtual Ref<Node> create() const
         {
-            return ExecutionContext::instance()->get_node_db()->create<Node>();
+            return LibraryContext::instance()->get_node_db()->create<Node>();
         }
 
         static String get_type_static()
@@ -143,13 +143,15 @@ namespace GodotObjectCompiler
         friend class Context;
 
         static inline bool node_register_constructor =
-            ExecutionContext::instance()->get_node_db()->register_node_constructor(
-                "Node", &GodotObjectCompiler::default_construct<Node>);
+            LibraryContext::add_register_callback([](LibraryContext* p_context) {
+                p_context->get_node_db()->register_node_constructor(
+                    "Node", &GodotObjectCompiler::default_construct<Node>);
+            });
     };
 
     template <typename T, typename... Args> Ref<T> node_new(Args&&... args)
     {
-        return ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
+        return LibraryContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
     }
 
 } // namespace GodotObjectCompiler
@@ -172,7 +174,7 @@ template <class T> GodotObjectCompiler::Ref<const T> GodotObjectCompiler::Node::
 template <typename T>
 GodotObjectCompiler::Ref<GodotObjectCompiler::Node> GodotObjectCompiler::default_construct()
 {
-    return ExecutionContext::instance()->get_node_db()->create<T>();
+    return LibraryContext::instance()->get_node_db()->create<T>();
 }
 
 #define NODE_TYPE(type)                                                                            \
@@ -190,7 +192,7 @@ GodotObjectCompiler::Ref<GodotObjectCompiler::Node> GodotObjectCompiler::default
     }                                                                                              \
     static Ref<Node> create_static()                                                               \
     {                                                                                              \
-        return ExecutionContext::instance()->get_node_db()->create<type>();                        \
+        return LibraryContext::instance()->get_node_db()->create<type>();                          \
     }                                                                                              \
     virtual Ref<Node> create() const override                                                      \
     {                                                                                              \
@@ -199,8 +201,10 @@ GodotObjectCompiler::Ref<GodotObjectCompiler::Node> GodotObjectCompiler::default
                                                                                                    \
   private:                                                                                         \
     static inline bool __registered__##type##__ =                                                  \
-        ExecutionContext::instance()->get_node_db()->register_node_constructor(                    \
-            #type, &GodotObjectCompiler::default_construct<type>);
+        LibraryContext::add_register_callback([](LibraryContext* p_context) {                      \
+            p_context->get_node_db()->register_node_constructor(                                   \
+                #type, &GodotObjectCompiler::default_construct<type>);                             \
+        });
 
 #define COPY_GUARD(type, parent)                                                                   \
     auto target = p_other->as<type>();                                                             \

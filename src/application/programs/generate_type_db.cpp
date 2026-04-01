@@ -39,7 +39,7 @@
 #include "library/core/config.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
-#include "library/execution_context.h"
+#include "library/library_context.h"
 #include "library/parser/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/define.h"
@@ -50,7 +50,6 @@
 
 namespace GodotObjectCompiler
 {
-
     Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context)
     {
         TreeSitterParser parser;
@@ -70,10 +69,16 @@ namespace GodotObjectCompiler
                     continue;
                 }
 
-                if (!ExecutionContext::instance()->file_modified(file)) {
+                bool is_input_file =
+                    p_context.files_input.has_value() &&
+                    std::find(p_context.files_input->begin(), p_context.files_input->end(), file) !=
+                        p_context.files_input->end();
+
+                if (!is_input_file && !LibraryContext::instance()->file_modified(file)) {
                     PRINT_VERBOSE("TypeDB:\tSkipping \"%s\". Not modified.", file.c_str());
                     continue;
                 }
+
                 PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
 
                 Ref<Namespace> global_namespace = node_new<Namespace>();
@@ -105,14 +110,14 @@ namespace GodotObjectCompiler
                                 PRINT_VERBOSE(
                                     "TypeDB:\tSaving attribute \"%s\"",
                                     node->qualified_name().c_str());
-                                ExecutionContext::instance()->get_type_db()->save_type_attribute(
+                                LibraryContext::instance()->get_type_db()->save_type_attribute(
                                     type, attr, file);
                             }
                         } else {
                             PRINT_VERBOSE(
                                 "TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
                             node->header = header_path(include_path, file);
-                            ExecutionContext::instance()->get_type_db()->save_type_data(node, file);
+                            LibraryContext::instance()->get_type_db()->save_type_data(node, file);
                         }
                     }
                 }

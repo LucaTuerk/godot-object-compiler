@@ -38,8 +38,8 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
-#include "library/execution_context.h"
 #include "library/generator/generator.h"
+#include "library/library_context.h"
 #include "library/parser/parser.h"
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/class.h"
@@ -52,7 +52,6 @@
 
 namespace GodotObjectCompiler
 {
-
     String GenerateBindings::file_id(const String& p_file_name)
     {
         Hasher<String> hasher;
@@ -315,7 +314,7 @@ namespace GodotObjectCompiler
                     result.register_includes.insert(header_path(*p_context.paths_root, input_file));
                 }
 
-                if (!ExecutionContext::instance()->file_modified(input_file)) {
+                if (!LibraryContext::instance()->file_modified(input_file)) {
                     PRINT_VERBOSE(
                         "Input file \"%s\" was not modified since last read. Skipping.",
                         input_file.c_str());
@@ -325,7 +324,7 @@ namespace GodotObjectCompiler
                 for (const Ref<Node>& child : *target_class->body()) {
                     if (Ref<Attribute> attribute = child->as<Attribute>()) {
                         for (const Ref<ClassGenerator>& generator :
-                             ExecutionContext::instance()->get_attribute_db()->class_generators()) {
+                             LibraryContext::instance()->get_attribute_db()->class_generators()) {
                             if (generator->handles(target_class, attribute)) {
                                 Ref<Context> default_values = node_new<Context>();
                                 Ref<GeneratorError> attr_def_error =
@@ -350,7 +349,7 @@ namespace GodotObjectCompiler
                 generate_results.push_back(result);
             }
 
-            if (!ExecutionContext::instance()->file_modified(input_file)) {
+            if (!LibraryContext::instance()->file_modified(input_file)) {
                 PRINT_VERBOSE(
                     "Input file \"%s\" was not modified since last read. Skipping.",
                     input_file.c_str());

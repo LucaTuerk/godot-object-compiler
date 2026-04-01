@@ -112,7 +112,7 @@ namespace GodotObjectCompiler
     }
 
     bool AttributeDB::register_class_generator(
-        const String& p_generator_name, Ref<ClassGenerator> p_generator)
+        const String& p_generator_name, const Ref<ClassGenerator>& p_generator)
     {
         if (_registered_generator_names.find(p_generator_name) ==
             _registered_generator_names.end()) {

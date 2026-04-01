@@ -40,7 +40,7 @@
 #include "core/string_utilities.h"
 #include "core/string_writer.h"
 #include "library/core/core.h"
-#include "library/execution_context.h"
+#include "library/library_context.h"
 #include "library/tree/syntax/attribute.h"
 #include "tree/predicates.h"
 #include "tree/syntax/class.h"
@@ -94,7 +94,7 @@ namespace GodotObjectCompiler
 
             String node_class = config.read<String, String>("_class");
             UID uid = config.read<String, UID>("_id");
-            if (Ref<Node> existing = ExecutionContext::instance()->get_node_db()->get<Node>(uid);
+            if (Ref<Node> existing = LibraryContext::instance()->get_node_db()->get<Node>(uid);
                 existing != nullptr) {
                 local.insert({uid, existing->clone()});
                 was_existing.insert(uid);
@@ -220,7 +220,7 @@ namespace GodotObjectCompiler
         }
 
         if (Writer writer; writer.write_to_file(p_type, path)) {
-            ExecutionContext::instance()->register_generated_file(path, p_generated_from);
+            LibraryContext::instance()->register_generated_file(path, p_generated_from);
         }
     }
 
@@ -252,7 +252,7 @@ namespace GodotObjectCompiler
         }
 
         if (Writer writer; writer.write_to_file(p_attribute, path)) {
-            ExecutionContext::instance()->register_generated_file(path, p_generated_from);
+            LibraryContext::instance()->register_generated_file(path, p_generated_from);
         }
     }
 
@@ -279,7 +279,7 @@ namespace GodotObjectCompiler
                     root_result.get_error()->set_handled();
                 }
             }
-            for (const String& using_ : ExecutionContext::instance()->get_usings()) {
+            for (const String& using_ : LibraryContext::instance()->get_usings()) {
                 if (String using_path = _get_cache_file_path(
                         format("%s::%s", using_.c_str(), name.c_str()), p_cache_type,
                         p_template_argument_count);
@@ -324,7 +324,7 @@ namespace GodotObjectCompiler
                 root_result.get_error()->set_handled();
             }
 
-            for (const String& using_ : ExecutionContext::instance()->get_usings()) {
+            for (const String& using_ : LibraryContext::instance()->get_usings()) {
                 if (String using_path = _get_attribute_cache_file_path(
                         format("%s::%s", using_.c_str(), name.c_str()), p_attribute_name,
                         cache_type);

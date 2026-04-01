@@ -82,6 +82,7 @@ namespace GodotObjectCompiler
 
     template <typename A, typename B> using Pair = std::pair<A, B>;
 
+    using AnyType = std::any;
     using TypeInfo = std::type_info;
     using TypeIndex = std::type_index;
 

@@ -98,7 +98,7 @@ namespace GodotObjectCompiler
             if (auto itr = before_node.find(context.current_src->get_id());
                 itr != before_node.end()) {
                 if (Ref<Context> before =
-                        ExecutionContext::instance()->get_node_db()->get<Context>(itr->second)) {
+                        LibraryContext::instance()->get_node_db()->get<Context>(itr->second)) {
                     context.current_target = before;
                 }
             }
@@ -189,7 +189,7 @@ namespace GodotObjectCompiler
         const String& p_input, Dictionary<Size, String>& r_parameters)
     {
         String local_input = p_input;
-        Vector<String> macros = ExecutionContext::instance()->get_attribute_db()->get_all_macros();
+        Vector<String> macros = LibraryContext::instance()->get_attribute_db()->get_all_macros();
 
         for (const String& macro : macros) {
             Size index = 0;

@@ -169,7 +169,7 @@ namespace GodotObjectCompiler
         String _cache_directory;
         String _readonly_cache_directory;
 
-        friend ExecutionContext;
+        friend LibraryContext;
     };
 
     template <typename T>

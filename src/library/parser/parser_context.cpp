@@ -52,7 +52,7 @@ namespace GodotObjectCompiler
     {
         original_buffer = input;
         buffer = input;
-        current_target = ExecutionContext::instance()->get_node_db()->create<Namespace>();
+        current_target = LibraryContext::instance()->get_node_db()->create<Namespace>();
 
         TSParser* parser = ts_parser_new();
         ts_parser_set_language(parser, tree_sitter_cpp());

@@ -36,7 +36,7 @@
 
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
-#include "library/execution_context.h"
+#include "library/library_context.h"
 
 namespace GodotObjectCompiler
 {
@@ -46,7 +46,7 @@ namespace GodotObjectCompiler
         StreamWriter writer;
         for (String line : string_split(p_input, "\n")) {
             if (!string_prefix(string_trim(line), "#")) {
-                for (const String& macro : ExecutionContext::instance()->get_remove_macros()) {
+                for (const String& macro : LibraryContext::instance()->get_remove_macros()) {
                     line = string_replace(line, macro, "");
                 }
             }

@@ -214,7 +214,9 @@ namespace GodotObjectCompiler
         if (!get_defaults_for_type(
                 property_type, variant_type, property_hint, property_usage_flags, p_target_class)) {
             GEN_ERROR(
-                p_attribute, "Unknown property type. Failed to determine default property info.");
+                p_attribute,
+                "Unknown property type \"%s\". Failed to determine default property info.",
+                property_type->name().c_str());
         }
 
         Ref<StringLiteralArgument> string_literal_argument =

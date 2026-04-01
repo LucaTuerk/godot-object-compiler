@@ -400,7 +400,7 @@ namespace GodotObjectCompiler
     template <class T, typename... Args> Ref<T> Context::create_child(Args&&... args)
     {
         Ref<T> child =
-            ExecutionContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
+            LibraryContext::instance()->get_node_db()->create<T>(std::forward<Args>(args)...);
         add_child(child);
         return child;
     }

@@ -69,7 +69,7 @@ namespace GodotObjectCompiler
 
     Ref<Node> NodeDB::create(const String& p_type)
     {
-        NodeDB* db = ExecutionContext::instance()->get_node_db();
+        NodeDB* db = LibraryContext::instance()->get_node_db();
 
         auto itr = db->_node_constructors.find(p_type);
 

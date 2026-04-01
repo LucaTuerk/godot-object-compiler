@@ -91,7 +91,7 @@ namespace GodotObjectCompiler
 
     String GodotGeneratorUtils::type_name_remove_usings(String p_typename)
     {
-        for (const String& _using : ExecutionContext::instance()->get_usings()) {
+        for (const String& _using : LibraryContext::instance()->get_usings()) {
             if (string_prefix(p_typename, format("%s::", _using.c_str()))) {
                 return p_typename.substr(_using.size() + 2);
             }
@@ -102,14 +102,14 @@ namespace GodotObjectCompiler
         Ref<Type> p_type, Ref<Namespace> p_from_namespace, String& r_header)
     {
         Result<NamedContext> type_result =
-            ExecutionContext::instance()->get_type_db()->get_type_data<NamedContext>(
+            LibraryContext::instance()->get_type_db()->get_type_data<NamedContext>(
                 p_type, p_from_namespace);
         if (type_result.has_result()) {
             r_header = type_result.get_result()->header;
             return !r_header.empty();
-        } else {
-            type_result.get_error()->set_handled();
         }
+
+        type_result.get_error()->set_handled();
         r_header = "";
         return false;
     }
@@ -385,7 +385,7 @@ namespace GodotObjectCompiler
 
         if (!function_names) {
             auto base_names = p_target_class->direct_bases_names();
-            auto type_result = ExecutionContext::instance()->get_type_db()->get_type_attribute(
+            auto type_result = LibraryContext::instance()->get_type_db()->get_type_attribute(
                 base_names[0], GodotClassAttribute::get_type_static(), 0, p_target_class);
             if (base_names.size() == 1 && type_result.has_result()) {
                 public_members->B<Struct>()[{
@@ -420,7 +420,7 @@ namespace GodotObjectCompiler
         Ref<Body> property_names_body;
         if (!property_names) {
             auto base_names = p_target_class->direct_bases_names();
-            auto type_result = ExecutionContext::instance()->get_type_db()->get_type_attribute(
+            auto type_result = LibraryContext::instance()->get_type_db()->get_type_attribute(
                 base_names[0], GodotClassAttribute::get_type_static(), 0, p_target_class);
             if (base_names.size() == 1 && type_result.has_result()) {
                 public_members->B<Struct>()[{
@@ -455,7 +455,7 @@ namespace GodotObjectCompiler
         Ref<Body> signal_names_body;
         if (!signal_names) {
             auto base_names = p_target_class->direct_bases_names();
-            auto type_result = ExecutionContext::instance()->get_type_db()->get_type_attribute(
+            auto type_result = LibraryContext::instance()->get_type_db()->get_type_attribute(
                 base_names[0], GodotClassAttribute::get_type_static(), 0, p_target_class);
             if (base_names.size() == 1 && type_result.has_result()) {
                 public_members->B<Struct>()[{
@@ -589,7 +589,7 @@ namespace GodotObjectCompiler
         // qualified
         for (const String& base : p_target_class->direct_bases_names()) {
             Result<Class> base_result =
-                ExecutionContext::instance()->get_type_db()->get_type_data<Class>(base);
+                LibraryContext::instance()->get_type_db()->get_type_data<Class>(base);
             if (base_result.has_error()) {
                 fmt_print_err(
                     "%s: Base class \"%s\" not found!", p_target_class->name().c_str(),
@@ -670,7 +670,7 @@ namespace GodotObjectCompiler
             }
 
             Result<GodotEnumAttribute> attribute_result =
-                ExecutionContext::instance()->get_type_db()->get_type_attribute<GodotEnumAttribute>(
+                LibraryContext::instance()->get_type_db()->get_type_attribute<GodotEnumAttribute>(
                     p_target_type, p_from_namespace);
 
             bool is_flags = false;
@@ -834,7 +834,7 @@ namespace GodotObjectCompiler
         const Ref<Type>& p_inner_type, const Ref<Namespace>& p_from_namespace)
     {
         const Result<Class> class_result =
-            ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
+            LibraryContext::instance()->get_type_db()->get_type_data<Class>(
                 p_inner_type->type_name_unmodified(), 0, p_from_namespace);
         if (class_result.has_error()) {
             class_result.get_error()->set_handled();
@@ -848,7 +848,7 @@ namespace GodotObjectCompiler
         const Ref<Type>& p_inner_type, const Ref<Namespace>& p_from_namespace)
     {
         const Result<Class> class_result =
-            ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
+            LibraryContext::instance()->get_type_db()->get_type_data<Class>(
                 p_inner_type->type_name_unmodified(), 0, p_from_namespace);
         if (class_result.has_error()) {
             class_result.get_error()->set_handled();
@@ -877,7 +877,7 @@ namespace GodotObjectCompiler
         const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace)
     {
         const Result<Class> class_result =
-            ExecutionContext::instance()->get_type_db()->get_type_data<Class>(
+            LibraryContext::instance()->get_type_db()->get_type_data<Class>(
                 p_target_type->type_name_unmodified(), 0, p_from_namespace);
         if (class_result.has_error()) {
             class_result.get_error()->set_handled();
@@ -892,7 +892,7 @@ namespace GodotObjectCompiler
         const Ref<Namespace>& p_from_namespace)
     {
         const Result<Enum> enum_result =
-            ExecutionContext::instance()->get_type_db()->get_type_data<Enum>(
+            LibraryContext::instance()->get_type_db()->get_type_data<Enum>(
                 p_target_type->type_name_unmodified(), 0, p_from_namespace);
         if (enum_result.has_error()) {
             enum_result.get_error()->set_handled();
@@ -945,7 +945,9 @@ namespace GodotObjectCompiler
         Ref<Type> inner_type;
         if (type_is_object_type(p_type) || type_is_godot_ref_type(p_type, inner_type)) {
             return build_variant_type_argument(AssumedParameterValues::VariantTypeObject());
-        } else if (String variant_type; get_variant_type_from_type(p_type, variant_type)) {
+        }
+
+        if (String variant_type; get_variant_type_from_type(p_type, variant_type)) {
             return build_variant_type_argument(variant_type);
         }
 

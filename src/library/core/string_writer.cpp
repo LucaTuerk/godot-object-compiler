@@ -37,7 +37,7 @@
 
 #include "application/version.h"
 #include "file_system_utilities.h"
-#include "library/execution_context.h"
+#include "library/library_context.h"
 #include "permissions.h"
 #include "resources.h"
 #include "string_utilities.h"
@@ -93,7 +93,7 @@ namespace GodotObjectCompiler
         StreamWriter writer;
 
         if (!p_generated_from.empty()) {
-            ExecutionContext::instance()->register_generated_file(path, p_generated_from);
+            LibraryContext::instance()->register_generated_file(path, p_generated_from);
         }
 
         writer.write(_generated_header(path_file_name(path)));

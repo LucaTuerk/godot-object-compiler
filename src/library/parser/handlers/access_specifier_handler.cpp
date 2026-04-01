@@ -52,7 +52,7 @@ namespace GodotObjectCompiler
     {
         if (r_current_target->is<BaseClasses>()) {
             // We don't care about base class access specifiers for
-            // now, so keep it clean an skip here.
+            // now, so keep it clean and skip here.
             return ParserStep::StepOver();
         }
 

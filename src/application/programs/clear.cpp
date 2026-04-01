@@ -55,8 +55,8 @@ namespace GodotObjectCompiler
             return clear_generated_error;
         }
 
-        ExecutionContext::instance()->clear_generated_from();
-        ExecutionContext::instance()->clear_last_modified_times();
+        LibraryContext::instance()->clear_generated_from();
+        LibraryContext::instance()->clear_last_modified_times();
         return ProgramError::OK;
     }
 

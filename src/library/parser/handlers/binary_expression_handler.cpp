@@ -56,12 +56,12 @@ namespace GodotObjectCompiler
             return ParserStep::StepOver();
         }
 
-        const Ref<int> result = calculate_binary_expression(
+        const Opt<int> result = calculate_binary_expression(
             p_current_src->get_child<TreeSitterNode>(0),
             p_current_src->get_child<TreeSitterNode>(1),
             p_current_src->get_child<TreeSitterNode>(2), r_current_target->as<EnumValue>());
 
-        if (!result) {
+        if (result == std::nullopt) {
             node_new<ParserError>(ERROR, p_current_src, "Failed to parse binary expression.");
             return ParserStep::StepOver();
         }
@@ -70,7 +70,7 @@ namespace GodotObjectCompiler
         return ParserStep::StepOver();
     }
 
-    Ref<int> BinaryExpressionHandler::calculate_binary_expression(
+    Opt<int> BinaryExpressionHandler::calculate_binary_expression(
         const Ref<TreeSitterNode>& left_operand, const Ref<TreeSitterNode>& expr_operator,
         const Ref<TreeSitterNode>& right_operand, const Ref<EnumValue>& current_target)
     {
@@ -79,27 +79,27 @@ namespace GodotObjectCompiler
               right_operand && right_operand->type_in({"number_literal", "identifier"}) &&
               expr_operator &&
               expr_operator->type_in({"+", "-", "*", "/", "%", "&", "|", "^", "<<", ">>"}))) {
-            return nullptr;
+            return std::nullopt;
         }
 
         int first = 0;
         if (left_operand->type == "binary_expression") {
-            const Ref<int> nested_result = calculate_binary_expression(
+            const Opt<int> nested_result = calculate_binary_expression(
                 left_operand->get_child<TreeSitterNode>(0),
                 left_operand->get_child<TreeSitterNode>(1),
                 left_operand->get_child<TreeSitterNode>(2), current_target);
-            if (!nested_result) {
-                return nullptr;
+            if (nested_result == std::nullopt) {
+                return std::nullopt;
             }
             first = *nested_result;
         } else {
             if (left_operand->type == "number_literal") {
                 first = string_to_int(left_operand->content());
             } else {
-                const Ref<int> first_opt =
+                const Opt<int> first_opt =
                     find_value_for_identifier(left_operand->content(), current_target);
-                if (!first_opt) {
-                    return nullptr;
+                if (first_opt == std::nullopt) {
+                    return std::nullopt;
                 }
                 first = *first_opt;
             }
@@ -109,10 +109,10 @@ namespace GodotObjectCompiler
         if (right_operand->type == "number_literal") {
             second = string_to_int(right_operand->content());
         } else {
-            const Ref<int> second_opt =
+            const Opt<int> second_opt =
                 find_value_for_identifier(right_operand->content(), current_target);
-            if (!second_opt) {
-                return nullptr;
+            if (second_opt == std::nullopt) {
+                return std::nullopt;
             }
             second = *second_opt;
         }
@@ -140,24 +140,24 @@ namespace GodotObjectCompiler
             result = first >> second;
         }
 
-        return make_ref<int>(result);
+        return result;
     }
 
-    Ref<int> BinaryExpressionHandler::find_value_for_identifier(
+    Opt<int> BinaryExpressionHandler::find_value_for_identifier(
         const String& identifier, const Ref<EnumValue>& current_target)
     {
         const Ref<EnumValue> identified = current_target->find_previous_sibling<EnumValue>(
             NamedContextPredicates::name<EnumValue>(identifier.c_str()));
         if (!identified) {
-            return nullptr;
+            return std::nullopt;
         }
 
         const Ref<Literal> literal = identified->find_child<Literal>();
         if (!literal) {
-            return nullptr;
+            return std::nullopt;
         }
 
-        return make_ref<int>(string_to_int(literal->content));
+        return string_to_int(literal->content);
     }
 
 } // namespace GodotObjectCompiler

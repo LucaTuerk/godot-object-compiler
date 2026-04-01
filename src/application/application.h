@@ -49,12 +49,21 @@ namespace GodotObjectCompiler
     class Application
     {
       public:
-        static bool was_last_exit_graceful(const ApplicationContext& context);
-        static int exit_gracefully(const ApplicationContext& context, int p_return_code);
-        static int run(Vector<String> p_arguments);
-        static int setup_context(Vector<String> p_arguments, ApplicationContext& r_context);
-        static int run_program(ApplicationContext& p_context);
-        static int cleanup_context(const ApplicationContext& p_context);
+        Application();
+        ~Application();
+
+        int run(const Vector<String>& p_arguments);
+
+      private:
+        int setup_context(Vector<String> p_arguments);
+        int run_program(const Ref<IProgram>& p_program);
+
+        int cleanup();
+        bool was_last_exit_graceful() const;
+        int exit_gracefully(int p_return_code) const;
+
+        ApplicationContext context;
+        static inline bool has_application = false;
     };
 
 } // namespace GodotObjectCompiler
@@ -65,7 +74,7 @@ namespace GodotObjectCompiler
 
 #define APP_TOP_LEVEL_ERR(...)                                                                     \
     print_err(format(__VA_ARGS__));                                                                \
-    return exit_gracefully(application_context, 1);
+    return exit_gracefully(1);
 
 #define APP_ERR_COND(condition, ...)                                                               \
     if ((condition)) {                                                                             \
