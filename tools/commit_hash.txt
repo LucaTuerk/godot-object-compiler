@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* build_number.h                                                         */
+/* commit_hash.cpp                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,6 +32,9 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#pragma once
+#include "application/build_info.h"
 
-#define GOC_BUILD_NUMBER "TQqgfUOoD9C4KJ31w5AP"
+namespace GodotObjectCompiler
+{
+    const char* BuildInfo::commit_hash = "COMMIT_HASH";
+}

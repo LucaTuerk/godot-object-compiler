@@ -42,7 +42,7 @@ namespace GodotObjectCompiler
     class GenerateResources : public IProgram
     {
         PROGRAM(GenerateResources, "generate/resources");
-        PROG_NO_ARGS
+        NO_PROGRAM_ARGS
 
       public:
         using TableRow = Vector<String>;

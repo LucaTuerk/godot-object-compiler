@@ -36,7 +36,7 @@
 #include "application.h"
 
 #include "application_context.h"
-#include "build_number.h"
+#include "build_info.h"
 #include "compiled_resources/res.gen.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
@@ -191,7 +191,7 @@ namespace GodotObjectCompiler
             }
 
             auto build_num_file = path_concat(context.paths_goc, "last_goc_build_number.txt");
-            String build_num = GOC_BUILD_NUMBER;
+            String build_num = BuildInfo::commit_hash;
             if (file_exists(build_num_file)) {
                 if (String last_build_num = read_file(build_num_file);
                     last_build_num != build_num) {

@@ -2,7 +2,6 @@ from pathlib import Path
 
 
 def create_all_h(directory):
-    print(directory)
     dirpath = Path(directory)
 
     includes = []
@@ -28,5 +27,11 @@ def create_all_h(directory):
             create_all_h(dir)
 
 
-create_all_h(Path("./tests"))
-create_all_h(Path("./src"))
+def create_all_h_for_project():
+    print("Creating all.h's")
+    create_all_h(Path("./tests"))
+    create_all_h(Path("./src"))
+
+
+if __name__ == "__main__":
+    create_all_h_for_project()

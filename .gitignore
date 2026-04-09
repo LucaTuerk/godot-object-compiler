@@ -12,6 +12,9 @@ compile_commands.json
 *.o
 *.os
 
+# Ignore generated commit hash
+commit_hash.cpp
+
 #goc
 goc
 .goc
