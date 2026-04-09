@@ -5,12 +5,34 @@ on:
   workflow_dispatch:
 
 jobs:
+  check-changed:
+    runs-on: ubuntu-22.04
+    outputs:
+      result: ${{ steps.compare.outputs.result }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+      - id: compare
+        name: Compare Commit Hashes
+        run: |
+          gh release download nightly -p goc_nightly-linux.x86_64.zip
+          unzip goc_nightly-linux.x86_64.zip
+          chmod +x ./linux/goc
+          ./linux/goc build_num >> last_hash
+          git rev-parse HEAD >> current_hash
+          diff last_hash current_hash && echo "result=0" >> ${GITHUB_OUTPUT} || echo "result=1" >> ${GITHUB_OUTPUT}
+
   check-format:
+    needs: check-changed
+    if: ${{ needs.check-changed.outputs.result == 1 }}
     uses: ./.github/workflows/format.yml
 
   linux-build:
     uses: ./.github/workflows/build_linux.yml
-    needs: check-format
+    needs: [ check-format, check-changed ]
+    if: ${{ needs.check-changed.outputs.result == 1 }}
     with:
       create_artifact: true
     secrets:
@@ -18,7 +40,8 @@ jobs:
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml
-    needs: check-format
+    needs: [ check-format, check-changed ]
+    if: ${{ needs.check-changed.outputs.result == 1 }}
     with:
       create_artifact: true
     secrets:
@@ -26,7 +49,8 @@ jobs:
 
   mac-build:
     uses: ./.github/workflows/build_mac.yml
-    needs: check-format
+    needs: [ check-format, check-changed ]
+    if: ${{ needs.check-changed.outputs.result == 1 }}
     with:
       create_artifact: true
     secrets:
@@ -35,7 +59,8 @@ jobs:
   upload-artifacts:
     name: Upload release artifacts
     runs-on: ubuntu-22.04
-    needs: [linux-build, windows-build, mac-build]
+    needs: [ linux-build, windows-build, mac-build, check-changed ]
+    if: ${{ needs.check-changed.outputs.result == 1 }}
     permissions: write-all
 
     steps:

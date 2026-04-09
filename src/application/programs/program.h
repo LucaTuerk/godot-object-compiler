@@ -101,7 +101,7 @@ namespace GodotObjectCompiler
         }                                                                                          \
     }
 
-#define PROG_NO_ARGS                                                                               \
+#define NO_PROGRAM_ARGS                                                                            \
     bool validate_arguments(ApplicationContext& p_context) override                                \
     {                                                                                              \
         return p_context.program_arguments.empty();                                                \

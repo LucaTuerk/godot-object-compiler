@@ -35,7 +35,7 @@
 
 #include "version.h"
 
-#include "application/build_number.h"
+#include "application/build_info.h"
 #include "application/version.h"
 
 namespace GodotObjectCompiler
@@ -44,14 +44,16 @@ namespace GodotObjectCompiler
     Ref<ProgramError> Version::run(ApplicationContext& p_context)
     {
         UNUSED(p_context);
-        fmt_print_ln("%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MINOR_VERSION, GOC_VERSION_NAME);
+        fmt_print_ln(
+            "%d.%d \"%s\"", BuildInfo::major_version, BuildInfo::minor_version,
+            BuildInfo::version_name);
         return ProgramError::OK;
     }
 
     Ref<ProgramError> BuildNum::run(ApplicationContext& p_context)
     {
         UNUSED(p_context);
-        fmt_print_ln("%s", GOC_BUILD_NUMBER);
+        fmt_print_ln("%s", BuildInfo::commit_hash);
         return ProgramError::OK;
     }
 

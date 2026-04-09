@@ -43,7 +43,7 @@ namespace GodotObjectCompiler
     class GenerateAssumptions : public IProgram
     {
         PROGRAM(GenerateAssumptions, "generate/assumptions");
-        PROG_NO_ARGS
+        NO_PROGRAM_ARGS
 
       public:
         Ref<ProgramError> run(ApplicationContext& p_context) override;

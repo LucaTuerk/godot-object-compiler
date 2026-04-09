@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* generate_bindings.h                                                    */
+/* build_info.cpp                                                         */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,23 +33,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
-#include "program.h"
+#include "build_info.h"
 
 namespace GodotObjectCompiler
 {
-
-    class GenerateBindings : public IProgram
-    {
-        PROGRAM(GenerateBindings, "generate/bindings")
-        NO_PROGRAM_ARGS
-
-      public:
-        String file_id(const String& p_file_name);
-
-        String generated_macro_name(const String& p_header, Size p_line);
-
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
-    };
-
+    const char* BuildInfo::version_name = "public experimental";
+    const int BuildInfo::major_version = 0;
+    const int BuildInfo::minor_version = 1;
 } // namespace GodotObjectCompiler

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* generate_bindings.h                                                    */
+/* build_info.h                                                           */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,22 +34,15 @@
 /**************************************************************************/
 
 #pragma once
-#include "program.h"
 
 namespace GodotObjectCompiler
 {
-
-    class GenerateBindings : public IProgram
+    class BuildInfo
     {
-        PROGRAM(GenerateBindings, "generate/bindings")
-        NO_PROGRAM_ARGS
-
       public:
-        String file_id(const String& p_file_name);
-
-        String generated_macro_name(const String& p_header, Size p_line);
-
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        static const char* commit_hash;
+        static const char* version_name;
+        static const int major_version;
+        static const int minor_version;
     };
-
 } // namespace GodotObjectCompiler

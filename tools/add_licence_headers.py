@@ -27,5 +27,12 @@ def add_licence_headers(path: pathlib.Path):
         with open(file, 'w') as current:
             current.write(write)
 
-add_licence_headers(pathlib.Path('src'))
-add_licence_headers(pathlib.Path('tests'))
+
+def add_licence_headers_for_project():
+    print("Adding licence headers.")
+    add_licence_headers(pathlib.Path('src'))
+    add_licence_headers(pathlib.Path('tests'))
+
+
+if __name__ == "__main__":
+    add_licence_headers_for_project()
