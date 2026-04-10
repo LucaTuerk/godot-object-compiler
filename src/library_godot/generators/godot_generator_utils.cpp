@@ -320,57 +320,6 @@ namespace GodotObjectCompiler
         return notification_body;
     }
 
-    Ref<Body> GodotGeneratorUtils::get_get_property_list_body(
-        const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
-        const Ref<Context>& p_generated_sources)
-    {
-        Ref<Context> public_members, _protected_members, _private_members;
-        unzip_generated_body(
-            p_generated_body, public_members, _protected_members, _private_members);
-        PANIC_COND(!public_members, "Failed to get public members group.");
-
-        bool get_property_list_defined = p_target_class->has_function_named("_get_property_list");
-        const String property_list_name =
-            get_property_list_defined ? "_generated_get_property_list" : "_get_property_list";
-        const String qualified_property_list_name =
-            format("%s::%s", p_target_class->qualified_name().c_str(), property_list_name.c_str());
-
-        Ref<Function> get_property_list = p_generated_sources->find_child(
-            0, NamedContextPredicates::name<Function>(qualified_property_list_name.c_str()));
-        Ref<Body> get_property_list_body;
-
-        if (!get_property_list) {
-            p_generated_sources->B<Function>()[{
-                B<Type>()[B<Identifier>("void")], B<Identifier>(qualified_property_list_name),
-                B<Parameters>()[{B<Parameter>()[{
-                    B<Type>()[{
-                        B<Identifier>(format(
-                            "%s<%s>", AssumedGodotTypes::List().type->qualified_name().c_str(),
-                            AssumedGodotTypes::PropertyInfo().type->qualified_name().c_str())),
-                        B<Pointer>()}],
-                    B<Identifier>("p_list")}]}],
-                B<Const>(), R<Body>(&get_property_list_body)}];
-
-            public_members->B<Function>()[{
-                B<Type>()[B<Identifier>("void")],
-                B<Identifier>(property_list_name),
-                B<Parameters>()[{B<Parameter>()[{
-                    B<Type>()[{
-                        B<Identifier>(format(
-                            "%s<%s>", AssumedGodotTypes::List().type->qualified_name().c_str(),
-                            AssumedGodotTypes::PropertyInfo().type->qualified_name().c_str())),
-                        B<Pointer>()}],
-                    B<Identifier>("p_list")}]}],
-                B<Const>(),
-            }][Output::Semicolon()];
-        } else {
-            get_property_list_body = get_property_list->find_child<Body>();
-            PANIC_COND(!get_property_list_body, "Body not found.");
-        }
-
-        return get_property_list_body;
-    }
-
     Ref<Body> GodotGeneratorUtils::get_function_names_body(
         const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body)
     {
@@ -415,7 +364,7 @@ namespace GodotObjectCompiler
             p_generated_body, public_members, _protected_members, _private_members);
         PANIC_COND(!public_members, "Failed to get public members group.");
 
-        Ref<Struct> property_names =
+        const Ref<Struct> property_names =
             public_members->find_child(0, NamedContextPredicates::name<Struct>("PropertyNames"));
         Ref<Body> property_names_body;
         if (!property_names) {
@@ -454,8 +403,8 @@ namespace GodotObjectCompiler
             public_members->find_child(0, NamedContextPredicates::name<Struct>("SignalNames"));
         Ref<Body> signal_names_body;
         if (!signal_names) {
-            auto base_names = p_target_class->direct_bases_names();
-            auto type_result = LibraryContext::instance()->get_type_db()->get_type_attribute(
+            const auto base_names = p_target_class->direct_bases_names();
+            const auto type_result = LibraryContext::instance()->get_type_db()->get_type_attribute(
                 base_names[0], GodotClassAttribute::get_type_static(), 0, p_target_class);
             if (base_names.size() == 1 && type_result.has_result()) {
                 public_members->B<Struct>()[{
@@ -496,8 +445,7 @@ namespace GodotObjectCompiler
             p_target->find_descendant(BFS, NodePredicates::tag<Body>(condition.c_str()));
         if (!if_body) {
             p_target->add_child(Output::Spaces(
-                {Output::FmtText("if (%s)", condition.c_str()),
-                 R<Body>(&if_body).$(condition.c_str())}));
+                {Output::FmtText("if (%s)", condition.c_str()), R<Body>(&if_body).$(condition)}));
         }
         return if_body;
     }
@@ -540,14 +488,14 @@ namespace GodotObjectCompiler
             return false;
         }
 
-        if (Ref<Identifier> id = p_node->as<Identifier>()) {
+        if (const Ref<Identifier> id = p_node->as<Identifier>()) {
             p_name = id->name;
             return true;
         }
 
-        if (Ref<Context> context = p_node->as<Context>()) {
+        if (const Ref<Context> context = p_node->as<Context>()) {
             for (const Ref<Node>& child : context->get_children()) {
-                if (Ref<Identifier> id = child->as<Identifier>()) {
+                if (const Ref<Identifier> id = child->as<Identifier>()) {
                     p_name = id->name;
                     return true;
                 }
@@ -566,7 +514,7 @@ namespace GodotObjectCompiler
             return true;
         }
 
-        if (Ref<Context> context = p_tree->as<Context>()) {
+        if (const Ref<Context> context = p_tree->as<Context>()) {
             for (const Ref<Node>& child : *context) {
                 if (tree_has_error(child)) {
                     return true;
@@ -585,8 +533,7 @@ namespace GodotObjectCompiler
             return true;
         }
 
-        // TODO: this will not work if the base class name is not fully
-        // qualified
+        // TODO: this will not work if the base class name is not fully qualified
         for (const String& base : p_target_class->direct_bases_names()) {
             Result<Class> base_result =
                 LibraryContext::instance()->get_type_db()->get_type_data<Class>(base);
@@ -970,20 +917,13 @@ namespace GodotObjectCompiler
         const Ref<GodotVariantTypeArgument>& p_variant_type,
         const Ref<GodotPropertyHintArgument>& p_hint,
         const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages, const String& p_property_name,
-        ClassGeneratorResult& r_result, bool p_no_editor)
+        ClassGeneratorResult& r_result)
     {
         Ref<Arguments> arguments;
         Ref<Output::ListNode> flags;
         Ref<Node> property_usage;
-        if (p_no_editor) {
-            property_usage = B<Output::ListNode>(" ", false, false)[{
-                B<Output::EnclosingNode>(
-                    "(", ")")[{R<Output::ListNode>(&flags, " | ", false, false)}],
-                Output::Text("& ~PROPERTY_USAGE_EDITOR"),
-            }];
-        } else {
-            property_usage = R<Output::ListNode>(&flags, " | ", false, false);
-        }
+
+        property_usage = R<Output::ListNode>(&flags, " | ", false, false);
 
         Ref<Node> result = B<Function>()[{
             B<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),

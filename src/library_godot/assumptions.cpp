@@ -58,6 +58,9 @@ namespace GodotObjectCompiler
                        STATE_VALID;
             success &=
                 ADD_PROPERTY.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
+            success &= ADD_GROUP.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
+            success &=
+                ADD_SUBGROUP.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
             success &= Variant.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
             success &=
                 VariantTypeEnum.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;

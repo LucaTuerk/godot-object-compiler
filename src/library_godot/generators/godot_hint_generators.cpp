@@ -36,6 +36,7 @@
 #include "godot_hint_generators.h"
 
 #include "godot_generator_utils.h"
+#include "library_godot/assumptions.h"
 #include "library_godot/generated_assumptions/parameter_types.h"
 
 namespace GodotObjectCompiler
@@ -56,24 +57,24 @@ namespace GodotObjectCompiler
         ClassGeneratorResult& r_result)
     {
         using namespace GodotGeneratorUtils;
-        using namespace AssumedParameterValues;
-        Ref<Context> p_generated_body = r_result.generated_body;
-        Ref<Context> p_generated_sources = r_result.generated_sources;
-        Ref<Context> p_generated_global = r_result.generated_global;
-        UNUSED(p_generated_global);
 
-        Ref<Body> get_property_list_body =
-            get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
-        GEN_ERROR_COND(
-            !get_property_list_body, p_attribute, "Failed to get _get_property_list body");
+        const Ref<Context> p_generated_body = r_result.generated_body;
+        const Ref<Context> p_generated_sources = r_result.generated_sources;
 
-        get_property_list_body->B<Function>()[{
-            B<Identifier>("p_list->push_back"),
-            B<Arguments>()[{B<Argument>()[build_property_info(
-                build_variant_type_argument(VariantTypeNil()),
-                build_property_hint_argument(HintNone()),
-                {build_property_usage_flags_argument(UsageCategory())},
-                p_attribute->literal_content(), r_result)]}]}][Output::Semicolon()];
+        const Ref<Body> bind_methods_body =
+            get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+        GEN_ERROR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
+
+        bind_methods_body->B<Function>()[{
+            B<Identifier>(AssumedGodotTypes::ADD_GROUP().type->name()),
+            B<Arguments>()[{
+                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())],
+                B<Argument>()[Output::StringLiteral("")]}]}][Output::Semicolon()];
+
+        PRINT_WARNING(
+            "Trying to add property category. Categories can not be bound correctly due to "
+            "issue https://github.com/godotengine/godot-proposals/issues/14274. Binding a property "
+            "group instead.");
         return GeneratorError::OK;
     }
 
@@ -91,25 +92,21 @@ namespace GodotObjectCompiler
         Ref<Class> p_target_class, Ref<GodotPropertyGroupAttribute> p_attribute,
         ClassGeneratorResult& r_result)
     {
-        Ref<Context> p_generated_body = r_result.generated_body;
-        Ref<Context> p_generated_sources = r_result.generated_sources;
-        Ref<Context> p_generated_global = r_result.generated_global;
         using namespace GodotGeneratorUtils;
-        using namespace AssumedParameterValues;
-        UNUSED(p_generated_global);
 
-        Ref<Body> get_property_list_body =
-            get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
-        GEN_ERROR_COND(
-            !get_property_list_body, p_attribute, "Failed to get _get_property_list body");
+        const Ref<Context> p_generated_body = r_result.generated_body;
+        const Ref<Context> p_generated_sources = r_result.generated_sources;
 
-        get_property_list_body->B<Function>()[{
-            B<Identifier>("p_list->push_back"),
-            B<Arguments>()[{B<Argument>()[build_property_info(
-                build_variant_type_argument(VariantTypeNil()),
-                build_property_hint_argument(HintNone()),
-                {build_property_usage_flags_argument(UsageGroup())}, p_attribute->literal_content(),
-                r_result)]}]}][Output::Semicolon()];
+        const Ref<Body> bind_methods_body =
+            get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+        GEN_ERROR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
+
+        bind_methods_body->B<Function>()[{
+            B<Identifier>(AssumedGodotTypes::ADD_GROUP().type->name()),
+            B<Arguments>()[{
+                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())],
+                B<Argument>()[Output::StringLiteral("")]}]}][Output::Semicolon()];
+
         return GeneratorError::OK;
     }
 
@@ -127,26 +124,21 @@ namespace GodotObjectCompiler
         Ref<Class> p_target_class, Ref<GodotPropertySubgroupAttribute> p_attribute,
         ClassGeneratorResult& r_result)
     {
-        Ref<Context> p_generated_body = r_result.generated_body;
-        Ref<Context> p_generated_sources = r_result.generated_sources;
-        Ref<Context> p_generated_global = r_result.generated_global;
         using namespace GodotGeneratorUtils;
-        using namespace AssumedParameterValues;
-        UNUSED(p_generated_global);
 
-        const Ref<Body> get_property_list_body =
-            get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
+        const Ref<Context> p_generated_body = r_result.generated_body;
+        const Ref<Context> p_generated_sources = r_result.generated_sources;
 
-        GEN_ERROR_COND(
-            !get_property_list_body, p_attribute, "Failed to get _get_property_list body");
+        const Ref<Body> bind_methods_body =
+            get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
+        GEN_ERROR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
 
-        get_property_list_body->B<Function>()[{
-            B<Identifier>("p_list->push_back"),
-            B<Arguments>()[{B<Argument>()[build_property_info(
-                build_variant_type_argument(VariantTypeNil()),
-                build_property_hint_argument(HintNone()),
-                {build_property_usage_flags_argument(UsageSubgroup())},
-                p_attribute->literal_content(), r_result)]}]}][Output::Semicolon()];
+        bind_methods_body->B<Function>()[{
+            B<Identifier>(AssumedGodotTypes::ADD_SUBGROUP().type->name()),
+            B<Arguments>()[{
+                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())],
+                B<Argument>()[Output::StringLiteral("")]}]}][Output::Semicolon()];
+
         return GeneratorError::OK;
     }
 

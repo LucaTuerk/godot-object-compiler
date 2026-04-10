@@ -91,10 +91,6 @@ namespace GodotObjectCompiler
             const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
             const Ref<Context>& p_generated_sources);
 
-        Ref<Body> get_get_property_list_body(
-            const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
-            const Ref<Context>& p_generated_sources);
-
         Ref<Body> get_function_names_body(
             const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
 
@@ -193,8 +189,7 @@ namespace GodotObjectCompiler
             const Ref<GodotVariantTypeArgument>& p_variant_type,
             const Ref<GodotPropertyHintArgument>& p_hint,
             const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages,
-            const String& p_property_name, ClassGeneratorResult& r_result,
-            bool p_no_editor = false);
+            const String& p_property_name, ClassGeneratorResult& r_result);
 
         Ref<Node> build_property_info(
             const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name,
