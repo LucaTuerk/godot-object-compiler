@@ -45,21 +45,23 @@ void ExampleClass::_bind_methods ()
   GDVIRTUAL_BIND (_virtual_function, "p_node") ;
   godot::ClassDB::bind_method (D_METHOD ("virtual_function", "p_node"), &ExampleClass::_virtual_function) ;
   godot::ClassDB::bind_method (D_METHOD ("rpc_function", "p_param"), &ExampleClass::rpc_function) ;
+  ADD_GROUP ("Properties", "") ;
   godot::ClassDB::bind_method (D_METHOD ("get_resource"), &ExampleClass::get_resource) ;
   godot::ClassDB::bind_method (D_METHOD ("set_resource", "resource"), &ExampleClass::set_resource) ;
-  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::OBJECT, "resource", godot::PropertyHint::PROPERTY_HINT_RESOURCE_TYPE, "Resource", (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_resource", "get_resource") ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::OBJECT, "resource", godot::PropertyHint::PROPERTY_HINT_RESOURCE_TYPE, "Resource", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT), "set_resource", "get_resource") ;
   godot::ClassDB::bind_method (D_METHOD ("get_resources"), &ExampleClass::get_resources) ;
   godot::ClassDB::bind_method (D_METHOD ("set_resources", "resources"), &ExampleClass::set_resources) ;
-  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::DICTIONARY, "resources", godot::PropertyHint::PROPERTY_HINT_DICTIONARY_TYPE, vformat("%s/%s:%s;%s/%s:%s", Variant::INT,PROPERTY_HINT_NONE,"",Variant::OBJECT,PROPERTY_HINT_RESOURCE_TYPE,"Resource"), (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_resources", "get_resources") ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::DICTIONARY, "resources", godot::PropertyHint::PROPERTY_HINT_DICTIONARY_TYPE, vformat("%s/%s:%s;%s/%s:%s", Variant::INT,PROPERTY_HINT_NONE,"",Variant::OBJECT,PROPERTY_HINT_RESOURCE_TYPE,"Resource"), godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT), "set_resources", "get_resources") ;
   godot::ClassDB::bind_method (D_METHOD ("get_range"), &ExampleClass::get_range) ;
   godot::ClassDB::bind_method (D_METHOD ("set_range", "range"), &ExampleClass::set_range) ;
-  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::FLOAT, "range", godot::PropertyHint::PROPERTY_HINT_RANGE, "0,1,0.1", (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_range", "get_range") ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::FLOAT, "range", godot::PropertyHint::PROPERTY_HINT_RANGE, "0,1,0.1", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT), "set_range", "get_range") ;
+  ADD_GROUP ("Enum Properties", "") ;
   godot::ClassDB::bind_method (D_METHOD ("get_enum_property"), &ExampleClass::get_enum_property) ;
   godot::ClassDB::bind_method (D_METHOD ("set_enum_property", "enum_property"), &ExampleClass::set_enum_property) ;
-  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::INT, "enum_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Regular Value A:0,Regular Value B:1,Regular Value C:2", (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_enum_property", "get_enum_property") ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::INT, "enum_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Regular Value A:0,Regular Value B:1,Regular Value C:2", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT), "set_enum_property", "get_enum_property") ;
   godot::ClassDB::bind_method (D_METHOD ("get_flags_property"), &ExampleClass::get_flags_property) ;
   godot::ClassDB::bind_method (D_METHOD ("set_flags_property", "flags_property"), &ExampleClass::set_flags_property) ;
-  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::INT, "flags_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Flag None:0,Flag Value A:1,Flag Value B:2,Flag Value C:4", (godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT) & ~PROPERTY_USAGE_EDITOR), "set_flags_property", "get_flags_property") ;
+  ADD_PROPERTY (godot::PropertyInfo (godot::Variant::INT, "flags_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Flag None:0,Flag Value A:1,Flag Value B:2,Flag Value C:4", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT), "set_flags_property", "get_flags_property") ;
 }
 void ExampleClass::_notification (int p_notification) 
 {
@@ -75,16 +77,6 @@ void ExampleClass::_notification (int p_notification)
         rpc_config("rpc_function", opts);
     }
   }
-}
-void ExampleClass::_get_property_list (godot::List<godot::PropertyInfo> * p_list) const 
-{
-  p_list->push_back (godot::PropertyInfo (godot::Variant::NIL, "Properties", godot::PropertyHint::PROPERTY_HINT_NONE, "", godot::PropertyUsageFlags::PROPERTY_USAGE_CATEGORY)) ;
-  p_list->push_back (godot::PropertyInfo (godot::Variant::OBJECT, "resource", godot::PropertyHint::PROPERTY_HINT_RESOURCE_TYPE, "Resource", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
-  p_list->push_back (godot::PropertyInfo (godot::Variant::DICTIONARY, "resources", godot::PropertyHint::PROPERTY_HINT_DICTIONARY_TYPE, vformat("%s/%s:%s;%s/%s:%s", Variant::INT,PROPERTY_HINT_NONE,"",Variant::OBJECT,PROPERTY_HINT_RESOURCE_TYPE,"Resource"), godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
-  p_list->push_back (godot::PropertyInfo (godot::Variant::FLOAT, "range", godot::PropertyHint::PROPERTY_HINT_RANGE, "0,1,0.1", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
-  p_list->push_back (godot::PropertyInfo (godot::Variant::NIL, "Enum Properties", godot::PropertyHint::PROPERTY_HINT_NONE, "", godot::PropertyUsageFlags::PROPERTY_USAGE_GROUP)) ;
-  p_list->push_back (godot::PropertyInfo (godot::Variant::INT, "enum_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Regular Value A:0,Regular Value B:1,Regular Value C:2", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
-  p_list->push_back (godot::PropertyInfo (godot::Variant::INT, "flags_property", godot::PropertyHint::PROPERTY_HINT_ENUM, "Flag None:0,Flag Value A:1,Flag Value B:2,Flag Value C:4", godot::PropertyUsageFlags::PROPERTY_USAGE_DEFAULT)) ;
 }
 void ExampleClass::something_happened (int p_param) 
 {
