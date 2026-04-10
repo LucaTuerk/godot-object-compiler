@@ -167,6 +167,15 @@ namespace GodotObjectCompiler
 
 } // namespace GodotObjectCompiler
 
+#define ONCE(action)                                                                               \
+    {                                                                                              \
+        static bool __action_called__ = false;                                                     \
+        if (!__action_called__) {                                                                  \
+            action;                                                                                \
+            __action_called__ = true;                                                              \
+        }                                                                                          \
+    }
+
 #define PRINT_LEVEL(level, ...)                                                                    \
     if (LibraryContext::instance()->get_error_level() >= (level)) {                                \
         if (level != ERROR)                                                                        \

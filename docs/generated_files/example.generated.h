@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* example.generated.h                                                    */
+/*                                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -26,7 +26,6 @@
 #include "godot_cpp/classes/wrapped.hpp"
 #include "godot_cpp/core/binder_common.hpp"
 #include "godot_cpp/core/gdvirtual.gen.inc"
-#include "godot_cpp/variant/callable.hpp"
 #include "godot_cpp/variant/string_name.hpp"
 #define GOC_GENERATED_10_107580388863103421() GDCLASS (ExampleClass, Node) ;\
 public:\
@@ -50,11 +49,8 @@ struct SignalNames \
 {\
   static const StringName& something_happened() {static const StringName sn = "something_happened"; return sn; }\
 } ;\
-godot::Callable function_callable{this, "function"};\
 void _virtual_function (Node * p_node) ;\
 GDVIRTUAL1 (_virtual_function, godot::Node *) ;\
-godot::Callable virtual_function_callable{this, "virtual_function"};\
-godot::Callable rpc_function_callable{this, "rpc_function"};\
 godot::Ref <godot::Resource> get_resource () const ;\
 void set_resource (const godot::Ref <godot::Resource> & p_resource) ;\
 godot::TypedDictionary <int, godot::Resource> get_resources () const ;\
