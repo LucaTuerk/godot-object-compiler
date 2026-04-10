@@ -487,13 +487,11 @@ namespace GodotObjectCompiler
 
         Ref<Node> property_info =
             build_property_info(variant_type, property_hint, usage_flags, property_name, r_result);
-        Ref<Node> property_info_no_editor = build_property_info(
-            variant_type, property_hint, usage_flags, property_name, r_result, true);
 
         Ref<Function> add_property = B<Function>()[{
             B<Identifier>(AssumedGodotTypes::ADD_PROPERTY().type->name()),
             B<Arguments>()[{
-                B<Argument>()[property_info_no_editor],
+                B<Argument>()[property_info],
                 B<Argument>()[Output::StringLiteral(setter_name)],
                 B<Argument>()[Output::StringLiteral(getter_name)],
             }]}][Output::Semicolon()];

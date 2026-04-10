@@ -68,7 +68,8 @@ namespace GodotObjectCompiler
         bind_methods_body->B<Function>()[{
             B<Identifier>(AssumedGodotTypes::ADD_GROUP().type->name()),
             B<Arguments>()[{
-                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())]}]}];
+                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())],
+                B<Argument>()[Output::StringLiteral("")]}]}][Output::Semicolon()];
 
         PRINT_WARNING(
             "Trying to add property category. Categories can not be bound correctly due to "
@@ -103,7 +104,8 @@ namespace GodotObjectCompiler
         bind_methods_body->B<Function>()[{
             B<Identifier>(AssumedGodotTypes::ADD_GROUP().type->name()),
             B<Arguments>()[{
-                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())]}]}];
+                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())],
+                B<Argument>()[Output::StringLiteral("")]}]}][Output::Semicolon()];
 
         return GeneratorError::OK;
     }
@@ -134,7 +136,8 @@ namespace GodotObjectCompiler
         bind_methods_body->B<Function>()[{
             B<Identifier>(AssumedGodotTypes::ADD_SUBGROUP().type->name()),
             B<Arguments>()[{
-                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())]}]}];
+                B<Argument>()[Output::StringLiteral(p_attribute->literal_content())],
+                B<Argument>()[Output::StringLiteral("")]}]}][Output::Semicolon()];
 
         return GeneratorError::OK;
     }

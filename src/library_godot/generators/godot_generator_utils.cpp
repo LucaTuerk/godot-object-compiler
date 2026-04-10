@@ -917,20 +917,13 @@ namespace GodotObjectCompiler
         const Ref<GodotVariantTypeArgument>& p_variant_type,
         const Ref<GodotPropertyHintArgument>& p_hint,
         const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages, const String& p_property_name,
-        ClassGeneratorResult& r_result, bool p_no_editor)
+        ClassGeneratorResult& r_result)
     {
         Ref<Arguments> arguments;
         Ref<Output::ListNode> flags;
         Ref<Node> property_usage;
-        if (p_no_editor) {
-            property_usage = B<Output::ListNode>(" ", false, false)[{
-                B<Output::EnclosingNode>(
-                    "(", ")")[{R<Output::ListNode>(&flags, " | ", false, false)}],
-                Output::Text("& ~PROPERTY_USAGE_EDITOR"),
-            }];
-        } else {
-            property_usage = R<Output::ListNode>(&flags, " | ", false, false);
-        }
+
+        property_usage = R<Output::ListNode>(&flags, " | ", false, false);
 
         Ref<Node> result = B<Function>()[{
             B<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
