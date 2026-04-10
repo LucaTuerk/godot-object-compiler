@@ -121,6 +121,16 @@ namespace GodotObjectCompiler
             "Assume that a define of name \"ADD_PROPERTY\" exists in "
             "the TypeDB."};
 
+        inline Assumption<AssumeType<Define>> ADD_GROUP{
+            {"ADD_GROUP"},
+            "Assume that a define of name \"ADD_GROUP\" exists in "
+            "the TypeDB."};
+
+        inline Assumption<AssumeType<Define>> ADD_SUBGROUP{
+            {"ADD_SUBGROUP"},
+            "Assume that a define of name \"ADD_SUBGROUP\" exists in "
+            "the TypeDB."};
+
         inline Assumption<AssumeType<Class>> Variant{
             {"Variant"},
             "Assume that a class named \"Variant\" exists in the "

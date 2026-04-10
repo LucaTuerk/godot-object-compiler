@@ -91,10 +91,6 @@ namespace GodotObjectCompiler
             const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
             const Ref<Context>& p_generated_sources);
 
-        Ref<Body> get_get_property_list_body(
-            const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body,
-            const Ref<Context>& p_generated_sources);
-
         Ref<Body> get_function_names_body(
             const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
 

@@ -255,12 +255,6 @@ namespace GodotObjectCompiler
             !bind_methods_body, p_target_class,
             "Failed to find or generate the _bind_methods function body.");
 
-        Ref<Body> get_property_list_body =
-            get_get_property_list_body(p_target_class, p_generated_body, p_generated_sources);
-        GEN_ERROR_COND(
-            !get_property_list_body, p_target_class,
-            "Failed to find or generate the _get_property_list function body.");
-
         Ref<Context> generated_public_members, generated_protected_members,
             generated_private_members;
         GEN_ERROR_COND(
@@ -350,7 +344,7 @@ namespace GodotObjectCompiler
 
             Ref<Literal> generator_options_hint =
                 generator_options->find_chain<Literal, Arguments, Argument>();
-            String generator_hint_string = "";
+            String generator_hint_string;
             if (generator_options_hint) {
                 GEN_ERROR_COND(
                     !generator_options_hint->unwrap_string_literal(generator_hint_string),
@@ -454,24 +448,24 @@ namespace GodotObjectCompiler
             case AccessSpecifier::PUBLIC: {
                 generated_public_members->add_child(get_def);
             } break;
-            case AccessSpecifier::PRIVATE:
+            case AccessSpecifier::PRIVATE: {
                 generated_private_members->add_child(get_def);
-                break;
-            case AccessSpecifier::PROTECTED:
+            } break;
+            case AccessSpecifier::PROTECTED: {
                 generated_protected_members->add_child(get_def);
-                break;
+            } break;
             }
 
             switch (set_specifier) {
             case AccessSpecifier::PUBLIC: {
                 generated_public_members->add_child(set_def);
             } break;
-            case AccessSpecifier::PRIVATE:
+            case AccessSpecifier::PRIVATE: {
                 generated_private_members->add_child(set_def);
-                break;
-            case AccessSpecifier::PROTECTED:
+            } break;
+            case AccessSpecifier::PROTECTED: {
                 generated_protected_members->add_child(set_def);
-                break;
+            } break;
             }
 
             p_generated_sources->add_children({
@@ -503,10 +497,6 @@ namespace GodotObjectCompiler
                 B<Argument>()[Output::StringLiteral(setter_name)],
                 B<Argument>()[Output::StringLiteral(getter_name)],
             }]}][Output::Semicolon()];
-
-        get_property_list_body->B<Function>()[{
-            B<Identifier>("p_list->push_back"), B<Arguments>()[B<Argument>()[property_info]]}]
-                                             [Output::Semicolon()];
 
         bind_methods_body->add_child(add_property);
 
