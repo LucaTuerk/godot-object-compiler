@@ -162,11 +162,6 @@ namespace GodotObjectCompiler
             }
         }
 
-        generated_public_members->add_child(Output::FmtText(
-            "%s %s_callable{this, \"%s\"};",
-            AssumedGodotTypes::Callable().type->qualified_name().c_str(),
-            target_function->name().c_str(), target_function->name().c_str()));
-
         const Ref<Body> function_names_body =
             GodotGeneratorUtils::get_function_names_body(p_target_class, p_generated_body);
         GEN_ERROR_COND(!function_names_body, p_attribute, "Failed to get function names body.");
@@ -178,7 +173,7 @@ namespace GodotObjectCompiler
             target_function->name().c_str())));
 
         r_result.header_includes.insert(AssumedGodotTypes::StringName().type->header);
-        r_result.header_includes.insert(AssumedGodotTypes::Callable().type->header);
+
         return GeneratorError::OK;
     }
 
