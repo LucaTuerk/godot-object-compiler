@@ -32,7 +32,6 @@
 public:\
 static void _bind_methods () ;\
 void _notification (int p_notification) ;\
-void _get_property_list (godot::List<godot::PropertyInfo> * p_list) const ;\
 struct PropertyNames \
 {\
   static const godot::StringName& resource() {static const godot::StringName sn = "resource"; return sn; }\
