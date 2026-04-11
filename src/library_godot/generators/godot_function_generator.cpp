@@ -247,7 +247,7 @@ namespace GodotObjectCompiler
             "Invalid macro " + macro + ". Was not found.");
 
         String virtual_name = format("_%s", p_bind_name.c_str());
-        String virtual_caller_name = virtual_name;
+        const String& virtual_caller_name = virtual_name;
 
         Ref<Arguments> arguments;
         Ref<Function> gdvirtual = B<Function>()[{
@@ -339,15 +339,15 @@ namespace GodotObjectCompiler
 
         Ref<Context> generated_target = nullptr;
         switch (*type) {
-        case AccessSpecifier::PUBLIC:
+        case AccessSpecifier::PUBLIC: {
             generated_target = generated_public_members;
-            break;
-        case AccessSpecifier::PRIVATE:
+        } break;
+        case AccessSpecifier::PRIVATE: {
             generated_target = generated_private_members;
-            break;
-        case AccessSpecifier::PROTECTED:
+        } break;
+        case AccessSpecifier::PROTECTED: {
             generated_target = generated_protected_members;
-            break;
+        } break;
         }
         GEN_ERROR_COND(
             generated_target == nullptr, p_target_function,

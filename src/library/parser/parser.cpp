@@ -54,6 +54,13 @@ namespace GodotObjectCompiler
 
     Ref<ParserError> TreeSitterParser::parse(const String& p_input, Ref<Context> r_target)
     {
+        auto global_namespace = r_target->as<Namespace>();
+        if (!global_namespace || !global_namespace->qualified_name().empty()) {
+            return node_new<ParserError>(
+                ERROR,
+                "TreeSitterParser: Invalid target node, expected to be the global namespace.");
+        }
+
         Dictionary<Size, String> stripped_parameters;
         Dictionary<UID, UID> before_node;
         HashSet<UID> handled;
@@ -66,7 +73,7 @@ namespace GodotObjectCompiler
         String original_input = input_is_path ? Parser::Helpers::remove_macros(read_file(p_input))
                                               : Parser::Helpers::remove_macros(p_input);
         String local_input = strip_known_macro_contents(original_input, stripped_parameters);
-        ParserContext context = ParserContext(local_input);
+        auto context = ParserContext(local_input);
         context.original_buffer = original_input;
         context.stripped_parameters = stripped_parameters;
         context.parse_attributes = parse_attributes;
@@ -75,7 +82,8 @@ namespace GodotObjectCompiler
         }
 
         if (!context.is_valid()) {
-            return node_new<ParserError>(ERROR, "Failed to setup context.");
+            global_namespace->B<Body>();
+            return ParserError::OK;
         }
 
         if (Ref<Node> first_ifdef = context.current_src->find_child(0, type_is("preproc_ifdef"))) {
@@ -87,15 +95,8 @@ namespace GodotObjectCompiler
             }
         }
 
-        auto global_namespace = r_target->as<Namespace>();
-        if (!global_namespace || !global_namespace->qualified_name().empty()) {
-            return node_new<ParserError>(
-                ERROR,
-                "TreeSitterParser: Invalid target node, expected to be the global namespace.");
-        }
-
         auto recall = [&]() {
-            if (auto itr = before_node.find(context.current_src->get_id());
+            if (const auto itr = before_node.find(context.current_src->get_id());
                 itr != before_node.end()) {
                 if (Ref<Context> before =
                         LibraryContext::instance()->get_node_db()->get<Context>(itr->second)) {
