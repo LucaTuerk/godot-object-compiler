@@ -51,8 +51,8 @@ namespace GodotObjectCompiler
         paths_cache = path_absolute(p_project.paths_cache);
         paths_readonly_cache = path_concat(paths_cache, ".readonly");
         paths_goc = path_absolute(p_project.paths_goc);
+        path_extension_api = p_project.path_extension_api;
 
-        paths_include = p_project.godot_include_paths;
         for (const auto& include_path : p_project.paths_include) {
             if (!vector_contains(*paths_include, include_path)) {
                 paths_include->push_back(include_path);
@@ -114,6 +114,9 @@ namespace GodotObjectCompiler
             } else if (prefix_extract(arg, "--sources=", "-S=", content)) {
                 files_input = string_split(content, ",");
                 itr = p_application_arguments.erase(itr);
+            } else if (prefix_extract(arg, "--extension_api=", "-E=", content)) {
+                path_extension_api = content;
+                itr = p_application_arguments.erase(itr);
             } else {
                 ++itr;
             }
@@ -148,27 +151,27 @@ namespace GodotObjectCompiler
 
         if (paths_root.has_value() && !directory_exits(*paths_root)) {
             if (!create_dir_recursive(*paths_root)) {
-                print_err(format(
+                fmt_print_err(
                     "Invalid root path \"%s\". Could not find or create directory.",
-                    paths_root->c_str()));
+                    paths_root->c_str());
                 success = false;
             }
         }
 
         if (!directory_exits(paths_cache)) {
             if (!create_dir_recursive(paths_cache)) {
-                print_err(format(
+                fmt_print_err(
                     "Invalid cache path \"%s\". Could not find or create directory.",
-                    paths_cache.c_str()));
+                    paths_cache.c_str());
                 success = false;
             }
         }
 
         if (!directory_exits(paths_generated)) {
             if (!create_dir_recursive(paths_generated)) {
-                print_err(format(
+                fmt_print_err(
                     "Invalid generated path \"%s\". Could not find or create directory.",
-                    paths_generated.c_str()));
+                    paths_generated.c_str());
                 success = false;
             }
         }
@@ -176,19 +179,28 @@ namespace GodotObjectCompiler
         if (files_input.has_value()) {
             for (const String& file : *files_input) {
                 if (!file_exists(file)) {
-                    print_err(
-                        format("Invalid input file \"%s\". File does not exist.", file.c_str()));
+                    fmt_print_err("Invalid input file \"%s\". File does not exist.", file.c_str());
                     success = false;
                 }
             }
         }
 
+        if (!path_extension_api.has_value()) {
+            print_err("No Extension API file specified.");
+            success = false;
+        } else if (!file_exists(path_extension_api.value())) {
+            fmt_print_err(
+                "Invalid Extension API path \"%s\", file does not exists.",
+                path_extension_api.value().c_str());
+            success = false;
+        }
+
         if (paths_include.has_value()) {
             for (const String& include_path : *paths_include) {
                 if (!directory_exits(include_path)) {
-                    print_err(format(
+                    fmt_print_err(
                         "Invalid include path\"%s\". Path is not a directory.",
-                        include_path.c_str()));
+                        include_path.c_str());
                 }
             }
         }

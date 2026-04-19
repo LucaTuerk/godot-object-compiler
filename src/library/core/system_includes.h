@@ -56,6 +56,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include "nlohmann/json.hpp"
+using Json = nlohmann::json;
 
 #include "tree-sitter-cpp.h"
 #include "tree_sitter/api.h"

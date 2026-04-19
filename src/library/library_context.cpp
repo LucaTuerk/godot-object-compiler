@@ -186,7 +186,7 @@ namespace GodotObjectCompiler
 
     bool LibraryContext::load_generated_from_file(const String& p_path)
     {
-        Config config;
+        JsonConfig config;
         if (!config.read_from_file(p_path)) {
             return false;
         }
@@ -207,7 +207,7 @@ namespace GodotObjectCompiler
 
     bool LibraryContext::save_generated_from_file(const String& p_path)
     {
-        Config config;
+        JsonConfig config;
 
         for (const auto& [path, generated] : generated_from) {
             config.write_to_section(path);
@@ -296,7 +296,7 @@ namespace GodotObjectCompiler
 
     bool LibraryContext::load_last_modified_times_file(const String& p_path)
     {
-        Config config;
+        JsonConfig config;
         if (!config.read_from_file(p_path)) {
             return false;
         }
@@ -317,7 +317,7 @@ namespace GodotObjectCompiler
 
     bool LibraryContext::save_last_modified_times_file(const String& p_path)
     {
-        Config config;
+        JsonConfig config;
 
         for (const auto& [path, last_modified] : out_last_modified_times) {
             config.write_to_section(path);

@@ -40,15 +40,18 @@
 namespace GodotObjectCompiler
 {
 
-    class Config : public IStructuredWriter, public IStructuredReader
+    class JsonConfig : public IStructuredReader, public IStructuredWriter
     {
       public:
-        Config();
-        ~Config() override = default;
+        JsonConfig() = default;
+
+        ~JsonConfig() override = default;
 
         const Vector<String>& get_sections();
 
         bool has_config_value(const String& p_key);
+
+        String dump();
 
         bool write_to_file(const String& p_path) override;
 
@@ -64,12 +67,10 @@ namespace GodotObjectCompiler
         String _read(const String& p_key) override;
 
       private:
-        Size _find_section_index(const String& p_key);
-
-        Size _current_section;
-        Dictionary<String, Size> _section_indices;
-        Vector<String> _sections;
-        Dictionary<Size, Dictionary<String, String>> config_values;
+        String current_section;
+        Json json;
+        bool sections_dirty = true;
+        Vector<String> sections;
     };
 
 } // namespace GodotObjectCompiler

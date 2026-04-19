@@ -37,13 +37,20 @@
 
 #include "application/application.h"
 #include "application/programs/generate_resources.h"
+#include "library/core/config.h"
 #include "library/core/core.h"
 #include "library/library_context.h"
+#include "library_godot/parsers/extension_api_parser.h"
 
 using namespace GodotObjectCompiler;
 
 int main(int argc, char* argv[])
 {
+    // GodotObjectCompiler::ExtensionAPIParser parser;
+    // Ref<Context> context = node_new<Context>();
+    // parser.parse("/home/luca/Repositories/godot-object-compiler-test/godot-cpp/gdextension/extension_api.json", context);
+    //
+    // return 0;
     Vector<String> args;
     for (int i = 1; i < argc; i++) {
         args.emplace_back(argv[i]);
