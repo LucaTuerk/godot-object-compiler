@@ -48,8 +48,9 @@ namespace GodotObjectCompiler
         String project_name;
         ProjectTarget project_target = ProjectTarget::TARGET_GDEXTENSION;
 
-        Opt<String> paths_root;
+        Opt<String> paths_godot_cpp;
         Opt<String> path_extension_api;
+        Opt<String> paths_root;
         Opt<Vector<String>> files_input;
         Opt<Vector<String>> paths_include;
 

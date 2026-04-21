@@ -46,11 +46,6 @@ using namespace GodotObjectCompiler;
 
 int main(int argc, char* argv[])
 {
-    // GodotObjectCompiler::ExtensionAPIParser parser;
-    // Ref<Context> context = node_new<Context>();
-    // parser.parse("/home/luca/Repositories/godot-object-compiler-test/godot-cpp/gdextension/extension_api.json", context);
-    //
-    // return 0;
     Vector<String> args;
     for (int i = 1; i < argc; i++) {
         args.emplace_back(argv[i]);

@@ -51,6 +51,10 @@ namespace GodotObjectCompiler
     };
 
     struct ClassGeneratorResult {
+        ClassGeneratorResult(
+            String p_file_path, Ref<Class> p_target_class, HashSet<String>& p_header_includes,
+            HashSet<String>& p_source_includes, HashSet<String>& p_register_includes);
+
         String file_path;
         String header_path;
         String generated_header_include_path;
@@ -64,13 +68,14 @@ namespace GodotObjectCompiler
         Ref<Context> initialize;
         Ref<Context> uninitialize;
 
+        void add_header_include(const String& p_header);
+        void add_source_include(const String& p_header);
+        void add_register_include(const String& p_header);
+
+      private:
         HashSet<String>& header_includes;
         HashSet<String>& source_includes;
         HashSet<String>& register_includes;
-
-        ClassGeneratorResult(
-            String p_file_path, Ref<Class> p_target_class, HashSet<String>& p_header_includes,
-            HashSet<String>& p_source_includes, HashSet<String>& p_register_includes);
     };
 
     class ClassGenerator
@@ -103,6 +108,24 @@ namespace GodotObjectCompiler
             ClassGeneratorResult& r_result) = 0;
     };
 
+    inline void ClassGeneratorResult::add_header_include(const String& p_header)
+    {
+        PANIC_COND(p_header.empty(), "Empty header.");
+        header_includes.insert(p_header);
+    }
+
+    inline void ClassGeneratorResult::add_source_include(const String& p_header)
+    {
+        PANIC_COND(p_header.empty(), "Empty header.");
+        source_includes.insert(p_header);
+    }
+
+    inline void ClassGeneratorResult::add_register_include(const String& p_header)
+    {
+        PANIC_COND(p_header.empty(), "Empty header.");
+        register_includes.insert(p_header);
+    }
+
     inline ClassGeneratorResult::ClassGeneratorResult(
         String p_file_path, Ref<Class> p_target_class, HashSet<String>& p_header_includes,
         HashSet<String>& p_source_includes, HashSet<String>& p_register_includes)
@@ -121,6 +144,7 @@ namespace GodotObjectCompiler
         initialize = node_new<Context>();
         uninitialize = node_new<Context>();
     }
+
     inline bool
     ClassGenerator::handles(const Ref<Class>& p_target_class, const Ref<Attribute>& p_attribute)
     {

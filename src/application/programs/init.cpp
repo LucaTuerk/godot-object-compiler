@@ -64,7 +64,10 @@ namespace GodotObjectCompiler
             input("   |- GOC Generated (default: \"%s\"): ", path_concat(goc_folder, "generated"));
         String cache_root =
             input("   |- GOC Cache (default: \"%s\"): ", path_concat(goc_folder, "cache"));
-        String extension_api = input("   |- Extension API (default: \"%s\"): ", "godot-cpp/gdextension/extension_api.json");
+        String godot_cpp = input("   |- Godot CPP Folder (default: \"%s\"): ", "godot-cpp");
+        String extension_api = input(
+            "   |- Extension API (default: \"%s\"): ",
+            path_concat_ext(path_concat(godot_cpp, "gdextension"), "extension_api", "json"));
 
         String root_absolute = path_absolute(root_folder);
         String goc_absolute = path_absolute(goc_folder);
@@ -88,6 +91,7 @@ namespace GodotObjectCompiler
             project.paths_generated = generate_folder;
             project.paths_cache = cache_root;
             project.path_extension_api = extension_api;
+            project.paths_godot_cpp = godot_cpp;
 
             String project_file_path = format("%s.goc_project", project_name.c_str());
             project.write_to_file(project_file_path);

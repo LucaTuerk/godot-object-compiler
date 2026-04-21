@@ -121,6 +121,30 @@ namespace GodotObjectCompiler
         return true;
     }
 
+    bool GodotMacroIncludeGenerator::generate_core_include(
+        const String& p_godot_cpp_path, const Ref<Context>& p_write_to)
+    {
+        String include_path = path_concat(p_godot_cpp_path, "include", "godot_cpp", "core");
+        if (!directory_exits(include_path)) {
+            return false;
+        }
+        p_write_to->add_child(Output::PragmaOnce());
+
+        Vector<String> includes = directory_files_recursive(include_path);
+        std::transform(
+            includes.cbegin(), includes.cend(), includes.begin(),
+            [include_path, p_godot_cpp_path](const String& p_path) {
+                return header_path(path_concat(p_godot_cpp_path, "include"), p_path);
+            });
+        std::sort(includes.begin(), includes.end());
+        for (const String& include : includes) {
+            if (string_suffix(include, ".hpp")) {
+                p_write_to->add_child(Output::Include(include));
+            }
+        }
+        return true;
+    }
+
     bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
         const Ref<IAttributeParameterType>& p_type, const Ref<Context>& p_write_to)
     {
@@ -262,7 +286,8 @@ namespace GodotObjectCompiler
             for (Size curr = 0; curr < size - 1; ++curr) {
                 for (Size cmp = curr + 1; cmp < size; ++cmp) {
                     body->add_child(Output::FmtText(
-                        "static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d and "
+                        "static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d "
+                        "and "
                         "%d\");",
                         curr + 1, cmp + 1, curr + 1, cmp + 1));
                 }
@@ -288,6 +313,7 @@ namespace GodotObjectCompiler
             return nullptr;
         }
         entry->add_child(Output::PragmaOnce());
+        entry->add_child(Output::Include("core_includes.h"));
         entry->add_child(Output::SystemInclude("type_traits"));
 
         generate_macros(entry);

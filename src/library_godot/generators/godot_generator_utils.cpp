@@ -916,14 +916,12 @@ namespace GodotObjectCompiler
     Ref<Node> GodotGeneratorUtils::build_property_info(
         const Ref<GodotVariantTypeArgument>& p_variant_type,
         const Ref<GodotPropertyHintArgument>& p_hint,
-        const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages, const String& p_property_name,
-        ClassGeneratorResult& r_result)
+        const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages, const String& p_property_name)
     {
         Ref<Arguments> arguments;
         Ref<Output::ListNode> flags;
-        Ref<Node> property_usage;
 
-        property_usage = R<Output::ListNode>(&flags, " | ", false, false);
+        Ref<Node> property_usage = R<Output::ListNode>(&flags, " | ", false, false);
 
         Ref<Node> result = B<Function>()[{
             B<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
@@ -937,7 +935,7 @@ namespace GodotObjectCompiler
                     p_hint->godot_property_hint().c_str()))],
                 B<Argument>()[B<Literal>(p_hint->hint_string())], property_usage}]}];
 
-        if (p_usages.size() == 0) {
+        if (p_usages.empty()) {
             arguments->remove_child(flags);
         } else {
             for (const Ref<GodotPropertyUsageFlagsArgument>& usage : p_usages) {
@@ -948,10 +946,6 @@ namespace GodotObjectCompiler
             }
         }
 
-        r_result.source_includes.insert(AssumedGodotTypes::Variant().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::PropertyInfo().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::PropertyHintEnum().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::PropertyUsageFlagsEnum().type->header);
         return result;
     }
 
@@ -959,8 +953,8 @@ namespace GodotObjectCompiler
         const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name,
         ClassGeneratorResult& r_result)
     {
-        r_result.source_includes.insert(AssumedGodotTypes::Variant().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::PropertyInfo().type->header);
+        r_result.add_source_include(AssumedGodotTypes::Variant().type->header);
+        r_result.add_source_include(AssumedGodotTypes::PropertyInfo().type->header);
         return B<Function>()[{
             B<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
             B<Arguments>()[{
@@ -984,8 +978,7 @@ namespace GodotObjectCompiler
             ERROR("Failed to get default property info.")
         }
 
-        return build_property_info(
-            variant_type, property_hint, {usage_flags}, p_property_name, r_result);
+        return build_property_info(variant_type, property_hint, {usage_flags}, p_property_name);
     }
 
     Ref<GodotPropertyHintArgument> GodotGeneratorUtils::build_property_hint_argument(

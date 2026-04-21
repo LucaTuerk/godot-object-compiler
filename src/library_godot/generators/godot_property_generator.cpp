@@ -486,7 +486,7 @@ namespace GodotObjectCompiler
             p_attribute->arguments()->find_children<GodotPropertyUsageFlagsArgument>();
 
         Ref<Node> property_info =
-            build_property_info(variant_type, property_hint, usage_flags, property_name, r_result);
+            build_property_info(variant_type, property_hint, usage_flags, property_name);
 
         Ref<Function> add_property = B<Function>()[{
             B<Identifier>(AssumedGodotTypes::ADD_PROPERTY().type->name()),
@@ -507,8 +507,7 @@ namespace GodotObjectCompiler
             AssumedGodotTypes::StringName().type->qualified_name().c_str(),
             property_name.c_str())));
 
-        r_result.header_includes.insert(AssumedGodotTypes::StringName().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::ADD_PROPERTY().type->header);
+        r_result.add_header_include(AssumedGodotTypes::StringName().type->header);
         return GeneratorError::OK;
     }
 

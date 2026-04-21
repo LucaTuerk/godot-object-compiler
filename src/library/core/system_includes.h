@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 
+#include "nlohmann/json.hpp"
 #include <algorithm>
 #include <any>
 #include <chrono>
@@ -56,7 +57,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include "nlohmann/json.hpp"
 using Json = nlohmann::json;
 
 #include "tree-sitter-cpp.h"

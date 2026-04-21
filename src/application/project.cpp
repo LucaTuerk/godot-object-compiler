@@ -45,6 +45,7 @@ namespace GodotObjectCompiler
     void Project::read_from(IStructuredReader* p_reader)
     {
         p_reader->read_from_section("Godot");
+        paths_godot_cpp = p_reader->read<String, String>("GodotCppPath");
         path_extension_api = p_reader->read<String, String>("ExtensionAPI");
 
         p_reader->read_from_section("Paths");
@@ -58,6 +59,7 @@ namespace GodotObjectCompiler
     void Project::write_to(IStructuredWriter* p_writer)
     {
         p_writer->write_to_section("Godot");
+        p_writer->write<String, String>("GodotCppPath", paths_godot_cpp);
         p_writer->write<String, String>("ExtensionAPI", path_extension_api);
         p_writer->write_to_section("Paths");
         p_writer->write<String, String>("RootPath", paths_root);

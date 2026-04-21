@@ -18,14 +18,18 @@ namespace GodotObjectCompiler
       public:
         Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
 
+        bool setup_include_paths(const String& p_godot_cpp_path);
+
       private:
-        static Result<Class, JsonError> parse_class(const Json& p_input);
+        Result<Class, JsonError> parse_class(const Json& p_input);
 
         static Result<Node, JsonError> parse_global_enum(const Json& p_input);
 
         static Result<Enum, JsonError> parse_enum(const Json& p_input);
 
         static Result<EnumValue, JsonError> parse_enum_value(const Json& p_input);
+
+        Dictionary<String, String> include_paths;
     };
 } // namespace GodotObjectCompiler
 

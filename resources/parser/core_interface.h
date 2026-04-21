@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* project.h                                                              */
+/* core_interface.h                                                       */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,38 +32,73 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
 
-#include "library/core/core.h"
-#include "library/core/reader_writer.h"
-
-namespace GodotObjectCompiler
+namespace godot
 {
-
-    enum ProjectTarget { TARGET_MODULE, TARGET_GDEXTENSION, TARGET_UNDEFINED = TARGET_GDEXTENSION };
-
-    struct Project {
-        ProjectTarget project_target = TARGET_GDEXTENSION;
-        String path_extension_api;
-        String paths_root;
-        String paths_generated = ".goc/generated";
-        String paths_cache = ".goc/cache";
-        String paths_goc = ".goc";
-        String paths_godot_cpp = "godot-cpp";
-        Vector<String> paths_include;
-
-        void read_from(IStructuredReader* p_reader);
-
-        void write_to(IStructuredWriter* p_writer);
-
-        bool read_from_file(const String& p_path);
-
-        bool write_to_file(const String& p_path);
-
-      private:
-        static Vector<String> from_comma_separated_string(const String& p_str);
-
-        String to_comma_separated_string(const Vector<String>& p_str);
+    enum ModuleInitializationLevel {
+        MODULE_INITIALIZATION_LEVEL_CORE,
+        MODULE_INITIALIZATION_LEVEL_SERVERS,
+        MODULE_INITIALIZATION_LEVEL_SCENE,
+        MODULE_INITIALIZATION_LEVEL_EDITOR,
+        MODULE_INITIALIZATION_LEVEL_MAX
     };
 
-} // namespace GodotObjectCompiler
+    template <typename T> class Ref
+    {
+    };
+
+    class Array
+    {
+    };
+
+    template <typename T> class TypedArray
+    {
+    };
+
+    template <typename T> class List
+    {
+    };
+
+    class Dictionary
+    {
+    };
+
+    template <typename K, typename V> class TypedDictionary
+    {
+    };
+
+    class Variant
+    {
+    };
+
+    class StringName
+    {
+    };
+
+    class Callable
+    {
+    };
+
+    class PropertyInfo
+    {
+    };
+
+} // namespace godot
+
+#define ADD_PROPERTY
+#define ADD_GROUP
+#define ADD_SUBGROUP
+#define GDCLASS
+#define GDREGISTER_CLASS
+#define GDREGISTER_VIRTUAL_CLASS
+#define GDREGISTER_ABSTRACT_CLASS
+#define GDREGISTER_INTERNAL_CLASS
+#define GDREGISTER_RUNTIME_CLASS
+#define GDVIRTUAL_CALL
+#define GDVIRTUAL_BIND
+#define BIND_ENUM_CONSTANT
+#define BIND_BITFIELD_FLAG
+#define VARIANT_ENUM_CAST
+#define VARIANT_BITFIELD_CAST

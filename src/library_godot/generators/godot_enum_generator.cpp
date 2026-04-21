@@ -109,8 +109,6 @@ namespace GodotObjectCompiler
             B<Arguments>()[B<Argument>()[Output::Text(target_enum->qualified_name())]],
         }][Output::Semicolon()];
 
-        r_result.header_includes.insert(cast_define->header);
-        r_result.source_includes.insert(bind_define->header);
         return GeneratorError::OK;
     }
 

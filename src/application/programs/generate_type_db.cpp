@@ -57,11 +57,6 @@ namespace GodotObjectCompiler
         Opt<String> include_path;
     };
 
-    String godot_header_path(const String& p_class_name)
-    {
-        return format("godot_cpp/classes/%s.hpp", p_class_name.c_str());
-    }
-
     void
     generate_from_file(const File& p_file, const ApplicationContext& p_context, IParser* p_parser)
     {
@@ -85,7 +80,10 @@ namespace GodotObjectCompiler
         PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", path.c_str());
 
         Ref<Namespace> global_namespace = node_new<Namespace>();
-        Ref<ParserError> error = p_parser->parse(path, global_namespace);
+        TreeSitterParser* tree_sitter_parser = dynamic_cast<TreeSitterParser*>(p_parser);
+        Ref<ParserError> error = tree_sitter_parser
+                                     ? tree_sitter_parser->parse_file(path, global_namespace)
+                                     : p_parser->parse(path, global_namespace);
 
         if (error != ParserError::OK) {
             return;
@@ -122,15 +120,6 @@ namespace GodotObjectCompiler
 
                 if (include_path.has_value()) {
                     node->header = header_path(include_path.value(), path);
-                } else {
-                    Ref<Class> godot_class = node->as<Class>();
-                    if (!godot_class) {
-                        godot_class = node->find_ancestor<Class>();
-                    }
-
-                    if (godot_class) {
-                        node->header = godot_header_path(godot_class->name());
-                    }
                 }
                 LibraryContext::instance()->get_type_db()->save_type_data(node, path);
             }
@@ -145,11 +134,15 @@ namespace GodotObjectCompiler
         PROG_ERR_COND(
             !p_context.path_extension_api.has_value(),
             "No extension api path specified. Cannot generate the TypeDB.");
+        PROG_ERR_COND(
+            !p_context.paths_godot_cpp.has_value(),
+            "No godot-cpp path specified. Cannot generate the TypeDB");
 
         TreeSitterParser tree_sitter_parser;
         tree_sitter_parser.set_parse_attributes(false);
 
         ExtensionAPIParser extension_api_parser;
+        extension_api_parser.setup_include_paths(p_context.paths_godot_cpp.value());
 
         Vector<File> files = {{p_context.path_extension_api.value(), std::nullopt}};
 

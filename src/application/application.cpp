@@ -226,7 +226,8 @@ namespace GodotObjectCompiler
 
         APP_ERR_COND(
             context.program->run(context) != ProgramError::OK,
-            "Error occurred while executing program.");
+            "Error occurred while executing program \"%s\"",
+            context.program->program_name().c_str());
         return 0;
     }
 

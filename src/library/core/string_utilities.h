@@ -87,6 +87,8 @@ namespace GodotObjectCompiler
 
     String cpp_enum_case_to_exposed_enum_case(const String& p_content);
 
+    String pascal_to_snake_case(const String& p_content);
+
     Vector<String>
     string_split(const String& p_content, const String& p_delimiter, bool p_leave_empty = false);
 

@@ -64,11 +64,11 @@ namespace GodotObjectCompiler
     {
         PANIC_COND(p_child == nullptr, "Trying to add null child.");
 
-        if (this == p_child->get_parent().get()) {
-            return;
-        }
-
-        if (p_child->get_parent() != nullptr) {
+        Ref<Context> parent = p_child->get_parent();
+        if (parent != nullptr) {
+            if (this == parent.get()) {
+                return;
+            }
             return p_child->reparent(this->as<Context>());
         }
 

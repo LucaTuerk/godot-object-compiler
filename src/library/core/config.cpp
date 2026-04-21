@@ -35,6 +35,7 @@
 
 #include "library/core/config.h"
 
+#include "file_system_utilities.h"
 #include "library/library_context.h"
 #include "permissions.h"
 
@@ -87,6 +88,10 @@ namespace GodotObjectCompiler
 
     bool JsonConfig::read_from_file(const String& p_path)
     {
+        if (!file_exists(p_path)) {
+            return false;
+        }
+
         try {
             std::ifstream file(p_path);
             json = Json::parse(file);
