@@ -60,7 +60,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          ./build/goc_tests run_integration_tests godot-cpp/include godot-cpp/gen/include
+          ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include
 
       - name: Upload Binary
         if: ${{inputs.create_artifact == true}}
