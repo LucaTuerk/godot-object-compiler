@@ -94,16 +94,21 @@ int main(int argc, char* argv[])
 
         for (const auto& [test_name, test_functor] :
              TestRegistry::instance()->get_integration_tests()) {
+            all_count++;
             PRINT_INFO("Running test case \"%s\"", test_name.c_str());
             {
                 Application application;
                 const Vector<String> args =
                     TestRegistry::instance()->get_test_application_arguments(
                         {"generate", "type_db"});
-                PANIC_COND(application.run(args) != 0, "Failed to setup type db during test run.");
+                if (application.run(args) != 0) {
+                    print_err("Failed to setup type db during test run.");
+                    PRINT_INFO("%s\tFailed!", test_name.c_str());
+                    failed_count++;
+                    continue;
+                }
             }
 
-            all_count++;
             const TestResult result = test_functor();
             switch (result) {
             case TEST_RESULT_SUCCESS:

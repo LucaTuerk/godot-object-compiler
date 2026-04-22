@@ -163,13 +163,13 @@ namespace GodotObjectCompiler
 
             APP_ERR_COND(
                 !context.paths_root.has_value(),
-                "No project root path specified, but is needed for selected program.");
+                "No project root path specified but is required for selected program.");
             APP_ERR_COND(
                 !context.path_extension_api.has_value(),
-                "No extension api file specified, but are needed for selected program.");
+                "No extension api file specified but is required for selected program.");
             APP_ERR_COND(
                 !context.paths_godot_cpp_include.has_value(),
-                "No godot-cpp include paths specified, but are needed for selected program.");
+                "No godot-cpp include paths specified but are required for selected program.");
 
             if (!context.paths_include.has_value()) {
                 context.paths_include = Vector<String>();
@@ -180,7 +180,9 @@ namespace GodotObjectCompiler
             LibraryContext::instance()->get_type_db()->set_cache_directory(context.paths_cache);
             LibraryContext::instance()->set_include_paths(*context.paths_include);
 
-            init_local_resources.run(context);
+            APP_ERR_COND(
+                init_local_resources.run(context) != ProgramError::OK,
+                "Failed to initialize local resources.");
 
             LibraryContext::instance()->set_remove_macros(
                 read_lines(path_concat(context.paths_goc, "macros/macro_remove.txt")));
