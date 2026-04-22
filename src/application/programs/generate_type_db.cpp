@@ -129,9 +129,6 @@ namespace GodotObjectCompiler
     Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context)
     {
         PROG_ERR_COND(
-            !p_context.paths_include.has_value(),
-            "No include path specified. Cannot generate the TypeDB.");
-        PROG_ERR_COND(
             !p_context.path_extension_api.has_value(),
             "No extension api path specified. Cannot generate the TypeDB.");
         PROG_ERR_COND(
@@ -149,11 +146,13 @@ namespace GodotObjectCompiler
         generate_from_file(
             {p_context.path_extension_api.value(), std::nullopt}, p_context, &extension_api_parser);
 
-        for (String include_path : *p_context.paths_include) {
-            include_path = path_absolute(include_path);
-            for (const String& file : directory_files_recursive(include_path)) {
-                generate_from_file(
-                    {path_absolute(file), include_path}, p_context, &tree_sitter_parser);
+        if (p_context.paths_include.has_value()) {
+            for (String include_path : *p_context.paths_include) {
+                include_path = path_absolute(include_path);
+                for (const String& file : directory_files_recursive(include_path)) {
+                    generate_from_file(
+                        {path_absolute(file), include_path}, p_context, &tree_sitter_parser);
+                }
             }
         }
 

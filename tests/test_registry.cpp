@@ -69,21 +69,31 @@ namespace GodotObjectCompiler
         result.emplace_back("-P=.goc_tests/.goc");
         result.emplace_back("-G=.goc_tests/.goc/generated");
         result.emplace_back("-C=.goc_tests/.goc/cache");
+        result.emplace_back(format("-E=%s", extension_api.c_str()));
         result.emplace_back(format(
-            "-I=%s", string_vector_combine(
-                         TestRegistry::instance()->get_integration_tests_include_paths(), ",")
-                         .c_str()));
+            "-GPP=%s",
+            string_vector_combine(get_integration_tests_godot_cpp_include_paths(), ",").c_str()));
         return result;
     }
 
-    Vector<String> TestRegistry::get_integration_tests_include_paths()
+    Vector<String> TestRegistry::get_integration_tests_godot_cpp_include_paths()
     {
         return include_paths;
     }
 
-    void TestRegistry::set_integration_tests_include_paths(const Vector<String>& p_paths)
+    void TestRegistry::set_integration_tests_godot_cpp_include_paths(const Vector<String>& p_paths)
     {
         include_paths = p_paths;
+    }
+
+    void TestRegistry::set_extension_api(const String& p_extension_api)
+    {
+        extension_api = p_extension_api;
+    }
+
+    String TestRegistry::get_extension_api()
+    {
+        return extension_api;
     }
 
     const Dictionary<String, TestFunctor>& TestRegistry::get_integration_tests()

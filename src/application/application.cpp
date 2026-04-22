@@ -165,8 +165,15 @@ namespace GodotObjectCompiler
                 !context.paths_root.has_value(),
                 "No project root path specified, but is needed for selected program.");
             APP_ERR_COND(
-                !context.paths_include.has_value(),
-                "No include paths were specified, but are needed for selected program.");
+                !context.path_extension_api.has_value(),
+                "No extension api file specified, but are needed for selected program.");
+            APP_ERR_COND(
+                !context.paths_godot_cpp_include.has_value(),
+                "No godot-cpp include paths specified, but are needed for selected program.");
+
+            if (!context.paths_include.has_value()) {
+                context.paths_include = Vector<String>();
+            }
 
             context.paths_include->push_back(*context.paths_root);
 

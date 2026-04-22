@@ -84,9 +84,13 @@ int main(int argc, char* argv[])
     if (run_integration_tests) {
         Vector<String> include_paths;
         for (int i = 2; i < argc; i++) {
-            include_paths.emplace_back(argv[i]);
+            if (i == 2) {
+                TestRegistry::instance()->set_extension_api(argv[i]);
+            } else {
+                include_paths.emplace_back(argv[i]);
+            }
         }
-        TestRegistry::instance()->set_integration_tests_include_paths(include_paths);
+        TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(include_paths);
 
         for (const auto& [test_name, test_functor] :
              TestRegistry::instance()->get_integration_tests()) {
