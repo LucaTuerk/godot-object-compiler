@@ -112,7 +112,7 @@ namespace GodotObjectCompiler
     {
         UNUSED(p_json); // TODO: Should be included in error message in collapsed form
         error_level = p_level;
-        message = format("JsonError: %s\n%s", p_message.c_str());
+        message = format("JsonError: %s", p_message.c_str());
     }
 
     Ref<ParserError> ExtensionAPIParser::parse(const String& p_input, Ref<Context> r_target)

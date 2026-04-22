@@ -168,12 +168,9 @@ namespace GodotObjectCompiler
         Permissions::instance()->add_write_path(paths_cache);
 
         if (paths_root.has_value() && !directory_exits(*paths_root)) {
-            if (!create_dir_recursive(*paths_root)) {
-                fmt_print_err(
-                    "Invalid root path \"%s\". Could not find or create directory.",
-                    paths_root->c_str());
-                success = false;
-            }
+            fmt_print_err(
+                "Invalid root path \"%s\". Could not find directory.", paths_root->c_str());
+            success = false;
         }
 
         if (!directory_exits(paths_cache)) {
