@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     }
 
     using namespace GodotObjectCompiler;
-    LibraryContext::instance()->set_error_level(INFO, FULL);
+    LibraryContext::instance()->set_error_level(VERBOSE, FULL);
     Permissions::instance()->add_write_path(".goc_tests");
 
     Size failed_count = 0;
