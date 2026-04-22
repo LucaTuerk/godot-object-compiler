@@ -136,7 +136,6 @@ namespace GodotObjectCompiler
             for (auto& element : json["global_enums"]) {
                 try {
                     auto result = parse_enum(element);
-                    result.has_result();
                     RESULT_ERROR_PASS_ON(JsonError, result, global_enum);
                     body->add_child(global_enum);
                 } catch (std::exception& e) {
@@ -176,12 +175,12 @@ namespace GodotObjectCompiler
 
         TreeSitterParser tree_sitter_parser;
         Ref<Context> core_context = node_new<Namespace>();
-        Ref<ParserError> error = tree_sitter_parser.parse(core_interface, core_context);
-        if (error != ParserError::OK) {
+        if (Ref<ParserError> error = tree_sitter_parser.parse(core_interface, core_context);
+            error != ParserError::OK) {
             return error;
         }
 
-        for (Ref<Class> core_class : core_context->find_children<Class>(true)) {
+        for (const Ref<Class>& core_class : core_context->find_children<Class>(true)) {
             auto name = core_class->name();
             auto include_itr = include_paths.find(class_name_to_canonical_name(name));
             PARSER_ERROR_COND(
@@ -218,23 +217,23 @@ namespace GodotObjectCompiler
         JSON_PARSE_ERR_COND(
             !p_input.contains("name"), p_input, "Parsed extension class is not named.");
 
-        String name = p_input["name"];
-        auto include_itr = include_paths.find(class_name_to_canonical_name(name));
+        const String name = p_input["name"];
+        const auto include_itr = include_paths.find(class_name_to_canonical_name(name));
 
         JSON_PARSE_ERR_COND(
             include_itr == include_paths.end(), p_input,
             "Could not find include path for class \"%s\"", name.c_str());
 
-        String include_path = include_itr->second;
+        const String include_path = include_itr->second;
 
         Ref<Class> result = B<Class>()[B<Identifier>(name)];
 
         if (p_input.contains("inherits")) {
-            String base_name = p_input["inherits"];
+            const String base_name = p_input["inherits"];
             result->B<BaseClasses>()[B<Type>()[B<Identifier>(base_name)]];
         }
 
-        Ref<Body> body = result->B<Body>();
+        const Ref<Body> body = result->B<Body>();
         if (p_input.contains("enums")) {
             for (auto& element : p_input["enums"]) {
                 if (auto enum_result = parse_enum(element); enum_result.has_result()) {
@@ -258,8 +257,8 @@ namespace GodotObjectCompiler
         JSON_PARSE_ERR_COND(
             !p_input.contains("name"), p_input, "Parsed extension enum is not named.");
 
-        String name = string_replace(p_input["name"], ".", "::");
-        bool is_variant_type = name == "Variant::Type";
+        const String name = string_replace(p_input["name"], ".", "::");
+        const bool is_variant_type = name == "Variant::Type";
 
         Ref<EnumValues> enum_values;
         Ref<Enum> result = B<Enum>()[{B<Identifier>(name), R<EnumValues>(&enum_values)}];
@@ -272,8 +271,7 @@ namespace GodotObjectCompiler
                 enum_values->add_child(value);
 
                 if (is_variant_type) {
-                    Ref<Identifier> identifier = value->find_descendant<Identifier>();
-                    if (identifier) {
+                    if (const Ref<Identifier> identifier = value->find_descendant<Identifier>()) {
                         identifier->name = string_replace(identifier->name, "TYPE_", "");
                     }
                 }
@@ -290,7 +288,7 @@ namespace GodotObjectCompiler
             !p_input.contains("value"), p_input,
             "Parsed extension enum value does not have a value.");
 
-        String name = p_input["name"];
+        const String name = p_input["name"];
         int value = p_input["value"];
         Ref<EnumValue> result =
             B<EnumValue>()[{B<Identifier>(name), B<Literal>(format("%d", value))}];

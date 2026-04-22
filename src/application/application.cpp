@@ -85,6 +85,7 @@ namespace GodotObjectCompiler
 
     int Application::run(const Vector<String>& p_arguments)
     {
+        PRINT_VERBOSE("Application: %s", string_vector_combine(p_arguments, " ").c_str());
         APP_TOP_LEVEL_ERR_COND(
             setup_context(p_arguments) != 0, "Failed to setup application context.");
         APP_TOP_LEVEL_ERR_COND(
@@ -220,6 +221,7 @@ namespace GodotObjectCompiler
 
     int Application::run_program(const Ref<IProgram>& p_program)
     {
+        APP_ERR_COND(p_program == nullptr, "Null program provided");
         context.program = p_program;
         if (!context.program->validate_arguments(context)) {
             fmt_print_err(

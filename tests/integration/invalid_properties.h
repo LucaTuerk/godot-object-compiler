@@ -42,8 +42,6 @@ using namespace GodotObjectCompiler;
 
 GOC_INTEGRATION_TEST(InvalidPropertiesGracefulExit)
 {
-    // return TEST_RESULT_IGNORED; // TODO: FIX
-
     for (const String& file : directory_files("tests/files/integration_tests/invalid_properties")) {
         GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file.c_str());
     }

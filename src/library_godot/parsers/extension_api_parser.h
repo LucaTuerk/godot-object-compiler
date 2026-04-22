@@ -57,8 +57,6 @@ namespace GodotObjectCompiler
       private:
         Result<Class, JsonError> parse_class(const Json& p_input);
 
-        static Result<Node, JsonError> parse_global_enum(const Json& p_input);
-
         static Result<Enum, JsonError> parse_enum(const Json& p_input);
 
         static Result<EnumValue, JsonError> parse_enum_value(const Json& p_input);
