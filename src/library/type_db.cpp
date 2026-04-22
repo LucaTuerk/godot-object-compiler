@@ -146,7 +146,7 @@ namespace GodotObjectCompiler
             }
         }
 
-        return root;
+        return {root};
     }
 
     void TypeDB::set_cache_directory(const String& path)

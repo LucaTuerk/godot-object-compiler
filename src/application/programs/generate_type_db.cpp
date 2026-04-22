@@ -135,14 +135,14 @@ namespace GodotObjectCompiler
             !p_context.path_extension_api.has_value(),
             "No extension api path specified. Cannot generate the TypeDB.");
         PROG_ERR_COND(
-            !p_context.paths_godot_cpp.has_value(),
+            !p_context.paths_godot_cpp_include.has_value(),
             "No godot-cpp path specified. Cannot generate the TypeDB");
 
         TreeSitterParser tree_sitter_parser;
         tree_sitter_parser.set_parse_attributes(false);
 
         ExtensionAPIParser extension_api_parser;
-        extension_api_parser.setup_include_paths(p_context.paths_godot_cpp.value());
+        extension_api_parser.setup_include_paths(p_context.paths_godot_cpp_include.value());
 
         Vector<File> files = {{p_context.path_extension_api.value(), std::nullopt}};
 

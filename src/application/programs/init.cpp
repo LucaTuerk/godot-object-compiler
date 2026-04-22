@@ -64,7 +64,8 @@ namespace GodotObjectCompiler
             input("   |- GOC Generated (default: \"%s\"): ", path_concat(goc_folder, "generated"));
         String cache_root =
             input("   |- GOC Cache (default: \"%s\"): ", path_concat(goc_folder, "cache"));
-        String godot_cpp = input("   |- Godot CPP Folder (default: \"%s\"): ", "godot-cpp");
+        String godot_cpp = input("   |- Godot CPP Include (default: \"%s\"): ", "godot-cpp/include");
+        String godot_cpp_gen = input("   |- Godot CPP Generated Include (default: \"%s\"): ", "godot-cpp/gen/include");
         String extension_api = input(
             "   |- Extension API (default: \"%s\"): ",
             path_concat_ext(path_concat(godot_cpp, "gdextension"), "extension_api", "json"));
@@ -81,6 +82,8 @@ namespace GodotObjectCompiler
         print_ln(format("   |  Generated: %s", generated_absolute.c_str()));
         print_ln(format("   |  Cache: %s", cache_absolute.c_str()));
         print_ln(format("   |  Extension API: %s", extension_api.c_str()));
+        print_ln(format("   |  Godot CPP Include: %s", godot_cpp.c_str()));
+        print_ln(format("   |  Godot CPP Generated Include: %s", godot_cpp_gen.c_str()));
         print_ln("");
 
         if (input("|? Accept? (y/%s) ", "n") == "y") {
@@ -91,7 +94,10 @@ namespace GodotObjectCompiler
             project.paths_generated = generate_folder;
             project.paths_cache = cache_root;
             project.path_extension_api = extension_api;
-            project.paths_godot_cpp = godot_cpp;
+            project.paths_godot_cpp_include = {
+                godot_cpp,
+                godot_cpp_gen
+            };
 
             String project_file_path = format("%s.goc_project", project_name.c_str());
             project.write_to_file(project_file_path);

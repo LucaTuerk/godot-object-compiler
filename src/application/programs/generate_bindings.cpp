@@ -83,7 +83,7 @@ namespace GodotObjectCompiler
             !p_context.files_input.has_value(),
             "No input files specified. Can not generate bindings.");
         PROG_ERR_COND(
-            !p_context.paths_godot_cpp.has_value(),
+            !p_context.paths_godot_cpp_include.has_value(),
             "No godot-cpp path specified. Can not generate bindings.");
 
         OutputTransformator transformator;
@@ -93,7 +93,7 @@ namespace GodotObjectCompiler
         Ref<Context> core_include_content = node_new<Context>();
         macro_include_generator.generate(nullptr, macro_include_content);
         macro_include_generator.generate_core_include(
-            p_context.paths_godot_cpp.value(), core_include_content);
+            p_context.paths_godot_cpp_include.value(), core_include_content);
 
         FileWriter marco_writer = FileWriter::generated(
             path_concat(p_context.paths_generated, "godot_object_compiler/macros.h"), "");

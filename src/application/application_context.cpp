@@ -51,7 +51,7 @@ namespace GodotObjectCompiler
         paths_cache = path_absolute(p_project.paths_cache);
         paths_readonly_cache = path_concat(paths_cache, ".readonly");
         paths_goc = path_absolute(p_project.paths_goc);
-        paths_godot_cpp = p_project.paths_godot_cpp;
+        paths_godot_cpp_include = p_project.paths_godot_cpp_include;
         path_extension_api = p_project.path_extension_api;
 
         for (const auto& include_path : p_project.paths_include) {
@@ -117,13 +117,13 @@ namespace GodotObjectCompiler
                 paths_cache = content;
                 itr = p_application_arguments.erase(itr);
             } else if (prefix_extract(arg, "--include_paths", "-I=", content)) {
-                paths_include = string_split(content, ",");
+                paths_include = string_split(content, ",", true);
                 itr = p_application_arguments.erase(itr);
             } else if (prefix_extract(arg, "--sources=", "-S=", content)) {
-                files_input = string_split(content, ",");
+                files_input = string_split(content, ",", true);
                 itr = p_application_arguments.erase(itr);
             } else if (prefix_extract(arg, "--godot-cpp=", "-GPP=", content)) {
-                paths_godot_cpp = content;
+                paths_godot_cpp_include = string_split(content, ",", true);
                 itr = p_application_arguments.erase(itr);
             } else if (prefix_extract(arg, "--extension_api=", "-E=", content)) {
                 path_extension_api = content;
@@ -138,19 +138,21 @@ namespace GodotObjectCompiler
         paths_readonly_cache = path_absolute(paths_readonly_cache);
         paths_generated = path_absolute(paths_generated);
 
-        if (paths_godot_cpp.has_value()) {
-            paths_godot_cpp = path_absolute(paths_godot_cpp.value());
+        if (paths_godot_cpp_include.has_value()) {
+            std::transform(
+                paths_godot_cpp_include->cbegin(), paths_godot_cpp_include->cend(),
+                paths_godot_cpp_include->begin(), &path_absolute);
         }
         if (path_extension_api.has_value()) {
             path_extension_api = path_absolute(path_extension_api.value());
         }
         if (files_input.has_value()) {
             std::transform(
-                files_input->begin(), files_input->end(), files_input->begin(), &path_absolute);
+                files_input->cbegin(), files_input->cend(), files_input->begin(), &path_absolute);
         }
         if (paths_include.has_value()) {
             std::transform(
-                paths_include->begin(), paths_include->end(), paths_include->begin(),
+                paths_include->cbegin(), paths_include->cend(), paths_include->begin(),
                 &path_absolute);
         }
 
@@ -201,14 +203,17 @@ namespace GodotObjectCompiler
             }
         }
 
-        if (!paths_godot_cpp.has_value()) {
-            print_err("No godot-cpp path specified.");
+        if (!paths_godot_cpp_include.has_value()) {
+            print_err("No godot-cpp include paths specified.");
             success = false;
-        } else if (!directory_exits(paths_godot_cpp.value())) {
-            fmt_print_err(
-                "Invalid godot-cpp path \"%s\". Could not find directory.",
-                paths_godot_cpp.value().c_str());
-            success = false;
+        } else {
+            for (const String& path : *paths_godot_cpp_include) {
+                if (!directory_exits(path)) {
+                    fmt_print_err(
+                        "Invalid godot-cpp path \"%s\". Could not find directory.", path.c_str());
+                    success = false;
+                }
+            }
         }
 
         if (!path_extension_api.has_value()) {

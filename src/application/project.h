@@ -49,7 +49,7 @@ namespace GodotObjectCompiler
         String paths_generated = ".goc/generated";
         String paths_cache = ".goc/cache";
         String paths_goc = ".goc";
-        String paths_godot_cpp = "godot-cpp";
+        Vector<String> paths_godot_cpp_include;
         Vector<String> paths_include;
 
         void read_from(IStructuredReader* p_reader);

@@ -74,17 +74,9 @@ namespace GodotObjectCompiler
         return class_name_to_canonical_name(path_stem(p_path));
     }
 
-    bool validate_header_path(const String& p_header_path, const String& p_godot_cpp_path)
-    {
-        String include_path = path_concat(p_godot_cpp_path, "include");
-        String gen_include_path = path_concat(path_concat(p_godot_cpp_path, "gen"), "include");
-
-        return file_exists(path_concat(include_path, p_header_path)) ||
-               file_exists(path_concat(gen_include_path, p_header_path));
-    }
-
     JsonError::JsonError(ErrorLevel p_level, const Json& p_json, const String& p_message)
     {
+        UNUSED(p_json); // TODO: Should be included in error message in collapsed form
         error_level = p_level;
         message = format("JsonError: %s\n%s", p_message.c_str());
     }
@@ -168,13 +160,11 @@ namespace GodotObjectCompiler
         return ParserError::OK;
     }
 
-    bool ExtensionAPIParser::setup_include_paths(const String& p_godot_cpp_path)
+    bool ExtensionAPIParser::setup_include_paths(const Vector<String>& p_godot_cpp_include)
     {
         include_paths.clear();
 
-        const Vector<String> paths = {
-            path_concat(p_godot_cpp_path, "include"),
-            path_concat(path_concat(p_godot_cpp_path, "gen"), "include")};
+        const Vector<String> paths = p_godot_cpp_include;
 
         for (const String& include_path : paths) {
             if (!directory_exits(include_path)) {

@@ -20,12 +20,14 @@ function(target_autogoc TARGET ROOT_DIR)
     if (TARGET godot-cpp)
         get_target_property(GODOT_CPP_FOLDER godot-cpp SOURCE_DIR)
         set(GDEXTENSION_API_FILE ${GODOT_CPP_FOLDER}/gdextension/extension_api.json)
+        get_target_property(GODOT_CPP_INCLUDE_DIRECTORIES godot-cpp INCLUDE_DIRECTORIES)
     else ()
         message(FATAL_ERROR "AUTOGOC: target godot-cpp not found.")
     endif ()
 
     list(JOIN INCLUDE_DIRECTORIES "," INCLUDE_JOINED)
     list(JOIN SOURCES "," SOURCES_JOINED)
+    list(JOIN GODOT_CPP_INCLUDE_DIRECTORIES "," GODOT_CPP_INCLUDE_DIRECTORIES_JOINED)
 
     if (TARGET goc)
         get_target_property(GOC_BINARY_DIR goc BINARY_DIR)
@@ -41,7 +43,7 @@ function(target_autogoc TARGET ROOT_DIR)
                 -G=.goc/generated
                 -I=${INCLUDE_JOINED}
                 -S=${SOURCES_JOINED}
-                -GPP=${GODOT_CPP_FOLDER}
+                -GPP=${GODOT_CPP_INCLUDE_DIRECTORIES_JOINED}
                 -E=${GDEXTENSION_API_FILE}
                 WORKING_DIRECTORY ${BINARY_DIR}
                 DEPENDS goc godot-cpp generate_bindings ${SOURCES}
@@ -59,7 +61,7 @@ function(target_autogoc TARGET ROOT_DIR)
                 -G=.goc/generated
                 -I=${INCLUDE_JOINED}
                 -S=${SOURCES_JOINED}
-                -GPP=${GODOT_CPP_FOLDER}
+                -GPP=${GODOT_CPP_INCLUDE_DIRECTORIES_JOINED}
                 -E=${GDEXTENSION_API_FILE}
                 WORKING_DIRECTORY ${BINARY_DIR}
                 DEPENDS godot-cpp generate_bindings ${SOURCES}
