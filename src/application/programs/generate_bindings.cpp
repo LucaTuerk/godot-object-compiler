@@ -277,9 +277,8 @@ namespace GodotObjectCompiler
 
                 Ref<Node> previous = target_class->get_previous_sibling();
                 if (!previous) {
-                    PRINT_VERBOSE(
-                        "No previous sibling found, class cannot have a "
-                        "GodotClassAttribute applied. Skipping class.");
+                    PRINT_VERBOSE("No previous sibling found, class cannot have a "
+                                  "GodotClassAttribute applied. Skipping class.");
                     continue;
                 }
 

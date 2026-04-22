@@ -87,5 +87,5 @@ The following values are available:
 +-------------------------------+----------------------------+
 | VariantTypePackedVector4Array | No documentation available |
 +-------------------------------+----------------------------+
-| VariantTypeVariantMax         | No documentation available |
+| VariantTypeMax                | No documentation available |
 +-------------------------------+----------------------------+

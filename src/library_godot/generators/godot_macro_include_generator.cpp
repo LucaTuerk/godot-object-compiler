@@ -65,16 +65,14 @@ namespace GodotObjectCompiler
 
     bool GodotMacroIncludeGenerator::generate_macros(const Ref<Context>& p_write_to)
     {
-        p_write_to->add_child(
-            Output::Define(
-                "GOC_BODY_COMBINE_INNER",
-                {Output::Text("A"), Output::Text("B"), Output::Text("C"), Output::Text("D")},
-                "A##B##C##D"));
-        p_write_to->add_child(
-            Output::Define(
-                "GOC_BODY_COMBINE",
-                {Output::Text("A"), Output::Text("B"), Output::Text("C"), Output::Text("D")},
-                "GOC_BODY_COMBINE_INNER(A, B, C, D)"));
+        p_write_to->add_child(Output::Define(
+            "GOC_BODY_COMBINE_INNER",
+            {Output::Text("A"), Output::Text("B"), Output::Text("C"), Output::Text("D")},
+            "A##B##C##D"));
+        p_write_to->add_child(Output::Define(
+            "GOC_BODY_COMBINE",
+            {Output::Text("A"), Output::Text("B"), Output::Text("C"), Output::Text("D")},
+            "GOC_BODY_COMBINE_INNER(A, B, C, D)"));
         String generated_content = "GOC_BODY_COMBINE(GOC_GENERATED_, __LINE__, _, GOC_FILE_ID())()";
 
         for (const String& macro :
@@ -82,13 +80,12 @@ namespace GodotObjectCompiler
             String res_file = "res://" + path_concat_ext("doc", macro, "txt");
             if (Resources::instance()->has_resource(res_file)) {
                 Ref<Context> params_docu = Output::Params({});
-                Ref<Context> comment = Output::DocComment(
-                    Output::Lines(
-                        {Output::Text(Resources::instance()->load_text_resource(res_file)),
-                         Output::NewLine(),
-                         Output::Spaces(
-                             {Output::BoldText("Available Parameters: "),
-                              params_docu->as<Output::OutputNode>()})}));
+                Ref<Context> comment = Output::DocComment(Output::Lines(
+                    {Output::Text(Resources::instance()->load_text_resource(res_file)),
+                     Output::NewLine(),
+                     Output::Spaces(
+                         {Output::BoldText("Available Parameters: "),
+                          params_docu->as<Output::OutputNode>()})}));
                 p_write_to->add_child(comment);
 
                 Size index = 0;
@@ -109,18 +106,16 @@ namespace GodotObjectCompiler
             Ref<Attribute> attr = attr_result.get_result();
 
             if (attr->is<GeneratedBodyAttribute>() || attr->is<GeneratedGlobalAttribute>()) {
-                p_write_to->add_child(
-                    Output::Define(
-                        macro, {Output::Text("...")},
-                        generated_content +
-                            "; static_assert( [](){ using namespace GOC_Macros; return " + macro +
-                            "_prototype(__VA_ARGS__);},\"\")"));
+                p_write_to->add_child(Output::Define(
+                    macro, {Output::Text("...")},
+                    generated_content +
+                        "; static_assert( [](){ using namespace GOC_Macros; return " + macro +
+                        "_prototype(__VA_ARGS__);},\"\")"));
             } else {
-                p_write_to->add_child(
-                    Output::Define(
-                        macro, {Output::Text("...")},
-                        "static_assert( [](){ using namespace GOC_Macros; return " + macro +
-                            "_prototype(__VA_ARGS__);},\"\")"));
+                p_write_to->add_child(Output::Define(
+                    macro, {Output::Text("...")},
+                    "static_assert( [](){ using namespace GOC_Macros; return " + macro +
+                        "_prototype(__VA_ARGS__);},\"\")"));
             }
         }
         return true;
@@ -132,7 +127,6 @@ namespace GodotObjectCompiler
         p_write_to->add_child(Output::PragmaOnce());
         bool found_any_path = false;
         for (const String& godot_cpp_include : p_godot_cpp_includes) {
-            print_ln(godot_cpp_include);
             String include_path = path_concat(godot_cpp_include, "godot_cpp", "core");
             if (!directory_exits(include_path)) {
                 continue;
@@ -176,10 +170,9 @@ namespace GodotObjectCompiler
             type_documentation->add_child(Output::Text(content));
             type_documentation->add_child(Output::NewLine());
         }
-        type_documentation->add_child(
-            Output::Spaces(
-                {Output::BoldText("Possible Values:"),
-                 value_names_documentation->as<Output::OutputNode>()}));
+        type_documentation->add_child(Output::Spaces(
+            {Output::BoldText("Possible Values:"),
+             value_names_documentation->as<Output::OutputNode>()}));
 
         p_write_to->add_child(Output::DocComment(type_documentation));
         p_write_to->B<Output::SnippetNode>("class " + type_name + " {};");
@@ -224,21 +217,19 @@ namespace GodotObjectCompiler
                 for (const auto& argument : arguments) {
                     if (argument.type == IAttributeParameterType::ARG_STRING) {
                         Ref<Parameter> parameter;
-                        parameters->add_child(
-                            R<Parameter>(&parameter)[{
-                                B<Type>()[{B<Const>(), B<Identifier>("char"), B<Pointer>()}],
-                                B<Identifier>(argument.name),
-                            }]);
+                        parameters->add_child(R<Parameter>(&parameter)[{
+                            B<Type>()[{B<Const>(), B<Identifier>("char"), B<Pointer>()}],
+                            B<Identifier>(argument.name),
+                        }]);
                         if (argument.optional) {
                             parameter->B<Literal>("\"\"");
                         }
                     } else if (argument.type == IAttributeParameterType::ARG_INTEGER) {
                         Ref<Parameter> parameter;
-                        parameters->add_child(
-                            R<Parameter>(&parameter)[{
-                                B<Type>()[B<Identifier>("int")],
-                                B<Identifier>(argument.name),
-                            }]);
+                        parameters->add_child(R<Parameter>(&parameter)[{
+                            B<Type>()[B<Identifier>("int")],
+                            B<Identifier>(argument.name),
+                        }]);
                         if (argument.optional) {
                             parameter->B<Literal>("0");
                         }
@@ -299,12 +290,11 @@ namespace GodotObjectCompiler
 
             for (Size curr = 0; curr < size - 1; ++curr) {
                 for (Size cmp = curr + 1; cmp < size; ++cmp) {
-                    body->add_child(
-                        Output::FmtText(
-                            "static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d "
-                            "and "
-                            "%d\");",
-                            curr + 1, cmp + 1, curr + 1, cmp + 1));
+                    body->add_child(Output::FmtText(
+                        "static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d "
+                        "and "
+                        "%d\");",
+                        curr + 1, cmp + 1, curr + 1, cmp + 1));
                 }
             }
 
