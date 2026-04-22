@@ -43,7 +43,7 @@ namespace GodotObjectCompiler
     class JsonError : public ParserError
     {
       public:
-        JsonError(ErrorLevel p_level, const String& p_message) : ParserError(p_level, p_message) {};
+        JsonError(ErrorLevel p_level, const String& p_message) : ParserError(p_level, p_message){};
         JsonError(ErrorLevel p_level, const Json& p_json, const String& p_message);
     };
 
