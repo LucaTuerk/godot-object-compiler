@@ -71,12 +71,6 @@ namespace GodotObjectCompiler
     Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context)
     {
         PROG_ERR_COND(
-            !(AssumedGodotTypes::validate_assumptions() &&
-              AssumedParameterValues::validate_assumptions()),
-            "Failed to validate some assumptions on available Godot types and macros, probably "
-            "because the TypeDB generator has not found the relevant files.\nEnsure godot-cpp "
-            "include path are known to goc via the -I= flag or in the .goc_project file.");
-        PROG_ERR_COND(
             !p_context.paths_root.has_value(),
             "No project root path specified. Can not generate bindings.");
         PROG_ERR_COND(
@@ -84,26 +78,39 @@ namespace GodotObjectCompiler
             "No input files specified. Can not generate bindings.");
         PROG_ERR_COND(
             !p_context.paths_godot_cpp_include.has_value(),
-            "No godot-cpp path specified. Can not generate bindings.");
+            "No godot-cpp include paths specified. Can not generate bindings.");
+        PROG_ERR_COND(
+            !p_context.path_extension_api.has_value(),
+            "No extension api file specified. Can not generate bindings.");
+        PROG_ERR_COND(
+            !(AssumedGodotTypes::validate_assumptions() &&
+              AssumedParameterValues::validate_assumptions()),
+            "Failed to validate some assumptions on available Godot types and macros. Supplied "
+            "extension api files or godot-cpp include paths might be invalid.");
 
         OutputTransformator transformator;
 
-        GodotMacroIncludeGenerator macro_include_generator;
-        Ref<Context> macro_include_content = node_new<Context>();
-        Ref<Context> core_include_content = node_new<Context>();
-        macro_include_generator.generate(nullptr, macro_include_content);
-        macro_include_generator.generate_core_include(
-            p_context.paths_godot_cpp_include.value(), core_include_content);
+        if (LibraryContext::instance()->file_modified(p_context.path_extension_api.value())) {
+            GodotMacroIncludeGenerator macro_include_generator;
+            Ref<Context> macro_include_content = node_new<Context>();
+            Ref<Context> core_include_content = node_new<Context>();
 
-        FileWriter marco_writer = FileWriter::generated(
-            path_concat(p_context.paths_generated, "godot_object_compiler/macros.h"), "");
-        Ref<Output::OutputNode> macro_output = transformator.transform(macro_include_content);
-        macro_output->get_output(&marco_writer);
+            macro_include_generator.generate(nullptr, macro_include_content);
+            macro_include_generator.generate_core_include(
+                p_context.paths_godot_cpp_include.value(), core_include_content);
 
-        FileWriter core_include_writer = FileWriter::generated(
-            path_concat(p_context.paths_generated, "godot_object_compiler/core_includes.h"), "");
-        Ref<Output::OutputNode> core_include_output = transformator.transform(core_include_content);
-        core_include_output->get_output(&core_include_writer);
+            FileWriter marco_writer = FileWriter::generated(
+                path_concat(p_context.paths_generated, "godot_object_compiler/macros.h"), "");
+            Ref<Output::OutputNode> macro_output = transformator.transform(macro_include_content);
+            macro_output->get_output(&marco_writer);
+
+            FileWriter core_include_writer = FileWriter::generated(
+                path_concat(p_context.paths_generated, "godot_object_compiler/core_includes.h"),
+                "");
+            Ref<Output::OutputNode> core_include_output =
+                transformator.transform(core_include_content);
+            core_include_output->get_output(&core_include_writer);
+        }
 
         Ref<Context> register_types_header = node_new<Context>();
         Ref<Context> register_types_source = node_new<Context>();
@@ -270,8 +277,9 @@ namespace GodotObjectCompiler
 
                 Ref<Node> previous = target_class->get_previous_sibling();
                 if (!previous) {
-                    PRINT_VERBOSE("No previous sibling found, class cannot have a "
-                                  "GodotClassAttribute applied. Skipping class.");
+                    PRINT_VERBOSE(
+                        "No previous sibling found, class cannot have a "
+                        "GodotClassAttribute applied. Skipping class.");
                     continue;
                 }
 
