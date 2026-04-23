@@ -45,8 +45,9 @@ namespace GodotObjectCompiler
     void Project::read_from(IStructuredReader* p_reader)
     {
         p_reader->read_from_section("Godot");
-        godot_include_paths =
-            string_split(p_reader->read<String, String>("IncludePaths"), ",", true);
+        paths_godot_cpp_include =
+            string_split(p_reader->read<String, String>("GodotCppIncludePaths"), ",", true);
+        path_extension_api = p_reader->read<String, String>("ExtensionAPI");
 
         p_reader->read_from_section("Paths");
         paths_root = p_reader->read<String, String>("RootPath");
@@ -60,8 +61,8 @@ namespace GodotObjectCompiler
     {
         p_writer->write_to_section("Godot");
         p_writer->write<String, String>(
-            "IncludePaths", string_vector_combine(godot_include_paths, ","));
-
+            "GodotCppIncludePaths", string_vector_combine(paths_godot_cpp_include, ","));
+        p_writer->write<String, String>("ExtensionAPI", path_extension_api);
         p_writer->write_to_section("Paths");
         p_writer->write<String, String>("RootPath", paths_root);
         p_writer->write<String, String>("GeneratedPath", paths_generated);
@@ -72,7 +73,7 @@ namespace GodotObjectCompiler
 
     bool Project::read_from_file(const String& p_path)
     {
-        Config config;
+        JsonConfig config;
         if (!config.read_from_file(p_path)) {
             return false;
         }
@@ -83,7 +84,7 @@ namespace GodotObjectCompiler
 
     bool Project::write_to_file(const String& p_path)
     {
-        Config config;
+        JsonConfig config;
         write_to(&config);
         return config.write_to_file(p_path);
     }

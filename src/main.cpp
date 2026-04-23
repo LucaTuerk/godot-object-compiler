@@ -37,8 +37,10 @@
 
 #include "application/application.h"
 #include "application/programs/generate_resources.h"
+#include "library/core/config.h"
 #include "library/core/core.h"
 #include "library/library_context.h"
+#include "library_godot/parsers/extension_api_parser.h"
 
 using namespace GodotObjectCompiler;
 

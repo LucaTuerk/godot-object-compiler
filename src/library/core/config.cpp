@@ -35,103 +35,113 @@
 
 #include "library/core/config.h"
 
+#include "file_system_utilities.h"
+#include "library/library_context.h"
+#include "permissions.h"
+
 namespace GodotObjectCompiler
 {
 
-    Config::Config()
+    const Vector<String>& JsonConfig::get_sections()
     {
-        write_to_section<String>("");
-    }
-
-    const Vector<String>& Config::get_sections()
-    {
-        return _sections;
-    }
-
-    bool Config::has_config_value(const String& p_key)
-    {
-        return config_values[_current_section].find(p_key) != config_values[_current_section].end();
-    }
-
-    void Config::_write_to_section(const String& p_section)
-    {
-        _current_section = _find_section_index(p_section);
-        if (_current_section == INVALID_ID) {
-            _current_section = _sections.size();
-            _section_indices[p_section] = _current_section;
-            _sections.push_back(p_section);
-        }
-    }
-
-    void Config::_write(const String& p_key, const String& p_value)
-    {
-        config_values[_current_section][p_key] = p_value;
-    }
-
-    void Config::_read_from_section(const String& p_section)
-    {
-        _current_section = _find_section_index(p_section);
-        if (_current_section == INVALID_ID) {
-            _current_section = 0;
-        }
-    }
-
-    String Config::_read(const String& p_key)
-    {
-        return config_values[_current_section][p_key];
-    }
-
-    Size Config::_find_section_index(const String& p_key)
-    {
-        auto itr = _section_indices.find(p_key);
-        if (itr != _section_indices.end()) {
-            return itr->second;
-        }
-        return INVALID_ID;
-    }
-
-    bool Config::write_to_file(const String& p_path)
-    {
-        std::ofstream file(p_path);
-        if (!file.is_open()) {
-            return false;
-        }
-
-        for (const auto& section : config_values) {
-            file << "[" << _sections[section.first] << "]" << std::endl;
-            for (const auto& value : section.second) {
-                file << value.first << "=" << value.second << std::endl;
-            }
-            file << std::endl;
-        }
-        return true;
-    }
-
-    bool Config::read_from_file(const String& p_path)
-    {
-        std::ifstream file(p_path);
-        if (!file.is_open()) {
-            return false;
-        }
-
-        String line;
-
-        while (std::getline(file, line)) {
-            if (line.empty() || line[0] == '#') {
-                continue;
-            } else if (line[0] == '[') {
-                String section = line.substr(1, line.find(']') - 1);
-                write_to_section(section);
-            } else {
-                size_t pos = line.find('=');
-                if (pos != String::npos) {
-                    String key = line.substr(0, pos);
-                    String value = line.substr(pos + 1);
-                    write(key, value);
+        if (sections_dirty) {
+            sections.clear();
+            for (auto& [key, value] : json.items()) {
+                if (value.is_object()) {
+                    sections.push_back(key);
                 }
             }
         }
+
+        return sections;
+    }
+
+    bool JsonConfig::has_config_value(const String& p_key)
+    {
+        if (current_section.empty()) {
+            return json.contains(p_key);
+        }
+        return json[current_section].contains(p_key);
+    }
+
+    String JsonConfig::dump()
+    {
+        return json.dump(1);
+    }
+
+    bool JsonConfig::write_to_file(const String& p_path)
+    {
+        try {
+            PANIC_COND(
+                !Permissions::instance()->is_allowed_write_path(p_path),
+                "JsonConfig: \"%s\" is not an allowed write path.");
+            std::ofstream file(p_path);
+            file << json.dump(1);
+        } catch (std::exception& e) {
+            PRINT_ERROR(
+                "JsonConfig: Failed to write config to file \"%s\" due to exception: %s",
+                p_path.c_str(), e.what());
+            return false;
+        }
         return true;
+    }
+
+    bool JsonConfig::read_from_file(const String& p_path)
+    {
+        if (!file_exists(p_path)) {
+            return false;
+        }
+
+        try {
+            std::ifstream file(p_path);
+            json = Json::parse(file);
+        } catch (std::exception& e) {
+            PRINT_ERROR(
+                "JsonConfig: Failed to read config from file \"%s\" due to exception: %s",
+                p_path.c_str(), e.what());
+            return false;
+        }
+        return true;
+    }
+
+    void JsonConfig::_write_to_section(const String& p_section)
+    {
+        if (current_section == p_section) {
+            return;
+        }
+        current_section = p_section;
+        sections_dirty = true;
+    }
+
+    void JsonConfig::_write(const String& p_key, const String& p_value)
+    {
+        try {
+            if (current_section.empty()) {
+                json[p_key] = p_value;
+            } else {
+                json[current_section][p_key] = p_value;
+            }
+        } catch (std::exception& e) {
+            PANIC("JsonConfig: Exception writing to key \"%s\": %s", p_key.c_str(), e.what());
+        }
+    }
+
+    void JsonConfig::_read_from_section(const String& p_section)
+    {
+        current_section = p_section;
+    }
+
+    String JsonConfig::_read(const String& p_key)
+    {
+        try {
+            if (current_section.empty()) {
+                return json[p_key];
+            } else {
+                return json[current_section][p_key];
+            }
+        } catch (std::exception& e) {
+            PANIC("JsonConfig: Exception reading from key \"%s\": %s", p_key.c_str(), e.what());
+        }
     }
 
 } // namespace GodotObjectCompiler

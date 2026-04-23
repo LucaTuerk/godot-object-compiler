@@ -121,6 +121,35 @@ namespace GodotObjectCompiler
         return true;
     }
 
+    bool GodotMacroIncludeGenerator::generate_core_include(
+        const Vector<String>& p_godot_cpp_includes, const Ref<Context>& p_write_to)
+    {
+        p_write_to->add_child(Output::PragmaOnce());
+        bool found_any_path = false;
+        for (const String& godot_cpp_include : p_godot_cpp_includes) {
+            String include_path = path_concat(godot_cpp_include, "godot_cpp", "core");
+            if (!directory_exits(include_path)) {
+                continue;
+            }
+            found_any_path = true;
+
+            Vector<String> includes = directory_files_recursive(include_path);
+            std::transform(
+                includes.cbegin(), includes.cend(), includes.begin(),
+                [godot_cpp_include](const String& p_path) {
+                    return header_path(godot_cpp_include, p_path);
+                });
+            std::sort(includes.begin(), includes.end());
+            for (const String& include : includes) {
+                if (string_suffix(include, ".compat.inc")) {
+                    continue;
+                }
+                p_write_to->add_child(Output::Include(include));
+            }
+        }
+        return found_any_path;
+    }
+
     bool GodotMacroIncludeGenerator::generate_attribute_parameter_type(
         const Ref<IAttributeParameterType>& p_type, const Ref<Context>& p_write_to)
     {
@@ -262,7 +291,8 @@ namespace GodotObjectCompiler
             for (Size curr = 0; curr < size - 1; ++curr) {
                 for (Size cmp = curr + 1; cmp < size; ++cmp) {
                     body->add_child(Output::FmtText(
-                        "static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d and "
+                        "static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d "
+                        "and "
                         "%d\");",
                         curr + 1, cmp + 1, curr + 1, cmp + 1));
                 }
@@ -288,6 +318,7 @@ namespace GodotObjectCompiler
             return nullptr;
         }
         entry->add_child(Output::PragmaOnce());
+        entry->add_child(Output::Include("core_includes.h"));
         entry->add_child(Output::SystemInclude("type_traits"));
 
         generate_macros(entry);

@@ -44,11 +44,12 @@ namespace GodotObjectCompiler
 
     struct Project {
         ProjectTarget project_target = TARGET_GDEXTENSION;
-        Vector<String> godot_include_paths;
+        String path_extension_api;
         String paths_root;
         String paths_generated = ".goc/generated";
         String paths_cache = ".goc/cache";
         String paths_goc = ".goc";
+        Vector<String> paths_godot_cpp_include;
         Vector<String> paths_include;
 
         void read_from(IStructuredReader* p_reader);

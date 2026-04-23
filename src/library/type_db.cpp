@@ -71,14 +71,14 @@ namespace GodotObjectCompiler
 
     bool ConfigNodeReaderWriter::write_to_file(Ref<Node> node, const String& path)
     {
-        Config config;
+        JsonConfig config;
         dump_node(&config, node, true);
         return config.write_to_file(path);
     }
 
     Result<Node> ConfigNodeReaderWriter::read_from_file(const String& path)
     {
-        Config config;
+        JsonConfig config;
         Dictionary<UID, Ref<Node>> local;
         HashSet<UID> was_existing;
 
@@ -146,7 +146,7 @@ namespace GodotObjectCompiler
             }
         }
 
-        return root;
+        return {root};
     }
 
     void TypeDB::set_cache_directory(const String& path)

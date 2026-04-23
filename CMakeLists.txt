@@ -53,11 +53,13 @@ target_include_directories(${EXEC_NAME} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/src
         ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tree-sitter/lib/include
         ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tree-sitter-cpp/bindings/c
+        ${CMAKE_CURRENT_LIST_DIR}/thirdparty/json/single_include
 )
 
 target_link_libraries(${EXEC_NAME} PRIVATE
         tree-sitter
         tree-sitter-cpp
+        nlohmann_json
 )
 
 if (NOT WIN32)
@@ -86,6 +88,7 @@ if (GOC_TESTS_ENABLED)
             ${CMAKE_CURRENT_LIST_DIR}/tests
             ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tree-sitter/lib/include
             ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tree-sitter-cpp/bindings/c
+            ${CMAKE_CURRENT_LIST_DIR}/thirdparty/json/single_include
     )
 
     target_sources(${EXEC_NAME_TEST} PRIVATE
@@ -95,6 +98,7 @@ if (GOC_TESTS_ENABLED)
     target_link_libraries(${EXEC_NAME_TEST} PRIVATE
             tree-sitter
             tree-sitter-cpp
+            nlohmann_json
     )
 
     target_compile_definitions(${EXEC_NAME_TEST} PRIVATE DEV_BUILD=1)

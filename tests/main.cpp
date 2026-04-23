@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     }
 
     using namespace GodotObjectCompiler;
-    LibraryContext::instance()->set_error_level(INFO, FULL);
+    LibraryContext::instance()->set_error_level(VERBOSE, FULL);
     Permissions::instance()->add_write_path(".goc_tests");
 
     Size failed_count = 0;
@@ -84,22 +84,31 @@ int main(int argc, char* argv[])
     if (run_integration_tests) {
         Vector<String> include_paths;
         for (int i = 2; i < argc; i++) {
-            include_paths.emplace_back(argv[i]);
+            if (i == 2) {
+                TestRegistry::instance()->set_extension_api(argv[i]);
+            } else {
+                include_paths.emplace_back(argv[i]);
+            }
         }
-        TestRegistry::instance()->set_integration_tests_include_paths(include_paths);
+        TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(include_paths);
 
         for (const auto& [test_name, test_functor] :
              TestRegistry::instance()->get_integration_tests()) {
+            all_count++;
             PRINT_INFO("Running test case \"%s\"", test_name.c_str());
             {
                 Application application;
                 const Vector<String> args =
                     TestRegistry::instance()->get_test_application_arguments(
                         {"generate", "type_db"});
-                PANIC_COND(application.run(args) != 0, "Failed to setup type db during test run.");
+                if (application.run(args) != 0) {
+                    print_err("Failed to setup type db during test run.");
+                    PRINT_INFO("%s\tFailed!", test_name.c_str());
+                    failed_count++;
+                    continue;
+                }
             }
 
-            all_count++;
             const TestResult result = test_functor();
             switch (result) {
             case TEST_RESULT_SUCCESS:

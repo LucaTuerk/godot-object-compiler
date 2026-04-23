@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* invalid_properties.h                                                   */
+/* core_interface.h                                                       */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,16 +34,71 @@
 /**************************************************************************/
 
 #pragma once
-#include "common.h"
-#include "library/core/file_system_utilities.h"
-#include "test_registry.h"
 
-using namespace GodotObjectCompiler;
-
-GOC_INTEGRATION_TEST(InvalidPropertiesGracefulExit)
+namespace godot
 {
-    for (const String& file : directory_files("tests/files/integration_tests/invalid_properties")) {
-        GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file.c_str());
-    }
-    return TEST_RESULT_SUCCESS;
-};
+    enum ModuleInitializationLevel {
+        MODULE_INITIALIZATION_LEVEL_CORE,
+        MODULE_INITIALIZATION_LEVEL_SERVERS,
+        MODULE_INITIALIZATION_LEVEL_SCENE,
+        MODULE_INITIALIZATION_LEVEL_EDITOR,
+        MODULE_INITIALIZATION_LEVEL_MAX
+    };
+
+    template <typename T> class Ref
+    {
+    };
+
+    class Array
+    {
+    };
+
+    template <typename T> class TypedArray
+    {
+    };
+
+    template <typename T> class List
+    {
+    };
+
+    class Dictionary
+    {
+    };
+
+    template <typename K, typename V> class TypedDictionary
+    {
+    };
+
+    class Variant
+    {
+    };
+
+    class StringName
+    {
+    };
+
+    class Callable
+    {
+    };
+
+    class PropertyInfo
+    {
+    };
+
+} // namespace godot
+
+#define ADD_PROPERTY
+#define ADD_GROUP
+#define ADD_SUBGROUP
+#define GDCLASS
+#define GDREGISTER_CLASS
+#define GDREGISTER_VIRTUAL_CLASS
+#define GDREGISTER_ABSTRACT_CLASS
+#define GDREGISTER_INTERNAL_CLASS
+#define GDREGISTER_RUNTIME_CLASS
+#define GDVIRTUAL_CALL
+#define GDVIRTUAL_BIND
+#define BIND_ENUM_CONSTANT
+#define BIND_BITFIELD_FLAG
+#define VARIANT_ENUM_CAST
+#define VARIANT_BITFIELD_CAST

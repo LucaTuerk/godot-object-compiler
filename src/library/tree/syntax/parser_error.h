@@ -133,4 +133,13 @@ namespace GodotObjectCompiler
         return node;
     }
 
+#define PARSER_ERROR(...) return node_new<ParserError>(ErrorLevel::ERROR, format(__VA_ARGS__))
+
+#define PARSER_ERROR_COND(condition, ...)                                                          \
+    do {                                                                                           \
+        if (condition) {                                                                           \
+            PARSER_ERROR(__VA_ARGS__);                                                             \
+        }                                                                                          \
+    } while (false)
+
 } // namespace GodotObjectCompiler

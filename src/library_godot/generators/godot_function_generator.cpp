@@ -172,7 +172,7 @@ namespace GodotObjectCompiler
             AssumedGodotTypes::StringName().type->qualified_name().c_str(),
             target_function->name().c_str())));
 
-        r_result.header_includes.insert(AssumedGodotTypes::StringName().type->header);
+        r_result.add_header_include(AssumedGodotTypes::StringName().type->header);
 
         return GeneratorError::OK;
     }
@@ -238,20 +238,12 @@ namespace GodotObjectCompiler
         }
 
         String macro = writer.get_string();
-
-        Assumption<AssumeType<Define>> GDVIRTUAL = {
-            {macro}, "Assume that a macro with name \"" + macro + "\" exists in the TypeDB."};
-        GDVIRTUAL.validate(LibraryContext::instance()->get_type_db());
-        GEN_ERROR_COND(
-            GDVIRTUAL.is_invalid(), p_target_function,
-            "Invalid macro " + macro + ". Was not found.");
-
         String virtual_name = format("_%s", p_bind_name.c_str());
         const String& virtual_caller_name = virtual_name;
 
         Ref<Arguments> arguments;
         Ref<Function> gdvirtual = B<Function>()[{
-            B<Identifier>(GDVIRTUAL().type->qualified_name()),
+            B<Identifier>(macro),
             R<Arguments>(&arguments),
         }][Output::Semicolon()];
 
@@ -280,7 +272,7 @@ namespace GodotObjectCompiler
             for (const Ref<Parameter>& parameter :
                  p_target_function->parameters()->find_children<Parameter>()) {
                 Ref<Type> parameter_type = parameter->type();
-                GEN_ERROR_COND(!parameter_type, p_attribute, "Failed to get paramter type.");
+                GEN_ERROR_COND(!parameter_type, p_attribute, "Failed to get parameter type.");
                 parameter_type = parameter_type->qualified();
 
                 func_parameters->B<Parameter>()[{
@@ -360,10 +352,6 @@ namespace GodotObjectCompiler
                                  p_target_class->name(), p_bind_name, virtual_caller_name,
                                  parameter_names, default_values)});
 
-        r_result.header_includes.insert(GDVIRTUAL().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::GDVIRTUAL_BIND().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::GDVIRTUAL_CALL().type->header);
-
         return GeneratorError::OK;
     }
 
@@ -407,9 +395,9 @@ namespace GodotObjectCompiler
             Output::FmtText("rpc_config(\"%s\", opts);", p_function_name.c_str()),
         }];
 
-        r_result.source_includes.insert(AssumedGodotTypes::Dictionary().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::MultiplayerAPI().type->header);
-        r_result.source_includes.insert(AssumedGodotTypes::MultiplayerPeer().type->header);
+        r_result.add_source_include(AssumedGodotTypes::Dictionary().type->header);
+        r_result.add_source_include(AssumedGodotTypes::MultiplayerAPI().type->header);
+        r_result.add_source_include(AssumedGodotTypes::MultiplayerPeer().type->header);
         return GeneratorError::OK;
     }
 

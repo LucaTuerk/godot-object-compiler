@@ -47,79 +47,111 @@
 #include "library/tree/syntax/namespace.h"
 #include "library/tree/syntax/struct.h"
 #include "library/type_db.h"
+#include "library_godot/parsers/extension_api_parser.h"
 
 namespace GodotObjectCompiler
 {
+
+    struct File {
+        String path;
+        Opt<String> include_path;
+    };
+
+    void
+    generate_from_file(const File& p_file, const ApplicationContext& p_context, IParser* p_parser)
+    {
+        auto& [path, include_path] = p_file;
+
+        if (!string_suffix(path, ".h") && !string_suffix(path, ".hpp") &&
+            !string_suffix(path, ".gen.inc") && !string_suffix(path, ".json")) {
+            return;
+        }
+
+        bool is_input_file =
+            p_context.files_input.has_value() &&
+            std::find(p_context.files_input->begin(), p_context.files_input->end(), path) !=
+                p_context.files_input->end();
+
+        if (!is_input_file && !LibraryContext::instance()->file_modified(path)) {
+            PRINT_VERBOSE("TypeDB:\tSkipping \"%s\". Not modified.", path.c_str());
+            return;
+        }
+
+        PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", path.c_str());
+
+        Ref<Namespace> global_namespace = node_new<Namespace>();
+        TreeSitterParser* tree_sitter_parser = dynamic_cast<TreeSitterParser*>(p_parser);
+        Ref<ParserError> error = tree_sitter_parser
+                                     ? tree_sitter_parser->parse_file(path, global_namespace)
+                                     : p_parser->parse(path, global_namespace);
+
+        if (error != ParserError::OK) {
+            return;
+        }
+
+        if (global_namespace) {
+            auto is_valid_type_target = [](const Ref<NamedContext>& node) {
+                return node->is<Class>() || node->is<Struct>() || node->is<Enum>() ||
+                       node->is<Define>();
+            };
+
+            Vector<Ref<NamedContext>> found = global_namespace->find_children<NamedContext>(
+                true, [is_valid_type_target](const Ref<NamedContext>& node) {
+                    return is_valid_type_target(node) || node->is<Attribute>();
+                });
+
+            for (const Ref<NamedContext>& node : found) {
+                if (Ref<Attribute> attr = node->as<Attribute>(); attr) {
+                    if (!attr->resolve_target()) {
+                        continue;
+                    }
+
+                    if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
+                        type && is_valid_type_target(type)) {
+                        PRINT_VERBOSE(
+                            "TypeDB:\tSaving attribute \"%s\"", node->qualified_name().c_str());
+                        LibraryContext::instance()->get_type_db()->save_type_attribute(
+                            type, attr, path);
+                    }
+                    continue;
+                }
+
+                PRINT_VERBOSE("TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
+
+                if (include_path.has_value()) {
+                    node->header = header_path(include_path.value(), path);
+                }
+                LibraryContext::instance()->get_type_db()->save_type_data(node, path);
+            }
+        }
+    }
+
     Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context)
     {
-        TreeSitterParser parser;
-        parser.set_parse_attributes(false);
-
         PROG_ERR_COND(
-            !p_context.paths_include.has_value(),
-            "No include path specified. Cannot generate the TypeDB.");
+            !p_context.path_extension_api.has_value(),
+            "No extension api path specified. Cannot generate the TypeDB.");
+        PROG_ERR_COND(
+            !p_context.paths_godot_cpp_include.has_value(),
+            "No godot-cpp path specified. Cannot generate the TypeDB");
 
-        for (String include_path : *p_context.paths_include) {
-            include_path = path_absolute(include_path);
-            for (String file : directory_files_recursive(include_path)) {
-                file = path_absolute(file);
+        TreeSitterParser tree_sitter_parser;
+        tree_sitter_parser.set_parse_attributes(false);
 
-                if (!string_suffix(file, ".h") && !string_suffix(file, ".hpp") &&
-                    !string_suffix(file, ".gen.inc")) {
-                    continue;
-                }
+        ExtensionAPIParser extension_api_parser;
+        extension_api_parser.setup_include_paths(p_context.paths_godot_cpp_include.value());
 
-                bool is_input_file =
-                    p_context.files_input.has_value() &&
-                    std::find(p_context.files_input->begin(), p_context.files_input->end(), file) !=
-                        p_context.files_input->end();
+        Vector<File> files = {{p_context.path_extension_api.value(), std::nullopt}};
 
-                if (!is_input_file && !LibraryContext::instance()->file_modified(file)) {
-                    PRINT_VERBOSE("TypeDB:\tSkipping \"%s\". Not modified.", file.c_str());
-                    continue;
-                }
+        generate_from_file(
+            {p_context.path_extension_api.value(), std::nullopt}, p_context, &extension_api_parser);
 
-                PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", file.c_str());
-
-                Ref<Namespace> global_namespace = node_new<Namespace>();
-                Ref<ParserError> error = parser.parse_file(file, global_namespace);
-
-                if (error != ParserError::OK) {
-                    continue;
-                }
-
-                if (global_namespace) {
-                    auto is_valid_type_target = [](const Ref<NamedContext>& node) {
-                        return node->is<Class>() || node->is<Struct>() || node->is<Enum>() ||
-                               node->is<Define>();
-                    };
-
-                    Vector<Ref<NamedContext>> found = global_namespace->find_children<NamedContext>(
-                        true, [is_valid_type_target](const Ref<NamedContext>& node) {
-                            return is_valid_type_target(node) || node->is<Attribute>();
-                        });
-
-                    for (const Ref<NamedContext>& node : found) {
-                        if (Ref<Attribute> attr = node->as<Attribute>(); attr) {
-                            if (!attr->resolve_target()) {
-                                continue;
-                            }
-
-                            if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
-                                type && is_valid_type_target(type)) {
-                                PRINT_VERBOSE(
-                                    "TypeDB:\tSaving attribute \"%s\"",
-                                    node->qualified_name().c_str());
-                                LibraryContext::instance()->get_type_db()->save_type_attribute(
-                                    type, attr, file);
-                            }
-                        } else {
-                            PRINT_VERBOSE(
-                                "TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
-                            node->header = header_path(include_path, file);
-                            LibraryContext::instance()->get_type_db()->save_type_data(node, file);
-                        }
-                    }
+        if (p_context.paths_include.has_value()) {
+            for (String include_path : *p_context.paths_include) {
+                include_path = path_absolute(include_path);
+                for (const String& file : directory_files_recursive(include_path)) {
+                    generate_from_file(
+                        {path_absolute(file), include_path}, p_context, &tree_sitter_parser);
                 }
             }
         }

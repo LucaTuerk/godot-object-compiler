@@ -85,6 +85,7 @@ namespace GodotObjectCompiler
 
     int Application::run(const Vector<String>& p_arguments)
     {
+        PRINT_VERBOSE("Application: %s", string_vector_combine(p_arguments, " ").c_str());
         APP_TOP_LEVEL_ERR_COND(
             setup_context(p_arguments) != 0, "Failed to setup application context.");
         APP_TOP_LEVEL_ERR_COND(
@@ -163,17 +164,26 @@ namespace GodotObjectCompiler
 
             APP_ERR_COND(
                 !context.paths_root.has_value(),
-                "No project root path specified, but is needed for selected program.");
+                "No project root path specified but is required for selected program.");
             APP_ERR_COND(
-                !context.paths_include.has_value(),
-                "No include paths were specified, but are needed for selected program.");
+                !context.path_extension_api.has_value(),
+                "No extension api file specified but is required for selected program.");
+            APP_ERR_COND(
+                !context.paths_godot_cpp_include.has_value(),
+                "No godot-cpp include paths specified but are required for selected program.");
+
+            if (!context.paths_include.has_value()) {
+                context.paths_include = Vector<String>();
+            }
 
             context.paths_include->push_back(*context.paths_root);
 
             LibraryContext::instance()->get_type_db()->set_cache_directory(context.paths_cache);
             LibraryContext::instance()->set_include_paths(*context.paths_include);
 
-            init_local_resources.run(context);
+            APP_ERR_COND(
+                init_local_resources.run(context) != ProgramError::OK,
+                "Failed to initialize local resources.");
 
             LibraryContext::instance()->set_remove_macros(
                 read_lines(path_concat(context.paths_goc, "macros/macro_remove.txt")));
@@ -211,6 +221,7 @@ namespace GodotObjectCompiler
 
     int Application::run_program(const Ref<IProgram>& p_program)
     {
+        APP_ERR_COND(p_program == nullptr, "Null program provided");
         context.program = p_program;
         if (!context.program->validate_arguments(context)) {
             fmt_print_err(
@@ -226,7 +237,8 @@ namespace GodotObjectCompiler
 
         APP_ERR_COND(
             context.program->run(context) != ProgramError::OK,
-            "Error occurred while executing program.");
+            "Error occurred while executing program \"%s\"",
+            context.program->program_name().c_str());
         return 0;
     }
 

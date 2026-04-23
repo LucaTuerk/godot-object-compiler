@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*                                                                        */
+/* example.generated.h                                                    */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -23,9 +23,6 @@
 
 #include "godot_object_compiler/macros.h"
 
-#include "godot_cpp/classes/wrapped.hpp"
-#include "godot_cpp/core/binder_common.hpp"
-#include "godot_cpp/core/gdvirtual.gen.inc"
 #include "godot_cpp/variant/string_name.hpp"
 #define GOC_GENERATED_10_107580388863103421() GDCLASS (ExampleClass, Node) ;\
 public:\

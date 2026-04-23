@@ -189,7 +189,7 @@ namespace GodotObjectCompiler
             const Ref<GodotVariantTypeArgument>& p_variant_type,
             const Ref<GodotPropertyHintArgument>& p_hint,
             const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages,
-            const String& p_property_name, ClassGeneratorResult& r_result);
+            const String& p_property_name);
 
         Ref<Node> build_property_info(
             const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name,

@@ -64,7 +64,13 @@ namespace GodotObjectCompiler
             input("   |- GOC Generated (default: \"%s\"): ", path_concat(goc_folder, "generated"));
         String cache_root =
             input("   |- GOC Cache (default: \"%s\"): ", path_concat(goc_folder, "cache"));
-        String godot_cpp_root = input("   |- godot-cpp (default: \"%s\"): ", "godot-cpp");
+        String godot_cpp =
+            input("   |- Godot CPP Include (default: \"%s\"): ", "godot-cpp/include");
+        String godot_cpp_gen =
+            input("   |- Godot CPP Generated Include (default: \"%s\"): ", "godot-cpp/gen/include");
+        String extension_api = input(
+            "   |- Extension API (default: \"%s\"): ",
+            path_concat_ext(path_concat(godot_cpp, "gdextension"), "extension_api", "json"));
 
         String root_absolute = path_absolute(root_folder);
         String goc_absolute = path_absolute(goc_folder);
@@ -77,7 +83,9 @@ namespace GodotObjectCompiler
         print_ln(format("   |  GOC Root: %s", goc_absolute.c_str()));
         print_ln(format("   |  Generated: %s", generated_absolute.c_str()));
         print_ln(format("   |  Cache: %s", cache_absolute.c_str()));
-        print_ln(format("   |  godot-cpp: %s", godot_cpp_root.c_str()));
+        print_ln(format("   |  Extension API: %s", extension_api.c_str()));
+        print_ln(format("   |  Godot CPP Include: %s", godot_cpp.c_str()));
+        print_ln(format("   |  Godot CPP Generated Include: %s", godot_cpp_gen.c_str()));
         print_ln("");
 
         if (input("|? Accept? (y/%s) ", "n") == "y") {
@@ -87,8 +95,8 @@ namespace GodotObjectCompiler
             project.paths_root = root_folder;
             project.paths_generated = generate_folder;
             project.paths_cache = cache_root;
-            project.godot_include_paths = {
-                path_concat(godot_cpp_root, "include"), path_concat(godot_cpp_root, "gen/include")};
+            project.path_extension_api = extension_api;
+            project.paths_godot_cpp_include = {godot_cpp, godot_cpp_gen};
 
             String project_file_path = format("%s.goc_project", project_name.c_str());
             project.write_to_file(project_file_path);

@@ -45,6 +45,8 @@ namespace GodotObjectCompiler
 
       public:
         Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) override;
+        bool generate_core_include(
+            const Vector<String>& p_godot_cpp_includes, const Ref<Context>& p_write_to);
 
       private:
         static bool generate_macros(const Ref<Context>& p_write_to);

@@ -255,6 +255,31 @@ namespace GodotObjectCompiler
         return writer.get_string();
     }
 
+    String pascal_to_snake_case(const String& p_content)
+    {
+        // AStar2D PascalCase
+        // a_star2d snake_case
+        //  ClassDB class_db LinuxBSD linux_bsd
+
+        StreamWriter writer;
+
+        for (Index i = 0; i < p_content.size(); ++i) {
+            char c = p_content[i];
+            const bool next_is_upper =
+                i < p_content.size() - 1 ? std::isupper(p_content[i + 1]) : true;
+
+            if (std::isupper(c)) {
+                if (!next_is_upper && i != 0) {
+                    writer.write_generic('_');
+                }
+                writer.write_generic(static_cast<char>(tolower(c)));
+            } else {
+                writer.write_generic(c);
+            }
+        }
+        return string_replace(string_replace(writer.get_string(), "2_d", "2d"), "3_d", "3d");
+    }
+
     Vector<String>
     string_split(const String& p_content, const String& p_delimiter, bool p_leave_empty)
     {

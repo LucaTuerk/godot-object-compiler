@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*                                                                        */
+/* example.generated.cpp                                                  */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -17,19 +17,13 @@
 #include "example.h"
 
 #include "example.h"
-#include "godot_cpp/classes/global_constants.hpp"
 #include "godot_cpp/classes/multiplayer_api.hpp"
 #include "godot_cpp/classes/multiplayer_peer.hpp"
 #include "godot_cpp/classes/node.hpp"
 #include "godot_cpp/classes/ref.hpp"
 #include "godot_cpp/classes/resource.hpp"
-#include "godot_cpp/classes/wrapped.hpp"
-#include "godot_cpp/core/class_db.hpp"
-#include "godot_cpp/core/object.hpp"
-#include "godot_cpp/core/property_info.hpp"
 #include "godot_cpp/variant/dictionary.hpp"
 #include "godot_cpp/variant/typed_dictionary.hpp"
-#include "godot_cpp/variant/variant.hpp"
 
 void ExampleClass::_bind_methods () 
 {

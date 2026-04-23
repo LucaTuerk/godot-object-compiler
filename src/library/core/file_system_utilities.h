@@ -75,6 +75,18 @@ namespace GodotObjectCompiler
 
     String path_concat(const String& p_left, const String& p_right);
 
+    template <typename T2> String path_concat(const String& p_left, T2 p_right)
+    {
+        return path_concat(p_left, String(p_right));
+    }
+
+    template <typename... Args> String path_concat(const String& p_left, Args... args);
+
+    template <typename... Args> String path_concat(const String& p_left, Args... args)
+    {
+        return path_concat(p_left, path_concat(args...));
+    }
+
     String
     path_concat_ext(const String& p_dir, const String& p_filename, const String& p_extension);
 
