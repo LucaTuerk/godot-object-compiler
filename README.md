@@ -121,10 +121,10 @@ GODOT_GENERATED_GLOBAL();
 
 # Usage
 
-GOC currently ships with integrations for CMake. The tools can be dumped into a local folder by calling the GOC executables init_tools program with a local path argument.
+GOC currently ships with integrations for CMake. The tools can be dumped into a local folder by calling the GOC executable's `init tools` program with a local path argument.
 
 ```cmd
-goc init_tools tools
+goc init tools tools
 ```
 
 ## CMake Integration
