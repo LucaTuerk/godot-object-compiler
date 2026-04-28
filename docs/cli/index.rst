@@ -2,7 +2,8 @@ Using the CLI
 =============
 
 .. toctree::
-    :name: sec-cli-inner
+    :name: sec-cli
+    :maxdepth: 1
 
     build_num
     clear
@@ -11,5 +12,7 @@ Using the CLI
     help
     import_type_db
     init
-    print
+    print_parsed
+    print_transformed
+    print_type
     version

@@ -1,0 +1,1 @@
+Clear all generated files.

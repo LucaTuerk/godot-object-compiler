@@ -64,12 +64,12 @@ namespace GodotObjectCompiler
         return result;
     }
 
-    String GenerateResources::rst_header(const String& p_text, char p_punctioation)
+    String GenerateResources::rst_header(const String& p_text, char p_punctuation)
     {
         StreamWriter writer;
         writer.write(p_text);
         writer.write("\n");
-        writer.write(char_times_n(p_punctioation, p_text.size()));
+        writer.write(char_times_n(p_punctuation, p_text.size()));
         writer.write("\n");
         return writer.get_string();
     }
@@ -168,12 +168,33 @@ namespace GodotObjectCompiler
             String file_path = path_concat_ext("resources/help", file_stem, "txt");
             if (!file_exists(file_path)) {
                 FileWriter writer(file_path);
-                writer.write("No help available");
+                writer.write("No description available");
+            }
+            String description = read_file(file_path);
+            if (string_contains(description, "DEV_PROGRAM")) {
+                // dev specific programs should not be included in the docs as they
+                // are not meant for the common user. cli help texts are still available.
+                continue;
             }
 
-            String doc_path = path_concat_ext(
-                "docs/cli/", string_replace(program->program_name(), "/", "_"), "rst");
-            write_initial_file_content(doc_path, "No documentation available");
+            String doc_path = path_concat("docs", "cli");
+            String desc_path = path_concat(doc_path, "descriptions");
+            create_dir_recursive(desc_path);
+
+            String doc_file_path = path_concat_ext(doc_path, file_stem, "rst");
+            String desc_file_path = path_concat_ext(desc_path, file_stem, "rst");
+
+            StreamWriter documentation_writer;
+            documentation_writer.write(rst_header(string_vector_combine(path, " "), '='));
+            documentation_writer.write("\n");
+            documentation_writer.write(
+                format(".. include:: descriptions/%s.rst", file_stem.c_str()));
+            documentation_writer.write("\n");
+
+            write_initial_file_content(doc_file_path, documentation_writer.get_string());
+
+            FileWriter description_writer(desc_file_path);
+            description_writer.write(description);
         }
 
         // Generate macro help docs
