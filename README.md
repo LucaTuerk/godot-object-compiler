@@ -121,10 +121,10 @@ GODOT_GENERATED_GLOBAL();
 
 # Usage
 
-GOC currently ships with integrations for CMake. The tools can be dumped into a local folder by calling the GOC executables init_tools program with a local path argument.
+GOC ships with integrations for CMake and SCons. The tools can be dumped into a local folder by calling the GOC executable's `init tools` program with a local path argument.
 
 ```cmd
-goc init_tools tools
+goc init tools tools
 ```
 
 ## CMake Integration
@@ -138,7 +138,8 @@ target_autogoc(${TARGET} src)
 ```
 
 ## SConstruct Integration
-tbd
+
+tbd. See [SConstruct integration](https://godot-object-compiler.readthedocs.io/latest/integrations/SConstruct.html) for more info.
 
 ## Command Line Usage
 You can also use the GOC as a CLI tool to manually generate the sources or build your own integrations. Execute
