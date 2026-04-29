@@ -125,21 +125,10 @@ GOC ships with integrations for CMake and SCons. The tools can be dumped into a 
 
 ```cmd
 goc init tools tools
-```
+GOC ships with integrations for [CMake](https://godot-object-compiler.readthedocs.io/latest/integrations/CMake.html) and [SCons](https://godot-object-compiler.readthedocs.io/latest/integrations/SConstruct.html). The tools can be dumped into a local folder by calling the GOC executable's `init tools` program with a local path argument.
 
-## CMake Integration
-
-Include the tools file in your CMakeLists.txt and activate the GOC generator for your GDExtension target by specifying the target name the and sources root directory. GOC will then generate the bindings code for your targets source files.
-
-```cmake
-#using example paths
-include(tools/autogoc.cmake)
-target_autogoc(${TARGET} src) 
-```
-
-## SConstruct Integration
-
-tbd. See [SConstruct integration](https://godot-object-compiler.readthedocs.io/latest/integrations/SConstruct.html) for more info.
+```cmd
+goc init tools tools
 
 ## Command Line Usage
 You can also use the GOC as a CLI tool to manually generate the sources or build your own integrations. Execute
