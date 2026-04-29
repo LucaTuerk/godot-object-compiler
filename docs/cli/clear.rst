@@ -1,9 +1,11 @@
 clear
 =====
 
+.. include:: descriptions/clear.rst
+
 .. toctree::
-    :name: sec-cli-clear
+    :name: cli_clear
 
     clear_generated
-    clear_imported_type_db
     clear_type_db
+    clear_imported_type_db

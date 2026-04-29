@@ -1,0 +1,1 @@
+Interactively initialize a .goc_project file in this directory.

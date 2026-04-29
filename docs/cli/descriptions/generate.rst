@@ -1,0 +1,1 @@
+Generate the type database and bindings.

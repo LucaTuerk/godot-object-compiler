@@ -1,0 +1,1 @@
+Show the current build hash.
