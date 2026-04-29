@@ -1,0 +1,1 @@
+Initialize local resources.

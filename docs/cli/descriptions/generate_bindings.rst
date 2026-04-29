@@ -1,0 +1,1 @@
+Generate bindings for the provided source files.
