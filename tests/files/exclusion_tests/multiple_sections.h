@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* helpers.h                                                              */
+/* multiple_sections.h                                                    */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,17 +32,23 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
-#include "library/core/core.h"
 
-namespace GodotObjectCompiler::Parser::Helpers
+class Test
 {
+  public:
+    int a;
 
-    String remove_macros(const String& p_input);
+    // goc off
+    int excluded1;
+    // goc on
 
-    String strip_excluded_sections(const String& p_input);
+    int b;
 
-    String
-    strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters);
+    // goc off
+    int excluded2;
+    // goc on
 
-} // namespace GodotObjectCompiler::Parser::Helpers
+    int c;
+};

@@ -17,6 +17,7 @@ The Godot Object Compiler uses attribute-like macros to guide the code generator
     GODOT_SUBGROUP
     GODOT_GENERATED_BODY
     GODOT_GENERATED_GLOBAL
+    exclusion
 
 Example
 ~~~~~~~
