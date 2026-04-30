@@ -69,7 +69,10 @@ namespace GodotObjectCompiler
 
         String original_input = input_is_path ? Parser::Helpers::remove_macros(read_file(p_input))
                                               : Parser::Helpers::remove_macros(p_input);
-        String local_input = strip_known_macro_contents(original_input, stripped_parameters);
+        String local_input =
+            Parser::Helpers::strip_known_macro_contents(original_input, stripped_parameters);
+        local_input = Parser::Helpers::strip_excluded_sections(local_input);
+
         auto context = ParserContext(local_input);
         context.original_buffer = original_input;
         context.stripped_parameters = stripped_parameters;
@@ -178,99 +181,6 @@ namespace GodotObjectCompiler
         }
 
         return ParserError::OK;
-    }
-
-    // TreeSitter does not handle macro parameters well
-    // but it works if the parameters are empty, so strip them before
-    // processing
-    String TreeSitterParser::strip_known_macro_contents(
-        const String& p_input, Dictionary<Size, String>& r_parameters)
-    {
-        String local_input = p_input;
-        Vector<String> macros = LibraryContext::instance()->get_attribute_db()->get_all_macros();
-
-        for (const String& macro : macros) {
-            Size index = 0;
-            Vector<Size> positions;
-            {
-                Size position = local_input.find(macro);
-                while (position != String::npos) {
-                    positions.push_back(position);
-                    position = local_input.find(macro, position + 1);
-                }
-            }
-
-            std::sort(positions.begin(), positions.end());
-
-            StreamWriter writer;
-            for (Size position : positions) {
-                Size open_index = position;
-                bool found_whitespace = false;
-                bool no_args = false;
-
-                auto itr = std::next(local_input.begin(), position);
-                while (itr != local_input.end()) {
-                    if (*itr == '(') {
-                        break;
-                    }
-
-                    bool whitespace = is_whitespace(*itr);
-                    if (whitespace && !found_whitespace) {
-                        found_whitespace = true;
-                    } else if (!whitespace && found_whitespace) {
-                        no_args = true;
-                        break;
-                    }
-
-                    ++itr;
-                    ++open_index;
-                }
-
-                if (no_args) {
-                    continue;
-                }
-
-                StreamWriter content;
-                Size opened = 1;
-                Size closed_index = open_index + 1;
-
-                if (itr == local_input.end()) {
-                    continue;
-                }
-
-                ++itr;
-                while (itr != local_input.end()) {
-                    if (*itr == '(') {
-                        opened++;
-                    }
-                    if (*itr == ')') {
-                        opened--;
-                    }
-
-                    if (opened == 0) {
-                        break;
-                    }
-                    content.write_generic(*itr);
-                    ++itr;
-                    ++closed_index;
-                }
-
-                r_parameters.insert({position, content.get_string()});
-
-                writer.write(local_input.substr(index, open_index - index + 1));
-                for (char c : content.get_string()) {
-                    if (is_whitespace(c)) {
-                        writer.write_generic(c);
-                    } else {
-                        writer.write(" ");
-                    }
-                }
-                index = closed_index;
-            }
-            writer.write(local_input.substr(index));
-            local_input = writer.get_string();
-        }
-        return local_input;
     }
 
     void TreeSitterParser::set_parse_attributes(bool p_parse_attributes)

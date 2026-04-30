@@ -56,16 +56,13 @@ namespace GodotObjectCompiler
     class TreeSitterParser : public IParser
     {
       public:
-        ~TreeSitterParser() = default;
+        ~TreeSitterParser() override = default;
 
         Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target);
 
         Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
 
         template <typename T> static bool register_handler(const String& p_name);
-
-        static String
-        strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters);
 
         void set_parse_attributes(bool p_parse_attributes);
 

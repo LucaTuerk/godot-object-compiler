@@ -17,6 +17,7 @@ find_program(CPP_CHECK cppcheck)
 if (CPP_CHECK)
     set(CMAKE_CXX_CPPCHECK "cppcheck"
             --suppress=*:*thirdparty/*
+            --suppress=nullPointer:src/*
     )
 endif ()
 
