@@ -70,19 +70,19 @@ jobs:
           submodules: "false"
 
       - name: Download Linux Artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: linux-binary
           path: linux
 
       - name: Download Windows Artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: windows-binary
           path: windows
 
       - name: Download Mac Artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: macos-binary
           path: macos
