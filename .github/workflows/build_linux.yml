@@ -41,7 +41,7 @@ jobs:
           token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Restore godot-cpp Cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ${{github.workspace}}/godot-cpp/.scons_cache/
           key: linux-godot-cpp
@@ -55,7 +55,7 @@ jobs:
           cd ..
 
       - name: Save godot-cpp Cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ${{github.workspace}}/godot-cpp/.scons_cache/
           key: linux-godot-cpp
