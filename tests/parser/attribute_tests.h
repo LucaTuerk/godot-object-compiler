@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* simple_handlers.h                                                      */
+/* attribute_tests.h                                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,59 +33,26 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "library/tree/syntax/namespace.h"
+#include "test_registry.h"
 
-#include "library/parser/node_handler.h"
-#include "library/parser/parser.h"
-
-namespace GodotObjectCompiler
+GOC_TEST(Parser_Attributes)
 {
+    GOC_TEST_PARSE_FILE("tests/files/attribute_tests/attributes.h");
 
-    class TemplateDeclarationInto : public IntoHandler<TemplateDeclarationInto>
-    {
-        NODE_HANDLER(TemplateDeclarationInto);
+    const Ref<Class> test_class = global_namespace->find_descendant<Class>();
+    GOC_TEST_ASSERT(test_class != nullptr, "Test class not properly parsed.");
+    GOC_TEST_EQ(test_class->name(), "Attributes", "Invalid name parsed for test class.");
 
-      public:
-        static inline String into_type = "template_declaration";
-    };
+    const Vector<Ref<Function>> functions = test_class->find_children<Function>(true);
+    GOC_TEST_EQ(functions.size(), 3, "Invalid number of functions parsed.");
+    GOC_TEST_EQ(functions[0]->name(), "a", "Invalid name for first function parsed.");
+    GOC_TEST_EQ(functions[1]->name(), "b", "Invalid name for second function parsed.");
+    GOC_TEST_EQ(functions[2]->name(), "c", "Invalid name for third function parsed.");
 
-    class ConditionalExpressionSkip : public SkipHandler<ConditionalExpressionSkip>
-    {
-        NODE_HANDLER(ConditionalExpressionSkip);
+    const Vector<Ref<Parameter>> params = functions[1]->find_children<Parameter>(true);
+    GOC_TEST_EQ(params.size(), 1, "Invalid number of parameters parsed.");
+    GOC_TEST_EQ(params[0]->name(), "param", "Invalid name of parameter parsed.");
 
-      public:
-        static inline String skip_type = "conditional_expression";
-    };
-
-    class CompoundStatementSkip : public SkipHandler<CompoundStatementSkip>
-    {
-        NODE_HANDLER(CompoundStatementSkip);
-
-      public:
-        static inline String skip_type = "compound_statement";
-    };
-
-    class PreprocCallSkip : public SkipHandler<PreprocCallSkip>
-    {
-        NODE_HANDLER(PreprocCallSkip);
-
-      public:
-        static inline String skip_type = "preproc_call";
-    };
-
-    class OperatorSkip : public SkipHandler<OperatorSkip>
-    {
-        NODE_HANDLER(OperatorSkip);
-
-      public:
-        static inline String skip_type = "operator";
-    };
-
-    class AttributeSkip : public SkipHandler<AttributeSkip>
-    {
-        NODE_HANDLER(AttributeSkip);
-
-      public:
-        static inline String skip_type = "attribute_declaration";
-    };
-
-} // namespace GodotObjectCompiler
+    return TEST_RESULT_SUCCESS;
+};

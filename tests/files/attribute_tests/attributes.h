@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* simple_handlers.h                                                      */
+/* attributes.h                                                           */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,58 +34,14 @@
 /**************************************************************************/
 #pragma once
 
-#include "library/parser/node_handler.h"
-#include "library/parser/parser.h"
-
-namespace GodotObjectCompiler
+class [[deprecated("This is just a test.")]] Attributes
 {
+  public:
+    [[nodiscard]]
+    int a();
 
-    class TemplateDeclarationInto : public IntoHandler<TemplateDeclarationInto>
-    {
-        NODE_HANDLER(TemplateDeclarationInto);
+    int b([[maybe_unused]] int param);
 
-      public:
-        static inline String into_type = "template_declaration";
-    };
-
-    class ConditionalExpressionSkip : public SkipHandler<ConditionalExpressionSkip>
-    {
-        NODE_HANDLER(ConditionalExpressionSkip);
-
-      public:
-        static inline String skip_type = "conditional_expression";
-    };
-
-    class CompoundStatementSkip : public SkipHandler<CompoundStatementSkip>
-    {
-        NODE_HANDLER(CompoundStatementSkip);
-
-      public:
-        static inline String skip_type = "compound_statement";
-    };
-
-    class PreprocCallSkip : public SkipHandler<PreprocCallSkip>
-    {
-        NODE_HANDLER(PreprocCallSkip);
-
-      public:
-        static inline String skip_type = "preproc_call";
-    };
-
-    class OperatorSkip : public SkipHandler<OperatorSkip>
-    {
-        NODE_HANDLER(OperatorSkip);
-
-      public:
-        static inline String skip_type = "operator";
-    };
-
-    class AttributeSkip : public SkipHandler<AttributeSkip>
-    {
-        NODE_HANDLER(AttributeSkip);
-
-      public:
-        static inline String skip_type = "attribute_declaration";
-    };
-
-} // namespace GodotObjectCompiler
+    [[noreturn]]
+    void c();
+};
