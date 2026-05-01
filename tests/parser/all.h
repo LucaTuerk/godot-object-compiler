@@ -1,4 +1,5 @@
 #pragma once
+#include "attribute_tests.h"
 #include "class_tests.h"
 #include "enum_tests.h"
 #include "exclusion_tests.h"
