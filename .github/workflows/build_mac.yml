@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: "true"
 
@@ -31,7 +31,7 @@ jobs:
           cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
 
       - name: Checkout godot-cpp
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: "godotengine/godot-cpp"
           ref: "4.5"
