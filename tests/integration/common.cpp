@@ -204,6 +204,13 @@ bool virtual_function_bound(
     return true;
 }
 
+bool class_included(const char* p_class_name, const GodotObjectCompiler::String& p_generated_source)
+{
+    return !get_line_that_contains(
+                p_generated_source, {"#include", pascal_to_snake_case(p_class_name)})
+                .empty();
+}
+
 String get_line_that_contains(const String& p_content, const Vector<String>& p_search)
 {
     for (const String& line : string_split(p_content, "\n")) {

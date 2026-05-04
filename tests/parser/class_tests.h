@@ -195,3 +195,60 @@ GOC_TEST(TemplateClass)
 
     return TEST_RESULT_SUCCESS;
 };
+
+GOC_TEST(TemplateParameters)
+{
+    GOC_TEST_PARSE_FILE("tests/files/class_tests/template_parameter_tests.h");
+
+    Ref<Class> template_single = global_namespace->find_descendant<Class>(
+        BFS, NamedContextPredicates::name<Class>("TemplateSingle"));
+    GOC_TEST_NEQ(template_single, nullptr, "TemplateSingle not found.");
+    GOC_TEST_EQ(template_single->template_parameter_count(), 1, "Wrong parameter count.");
+
+    Ref<Class> template_double = global_namespace->find_descendant<Class>(
+        BFS, NamedContextPredicates::name<Class>("TemplateDouble"));
+    GOC_TEST_NEQ(template_double, nullptr, "TemplateDouble not found.");
+    GOC_TEST_EQ(template_double->template_parameter_count(), 2, "Wrong parameter count.");
+
+    Ref<Class> param_type_a = global_namespace->find_descendant<Class>(
+        BFS, NamedContextPredicates::name<Class>("ParamTypeA"));
+    GOC_TEST_NEQ(param_type_a, nullptr, "ParamTypeA not found.");
+
+    Ref<Class> param_type_b = global_namespace->find_descendant<Class>(
+        BFS, NamedContextPredicates::name<Class>("ParamTypeB"));
+    GOC_TEST_NEQ(param_type_b, nullptr, "ParamTypeB not found.");
+
+    Ref<Class> param_type_c = global_namespace->find_descendant<Class>(
+        BFS, NamedContextPredicates::name<Class>("ParamTypeC"));
+    GOC_TEST_NEQ(param_type_c, nullptr, "ParamTypeC not found.");
+
+    Ref<Class> test_class = global_namespace->find_descendant<Class>(
+        BFS, NamedContextPredicates::name<Class>("TestClass"));
+    GOC_TEST_NEQ(test_class, nullptr, "TestClass not found.");
+
+    Vector<Ref<Type>> test_class_types = test_class->find_children<Type>(true);
+    bool template_single_used = false, template_double_used = false, param_a_used = false,
+         param_b_used = false, param_c_used = false;
+
+    for (const auto& type : test_class_types) {
+        if (type->name() == template_single->name()) {
+            template_single_used = true;
+        } else if (type->name() == template_double->name()) {
+            template_double_used = true;
+        } else if (type->name() == param_type_a->name()) {
+            param_a_used = true;
+        } else if (type->name() == param_type_b->name()) {
+            param_b_used = true;
+        } else if (type->name() == param_type_c->name()) {
+            param_c_used = true;
+        }
+    }
+
+    GOC_TEST_ASSERT(template_single_used, "TemplateSingle usage not found.");
+    GOC_TEST_ASSERT(template_double_used, "TemplateDouble usage not found.");
+    GOC_TEST_ASSERT(param_a_used, "ParamTypeA usage not found.");
+    GOC_TEST_ASSERT(param_b_used, "ParamTypeB usage not found.");
+    GOC_TEST_ASSERT(param_c_used, "ParamTypeC usage not found.");
+
+    return TEST_RESULT_SUCCESS;
+};

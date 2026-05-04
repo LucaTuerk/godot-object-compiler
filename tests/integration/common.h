@@ -77,6 +77,9 @@ bool virtual_function_bound(
     const GodotObjectCompiler::String& p_generated_header,
     const GodotObjectCompiler::String& p_generated_source);
 
+bool class_included(
+    const char* p_class_name, const GodotObjectCompiler::String& p_generated_source);
+
 #define GOC_INTEGRATION_TEST_GEN_FILE(file)                                                        \
     String generated_header, generated_source, register_header, register_source;                   \
     bool success = generate_files(                                                                 \
@@ -133,3 +136,8 @@ bool virtual_function_bound(
     GOC_TEST_ASSERT(                                                                               \
         virtual_function_bound(func, type, generated_header, generated_source),                    \
         format("Function \"%s\" not bound.", func));
+
+#define GOC_ASSERT_CLASS_INCLUDED(class_name)                                                      \
+    GOC_TEST_ASSERT(                                                                               \
+        class_included(class_name, generated_source),                                              \
+        format("Class \"%s\" not included.", class_name));
