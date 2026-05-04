@@ -969,6 +969,8 @@ namespace GodotObjectCompiler
         const Ref<Type>& p_type, const String& p_property_name, ClassGeneratorResult& r_result,
         const Ref<Namespace>& p_from_namespace, DefaultsUsage p_usage)
     {
+        UNUSED(r_result);
+
         Ref<GodotVariantTypeArgument> variant_type;
         Ref<GodotPropertyHintArgument> property_hint;
         Ref<GodotPropertyUsageFlagsArgument> usage_flags;

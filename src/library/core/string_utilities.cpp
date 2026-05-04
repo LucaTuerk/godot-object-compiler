@@ -257,10 +257,6 @@ namespace GodotObjectCompiler
 
     String pascal_to_snake_case(const String& p_content)
     {
-        // AStar2D PascalCase
-        // a_star2d snake_case
-        //  ClassDB class_db LinuxBSD linux_bsd
-
         StreamWriter writer;
 
         for (Index i = 0; i < p_content.size(); ++i) {
