@@ -108,11 +108,14 @@ if (GOC_TESTS_ENABLED)
 
     if (NOT WIN32)
         target_compile_options(${EXEC_NAME_TEST} PRIVATE
-                $<$<CONFIG:Debug>:-Wall -Wextra -fdiagnostics-color=always -g>
-                $<$<CONFIG:Release>:-O3>)
+                -Wall -Wextra -fdiagnostics-color=always -coverage -g
+        )
+        target_link_options(${EXEC_NAME_TEST} PRIVATE -coverage)
     endif ()
 
-    target_precompile_headers(${EXEC_NAME_TEST} REUSE_FROM ${EXEC_NAME})
+    target_precompile_headers(${EXEC_NAME_TEST} PRIVATE
+            src/library/core/system_includes.h
+    )
 
     add_test(
             NAME GodotObjectCompilerTests

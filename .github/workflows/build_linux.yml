@@ -63,6 +63,15 @@ jobs:
       - name: Run Tests
         run: |
           ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include
+          pip install gcovr
+          cd ./build/CMakeFiles/goc_tests.dir/src
+          gcovr --filter . -e "/usr/include/.*" -e "/.*thirdparty/.*" -e "/.*tests/.*" --cobertura-pretty --cobertura --merge-mode-functions=merge-use-line-min -o coverage.cobertura.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./build/CMakeFiles/goc_tests.dir/src/coverage.cobertura.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   linux-test-project:
     name: Run Test Project (Linux 🐧)
