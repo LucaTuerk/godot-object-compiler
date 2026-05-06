@@ -222,6 +222,24 @@ namespace GodotObjectCompiler
         generated_from.clear();
     }
 
+    void LibraryContext::regenerate_file_apply()
+    {
+        for (const String& path : regenerate_files) {
+            last_modified_times.erase(path);
+            out_last_modified_times.erase(path);
+
+            if (auto itr = generated_from.find(path); itr != generated_from.end()) {
+                for (const String& generated_file : itr->second) {
+                    if (file_exists(generated_file)) {
+                        read_file(path);
+                    }
+                }
+            }
+            generated_from.erase(path);
+        }
+        regenerate_files.clear();
+    }
+
     void LibraryContext::clear_last_modified_times()
     {
         last_modified_times.clear();
@@ -230,18 +248,7 @@ namespace GodotObjectCompiler
 
     void LibraryContext::regenerate_file(const String& p_path)
     {
-        last_modified_times.erase(p_path);
-        out_last_modified_times.erase(p_path);
-
-        auto itr = generated_from.find(p_path);
-        if (itr != generated_from.end()) {
-            for (const String& generated_file : itr->second) {
-                if (file_exists(generated_file)) {
-                    read_file(p_path);
-                }
-            }
-        }
-        generated_from.erase(p_path);
+        regenerate_files.push_back(p_path);
     }
 
     void LibraryContext::clean_generated_files()
@@ -250,7 +257,7 @@ namespace GodotObjectCompiler
         while (itr != generated_from.end()) {
             const auto& [path, generated_files] = *itr;
 
-            if (!file_exists(path)) {
+            if (!path.empty() && !file_exists(path)) {
                 for (const String& generated_file : generated_files) {
                     PRINT_VERBOSE(
                         "Removing orphan \"%s\", generated from \"%s\"", generated_file.c_str(),
@@ -269,9 +276,10 @@ namespace GodotObjectCompiler
                     break;
                 }
             }
-
             ++itr;
         }
+
+        regenerate_file_apply();
     }
 
     bool LibraryContext::clear_generated_files(const String& p_path)

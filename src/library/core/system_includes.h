@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 
+// GCOVR_EXCL_START
 #include "nlohmann/json.hpp"
 #include <algorithm>
 #include <any>
@@ -61,3 +62,4 @@ using Json = nlohmann::ordered_json;
 
 #include "tree-sitter-cpp.h"
 #include "tree_sitter/api.h"
+// GCOVR_EXCL_STOP

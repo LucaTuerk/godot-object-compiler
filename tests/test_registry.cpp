@@ -52,23 +52,33 @@ namespace GodotObjectCompiler
         return success;
     }
 
-    String TestRegistry::test_generated_folder()
+    String TestRegistry::get_test_root_dir()
+    {
+        return "tests/files/integration_tests";
+    }
+
+    String TestRegistry::get_goc_path()
+    {
+        return ".goc_tests/.goc";
+    }
+
+    String TestRegistry::get_generated_path()
     {
         return ".goc_tests/.goc/generated";
     }
 
-    String TestRegistry::test_root_folder()
+    String TestRegistry::get_cache_path()
     {
-        return "tests/files/integration_tests";
+        return ".goc_tests/.goc/cache";
     }
 
     Vector<String> TestRegistry::get_test_application_arguments(const ProgramPath& p_program_path)
     {
         Vector<String> result = p_program_path;
-        result.emplace_back(format("-R=%s", test_root_folder().c_str()));
-        result.emplace_back("-P=.goc_tests/.goc");
-        result.emplace_back("-G=.goc_tests/.goc/generated");
-        result.emplace_back("-C=.goc_tests/.goc/cache");
+        result.emplace_back(format("-R=%s", get_test_root_dir().c_str()));
+        result.emplace_back(format("-P=%s", get_goc_path().c_str()));
+        result.emplace_back(format("-G=%s", get_generated_path().c_str()));
+        result.emplace_back(format("-C=%s", get_cache_path().c_str()));
         result.emplace_back(format("-E=%s", extension_api.c_str()));
         result.emplace_back(format(
             "-GPP=%s",
