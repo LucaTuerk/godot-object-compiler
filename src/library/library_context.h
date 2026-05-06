@@ -89,6 +89,8 @@ namespace GodotObjectCompiler
 
         void clear_generated_from();
 
+        void regenerate_file_apply();
+
         void regenerate_file(const String& p_path);
 
         bool load_last_modified_times_file(const String& p_path);
@@ -141,6 +143,7 @@ namespace GodotObjectCompiler
         Vector<String> input_files{};
         Vector<String> remove_macros{};
         Vector<String> include_paths{};
+        Vector<String> regenerate_files{};
         Dictionary<String, Vector<String>> generated_from{};
         Dictionary<String, Size> last_modified_times{};
         Dictionary<String, Size> out_last_modified_times{};

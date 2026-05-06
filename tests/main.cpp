@@ -41,6 +41,7 @@
 #include "library/all.h"
 #include "library/core/permissions.h"
 #include "parser/all.h"
+#include "programs/all.h"
 #include "test_registry.h"
 
 int main(int argc, char* argv[])
@@ -59,11 +60,18 @@ int main(int argc, char* argv[])
 
     Size failed_count = 0;
     Size success_count = 0, ignore_count = 0, all_count = 0;
+
     for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
         PRINT_INFO("Running test case \"%s\"", test_name.c_str());
         all_count++;
 
-        const TestResult result = test_functor();
+        TestResult result = TEST_RESULT_FAILURE;
+        try {
+            result = test_functor();
+        } catch (const std::exception& e) {
+            print_err(e.what());
+        }
+
         switch (result) {
         case TEST_RESULT_SUCCESS:
             PRINT_INFO("%s\tSuccess!", test_name.c_str());
@@ -109,7 +117,13 @@ int main(int argc, char* argv[])
                 }
             }
 
-            const TestResult result = test_functor();
+            TestResult result = TEST_RESULT_FAILURE;
+            try {
+                result = test_functor();
+            } catch (const std::exception& e) {
+                print_err(e.what());
+            }
+
             switch (result) {
             case TEST_RESULT_SUCCESS:
                 PRINT_INFO("%s\tSuccess!", test_name.c_str());

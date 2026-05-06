@@ -58,20 +58,29 @@ namespace GodotObjectCompiler
         }
 
         bool register_test(const String& name, TestFunctor functor);
+
         bool register_integration_test(const String& name, TestFunctor functor);
 
-        String test_generated_folder();
-        String test_root_folder();
+        static String get_generated_path();
+
+        static String get_test_root_dir();
+
+        static String get_goc_path();
+
+        static String get_cache_path();
 
         Vector<String> get_test_application_arguments(const ProgramPath& p_program_path);
 
         Vector<String> get_integration_tests_godot_cpp_include_paths();
+
         void set_integration_tests_godot_cpp_include_paths(const Vector<String>& p_paths);
 
         void set_extension_api(const String& p_extension_api);
+
         String get_extension_api();
 
         const Dictionary<String, TestFunctor>& get_tests();
+
         const Dictionary<String, TestFunctor>& get_integration_tests();
 
       private:

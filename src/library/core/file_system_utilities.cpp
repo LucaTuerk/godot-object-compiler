@@ -80,6 +80,10 @@ namespace GodotObjectCompiler
 
     bool file_exists(const String& p_path)
     {
+        if (p_path.empty()) {
+            return false;
+        }
+
         const String absolute = path_absolute(p_path);
         return std::filesystem::exists(absolute);
     }
