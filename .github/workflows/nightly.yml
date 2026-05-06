@@ -37,6 +37,8 @@ jobs:
       create_artifact: true
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+    permissions:
+      pull-requests: write
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml
