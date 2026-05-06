@@ -14,8 +14,6 @@ jobs:
   linux-build:
     name: Build (Linux 🐧)
     runs-on: ubuntu-22.04
-    permissions:
-      pull-requests: write
     steps:
       - name: Checkout Project
         uses: actions/checkout@v6
