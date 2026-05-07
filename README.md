@@ -1,6 +1,3 @@
-[![Build](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg)](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml)
-[![Coverage](https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM)](https://codecov.io/github/LucaTuerk/godot-object-compiler)
-
 [<img src="./docs/img/logo_header.svg" width="100%" />](./docs/img/logo_header.svg)
 ___
 
@@ -9,6 +6,9 @@ The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It 
 </p> 
 
 ___
+
+[![Build](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg)](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml)
+[![Coverage](https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM)](https://codecov.io/github/LucaTuerk/godot-object-compiler)
 
 > [!WARNING]
 > This is experimental software, please do not use this application in a production environment.
