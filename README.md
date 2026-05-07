@@ -1,12 +1,3 @@
-[<img src="./docs/img/logo_header.svg" width="100%" />](./docs/img/logo_header.svg)
-___
-
-<p align='center'>
-The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It generates bindings and other builderplate code for <b>efficent development in C++</b> while maintaining full configurability via <b>expressive macros</b> generated directly from the godot-cpp source used to build your extension.
-</p> 
-
-___
-
 <p align='center'>
 	<a href="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml" > 
 	 <img src="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg"/> 
@@ -20,7 +11,16 @@ ___
 	<a href="https://ko-fi.com/lucaiantuerk" > 
 	 <img src="https://img.shields.io/badge/Ko--fi-F16061?style=flat&logo=ko-fi&logoColor=white"/> 
 	</a>
+</p>
+
+[<img src="./docs/img/logo_header.svg" width="100%" />](./docs/img/logo_header.svg)
+___
+
+<p align='center'>
+The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It generates bindings and other builderplate code for <b>efficent development in C++</b> while maintaining full configurability via <b>expressive macros</b> generated directly from the godot-cpp source used to build your extension.
 </p> 
+
+___
 
 > [!WARNING]
 > This is experimental software, please do not use this application in a production environment.
