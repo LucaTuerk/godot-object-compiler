@@ -9,8 +9,8 @@ ___
 
 [![Build](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg)](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml)
 [![Coverage](https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM)](https://codecov.io/github/LucaTuerk/godot-object-compiler)
-[![Read the Docs](https://img.shields.io/badge/Read%20the%20Docs-%23000000?style=for-the-badge&logo=readthedocs&logoColor=white)](https://godot-object-compiler.readthedocs.io/latest/)
-[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/lucaiantuerk)
+[![Read the Docs](https://img.shields.io/badge/Read%20the%20Docs-%23000000?style=flat&logo=readthedocs&logoColor=white)](https://godot-object-compiler.readthedocs.io/latest/)
+[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/lucaiantuerk)
 
 > [!WARNING]
 > This is experimental software, please do not use this application in a production environment.
