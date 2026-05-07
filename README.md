@@ -6,12 +6,11 @@ The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It 
 </p> 
 
 ___
-<div align="center">
+
 [![Build](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg)](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml)
 [![Coverage](https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM)](https://codecov.io/github/LucaTuerk/godot-object-compiler)
 [![Read the Docs](https://img.shields.io/badge/Read%20the%20Docs-%23000000?style=flat&logo=readthedocs&logoColor=white)](https://godot-object-compiler.readthedocs.io/latest/)
 [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/lucaiantuerk)
-</div>
 
 > [!WARNING]
 > This is experimental software, please do not use this application in a production environment.
