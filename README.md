@@ -1,8 +1,16 @@
 <div align='center'>
-	 <img href="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml" src="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg"/> 
-	 <img href="https://godot-object-compiler.readthedocs.io/latest/"src="https://app.readthedocs.org/projects/godot-object-compiler/badge/?version=latest"/> 
-	 <img href="https://codecov.io/github/LucaTuerk/godot-object-compiler" src="https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM"/> 
-	 <img href="https://opensource.org/licenses/MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"/> 
+	<a href="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml">
+	 <img src="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg"/>
+	</a>
+	<a href="https://godot-object-compiler.readthedocs.io/latest/">
+	 <img src="https://app.readthedocs.org/projects/godot-object-compiler/badge/?version=latest"/>
+	</a>
+	<a href="https://codecov.io/github/LucaTuerk/godot-object-compiler">
+	 <img src="https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM"/>
+	</a>
+	<a href="https://opensource.org/licenses/MIT">
+	 <img src="https://img.shields.io/badge/License-MIT-yellow.svg"/>
+	</a>
 </div>
 
 ___
@@ -146,5 +154,7 @@ To show usage info or consult the documentation.
 ___
 
 <div align='center'>
-	 <img href="https://ko-fi.com/lucaiantuerk" src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white"/> 
+	<a href="https://ko-fi.com/lucaiantuerk">
+	 <img src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white"/>
+	</a>
 </div>
