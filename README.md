@@ -1,4 +1,7 @@
 <p align='center'>
+	<a href="https://opensource.org/licenses/MIT"> 
+	 <img src="https://img.shields.io/badge/License-MIT-yellow.svg"/> 
+	</a>
 	<a href="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml" > 
 	 <img src="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg"/> 
 	</a>
