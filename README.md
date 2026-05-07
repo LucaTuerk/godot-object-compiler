@@ -1,3 +1,5 @@
+[![Build](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg)](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml)
+[![Coverage](https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM)](https://codecov.io/github/LucaTuerk/godot-object-compiler)
 
 [<img src="./docs/img/logo_header.svg" width="100%" />](./docs/img/logo_header.svg)
 ___
