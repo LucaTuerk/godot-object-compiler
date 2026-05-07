@@ -7,10 +7,20 @@ The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It 
 
 ___
 
-[![Build](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg)](https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml)
-[![Coverage](https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM)](https://codecov.io/github/LucaTuerk/godot-object-compiler)
-[![Read the Docs](https://img.shields.io/badge/Read%20the%20Docs-%23000000?style=flat&logo=readthedocs&logoColor=white)](https://godot-object-compiler.readthedocs.io/latest/)
-[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/lucaiantuerk)
+<p align='center'>
+	<a href="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml" > 
+	 <img src="https://github.com/LucaTuerk/godot-object-compiler/actions/workflows/workflow.yml/badge.svg"/> 
+	</a>
+	<a href="https://codecov.io/github/LucaTuerk/godot-object-compiler" > 
+	 <img src="https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM"/> 
+	</a>
+	<a href="https://godot-object-compiler.readthedocs.io/latest/" > 
+	 <img src="https://img.shields.io/badge/Read%20the%20Docs-%23000000?style=flat&logo=readthedocs&logoColor=white"/> 
+	</a>
+	<a href="https://ko-fi.com/lucaiantuerk" > 
+	 <img src="https://img.shields.io/badge/Ko--fi-F16061?style=flat&logo=ko-fi&logoColor=white"/> 
+	</a>
+</p> 
 
 > [!WARNING]
 > This is experimental software, please do not use this application in a production environment.
