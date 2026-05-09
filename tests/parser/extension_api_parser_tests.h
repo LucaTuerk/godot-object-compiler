@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* fuzz_tests.h                                                           */
+/* extension_api_parser_tests.h                                           */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,24 +33,38 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-
-#include "library/parser/parser.h"
-#include "library/tree/syntax//namespace.h"
-#include "library/tree/syntax/parser_error.h"
+#include "library/tree/predicates.h"
+#include "library_godot/parsers/extension_api_parser.h"
 #include "test_registry.h"
 
-GOC_TEST(ParserRandStringFuzz)
+using namespace GodotObjectCompiler;
+
+GOC_INTEGRATION_TEST(ExtensionAPIParser)
 {
-    using namespace GodotObjectCompiler;
+    ExtensionAPIParser parser;
+    parser.setup_include_paths(
+        TestRegistry::instance()->get_integration_tests_godot_cpp_include_paths());
+    const Ref<Context> global_context = node_new<Namespace>();
+    const auto api_path = TestRegistry::instance()->get_extension_api();
+    const Ref<ParserError> error = parser.parse(api_path, global_context);
+    GOC_TEST_EQ(
+        error, ParserError::OK, "Failed to parse extension api file \"%s\"", api_path.c_str());
 
-    TreeSitterParser parser;
+    Vector<String> check_classes = {"Node", "Resource", "RefCounted", "Object", "Signal"};
+    Vector<String> check_enums = {"Variant::Type", "PropertyHint", "PropertyUsageFlags"};
 
-    for (Size i = 0; i < 100; ++i) {
-        Ref<Namespace> global_namespace = node_new<Namespace>();
-        Ref<ParserError> error = parser.parse(generate_random_string(1000), global_namespace);
-        // GOC_TEST_EQ(global_namespace->get_child_count(), 0,
-        // "Unexpected results while parsing random string input.")
+    for (const String& check_class : check_classes) {
+        Ref<Class> _class = global_context->find_descendant<Class>(
+            BFS, NamedContextPredicates::name<Class>(check_class.c_str()));
+        GOC_TEST_NEQ(
+            _class, nullptr, "Failed to find class of name \"%s\" in parsed extension api.");
     }
 
+    for (const String& check_enum : check_enums) {
+        Ref<Enum> _enum = global_context->find_descendant<Enum>(
+            BFS, NamedContextPredicates::name<Enum>(check_enum.c_str()));
+        GOC_TEST_NEQ(_enum, nullptr, "Failed to find enum of name \"%s\" in parsed extension api.");
+        GOC_TEST_ASSERT(!_enum->value_names().empty(), "Parsed enum ")
+    }
     return TEST_RESULT_SUCCESS;
 };
