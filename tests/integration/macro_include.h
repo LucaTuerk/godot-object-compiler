@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* member.cpp                                                             */
+/* macro_include.h                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,90 +32,46 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+#pragma once
+#include "common.h"
+#include "library/tree/output/output_transformator.h"
+#include "library_godot/generators/godot_macro_include_generator.h"
+#include "test_registry.h"
 
-#include "member.h"
+using namespace GodotObjectCompiler;
 
-#include "access_specifier.h"
-#include "class.h"
-#include "modifiers.h"
-#include "struct.h"
-#include "type.h"
-
-namespace GodotObjectCompiler
+GOC_INTEGRATION_TEST(MacroInclude)
 {
+    GodotMacroIncludeGenerator generator;
+    const Ref<Context> context = node_new<Context>();
+    generator.generate(nullptr, context);
 
-    bool Member::_is_virtual_lazy_get() const
-    {
-        return find_child<Virtual>() != nullptr;
-    }
+    OutputTransformator transformator;
+    StreamWriter writer;
+    transformator.transform(context)->get_output(&writer);
 
-    bool Member::_is_override_lazy_get() const
-    {
-        return find_child<Override>() != nullptr;
-    }
+    const String include_content = writer.get_string();
 
-    bool Member::_is_static_lazy_get() const
-    {
-        return find_child<Static>() != nullptr;
-    }
+    // Check attributes
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Class attribute not found", "define", "GODOT_CLASS");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Enum attribute not found", "define", "GODOT_ENUM");
+    GOC_ASSERT_LINE_CONTAINS(
+        include_content, "Property attribute not found", "define", "GODOT_PROPERTY");
+    GOC_ASSERT_LINE_CONTAINS(
+        include_content, "Generated Body attribute not found", "define", "GODOT_GENERATED_BODY");
+    GOC_ASSERT_LINE_CONTAINS(
+        include_content, "Generated Global attribute not found", "define",
+        "GODOT_GENERATED_GLOBAL");
+    GOC_ASSERT_LINE_CONTAINS(
+        include_content, "Function attribute not found", "define", "GODOT_FUNCTION");
 
-    bool Member::_is_const_lazy_get() const
-    {
-        if (const auto type = find_child<Type>(); type != nullptr) {
-            if (type->find_child<Const>() != nullptr) {
-                return true;
-            }
-        }
-        return find_child<Const>() != nullptr;
-    }
+    // Check some parameters
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "LevelScene");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "LevelEditor");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "UsageNone");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "HintRange");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "Flags");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "Channel");
 
-    Ref<AccessSpecifier::Type> Member::_access_specifier_type_lazy_get() const
-    {
-        if (!get_parent()) {
-            return nullptr;
-        }
-
-        Ref<Class> _class = find_ancestor<Class>();
-        if (!_class) {
-            return nullptr;
-        }
-        const bool is_in_struct = _class->is<Struct>();
-
-        const Ref<AccessSpecifier> specifier = find_previous_sibling<AccessSpecifier>();
-        if (!specifier) {
-            if (is_in_struct) {
-                return make_ref<AccessSpecifier::Type>(AccessSpecifier::PUBLIC);
-            } else {
-                return make_ref<AccessSpecifier::Type>(AccessSpecifier::PRIVATE);
-            }
-        }
-
-        return make_ref<AccessSpecifier::Type>(specifier->type);
-    }
-
-    bool Member::_is_public_member_lazy_get() const
-    {
-        return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PUBLIC;
-    }
-
-    bool Member::_is_protected_member_lazy_get() const
-    {
-        return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PROTECTED;
-    }
-
-    bool Member::_is_private_member_lazy_get() const
-    {
-        return access_specifier_type() && *access_specifier_type() == AccessSpecifier::PRIVATE;
-    }
-
-    bool Member::copy_to(const Ref<Node>& p_other) const
-    {
-        COPY_GUARD(Member, NamedContext);
-        COPY_LAZY(access_specifier_type);
-        COPY_LAZY(is_private_member);
-        COPY_LAZY(is_protected_member);
-        COPY_LAZY(is_public_member);
-        return true;
-    }
-
-} // namespace GodotObjectCompiler
+    return TEST_RESULT_SUCCESS;
+};

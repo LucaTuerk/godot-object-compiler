@@ -43,6 +43,7 @@ namespace Tests
     {
         GODOT_GENERATED_BODY();
 
+      public:
         GODOT_PROPERTY();
         Variant variant_property;
 
@@ -88,6 +89,7 @@ namespace Tests
         GODOT_PROPERTY();
         long long_property = 0;
 
+      protected:
         GODOT_PROPERTY();
         NodePath node_path_property;
 
@@ -145,6 +147,7 @@ namespace Tests
         GODOT_PROPERTY();
         String string_property;
 
+      private:
         GODOT_PROPERTY();
         StringName string_name_property;
 
