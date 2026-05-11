@@ -59,3 +59,19 @@ GOC_TEST(ApplicationInvalidArgs)
     }
     return TEST_RESULT_SUCCESS;
 };
+
+GOC_TEST(EnsureSingleApplication)
+{
+    bool failed = false;
+
+    Application application_a;
+
+    try {
+        Application application_b;
+    } catch (std::exception& e) {
+        failed = true;
+    }
+
+    GOC_TEST_ASSERT(failed, "Duplicate Application did not panic.");
+    return TEST_RESULT_SUCCESS;
+};

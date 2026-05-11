@@ -69,7 +69,14 @@ jobs:
           ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include
           pip install gcovr
           cd ./build/CMakeFiles/goc_tests.dir/src
-          gcovr --filter . -e "/usr/include/.*" -e "/.*thirdparty/.*" -e "/.*tests/.*" --cobertura-pretty --cobertura --merge-mode-functions=merge-use-line-min -o coverage.cobertura.xml
+          gcovr -f . -e "/usr/include/.*" -e "/.*thirdparty/.*" -e "/.*tests/.*"\
+            --merge-mode-functions=merge-use-line-min\
+            --exclude-unreachable-branches\
+            --exclude-throw-branches\
+            --exclude-noncode-lines\
+            --exclude-lines-by-pattern .*PANIC_COND\
+            --sonarqube coverage.xml\
+            --cobertura coverage.cobertura.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -84,7 +91,7 @@ jobs:
         with:
           args: >
             --define sonar.cfamily.compile-commands=./build/compile_commands.json
-            --define sonar.cobertura.reportPaths=./build/CMakeFiles/goc_tests.dir/src/coverage.cobertura.xml
+            --define sonar.coverageReportPaths=./build/CMakeFiles/goc_tests.dir/src/coverage.xml
 
   linux-test-project:
     name: Run Test Project (Linux 🐧)

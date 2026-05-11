@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 #include "library/core/file_system_utilities.h"
+#include "library/core/permissions.h"
 #include "library/core/string_utilities.h"
 #include "test_registry.h"
 
@@ -61,5 +62,23 @@ GOC_TEST(FileReadWriteTest)
             filename.c_str());
     }
 
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(EnsurePermission)
+{
+    Vector<String> paths = {".goc_tests", "/home", "/bin"};
+
+    for (const String& path : paths) {
+        bool expect_fail = !Permissions::instance()->is_allowed_write_path(path);
+        bool failed = false;
+        try {
+            Permissions::instance()->ensure_is_allowed_write_path(path);
+        } catch (std::exception& e) {
+            failed = true;
+        }
+
+        GOC_TEST_EQ(expect_fail, failed, "Unexpected write permission.");
+    }
     return TEST_RESULT_SUCCESS;
 };
