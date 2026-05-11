@@ -50,8 +50,9 @@ GOC_TEST(ClassSimple)
 
     Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 
-    GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
+    GOC_TEST_EQ(classes.size(), 2, "Invalid class count.")
     GOC_TEST_EQ(classes[0]->name(), "SimpleClass", "Invalid class name.")
+    GOC_TEST_EQ(classes[1]->name(), "SimpleStruct", "Invalid class name.")
 
     return TEST_RESULT_SUCCESS;
 };
@@ -158,6 +159,8 @@ GOC_TEST(ClassMemberFields)
 
     Vector<AccessSpecifier::Type> access_specifier = {
         x3(AccessSpecifier::PUBLIC), x3(AccessSpecifier::PROTECTED), x3(AccessSpecifier::PRIVATE)};
+
+    GOC_TEST_EQ(A->member_fields().size(), 9, "Invalid member field count.");
 
     Vector<Pair<Vector<Ref<Field>>, Vector<String>>> fields_names_pairs = {
         {A->public_member_fields(), public_members},

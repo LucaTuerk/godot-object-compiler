@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* string_literal_parameter_type.h                                        */
+/* define.h                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,26 +32,7 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
 
-namespace GodotObjectCompiler
-{
-
-    class StringLiteralArgument : public Argument
-    {
-        NODE_TYPE(StringLiteralArgument);
-    };
-
-    class StringLiteralParameterType : public IAttributeParameterType
-    {
-        PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
-      public:
-        String get_return_type() override;
-        Vector<String> get_value_names() override;
-        Vector<Argument> get_arguments() override;
-        bool is_builtin() override;
-    };
-
-} // namespace GodotObjectCompiler
+#define TEST_DEFINE 1
+#define TEST_FUNC_DEFINE(arg) arg

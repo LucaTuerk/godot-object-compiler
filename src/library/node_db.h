@@ -68,10 +68,10 @@ namespace GodotObjectCompiler
         }
         ~NodeDB();
 
+        static UID generate_unique_id();
+
       private:
         static inline HashSet<UID> _uids{};
-
-        static UID _generate_unique_id();
 
         static bool _has_uid(UID p_uid);
 
@@ -84,13 +84,13 @@ namespace GodotObjectCompiler
 
     template <typename T, typename... Args> Ref<T> NodeDB::create(Args&&... p_args)
     {
-        return create_with_id<T, Args...>(_generate_unique_id(), std::forward<Args>(p_args)...);
+        return create_with_id<T, Args...>(generate_unique_id(), std::forward<Args>(p_args)...);
     }
 
     template <typename T, typename... Args>
     Ref<T> NodeDB::create_with_id(UID p_uid, Args&&... p_args)
     {
-        p_uid = p_uid == INVALID_ID ? _generate_unique_id() : p_uid;
+        p_uid = p_uid == INVALID_ID ? generate_unique_id() : p_uid;
 
         if (const auto itr = _nodes.find(p_uid); itr != _nodes.end()) {
             if (const Ref<Node> other = itr->second.lock(); other != nullptr) {

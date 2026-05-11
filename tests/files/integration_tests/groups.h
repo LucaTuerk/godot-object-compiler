@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* string_literal_parameter_type.h                                        */
+/* groups.h                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,26 +32,30 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
 
-namespace GodotObjectCompiler
+#include "groups.generated.h"
+
+namespace Tests
 {
-
-    class StringLiteralArgument : public Argument
+    GODOT_CLASS();
+    class Groups : public Node
     {
-        NODE_TYPE(StringLiteralArgument);
-    };
+        GODOT_GENERATED_BODY();
 
-    class StringLiteralParameterType : public IAttributeParameterType
-    {
-        PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
       public:
-        String get_return_type() override;
-        Vector<String> get_value_names() override;
-        Vector<Argument> get_arguments() override;
-        bool is_builtin() override;
-    };
+        GODOT_CATEGORY("Category");
+        GODOT_PROPERTY();
+        int a = 0;
 
-} // namespace GodotObjectCompiler
+        GODOT_GROUP("Group");
+        GODOT_PROPERTY();
+        int b = 0;
+
+        GODOT_SUBGROUP("Subgroup");
+        GODOT_PROPERTY();
+        int c = 0;
+    };
+} // namespace Tests
+
+GODOT_GENERATED_GLOBAL();

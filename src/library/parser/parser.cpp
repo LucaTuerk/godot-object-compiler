@@ -156,19 +156,6 @@ namespace GodotObjectCompiler
                         context.current_src =
                             context.current_src->get_next_sibling()->as<TreeSitterNode>();
                     }
-                } else if (step.is_step_out()) {
-                    do_continue = context.current_src->has_parent();
-                    if (do_continue) {
-                        context.current_src =
-                            context.current_src->get_parent()->as<TreeSitterNode>();
-                        recall();
-                    }
-                } else if (Ref<TreeSitterNode> go_to; step.is_go_to(go_to)) {
-                    do_continue = go_to != nullptr;
-                    if (do_continue) {
-                        context.current_src = go_to;
-                        recall();
-                    }
                 }
             } while (do_continue);
 

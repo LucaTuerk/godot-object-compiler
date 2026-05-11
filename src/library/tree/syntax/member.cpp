@@ -39,6 +39,7 @@
 #include "class.h"
 #include "modifiers.h"
 #include "struct.h"
+#include "type.h"
 
 namespace GodotObjectCompiler
 {
@@ -60,6 +61,11 @@ namespace GodotObjectCompiler
 
     bool Member::_is_const_lazy_get() const
     {
+        if (const auto type = find_child<Type>(); type != nullptr) {
+            if (type->find_child<Const>() != nullptr) {
+                return true;
+            }
+        }
         return find_child<Const>() != nullptr;
     }
 

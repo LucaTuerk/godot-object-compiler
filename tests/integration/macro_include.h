@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* string_literal_parameter_type.h                                        */
+/* macro_include.h                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,26 +32,46 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
+#include "common.h"
+#include "library/tree/output/output_transformator.h"
+#include "library_godot/generators/godot_macro_include_generator.h"
+#include "test_registry.h"
 
-namespace GodotObjectCompiler
+using namespace GodotObjectCompiler;
+
+GOC_INTEGRATION_TEST(MacroInclude)
 {
+    GodotMacroIncludeGenerator generator;
+    const Ref<Context> context = node_new<Context>();
+    generator.generate(nullptr, context);
 
-    class StringLiteralArgument : public Argument
-    {
-        NODE_TYPE(StringLiteralArgument);
-    };
+    OutputTransformator transformator;
+    StreamWriter writer;
+    transformator.transform(context)->get_output(&writer);
 
-    class StringLiteralParameterType : public IAttributeParameterType
-    {
-        PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
-      public:
-        String get_return_type() override;
-        Vector<String> get_value_names() override;
-        Vector<Argument> get_arguments() override;
-        bool is_builtin() override;
-    };
+    const String include_content = writer.get_string();
 
-} // namespace GodotObjectCompiler
+    // Check attributes
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Class attribute not found", "define", "GODOT_CLASS");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Enum attribute not found", "define", "GODOT_ENUM");
+    GOC_ASSERT_LINE_CONTAINS(
+        include_content, "Property attribute not found", "define", "GODOT_PROPERTY");
+    GOC_ASSERT_LINE_CONTAINS(
+        include_content, "Generated Body attribute not found", "define", "GODOT_GENERATED_BODY");
+    GOC_ASSERT_LINE_CONTAINS(
+        include_content, "Generated Global attribute not found", "define",
+        "GODOT_GENERATED_GLOBAL");
+    GOC_ASSERT_LINE_CONTAINS(
+        include_content, "Function attribute not found", "define", "GODOT_FUNCTION");
+
+    // Check some parameters
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "LevelScene");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "LevelEditor");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "UsageNone");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "HintRange");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "Flags");
+    GOC_ASSERT_LINE_CONTAINS(include_content, "Not found.", "Channel");
+
+    return TEST_RESULT_SUCCESS;
+};

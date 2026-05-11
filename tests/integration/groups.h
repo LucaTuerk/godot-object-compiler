@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* string_literal_parameter_type.h                                        */
+/* groups.h                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,26 +32,26 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
+#include "common.h"
+#include "library_godot/attributes/godot_attributes.h"
+#include "test_registry.h"
 
-namespace GodotObjectCompiler
+using namespace GodotObjectCompiler;
+
+GOC_INTEGRATION_TEST(Groups)
 {
+    GOC_INTEGRATION_TEST_GEN_FILE("tests/files/integration_tests/groups.h");
 
-    class StringLiteralArgument : public Argument
-    {
-        NODE_TYPE(StringLiteralArgument);
-    };
+    GOC_ASSERT_PROP_BOUND("a", "INT");
+    GOC_ASSERT_LINE_CONTAINS(generated_source, "Category was not bound.", "ADD_GROUP", "Category");
 
-    class StringLiteralParameterType : public IAttributeParameterType
-    {
-        PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
-      public:
-        String get_return_type() override;
-        Vector<String> get_value_names() override;
-        Vector<Argument> get_arguments() override;
-        bool is_builtin() override;
-    };
+    GOC_ASSERT_PROP_BOUND("b", "INT");
+    GOC_ASSERT_LINE_CONTAINS(generated_source, "Group was not bound", "ADD_GROUP", "Group");
 
-} // namespace GodotObjectCompiler
+    GOC_ASSERT_PROP_BOUND("c", "INT");
+    GOC_ASSERT_LINE_CONTAINS(
+        generated_source, "Subgroup was not bound", "ADD_SUBGROUP", "Subgroup");
+
+    return TEST_RESULT_SUCCESS;
+};

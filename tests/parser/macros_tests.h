@@ -87,3 +87,15 @@ GOC_TEST(ParseMacros)
 
     return TEST_RESULT_SUCCESS;
 };
+
+GOC_TEST(ParseDefine)
+{
+    GOC_TEST_PARSE_FILE("tests/files/macro_tests/define.h");
+
+    auto defines = global_namespace->find_children<Define>(true);
+    GOC_TEST_EQ(defines.size(), 2, "Invalid define count.");
+    GOC_TEST_EQ(defines[0]->name(), "TEST_DEFINE", "Invalid test define name.");
+    GOC_TEST_EQ(defines[1]->name(), "TEST_FUNC_DEFINE", "Invalid test function define name.");
+
+    return TEST_RESULT_SUCCESS;
+};

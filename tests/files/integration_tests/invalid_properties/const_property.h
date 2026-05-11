@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* string_literal_parameter_type.h                                        */
+/* const_property.h                                                       */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,26 +32,18 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
 
-namespace GodotObjectCompiler
+#include "invalid_properties/const_property.generated.h"
+
+GODOT_CLASS();
+
+class Invalid : Node
 {
+    GODOT_GENERATED_BODY();
 
-    class StringLiteralArgument : public Argument
-    {
-        NODE_TYPE(StringLiteralArgument);
-    };
+    GODOT_PROPERTY();
+    const int const_property = 0;
+};
 
-    class StringLiteralParameterType : public IAttributeParameterType
-    {
-        PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
-      public:
-        String get_return_type() override;
-        Vector<String> get_value_names() override;
-        Vector<Argument> get_arguments() override;
-        bool is_builtin() override;
-    };
-
-} // namespace GodotObjectCompiler
+GODOT_GENERATED_GLOBAL();

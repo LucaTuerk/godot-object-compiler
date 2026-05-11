@@ -90,8 +90,9 @@ namespace GodotObjectCompiler
         PANIC_COND(
             itr == _children.end(), "Cannot insert child after existing child. Was not found.");
 
-        _children.insert(itr, p_child);
+        itr = _children.insert(itr, p_child);
         Index index = p_existing->_index;
+        p_child->_index = index;
         p_child->_parent = this->as<Context>();
         while (itr != _children.end()) {
             (*(itr++))->_index = index++;

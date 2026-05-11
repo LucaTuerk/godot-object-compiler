@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* string_literal_parameter_type.h                                        */
+/* application_tests.h                                                    */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,26 +32,30 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
+#include "application/application.h"
+#include "library/core/string_utilities.h"
+#include "test_registry.h"
 
-namespace GodotObjectCompiler
+using namespace GodotObjectCompiler;
+
+inline Vector<String> fuzz_arguments()
 {
+    Vector<String> args;
+    for (int i = 0; i < 5; ++i) {
+        args.push_back(generate_random_string(10));
+    }
+    return args;
+}
 
-    class StringLiteralArgument : public Argument
-    {
-        NODE_TYPE(StringLiteralArgument);
-    };
-
-    class StringLiteralParameterType : public IAttributeParameterType
-    {
-        PARAM_TYPE(StringLiteralParameterType, StringLiteralArgument)
-      public:
-        String get_return_type() override;
-        Vector<String> get_value_names() override;
-        Vector<Argument> get_arguments() override;
-        bool is_builtin() override;
-    };
-
-} // namespace GodotObjectCompiler
+GOC_TEST(ApplicationInvalidArgs)
+{
+    for (int i = 0; i < 100; i++) {
+        Application application;
+        auto args = fuzz_arguments();
+        GOC_TEST_NEQ(
+            application.run(fuzz_arguments()), 0, "Application run succeeded with fuzzing args %s",
+            string_vector_combine(args, " ").c_str());
+    }
+    return TEST_RESULT_SUCCESS;
+};

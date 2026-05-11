@@ -120,14 +120,4 @@ namespace GodotObjectCompiler
         return literal->content;
     }
 
-    String GodotPropertyHintArgument::_hint_content_lazy_get() const
-    {
-        const String hint = hint_string();
-        if (hint.size() < 2) {
-            return "";
-        }
-
-        return hint.substr(1, hint.size() - 2);
-    }
-
 } // namespace GodotObjectCompiler

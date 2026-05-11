@@ -58,14 +58,4 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    String StringLiteralArgument::_content_lazy_get() const
-    {
-        const Ref<Literal> literal = find_child<Literal>();
-        if (!literal) {
-            ERR("Failed to find literal.");
-            return "";
-        }
-        return literal->content;
-    }
-
 } // namespace GodotObjectCompiler

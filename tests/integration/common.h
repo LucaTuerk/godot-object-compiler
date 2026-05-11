@@ -141,3 +141,6 @@ bool class_included(
     GOC_TEST_ASSERT(                                                                               \
         class_included(class_name, generated_source),                                              \
         format("Class \"%s\" not included.", class_name));
+
+#define GOC_ASSERT_LINE_CONTAINS(content, message, ...)                                            \
+    GOC_TEST_ASSERT(find_line_that_contains(content, {__VA_ARGS__}) != INVALID_INDEX, message)

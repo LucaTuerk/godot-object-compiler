@@ -37,3 +37,6 @@
 class SimpleClass
 {
 };
+
+struct SimpleStruct {
+};

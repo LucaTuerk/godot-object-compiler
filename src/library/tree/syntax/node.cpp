@@ -205,9 +205,9 @@ namespace GodotObjectCompiler
     Ref<Node> Node::get_sibling(int p_offset) const
     {
         const Ref<Context> parent = get_parent();
-        if (parent == nullptr) {
-            return nullptr;
-        }
+
+        PANIC_COND(parent == nullptr, "Trying to get a sibling on out of tree node.");
+        PANIC_COND(_index == INVALID_INDEX, "Trying to get a sibling on node with invalid index.");
 
         return parent->get_child_strict(static_cast<SignedIndex>(_index) + p_offset);
     }

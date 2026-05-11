@@ -181,10 +181,11 @@ namespace GodotObjectCompiler
 
 #define PRINT_LEVEL(level, ...)                                                                    \
     if (LibraryContext::instance()->get_error_level() >= (level)) {                                \
-        if (level != ERROR)                                                                        \
+        if (level != ERROR) {                                                                      \
             fmt_print_ln(__VA_ARGS__);                                                             \
-        else                                                                                       \
+        } else {                                                                                   \
             fmt_print_err(__VA_ARGS__);                                                            \
+        }                                                                                          \
     }
 
 #define PRINT_ERROR(...) PRINT_LEVEL(ERROR, __VA_ARGS__)

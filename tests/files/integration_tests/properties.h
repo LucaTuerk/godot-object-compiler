@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 
+#include "nlohmann/json.hpp"
 #include "properties.generated.h"
 
 namespace Tests
@@ -43,6 +44,7 @@ namespace Tests
     {
         GODOT_GENERATED_BODY();
 
+      public:
         GODOT_PROPERTY();
         Variant variant_property;
 
@@ -88,6 +90,7 @@ namespace Tests
         GODOT_PROPERTY();
         long long_property = 0;
 
+      protected:
         GODOT_PROPERTY();
         NodePath node_path_property;
 
@@ -145,19 +148,20 @@ namespace Tests
         GODOT_PROPERTY();
         String string_property;
 
-        GODOT_PROPERTY();
+      private:
+        GODOT_PROPERTY(PublicGet, PublicSet);
         StringName string_name_property;
 
-        GODOT_PROPERTY();
+        GODOT_PROPERTY(PrivateGet, PublicSet);
         Transform2D transform2D_property;
 
-        GODOT_PROPERTY();
+        GODOT_PROPERTY(PublicSet, PrivateGet);
         Transform3D transform3D_property;
 
-        GODOT_PROPERTY();
+        GODOT_PROPERTY(PrivateSet, PrivateSet);
         Vector2 vector2_property;
 
-        GODOT_PROPERTY();
+        GODOT_PROPERTY(ProtectedSet, ProtectedGet);
         Vector2i vector2i_property;
 
         GODOT_PROPERTY();

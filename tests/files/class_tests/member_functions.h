@@ -38,20 +38,20 @@ class A
 {
   public:
     int a();
-    bool b();
+    static bool b();
     A* c();
 
     int d(int param);
-    bool e(bool param);
+    virtual bool e(bool param);
     A* f(A* param);
 
   protected:
     int g();
-    bool h();
+    bool h() override;
     A* i();
 
     int j(int param);
-    bool k(bool param);
+    bool k(bool param) override;
     A* l(A* param);
 
   private:
@@ -59,7 +59,9 @@ class A
     bool n();
     A* o();
 
-    int p(int param);
-    bool q(bool param);
+    virtual int p(int param);
+    static bool q(bool param);
     A* r(A* param);
+
+    operator int();
 };

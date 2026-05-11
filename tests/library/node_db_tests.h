@@ -138,3 +138,57 @@ GOC_TEST(NodeIDRemovedTest)
 
     return TEST_RESULT_SUCCESS;
 };
+
+GOC_TEST(NodeIDChangeValid)
+{
+    Vector<UID> uids;
+
+    for (Size i = 0; i < 1000; ++i) {
+        Ref<Node> node = node_new<Node>();
+        uids.push_back(node->get_id());
+    }
+
+    auto node_db = LibraryContext::instance()->get_node_db();
+
+    for (UID uid : uids) {
+        auto before_node = node_db->get<Node>(uid);
+        UID new_id = node_db->request_id_change(uid);
+        auto after_node = node_db->get<Node>(new_id);
+        GOC_TEST_EQ(before_node, after_node, "Node ID change failed");
+    }
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(NodeIDChangeInvalid)
+{
+    Vector<UID> uids;
+
+    for (Size i = 0; i < 20; ++i) {
+        Ref<Node> node = node_new<Node>();
+        uids.push_back(node->get_id());
+    }
+
+    auto node_db = LibraryContext::instance()->get_node_db();
+
+    for (UID uid : uids) {
+        auto before_node = node_db->get<Node>(uid);
+        try {
+            std::ignore = node_db->request_id_change(NodeDB::generate_unique_id(), uid);
+        } catch (std::exception& e) {
+        }
+        auto after_node = node_db->get<Node>(uid);
+        GOC_TEST_EQ(before_node, after_node, "Invalid Node ID change modified id");
+    }
+
+    for (UID uid : uids) {
+        auto before_node = node_db->get<Node>(uid);
+        try {
+            std::ignore = node_db->request_id_change(INVALID_ID, uid);
+        } catch (std::exception& e) {
+        }
+        auto after_node = node_db->get<Node>(uid);
+        GOC_TEST_EQ(before_node, after_node, "Invalid Node ID change modified id");
+    }
+
+    return TEST_RESULT_SUCCESS;
+};
