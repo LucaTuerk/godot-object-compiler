@@ -144,8 +144,6 @@ namespace GodotObjectCompiler
 
         Ref<EnclosingNode> Brackets(std::initializer_list<Ref<Node>>&& p_children);
 
-        Ref<EnclosingNode> SquareBrackets(std::initializer_list<Ref<Node>>&& p_children);
-
         Ref<EnclosingNode> Braces(std::initializer_list<Ref<Node>>&& p_children);
 
         Ref<EnclosingNode> Chevrons(std::initializer_list<Ref<Node>>&& p_children);
@@ -160,15 +158,7 @@ namespace GodotObjectCompiler
 
         Ref<ListNode> Params(std::initializer_list<Ref<Node>>&& p_children);
 
-        Ref<ListNode> ConstRefParam(
-            const String& p_type, const String& p_name, Ref<OutputNode> p_default_val = nullptr);
-
-        Ref<ListNode>
-        Param(const String& p_type, const String& p_name, Ref<OutputNode> p_default_val = nullptr);
-
         Ref<ListNode> LineOfCode(std::initializer_list<Ref<Node>>&& p_children);
-
-        Ref<ListNode> ParamDecl(const String& p_type, const String& p_name);
 
         Ref<SnippetNode> Text(const String& p_content);
 
@@ -189,54 +179,15 @@ namespace GodotObjectCompiler
 
         Ref<SnippetNode> NewLine();
 
-        Ref<ListNode>
-        FuncCall(const String& p_function_name, std::initializer_list<Ref<Node>>&& p_parameters);
-
-        Ref<ListNode> FuncImpl(
-            const String& p_modifiers_front, const String& p_return_type,
-            const String& p_function_name, std::initializer_list<Ref<Node>>&& p_params,
-            const String& p_modifiers, std::initializer_list<Ref<Node>>&& p_lines);
-
-        Ref<ListNode> FuncDef(
-            const String& p_modifiers_front, const String& p_return_type,
-            const String& p_function_name, std::initializer_list<Ref<Node>>&& p_params,
-            const String& p_modifiers);
-
         Ref<ListNode> ConstRef(const String& p_type);
-
-        Ref<ListNode> MemberFuncDef(
-            const String& p_type, const String& p_name,
-            std::initializer_list<Ref<Node>>&& p_parameters, const String& p_modifiers);
-
-        Ref<ListNode> MemberFuncImpl(
-            const String& p_return_type, const String& p_class_name, const String& p_name,
-            std::initializer_list<Ref<Node>>&& p_params, const String& modifiers,
-            std::initializer_list<Ref<Node>>&& lines);
-
-        Ref<ListNode>
-        DeclAssign(const String& p_type, const String& p_name, const Ref<Node>& p_value);
 
         Ref<ListNode> Assign(const String& p_variable_name, const Ref<Node>& p_value);
 
         Ref<ListNode> Return(const String& p_name);
 
-        Ref<SnippetNode> Param(const String& p_name);
-
         Ref<SnippetNode> Include(const String& p_path);
 
         Ref<SnippetNode> SystemInclude(const String& p_path);
-
-        Ref<ListNode> Namespace(const String& p_name, Ref<OutputNode> p_content);
-
-        Ref<ListNode> Class(const String& p_name, const Ref<Node>& p_content);
-
-        Ref<ListNode> Class(const String& p_name, const String& p_base, Ref<OutputNode> p_content);
-
-        Ref<ListNode> Enum(const String& p_name, const Ref<Node>& p_content);
-
-        Ref<ListNode> MacroFunctionDefine(
-            const String& p_name, std::initializer_list<Ref<Node>>&& p_params,
-            std::initializer_list<Ref<Node>>&& p_lines);
 
         Ref<EnclosingNode> DocComment(const Ref<Node>& p_content);
 

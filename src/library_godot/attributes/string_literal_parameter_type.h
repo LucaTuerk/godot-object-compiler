@@ -42,8 +42,6 @@ namespace GodotObjectCompiler
     class StringLiteralArgument : public Argument
     {
         NODE_TYPE(StringLiteralArgument);
-
-        LAZY(StringLiteralArgument, String, content);
     };
 
     class StringLiteralParameterType : public IAttributeParameterType

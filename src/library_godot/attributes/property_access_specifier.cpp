@@ -100,30 +100,6 @@ namespace GodotObjectCompiler
         return false;
     }
 
-    bool PropertyGetAccessSpecifierArgument::get_specifier_cpp_name(String& r_specifier_name) const
-    {
-        r_specifier_name = "";
-        const Ref<Identifier> identifier = find_child<Identifier>();
-        if (!identifier) {
-            ERR("Failed to find identifier.");
-            return false;
-        }
-
-        if (identifier->name == PrivateGet) {
-            r_specifier_name = "private";
-            return true;
-        } else if (identifier->name == ProtectedGet) {
-            r_specifier_name = "protected";
-            return true;
-        } else if (identifier->name == PublicGet) {
-            r_specifier_name = "public";
-            return true;
-        }
-
-        ERR("Invalid identifier name %s.", identifier->name.c_str());
-        return false;
-    }
-
     bool PropertySetAccessSpecifierArgument::get_specifier(AccessSpecifier::Type& r_specifier) const
     {
         const Ref<Identifier> identifier = find_child<Identifier>();
@@ -143,30 +119,6 @@ namespace GodotObjectCompiler
             return true;
         }
 
-        return false;
-    }
-
-    bool PropertySetAccessSpecifierArgument::get_specifier_cpp_name(String& r_specifier_name) const
-    {
-        r_specifier_name = "";
-        const Ref<Identifier> identifier = find_child<Identifier>();
-        if (!identifier) {
-            ERR("Failed to find identifier.");
-            return false;
-        }
-
-        if (identifier->name == PrivateSet) {
-            r_specifier_name = "private";
-            return true;
-        } else if (identifier->name == ProtectedSet) {
-            r_specifier_name = "protected";
-            return true;
-        } else if (identifier->name == PublicSet) {
-            r_specifier_name = "public";
-            return true;
-        }
-
-        ERR("Invalid identifier name %s.", identifier->name.c_str());
         return false;
     }
 

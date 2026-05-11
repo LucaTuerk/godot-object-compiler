@@ -50,7 +50,6 @@ namespace GodotObjectCompiler
         static inline const char* PrivateGet = "PrivateGet";
 
         bool get_specifier(AccessSpecifier::Type& r_specifier) const;
-        bool get_specifier_cpp_name(String& r_specifier_name) const;
     };
 
     class PropertySetAccessSpecifierArgument : public Argument
@@ -63,7 +62,6 @@ namespace GodotObjectCompiler
         static inline const char* PrivateSet = "PrivateSet";
 
         bool get_specifier(AccessSpecifier::Type& r_specifier) const;
-        bool get_specifier_cpp_name(String& r_specifier_name) const;
     };
 
     class PropertyGetAccessSpecifierParameterType : public IAttributeParameterType

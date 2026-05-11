@@ -209,11 +209,6 @@ namespace GodotObjectCompiler
             ADD_CHILDREN_AND_RET(create<EnclosingNode>("(", ")"));
         }
 
-        Ref<EnclosingNode> SquareBrackets(std::initializer_list<Ref<Node>>&& p_children)
-        {
-            ADD_CHILDREN_AND_RET(create<EnclosingNode>("[", "]"));
-        }
-
         Ref<EnclosingNode> Braces(std::initializer_list<Ref<Node>>&& p_children)
         {
             ADD_CHILDREN_AND_RET(create<EnclosingNode>("{", "}"));
@@ -249,21 +244,6 @@ namespace GodotObjectCompiler
             ADD_CHILDREN_AND_RET(create<ListNode>(", ", false, false););
         }
 
-        Ref<ListNode>
-        Param(const String& p_type, const String& p_name, Ref<OutputNode> p_default_val)
-        {
-            return p_default_val ? Spaces({Text(p_type), Text(p_name), Text("="), p_default_val})
-                                 : Spaces({Text(p_type), Text(p_name)});
-        }
-
-        Ref<ListNode>
-        ConstRefParam(const String& p_type, const String& p_name, Ref<OutputNode> p_default_val)
-        {
-            return p_default_val
-                       ? Spaces({ConstRef(p_type), Text(p_name), Text("="), p_default_val})
-                       : Spaces({ConstRef(p_type), Text(p_name)});
-        }
-
         Ref<ListNode> LineOfCode(std::initializer_list<Ref<Node>>&& p_children)
         {
             return NoSep({NoSep({std::move(p_children)}), Semicolon()});
@@ -296,53 +276,6 @@ namespace GodotObjectCompiler
             return LibraryContext::instance()->get_node_db()->create<SnippetNode>("\n");
         }
 
-        Ref<ListNode> ParamDecl(const String& p_type, const String& p_name)
-        {
-            return Spaces({
-                Text(p_type),
-                Text(p_name),
-            });
-        }
-
-        Ref<ListNode> FuncDef(
-            const String& p_modifiers_front, const String& p_return_type,
-            const String& p_function_name, std::initializer_list<Ref<Node>>&& p_params,
-            const String& p_modifiers)
-        {
-            return Spaces(
-                {Text(p_modifiers_front), Text(p_return_type),
-                 NoSep({
-                     Text(p_function_name),
-                     Brackets({Params(std::move(p_params))}),
-                 }),
-                 Text(p_modifiers), Semicolon(), NewLine()});
-        }
-
-        Ref<ListNode> FuncImpl(
-            const String& p_modifiers_front, const String& p_return_type,
-            const String& p_function_name, std::initializer_list<Ref<Node>>&& p_params,
-            const String& p_modifiers, std::initializer_list<Ref<Node>>&& p_lines)
-        {
-            return Spaces(
-                {Text(p_modifiers_front), Text(p_return_type),
-                 NoSep({
-                     Text(p_function_name),
-                     Brackets({Params(std::move(p_params))}),
-                 }),
-                 Text(p_modifiers),
-                 Braces({
-                     NewLine(),
-                     Indent(2, {Lines(std::move(p_lines))}),
-                 }),
-                 NewLine()});
-        }
-
-        Ref<ListNode>
-        DeclAssign(const String& p_type, const String& p_name, const Ref<Node>& p_value)
-        {
-            return LineOfCode({Spaces({Text(p_type), Text(p_name), Text("="), p_value})});
-        }
-
         Ref<ListNode> Assign(const String& p_variable_name, const Ref<Node>& p_value)
         {
             return NoSep({Spaces({Text(p_variable_name), Text("="), p_value}), Semicolon()});
@@ -353,46 +286,6 @@ namespace GodotObjectCompiler
             return LineOfCode({Spaces({Text("return"), Text(p_name)})});
         }
 
-        Ref<ListNode>
-        FuncCall(const String& p_function_name, std::initializer_list<Ref<Node>>&& p_parameters)
-        {
-            return NoSep({Text(p_function_name), Brackets({Params(std::move(p_parameters))})});
-        }
-
-        Ref<ListNode> MemberFuncDef(
-            const String& p_type, const String& p_name,
-            std::initializer_list<Ref<Node>>&& p_parameters, const String& p_modifiers)
-        {
-            return Spaces(
-                {Text(p_type), NoSep({
-                                   Text(p_name),
-                                   Brackets({Params(std::move(p_parameters))}),
-                                   Text(p_modifiers),
-                                   Semicolon(),
-                                   NewLine(),
-                               })});
-        }
-
-        Ref<ListNode> ConstRef(const String& p_type)
-        {
-            return Spaces({Text("const"), NoSep({Text(p_type), Text("&")})});
-        }
-
-        Ref<ListNode> MemberFuncImpl(
-            const String& p_return_type, const String& p_class_name, const String& p_name,
-            std::initializer_list<Ref<Node>>&& p_params, const String& modifiers,
-            std::initializer_list<Ref<Node>>&& lines)
-        {
-            return FuncImpl(
-                "", p_return_type, p_class_name + "::" + p_name, std::move(p_params), modifiers,
-                std::move(lines));
-        }
-
-        Ref<SnippetNode> Param(const String& p_name)
-        {
-            return LibraryContext::instance()->get_node_db()->create<SnippetNode>(p_name);
-        }
-
         Ref<SnippetNode> Include(const String& p_path)
         {
             return node_new<SnippetNode>("#include \"" + p_path + "\"");
@@ -401,37 +294,6 @@ namespace GodotObjectCompiler
         Ref<SnippetNode> SystemInclude(const String& p_path)
         {
             return node_new<SnippetNode>("#include <" + p_path + ">");
-        }
-
-        Ref<ListNode> Namespace(const String& p_name, Ref<OutputNode> p_content)
-        {
-            return Spaces(
-                {Text("namespace"), Text(p_name), Braces({NewLine(), Indent(4, {p_content})})});
-        }
-
-        Ref<ListNode> Enum(const String& p_name, const Ref<Node>& p_content)
-        {
-            return Spaces(
-                {Text("enum"), Text(p_name),
-                 Braces({
-                     NewLine(),
-                     Indent(2, {p_content}),
-                 }),
-                 Semicolon()});
-        }
-
-        Ref<ListNode> MacroFunctionDefine(
-            const String& p_name, std::initializer_list<Ref<Node>>&& p_params,
-            std::initializer_list<Ref<Node>>&& p_lines)
-        {
-            return Spaces({
-                Text("#define"),
-                NoSep({
-                    Text(p_name),
-                    Brackets({Params(std::move(p_params))}),
-                }),
-                Indent(2, {EscapedLines(std::move(p_lines))}),
-            });
         }
 
         Ref<EnclosingNode> DocComment(const Ref<Node>& p_content)
@@ -473,28 +335,6 @@ namespace GodotObjectCompiler
                 B<Body>()[std::move(p_children)],
             });
             return result;
-        }
-
-        Ref<ListNode> Class(const String& p_name, const Ref<Node>& p_content)
-        {
-            return Spaces(
-                {Text("class"), Text(p_name),
-                 Braces({
-                     NewLine(),
-                     Indent(2, {p_content}),
-                 }),
-                 Semicolon()});
-        }
-
-        Ref<ListNode> Class(const String& name, const String& base, const Ref<Node>& content)
-        {
-            return Spaces(
-                {Text("class"), Text(name), Text(": public"), Text(base),
-                 Braces({
-                     NewLine(),
-                     Indent(2, {content}),
-                 }),
-                 Semicolon()});
         }
 
     } // namespace Output
