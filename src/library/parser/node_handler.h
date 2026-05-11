@@ -48,21 +48,15 @@ namespace GodotObjectCompiler
             TYPE_UNDECIDED,
             TYPE_STEP_INTO,
             TYPE_STEP_OVER,
-            TYPE_STEP_OUT,
-            TYPE_GO_TO
         };
 
         static ParserStep Undecided();
         static ParserStep StepInto();
         static ParserStep StepOver();
-        static ParserStep StepOut();
-        static ParserStep GoTo(const Ref<TreeSitterNode>& target);
 
         [[nodiscard]] bool is_undecided() const;
         [[nodiscard]] bool is_step_into() const;
         [[nodiscard]] bool is_step_over() const;
-        [[nodiscard]] bool is_step_out() const;
-        bool is_go_to(Ref<TreeSitterNode>& p_target) const;
 
       private:
         ParserStep(StepType type, const Ref<TreeSitterNode>& goto_target)
