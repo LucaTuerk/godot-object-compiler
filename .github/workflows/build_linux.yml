@@ -9,6 +9,10 @@ on:
     secrets:
       GOC_RUNNER_TOKEN:
         required: true
+      SONAR_TOKEN:
+        required: true
+      CODECOV_TOKEN:
+        required: true
 
 jobs:
   linux-build:
@@ -72,6 +76,15 @@ jobs:
         with:
           files: ./build/CMakeFiles/goc_tests.dir/src/coverage.cobertura.xml
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            --define sonar.cfamily.compile-commands=./build/compile_commands.json
+            --define sonar.cobertura.reportPaths=./build/CMakeFiles/goc_tests.dir/src/coverage.cobertura.xml
 
   linux-test-project:
     name: Run Test Project (Linux 🐧)
