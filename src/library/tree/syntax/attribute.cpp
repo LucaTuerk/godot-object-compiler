@@ -47,14 +47,14 @@ namespace GodotObjectCompiler
                 return target;
             }
             return nullptr;
-        } break;
+        }
         case CONTAINING: {
             return find_parent<Node>(
                 [this](const Ref<Node>& p_parent) { return verify_target(p_parent); });
-        } break;
+        }
         case NONE: {
             return nullptr;
-        } break;
+        }
         default: {
             PANIC("UNIMPLEMENTED");
         }

@@ -108,13 +108,10 @@ namespace GodotObjectCompiler
             switch (access_specifier->type) {
             case AccessSpecifier::PUBLIC:
                 return Output::Text("public:");
-                break;
             case AccessSpecifier::PRIVATE:
                 return Output::Text("private:");
-                break;
             case AccessSpecifier::PROTECTED:
                 return Output::Text("protected:");
-                break;
             }
         }
 

@@ -533,21 +533,23 @@ namespace GodotObjectCompiler
             return true;
         }
 
-        // TODO: this will not work if the base class name is not fully qualified
-        for (const String& base : p_target_class->direct_bases_names()) {
-            Result<Class> base_result =
-                LibraryContext::instance()->get_type_db()->get_type_data<Class>(base);
-            if (base_result.has_error()) {
-                fmt_print_err(
-                    "%s: Base class \"%s\" not found!", p_target_class->name().c_str(),
-                    base.c_str());
-                return false;
-            }
-
-            return class_has_base_class(base_result.get_result(), p_base_class_qualified);
+        auto base_class_names = p_target_class->direct_bases_names();
+        if (base_class_names.empty()) {
+            return false;
         }
 
-        return false;
+        auto base = base_class_names.front();
+
+        // TODO: this will not work if the base class name is not fully qualified
+        Result<Class> base_result =
+            LibraryContext::instance()->get_type_db()->get_type_data<Class>(base);
+        if (base_result.has_error()) {
+            fmt_print_err(
+                "%s: Base class \"%s\" not found!", p_target_class->name().c_str(), base.c_str());
+            return false;
+        }
+
+        return class_has_base_class(base_result.get_result(), p_base_class_qualified);
     }
 
     bool GodotGeneratorUtils::class_is_node_type(const Ref<Class>& p_target_class)
