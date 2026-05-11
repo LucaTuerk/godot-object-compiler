@@ -159,6 +159,8 @@ GOC_TEST(ClassMemberFields)
     Vector<AccessSpecifier::Type> access_specifier = {
         x3(AccessSpecifier::PUBLIC), x3(AccessSpecifier::PROTECTED), x3(AccessSpecifier::PRIVATE)};
 
+    GOC_TEST_EQ(A->member_fields().size(), 9, "Invalid member field count.");
+
     Vector<Pair<Vector<Ref<Field>>, Vector<String>>> fields_names_pairs = {
         {A->public_member_fields(), public_members},
         {A->protected_member_fields(), protected_members},

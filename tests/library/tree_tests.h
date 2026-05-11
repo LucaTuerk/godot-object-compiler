@@ -107,3 +107,33 @@ GOC_TEST(ReplaceChild)
     GOC_TEST_EQ(child_node->get_parent(), new_context, "Failed to take child");
     return TEST_RESULT_SUCCESS;
 };
+
+GOC_TEST(NamespaceLazy)
+{
+    Ref<Class> class_c;
+    Ref<Enum> enum_2;
+    Ref<Namespace> _namespace = B<Namespace>()[{
+        B<Identifier>("Namespace"),
+        B<Body>()[{
+            B<Enum>()[{
+                B<Identifier>("Enum"),
+                B<EnumValues>()[{B<EnumValue>()[{B<Identifier>("ENUM_VALUE")}]}]}],
+            B<Class>()[B<Identifier>("A"), B<BaseClasses>(), B<Body>()],
+            B<Class>()[{
+                B<Identifier>("B"), B<BaseClasses>(),
+                B<Body>()[{
+                    R<Class>(&class_c)
+                        [B<Identifier>("C"), B<BaseClasses>(),
+                         B<Body>()[{R<Enum>(&enum_2)[{
+                             B<Identifier>("Enum2"),
+                             B<EnumValues>()[{B<EnumValue>()[{B<Identifier>("ENUM_VALUE2")}]}]}]}]],
+                }]}]}]}];
+
+    GOC_TEST_EQ(_namespace->classes().size(), 2, "Invalid class count.");
+    GOC_TEST_EQ(_namespace->classes_recursive().size(), 3, "Invalid recursive class count.");
+    GOC_TEST_EQ(class_c->namespaces().size(), 2, "Invalid namespace count.");
+    GOC_TEST_EQ(_namespace->enums().size(), 1, "Invalid enum count.");
+    GOC_TEST_EQ(_namespace->enums_recursive().size(), 2, "Invalid recursive enum count.");
+
+    return TEST_RESULT_SUCCESS;
+};

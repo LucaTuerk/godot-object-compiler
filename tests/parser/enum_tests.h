@@ -43,6 +43,8 @@ GOC_TEST(EnumValues)
     using namespace GodotObjectCompiler;
     GOC_TEST_PARSE_FILE("tests/files/enum_tests/enum_values.h")
 
+    GOC_TEST_EQ(global_namespace->enums().size(), 2, "Invalid enum count.");
+
     Ref<Enum> enum1 = global_namespace->find_descendant<Enum>(
         BFS, NamedContextPredicates::name<Enum>("TestEnum1"));
     GOC_TEST_ASSERT(enum1, "Failed to find TestEnum1");
