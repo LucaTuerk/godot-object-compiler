@@ -61,8 +61,8 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [ linux-build, windows-build, mac-build, check-changed ]
     if: ${{ needs.check-changed.outputs.result == 1 }}
-    permissions: write-all
-
+    permissions:
+      contents: write
     steps:
       - name: Checkout Project
         uses: actions/checkout@v6

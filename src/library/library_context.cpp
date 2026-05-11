@@ -62,16 +62,12 @@ namespace GodotObjectCompiler
         switch (level) {
         case ERROR:
             return "Error";
-            break;
         case WARNING:
             return "Warning";
-            break;
         case INFO:
             return "Info";
-            break;
         case VERBOSE:
             return "Verbose";
-            break;
         }
         return "";
     }

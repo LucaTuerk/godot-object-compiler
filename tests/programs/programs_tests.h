@@ -46,13 +46,17 @@ GOC_INTEGRATION_TEST(Clear)
         application.run(TestRegistry::instance()->get_test_application_arguments({"clear"}));
     GOC_TEST_ASSERT(result == 0, "Failed to run program");
 
-    for (const String& file : directory_files_recursive(TestRegistry::get_generated_path())) {
+    const auto generated_files = directory_files_recursive(TestRegistry::get_generated_path());
+    const auto cache_files = directory_files_recursive(TestRegistry::get_cache_path());
+
+    for (const String& file : generated_files) {
         fmt_print_err("Generated File \"%s\" was not properly cleaned up.", file.c_str());
-        return TEST_RESULT_FAILURE;
+    }
+    for (const String& file : cache_files) {
+        fmt_print_err("TypeDB File \"%s\" was not properly cleaned up.", file.c_str());
     }
 
-    for (const String& file : directory_files_recursive(TestRegistry::get_cache_path())) {
-        fmt_print_err("TypeDB File \"%s\" was not properly cleaned up.", file.c_str());
+    if (!cache_files.empty() || !generated_files.empty()) {
         return TEST_RESULT_FAILURE;
     }
 

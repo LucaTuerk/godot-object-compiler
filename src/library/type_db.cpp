@@ -164,12 +164,12 @@ namespace GodotObjectCompiler
             return path_concat(
                 _readonly_cache_directory,
                 mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
-        } break;
+        }
         case CacheType::READWRITE_CACHE: {
             return path_concat(
                 _cache_directory,
                 mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
-        } break;
+        }
         }
 
         PANIC("Unhandled cache type.");
