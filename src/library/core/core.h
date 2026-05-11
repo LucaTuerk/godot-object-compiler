@@ -157,20 +157,25 @@ void GodotObjectCompiler::fmt_print_ln(const String& format_str, Args&&... args)
     abort()
 #else
 #define PANIC(...)                                                                                 \
-    throw std::runtime_error(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__));
+    throw std::runtime_error(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__))
 #endif
 
 #define PANIC_COND(condition, ...)                                                                 \
-    if ((condition)) {                                                                             \
-        PANIC(__VA_ARGS__);                                                                        \
-    }
+    do {                                                                                           \
+        if ((condition)) {                                                                         \
+            PANIC(__VA_ARGS__);                                                                    \
+        }                                                                                          \
+    } while (false)
 
 #ifdef PANIC_ON_ERR
 #define ERR(...) PANIC(__VA_ARGS__)
 #else
-#define ERR(...) print_err(format("%s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__));
+#define ERR(...) print_err(format("%s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__))
 #endif
+
 #define ERR_COND(condition, ...)                                                                   \
-    if ((condition)) {                                                                             \
-        ERR(__VA_ARGS__);                                                                          \
-    }
+    do {                                                                                           \
+        if ((condition)) {                                                                         \
+            ERR(__VA_ARGS__);                                                                      \
+        }                                                                                          \
+    } while (false)
