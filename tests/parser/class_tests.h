@@ -50,8 +50,9 @@ GOC_TEST(ClassSimple)
 
     Vector<Ref<Class>> classes = global_namespace->classes_recursive();
 
-    GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
+    GOC_TEST_EQ(classes.size(), 2, "Invalid class count.")
     GOC_TEST_EQ(classes[0]->name(), "SimpleClass", "Invalid class name.")
+    GOC_TEST_EQ(classes[1]->name(), "SimpleStruct", "Invalid class name.")
 
     return TEST_RESULT_SUCCESS;
 };

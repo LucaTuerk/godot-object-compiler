@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* simple_class.h                                                         */
+/* application_tests.h                                                    */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,10 +33,29 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "application/application.h"
+#include "library/core/string_utilities.h"
+#include "test_registry.h"
 
-class SimpleClass
+using namespace GodotObjectCompiler;
+
+inline Vector<String> fuzz_arguments()
 {
-};
+    Vector<String> args;
+    for (int i = 0; i < 5; ++i) {
+        args.push_back(generate_random_string(10));
+    }
+    return args;
+}
 
-struct SimpleStruct {
+GOC_TEST(ApplicationInvalidArgs)
+{
+    for (int i = 0; i < 100; i++) {
+        Application application;
+        auto args = fuzz_arguments();
+        GOC_TEST_NEQ(
+            application.run(fuzz_arguments()), 0, "Application run succeeded with fuzzing args %s",
+            string_vector_combine(args, " ").c_str());
+    }
+    return TEST_RESULT_SUCCESS;
 };
