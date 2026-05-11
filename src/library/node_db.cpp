@@ -48,7 +48,7 @@ namespace GodotObjectCompiler
         }
 
         if (p_to == INVALID_ID) {
-            p_to = _generate_unique_id();
+            p_to = generate_unique_id();
         }
 
         if (_nodes.find(p_from) == _nodes.end()) {
@@ -85,7 +85,7 @@ namespace GodotObjectCompiler
         return _node_constructors.try_emplace(p_name, p_creator).second;
     }
 
-    UID NodeDB::_generate_unique_id()
+    UID NodeDB::generate_unique_id()
     {
         std::random_device rd;
         std::mt19937_64 gen(rd());

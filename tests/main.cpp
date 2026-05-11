@@ -46,6 +46,8 @@
 
 int main(int argc, char* argv[])
 {
+    Vector<String> failed_tests;
+
     bool run_integration_tests = false;
     for (int i = 1; i < argc; i++) {
         print_ln(argv[i]);
@@ -75,10 +77,10 @@ int main(int argc, char* argv[])
         switch (result) {
         case TEST_RESULT_SUCCESS:
             PRINT_INFO("%s\tSuccess!", test_name.c_str());
-            print_ln(format("%s\tSuccess!", test_name.c_str()));
             success_count++;
             break;
         case TEST_RESULT_FAILURE:
+            failed_tests.push_back(test_name);
             PRINT_INFO("%s\tFailed!", test_name.c_str());
             failed_count++;
             break;
@@ -127,10 +129,10 @@ int main(int argc, char* argv[])
             switch (result) {
             case TEST_RESULT_SUCCESS:
                 PRINT_INFO("%s\tSuccess!", test_name.c_str());
-                print_ln(format("%s\tSuccess!", test_name.c_str()));
                 success_count++;
                 break;
             case TEST_RESULT_FAILURE:
+                failed_tests.push_back(test_name);
                 PRINT_INFO("%s\tFailed!", test_name.c_str());
                 failed_count++;
                 break;
@@ -143,8 +145,12 @@ int main(int argc, char* argv[])
     }
 
     PRINT_INFO(
-        "Summary: %d failed, %d succeeded, %d ignored, %d tests run", failed_count, success_count,
+        "Summary: %d failed, %d succeeded, %d ignored, %d tests run.", failed_count, success_count,
         ignore_count, all_count);
+
+    for (const String& test_name : failed_tests) {
+        PRINT_INFO("Failed %s", test_name.c_str());
+    }
 
     if (failed_count != 0) {
         return 1;

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* node_db.h                                                              */
+/* tree_tests.h                                                           */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,89 +33,77 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "core/core.h"
+#include "test_registry.h"
 
-namespace GodotObjectCompiler
+using namespace GodotObjectCompiler;
+
+GOC_TEST(AddRemoveChild)
 {
+    Vector<Ref<Node>> children;
+    Ref<Context> context = node_new<Context>();
 
-    class Node;
-    class LibraryContext;
-
-    class NodeDB
-    {
-      private:
-        struct Private {
-        };
-
-      public:
-        UID request_id_change(UID p_from, UID p_to = INVALID_ID);
-
-        template <typename T, typename... Args> Ref<T> create(Args&&... p_args);
-
-        template <typename T, typename... Args> Ref<T> create_with_id(UID p_uid, Args&&... p_args);
-
-        template <typename T> Ref<T> get(UID p_uid);
-
-        using NodeCreator = Creator<Node>;
-
-        bool register_node_constructor(const String& p_name, NodeCreator p_creator);
-
-        static Ref<Node> create(const String& p_type);
-
-        NodeDB() = delete;
-        NodeDB(Private)
-        {
-        }
-        ~NodeDB();
-
-        static UID generate_unique_id();
-
-      private:
-        static inline HashSet<UID> _uids{};
-
-        static bool _has_uid(UID p_uid);
-
-        Dictionary<UID, WeakRef<Node>> _nodes;
-
-        Dictionary<String, NodeCreator> _node_constructors;
-
-        friend LibraryContext;
-    };
-
-    template <typename T, typename... Args> Ref<T> NodeDB::create(Args&&... p_args)
-    {
-        return create_with_id<T, Args...>(generate_unique_id(), std::forward<Args>(p_args)...);
+    for (int i = 0; i < 1000; ++i) {
+        auto node = node_new<Node>();
+        children.push_back(node);
+        context->add_child(node);
     }
 
-    template <typename T, typename... Args>
-    Ref<T> NodeDB::create_with_id(UID p_uid, Args&&... p_args)
-    {
-        p_uid = p_uid == INVALID_ID ? generate_unique_id() : p_uid;
+    GOC_TEST_EQ(children.size(), context->get_child_count(), "Invalid child count after insert");
 
-        if (const auto itr = _nodes.find(p_uid); itr != _nodes.end()) {
-            if (const Ref<Node> other = itr->second.lock(); other != nullptr) {
-                print_err("Node with uid already exits");
-                return nullptr;
-            }
-        }
-
-        Ref<T> node = make_ref<T>(std::forward<Args>(p_args)...);
-        node->_id = p_uid;
-        _nodes[p_uid] = node;
-        return node;
+    for (const auto& node : children) {
+        GOC_TEST_EQ(node->get_parent(), context, "Node parent is invalid.");
     }
 
-    template <typename T> Ref<T> NodeDB::get(UID p_uid)
-    {
-        if (p_uid == INVALID_ID) {
-            return nullptr;
-        }
-
-        if (const auto itr = _nodes.find(p_uid); itr != _nodes.end()) {
-            return std::dynamic_pointer_cast<T>(itr->second.lock());
-        }
-
-        return nullptr;
+    for (const auto& node : children) {
+        context->remove_child(node);
     }
 
-} // namespace GodotObjectCompiler
+    GOC_TEST_EQ(context->get_child_count(), 0, "Invalid child count after remove");
+
+    for (const auto& node : children) {
+        GOC_TEST_EQ(node->get_parent(), nullptr, "Node parent is invalid.");
+    }
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(AddChildBefore)
+{
+    Vector<Ref<Node>> children;
+    const Ref<Context> context = node_new<Context>();
+
+    for (int i = 0; i < 10; ++i) {
+        auto node = node_new<Node>();
+        children.push_back(node);
+        context->add_child(node);
+    }
+
+    const auto node = node_new<Node>();
+
+    for (int i = 0; i < 10; ++i) {
+        context->add_child_before(node, children[i]);
+        GOC_TEST_EQ(node->get_next_sibling(), children[i], "Node next sibling is invalid.");
+        context->remove_child(node);
+    }
+
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(ReplaceChild)
+{
+    Vector<Ref<Context>> children;
+    const Ref<Context> context = node_new<Context>();
+
+    for (int i = 0; i < 10; ++i) {
+        auto node = node_new<Context>();
+        children.push_back(node);
+        context->add_child(node);
+    }
+
+    Ref<Node> child_node = children[5]->B<Context>();
+    Ref<Context> new_context = node_new<Context>();
+
+    context->replace_child(children[5], new_context, true);
+    GOC_TEST_EQ(context->get_child(5), new_context, "Failed to replace child");
+    GOC_TEST_EQ(child_node->get_parent(), new_context, "Failed to take child");
+    return TEST_RESULT_SUCCESS;
+};
