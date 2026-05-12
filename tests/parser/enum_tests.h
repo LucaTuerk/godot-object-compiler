@@ -79,7 +79,7 @@ GOC_TEST(EnumValueAssign)
 
     int i = 1;
     for (const Ref<EnumValue>& value : test_enum->find_children<EnumValue>()) {
-        Ref<Literal> literal = value->find_child<Literal>();
+        Ref<Literal> literal = value->literal();
         GOC_TEST_ASSERT(literal, "Failed to find Literal");
         GOC_TEST_EQ(string_to_int(literal->content), i, "Invalid literal.");
         i++;
@@ -91,7 +91,7 @@ GOC_TEST(EnumValueAssign)
 
     i = 1;
     for (const Ref<EnumValue>& value : test_enum2->find_children<EnumValue>()) {
-        Ref<Literal> literal = value->find_child<Literal>();
+        Ref<Literal> literal = value->literal();
         GOC_TEST_ASSERT(literal, "Failed to find Literal");
         if (value->name() == "VALUE_ALL") {
             GOC_TEST_EQ(string_to_int(literal->content), i - 1, "Invalid literal.");
@@ -107,7 +107,7 @@ GOC_TEST(EnumValueAssign)
 
     i = 0;
     for (const Ref<EnumValue>& value : test_enum3->find_children<EnumValue>()) {
-        Ref<Literal> literal = value->find_child<Literal>();
+        Ref<Literal> literal = value->literal();
         GOC_TEST_ASSERT(literal, "Failed to find Literal");
         if (value->name() == "VALUE_D3") {
             i = 10;

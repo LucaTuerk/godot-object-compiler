@@ -97,7 +97,7 @@ namespace GodotObjectCompiler
     {
         PANIC_COND(
             has_application,
-            "Invalid Application init. Another Application instance is still active.")
+            "Invalid Application init. Another Application instance is still active.");
         has_application = true;
         LibraryContext::instance()->init();
     }

@@ -125,7 +125,7 @@ namespace GodotObjectCompiler
                             PANIC_COND(
                                 !context.current_target->has_parent(),
                                 "Invalid orphan parser target after call to NodeHandler %s",
-                                node_handler->get_type().c_str())
+                                node_handler->get_type().c_str());
 
                             if (before != context.current_target) {
                                 before_node[context.current_src->get_id()] = before->get_id();

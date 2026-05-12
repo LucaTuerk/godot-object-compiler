@@ -51,9 +51,9 @@ namespace GodotObjectCompiler
 
         void add_write_path(const String& p_path);
 
-        bool is_allowed_write_path(const String& p_path);
+        bool is_allowed_write_path(const String& p_path) const;
 
-        void ensure_is_allowed_write_path(const String& p_path);
+        void ensure_is_allowed_write_path(const String& p_path) const;
 
       private:
         HashSet<String> allowed_write_paths;

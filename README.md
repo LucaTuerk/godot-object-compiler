@@ -5,6 +5,9 @@
 	<a href="https://godot-object-compiler.readthedocs.io/latest/">
 	 <img src="https://app.readthedocs.org/projects/godot-object-compiler/badge/?version=latest"/>
 	</a>
+    <a href="https://sonarcloud.io/project/overview?id=LucaTuerk_godot-object-compiler">
+      <img src="https://sonarcloud.io/api/project_badges/measure?project=LucaTuerk_godot-object-compiler&metric=alert_status"/>
+    </a>
 	<a href="https://codecov.io/github/LucaTuerk/godot-object-compiler">
 	 <img src="https://codecov.io/github/LucaTuerk/godot-object-compiler/graph/badge.svg?token=19TG160YEM"/>
 	</a>
@@ -29,9 +32,11 @@ The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It 
 
 # Example
 
-GOC provides macros that guide the code generator and allows you to expose Godot Object derived classes and their properties, methods and signals to the engine.
+GOC provides macros that guide the code generator and allows you to expose Godot Object derived classes and their
+properties, methods and signals to the engine.
 
 ### Classes
+
 ```cpp
 #include "godot_object_compiler/macros.h"
 #include "example_node.generated.h"
@@ -44,10 +49,15 @@ class ExampleNode : public Node3D {
 };
 ```
 
-A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated body macro. This hook is used by the GOC to inject definitions into the class, such as getters and setters and other additional methods.
+A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated
+body macro. This hook is used by the GOC to inject definitions into the class, such as getters and setters and other
+additional methods.
 
 ### Properties
-Next we might want to expose a bunch of properties. If needed we can always provide our own property hints and property usages within the macro parameters. 
+
+Next we might want to expose a bunch of properties. If needed we can always provide our own property hints and property
+usages within the macro parameters.
+
 ```cpp
 
     GODOT_PROPERTY(HintGlobalDir());
@@ -57,17 +67,22 @@ Next we might want to expose a bunch of properties. If needed we can always prov
     float range;
 
 ```
-> [!NOTE]
-> GOC provides convenience functions for all possible hint and usage values parsed directly from the godot-cpp library your linking to.
 
-While properties are always public within the engine, we can modify the access specifier of the generated getters and setters for access within our extension.
+> [!NOTE]
+> GOC provides convenience functions for all possible hint and usage values parsed directly from the godot-cpp library
+> your linking to.
+
+While properties are always public within the engine, we can modify the access specifier of the generated getters and
+setters for access within our extension.
 
 ```cpp
     GODOT_PROPERTY(PublicGet, PrivateSet);
     int cpp_private_property;
 
 ```
+
 It is also possible to expose Godot Object types and typed collections.
+
 ```cpp
 
     GODOT_PROPERTY();
@@ -81,7 +96,10 @@ It is also possible to expose Godot Object types and typed collections.
 ```
 
 ### Signals
-If we want to add a signal we add a void method definition and mark it as a signal. This will register the signal with the appropriate method signature and generate an implementation for this method which can be used to emit the signal.
+
+If we want to add a signal we add a void method definition and mark it as a signal. This will register the signal with
+the appropriate method signature and generate an implementation for this method which can be used to emit the signal.
+
 ```cpp
 
     GODOT_SIGNAL();
@@ -90,6 +108,7 @@ If we want to add a signal we add a void method definition and mark it as a sign
 ```
 
 ### Functions
+
 GOC can also expose regular functions to the engine, and script virtual functions can be bound with a simple tag.
 
 ```cpp
@@ -106,7 +125,10 @@ GOC can also expose regular functions to the engine, and script virtual function
 ```
 
 ### Enums
-Lets say we want to add a flags property to our node. We can add a marked enum to the class body, and specify that we would like this enum to be treated as flags in the macro parameters.
+
+Lets say we want to add a flags property to our node. We can add a marked enum to the class body, and specify that we
+would like this enum to be treated as flags in the macro parameters.
+
 ```cpp
 
     GODOT_ENUM(EnumFlags);
@@ -117,7 +139,10 @@ Lets say we want to add a flags property to our node. We can add a marked enum t
 	};
 
 ```
-Next we add the property. The GOC queries the enum type and generates appropriate code to expose this property with the property hint to bind the enum names and values.
+
+Next we add the property. The GOC queries the enum type and generates appropriate code to expose this property with the
+property hint to bind the enum names and values.
+
 ```cpp
 
     GODOT_PROPERTY();
@@ -125,9 +150,9 @@ Next we add the property. The GOC queries the enum type and generates appropriat
 
 ```
 
+Last but not least we add a generated global macro outside the class body. GOC uses this hook to generate code that
+needs to be added in the global namespace such as the enum variant cast macros.
 
-
-Last but not least we add a generated global macro outside the class body. GOC uses this hook to generate code that needs to be added in the global namespace such as the enum variant cast macros.
 ```cpp
 
 GODOT_GENERATED_GLOBAL();
@@ -136,13 +161,16 @@ GODOT_GENERATED_GLOBAL();
 
 # Usage
 
-GOC ships with integrations for [CMake](https://godot-object-compiler.readthedocs.io/latest/integrations/CMake.html) and [SCons](https://godot-object-compiler.readthedocs.io/latest/integrations/SConstruct.html). The tools can be dumped into a local folder by calling the GOC executable's `init tools` program with a local path argument.
+GOC ships with integrations for [CMake](https://godot-object-compiler.readthedocs.io/latest/integrations/CMake.html)
+and [SCons](https://godot-object-compiler.readthedocs.io/latest/integrations/SConstruct.html). The tools can be dumped
+into a local folder by calling the GOC executable's `init tools` program with a local path argument.
 
 ```cmd
 goc init tools tools
 ```
 
 ## Command Line Usage
+
 You can also use the GOC as a CLI tool to manually generate the sources or build your own integrations. Execute
 
 ```cmd

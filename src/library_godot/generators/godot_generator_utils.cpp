@@ -538,7 +538,7 @@ namespace GodotObjectCompiler
             return false;
         }
 
-        auto base = base_class_names.front();
+        const String& base = base_class_names.front();
 
         // TODO: this will not work if the base class name is not fully qualified
         Result<Class> base_result =
