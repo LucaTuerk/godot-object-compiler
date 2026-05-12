@@ -96,7 +96,6 @@ jobs:
   linux-test-project:
     name: Run Test Project (Linux 🐧)
     runs-on: ubuntu-22.04
-    needs: linux-build
     steps:
       - name: Checkout Test Repo
         uses: actions/checkout@v6
