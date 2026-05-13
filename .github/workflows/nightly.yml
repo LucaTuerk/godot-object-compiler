@@ -31,16 +31,18 @@ jobs:
 
   linux-build:
     uses: ./.github/workflows/build_linux.yml
-    needs: [ check-format, check-changed ]
+    needs: [check-format, check-changed]
     if: ${{ needs.check-changed.outputs.result == 1 }}
     with:
       create_artifact: true
     secrets:
       GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
+      CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
+      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml
-    needs: [ check-format, check-changed ]
+    needs: [check-format, check-changed]
     if: ${{ needs.check-changed.outputs.result == 1 }}
     with:
       create_artifact: true
@@ -49,7 +51,7 @@ jobs:
 
   mac-build:
     uses: ./.github/workflows/build_mac.yml
-    needs: [ check-format, check-changed ]
+    needs: [check-format, check-changed]
     if: ${{ needs.check-changed.outputs.result == 1 }}
     with:
       create_artifact: true
@@ -59,7 +61,7 @@ jobs:
   upload-artifacts:
     name: Upload release artifacts
     runs-on: ubuntu-22.04
-    needs: [ linux-build, windows-build, mac-build, check-changed ]
+    needs: [linux-build, windows-build, mac-build, check-changed]
     if: ${{ needs.check-changed.outputs.result == 1 }}
     permissions:
       contents: write
