@@ -6,9 +6,6 @@ on:
         required: false
         type: boolean
         default: false
-    secrets:
-      GOC_RUNNER_TOKEN:
-        required: true
 jobs:
   windows-build:
     name: Build (Windows 🪟)
@@ -36,7 +33,6 @@ jobs:
           repository: "godotengine/godot-cpp"
           ref: "4.5"
           path: "godot-cpp"
-          token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Restore godot-cpp Cache
         uses: actions/cache/restore@v5
