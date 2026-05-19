@@ -39,8 +39,6 @@ jobs:
   linux-run-testproject:
     uses: ./.github/workflows/testproject_linux.yml
     needs: check-format
-    secrets:
-      GOC_RUNNER_TOKEN: ${{secrets.GOC_RUNNER_TOKEN}}
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml

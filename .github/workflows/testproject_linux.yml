@@ -6,9 +6,6 @@ on:
         required: false
         type: boolean
         default: false
-    secrets:
-      GOC_RUNNER_TOKEN:
-        required: true
 
 jobs:
   linux-test-project:
@@ -20,7 +17,6 @@ jobs:
         with:
           repository: "LucaTuerk/godot-object-compiler-test"
           submodules: "false"
-          token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Checkout Godot Object Compiler
         uses: actions/checkout@v6
@@ -28,7 +24,6 @@ jobs:
           repository: "LucaTuerk/godot-object-compiler"
           submodules: "recursive"
           path: "godot-object-compiler"
-          token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Checkout godot-cpp
         uses: actions/checkout@v6
@@ -37,7 +32,6 @@ jobs:
           submodules: "true"
           path: "godot-cpp"
           ref: "4.5"
-          token: ${{secrets.GOC_RUNNER_TOKEN}}
 
       - name: Install Packages
         run: |
