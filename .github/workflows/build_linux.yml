@@ -2,8 +2,6 @@ name: Linux Build
 on:
   workflow_call:
     secrets:
-      SONAR_TOKEN:
-        required: true
       CODECOV_TOKEN:
         required: true
 
@@ -75,12 +73,3 @@ jobs:
         with:
           files: ./build/CMakeFiles/goc_tests.dir/src/coverage.cobertura.xml
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v8
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            --define sonar.cfamily.compile-commands=./build/compile_commands.json
-            --define sonar.coverageReportPaths=./build/CMakeFiles/goc_tests.dir/src/coverage.xml
