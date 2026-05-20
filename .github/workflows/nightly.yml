@@ -38,6 +38,8 @@ jobs:
   linux-run-testproject:
     uses: ./.github/workflows/testproject_linux.yml
     needs: check-format
+    with:
+      create_artifact: true
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml
