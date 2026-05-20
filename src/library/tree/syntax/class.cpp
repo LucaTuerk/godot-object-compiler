@@ -121,13 +121,6 @@ namespace GodotObjectCompiler
         return false;
     }
 
-    bool Class::copy_to(const Ref<Node>& p_other) const
-    {
-        COPY_GUARD(Class, Namespace);
-        // COPY_LAZY(base_classes);
-        return true;
-    }
-
     Vector<Ref<Function>> Class::_member_functions_lazy_get() const
     {
         if (!body()) {

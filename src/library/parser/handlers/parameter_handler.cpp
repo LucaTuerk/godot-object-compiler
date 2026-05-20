@@ -64,9 +64,8 @@ namespace GodotObjectCompiler
     {
         const Ref<TemplateParameters> template_parameters =
             r_current_target->as<TemplateParameters>();
-        if (template_parameters == nullptr) {
-            return ParserStep::StepOver();
-        }
+        PANIC_COND(
+            template_parameters == nullptr, "Invalid source node for template parameter type");
 
         template_parameters->parameter_count += 1;
 

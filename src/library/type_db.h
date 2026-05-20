@@ -65,7 +65,7 @@ namespace GodotObjectCompiler
 
         AssumeType() = default;
 
-        AssumeType(String type_name, const Size& template_arg_count = 0)
+        explicit AssumeType(String type_name, const Size& template_arg_count = 0)
             : name(std::move(type_name)), template_parameter_count(template_arg_count)
         {
         }
