@@ -64,6 +64,20 @@ namespace GodotObjectCompiler
         return true;
     }
 
+    void TemplateParameters::read_from(IStructuredReader* p_reader)
+    {
+        Context::read_from(p_reader);
+        parameter_count = p_reader->read<String, int>("parameter_count");
+        optional_parameter_count = p_reader->read<String, int>("optional_parameter_count");
+    }
+
+    void TemplateParameters::write_to(IStructuredWriter* p_writer)
+    {
+        Context::write_to(p_writer);
+        p_writer->write("parameter_count", parameter_count);
+        p_writer->write("optional_parameter_count", optional_parameter_count);
+    }
+
     Ref<Type> Parameter::_type_lazy_get() const
     {
         return find_child<Type>();

@@ -49,4 +49,14 @@ namespace GodotObjectCompiler
         handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) override;
     };
 
+    class TemplateParameterHandler : public INodeHandler
+    {
+        NODE_HANDLER(TemplateParameterHandler);
+
+      public:
+        bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
+        ParserStep
+        handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) override;
+    };
+
 } // namespace GodotObjectCompiler

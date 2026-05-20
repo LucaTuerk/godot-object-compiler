@@ -56,6 +56,7 @@ namespace GodotObjectCompiler
 
       public:
         LAZY(Class, Size, template_parameter_count);
+        LAZY(Class, Size, optional_template_parameter_count);
         /* collections */
         LAZY(Class, Vector<String>, direct_bases_names);
         LAZY_MUT(Class, Vector<Ref<Class>>, base_classes);

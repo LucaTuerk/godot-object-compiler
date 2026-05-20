@@ -53,7 +53,7 @@
 namespace GodotObjectCompiler
 {
 
-    void dump_node(IStructuredWriter* writer, Ref<Node> node, bool is_root)
+    void dump_node(IStructuredWriter* writer, const Ref<Node>& node, const bool is_root)
     {
         writer->write_to_section(node->get_id());
         node->write_to(writer);
@@ -69,7 +69,7 @@ namespace GodotObjectCompiler
         }
     }
 
-    bool ConfigNodeReaderWriter::write_to_file(Ref<Node> node, const String& path)
+    bool ConfigNodeReaderWriter::write_to_file(const Ref<Node> node, const String& path)
     {
         JsonConfig config;
         dump_node(&config, node, true);
@@ -92,7 +92,7 @@ namespace GodotObjectCompiler
                 continue;
             }
 
-            String node_class = config.read<String, String>("_class");
+            auto node_class = config.read<String, String>("_class");
             UID uid = config.read<String, UID>("_id");
             if (Ref<Node> existing = LibraryContext::instance()->get_node_db()->get<Node>(uid);
                 existing != nullptr) {
@@ -101,8 +101,7 @@ namespace GodotObjectCompiler
                 continue;
             }
 
-            Ref<Node> node = NodeDB::create(node_class);
-            if (node) {
+            if (Ref<Node> node = NodeDB::create(node_class)) {
                 node->read_from(&config);
                 local.insert({uid, node});
             }
@@ -131,7 +130,7 @@ namespace GodotObjectCompiler
 
             const Ref<Node> self = self_itr->second;
 
-            if (Ref<Context> parent = parent_itr->second->as<Context>(); parent && self) {
+            if (const Ref<Context> parent = parent_itr->second->as<Context>(); parent && self) {
                 parent->add_child(self);
             }
         }
@@ -176,8 +175,8 @@ namespace GodotObjectCompiler
     }
 
     String TypeDB::_get_attribute_cache_file_path(
-        const String& p_qualified_name, const String& p_attribute_name, CacheType p_cache_type,
-        Size p_template_argument_count) const
+        const String& p_qualified_name, const String& p_attribute_name,
+        const CacheType p_cache_type, const Size p_template_argument_count) const
     {
         switch (p_cache_type) {
         case CacheType::READONLY_CACHE: {
@@ -198,29 +197,36 @@ namespace GodotObjectCompiler
     void
     TypeDB::save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const
     {
-        String path;
-        if (Ref<TemplateParameters> parameters = p_type->find_child<TemplateParameters>();
-            parameters != nullptr) {
-            path = _get_cache_file_path(
-                p_type->qualified_name(), CacheType::READWRITE_CACHE,
-                parameters->get_child_count());
+        Vector<String> paths;
+
+        if (const Ref<Class> _class = p_type->as<Class>();
+            _class != nullptr && _class->template_parameter_count() > 0) {
+
+            for (Size i = 0; i <= _class->optional_template_parameter_count(); ++i) {
+                paths.push_back(_get_cache_file_path(
+                    p_type->qualified_name(), CacheType::READWRITE_CACHE,
+                    _class->template_parameter_count() - i));
+            }
         } else {
-            path = _get_cache_file_path(p_type->qualified_name(), CacheType::READWRITE_CACHE);
+            paths.push_back(
+                _get_cache_file_path(p_type->qualified_name(), CacheType::READWRITE_CACHE));
         }
 
-        if (string_contains(path, INVALID_NAME)) {
-            PRINT_ERROR(
-                "Failed to get cache path for type \"%s\"", p_type->qualified_name().c_str());
-            return;
-        }
+        for (const String& path : paths) {
+            if (string_contains(path, INVALID_NAME)) {
+                PRINT_ERROR(
+                    "Failed to get cache path for type \"%s\"", p_type->qualified_name().c_str());
+                return;
+            }
 
-        if (const auto base = path_base(path);
-            !directory_exits(base) && !create_dir_recursive(base)) {
-            return;
-        }
+            if (const auto base = path_base(path);
+                !directory_exits(base) && !create_dir_recursive(base)) {
+                return;
+            }
 
-        if (Writer writer; writer.write_to_file(p_type, path)) {
-            LibraryContext::instance()->register_generated_file(path, p_generated_from);
+            if (Writer writer; writer.write_to_file(p_type, path)) {
+                LibraryContext::instance()->register_generated_file(path, p_generated_from);
+            }
         }
     }
 
@@ -228,37 +234,41 @@ namespace GodotObjectCompiler
         const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute,
         const String& p_generated_from) const
     {
-        String path;
-        if (Ref<TemplateParameters> parameters = p_type->find_child<TemplateParameters>();
-            parameters != nullptr) {
-            path = _get_attribute_cache_file_path(
-                p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE,
-                parameters->get_child_count());
+        Vector<String> paths;
+        if (const Ref<Class> _class = p_type->as<Class>();
+            _class != nullptr && _class->template_parameter_count() > 0) {
+            for (Size i = 0; i <= _class->optional_template_parameter_count(); ++i) {
+                paths.push_back(_get_attribute_cache_file_path(
+                    p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE,
+                    _class->template_parameter_count() - i));
+            }
         } else {
-            path = _get_attribute_cache_file_path(
-                p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE);
+            paths.push_back(_get_attribute_cache_file_path(
+                p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE));
         }
 
-        if (string_contains(path, INVALID_NAME)) {
-            PRINT_ERROR(
-                "Failed to get cache path for attribute \"%s\" on type \"%s\"",
-                p_attribute->get_type().c_str(), p_attribute->qualified_name().c_str());
-            return;
-        }
+        for (const String& path : paths) {
+            if (string_contains(path, INVALID_NAME)) {
+                PRINT_ERROR(
+                    "Failed to get cache path for attribute \"%s\" on type \"%s\"",
+                    p_attribute->get_type().c_str(), p_attribute->qualified_name().c_str());
+                return;
+            }
 
-        if (const String base = path_base(path);
-            !directory_exits(base) && !create_dir_recursive(base)) {
-            return;
-        }
+            if (const String base = path_base(path);
+                !directory_exits(base) && !create_dir_recursive(base)) {
+                return;
+            }
 
-        if (Writer writer; writer.write_to_file(p_attribute, path)) {
-            LibraryContext::instance()->register_generated_file(path, p_generated_from);
+            if (Writer writer; writer.write_to_file(p_attribute, path)) {
+                LibraryContext::instance()->register_generated_file(path, p_generated_from);
+            }
         }
     }
 
     Result<Node> TypeDB::_get_type_data(
-        const String& p_qualified_name, Size p_template_argument_count,
-        const Ref<Namespace>& p_from_namespace, CacheType p_cache_type)
+        const String& p_qualified_name, const Size p_template_argument_count,
+        const Ref<Namespace>& p_from_namespace, const CacheType p_cache_type)
     {
         Reader reader;
 
@@ -271,8 +281,8 @@ namespace GodotObjectCompiler
             }
 
             if (file_exists(cache_file_path)) {
-                Result<Node> root_result = reader.read_from_file(cache_file_path);
-                if (root_result.has_result()) {
+                if (Result<Node> root_result = reader.read_from_file(cache_file_path);
+                    root_result.has_result()) {
                     _cache[cache_file_path] = root_result.get_result()->clone();
                     return root_result.get_result();
                 } else {
@@ -302,8 +312,8 @@ namespace GodotObjectCompiler
 
     Result<Attribute> TypeDB::_get_type_attribute(
         const String& p_qualified_name, const String& p_attribute_name,
-        Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace,
-        CacheType cache_type)
+        const Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace,
+        const CacheType cache_type)
     {
         Reader reader;
 
@@ -361,7 +371,7 @@ namespace GodotObjectCompiler
 
     Result<Attribute> TypeDB::get_type_attribute(
         const String& p_qualified_name, const String& p_attribute_name,
-        Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace)
+        const Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace)
     {
         Result<Attribute> found_result = _get_type_attribute(
             p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace,
@@ -519,17 +529,17 @@ namespace GodotObjectCompiler
             return STATE_INVALID;
         }
 
-        Vector<String> enum_name_split{namespaces.begin(), namespaces.end() - 1};
-        String enum_name = string_vector_combine(enum_name_split, "::");
+        const Vector<String> enum_name_split{namespaces.begin(), namespaces.end() - 1};
+        const String enum_name = string_vector_combine(enum_name_split, "::");
 
-        Result<Enum> enum_result = get_type_data<Enum>(enum_name);
+        const Result<Enum> enum_result = get_type_data<Enum>(enum_name);
         if (enum_result.has_error()) {
             enum_result.get_error()->set_handled();
             return STATE_INVALID;
         }
 
-        Ref<Enum> enum_ = enum_result.get_result();
-        Ref<EnumValue> value = enum_->find_chain<EnumValue, EnumValues>(
+        const Ref<Enum> enum_ = enum_result.get_result();
+        const Ref<EnumValue> value = enum_->find_chain<EnumValue, EnumValues>(
             NamedContextPredicates::name<EnumValue>(namespaces.back().c_str()));
         if (value == nullptr) {
             return STATE_INVALID;

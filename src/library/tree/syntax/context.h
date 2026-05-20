@@ -99,9 +99,9 @@ namespace GodotObjectCompiler
       public:
         bool copy_to(const Ref<Node>& p_other) const override;
 
-        void add_child(Ref<Node> p_child);
+        void add_child(const Ref<Node>& p_child);
 
-        void add_child_before(Ref<Node> p_child, Ref<Node> p_existing);
+        void add_child_before(const Ref<Node>& p_child, const Ref<Node>& p_existing);
 
         void add_children(std::initializer_list<Ref<Node>>&& p_children);
 
@@ -136,7 +136,7 @@ namespace GodotObjectCompiler
 
         ChildIterator remove_child(ChildIterator p_itr);
 
-        ChildIterator reparent_child(ChildIterator p_itr, Ref<Context> p_new_parent);
+        ChildIterator reparent_child(ChildIterator p_itr, const Ref<Context>& p_new_parent);
 
         void remove_all_children();
 

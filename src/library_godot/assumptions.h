@@ -270,7 +270,7 @@ namespace GodotObjectCompiler
             "TypeDB"};
 
         inline Assumption<AssumeType<Class>> List{
-            {"List", 3}, "Assume that a class of name \"List\" exists in the TypeDB"};
+            {"List", 2}, "Assume that a class of name \"List\" exists in the TypeDB"};
 
         inline Assumption<AssumeType<Class>> PropertyInfo{
             {"PropertyInfo"},

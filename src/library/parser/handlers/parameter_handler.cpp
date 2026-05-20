@@ -53,4 +53,27 @@ namespace GodotObjectCompiler
         return ParserStep::StepInto();
     }
 
+    bool TemplateParameterHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+    {
+        return p_current_src->type_in(
+            {"type_parameter_declaration", "optional_type_parameter_declaration"});
+    }
+
+    ParserStep TemplateParameterHandler::handle(
+        const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
+    {
+        const Ref<TemplateParameters> template_parameters =
+            r_current_target->as<TemplateParameters>();
+        if (template_parameters == nullptr) {
+            return ParserStep::StepOver();
+        }
+
+        template_parameters->parameter_count += 1;
+
+        if (p_current_src->type == "optional_type_parameter_declaration") {
+            template_parameters->optional_parameter_count += 1;
+        }
+        return ParserStep::StepOver();
+    }
+
 } // namespace GodotObjectCompiler

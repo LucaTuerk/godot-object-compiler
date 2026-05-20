@@ -83,7 +83,7 @@ namespace GodotObjectCompiler
 
     String Class::_first_base_qualifed_name_lazy_get() const
     {
-        Vector<Ref<Class>> bases = base_classes();
+        const Vector<Ref<Class>> bases = base_classes();
         if (bases.empty()) {
             return "";
         }
@@ -214,11 +214,20 @@ namespace GodotObjectCompiler
 
     Size Class::_template_parameter_count_lazy_get() const
     {
-        Ref<TemplateParameters> template_parameters = find_child<TemplateParameters>();
+        const Ref<TemplateParameters> template_parameters = find_child<TemplateParameters>();
         if (!template_parameters) {
             return 0;
         }
-        return template_parameters->get_child_count();
+        return template_parameters->parameter_count;
+    }
+
+    Size Class::_optional_template_parameter_count_lazy_get() const
+    {
+        const Ref<TemplateParameters> template_parameters = find_child<TemplateParameters>();
+        if (!template_parameters) {
+            return 0;
+        }
+        return template_parameters->optional_parameter_count;
     }
 
 } // namespace GodotObjectCompiler

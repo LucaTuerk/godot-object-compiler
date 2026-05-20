@@ -65,7 +65,7 @@ namespace GodotObjectCompiler
                 return ParserStep::StepOver();
             }
 
-            Ref<Node> previous_node = r_current_target->get_child(-1);
+            const Ref<Node> previous_node = r_current_target->get_child(-1);
             r_current_target = r_current_target->B<Class>();
             r_current_target->create_child<Identifier>(identifier->content());
             identifier->set_handled();
