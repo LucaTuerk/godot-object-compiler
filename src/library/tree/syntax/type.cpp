@@ -54,9 +54,10 @@ namespace GodotObjectCompiler
     String Type::_type_name_untemplated_lazy_get() const
     {
         StreamWriter writer;
-        Ref<Type> temp = node_new<Type>();
+        const Ref<Type> temp = node_new<Type>();
         for (const Ref<Node>& child : _children) {
-            if (child->is<TemplateParameters>() || child->is<TemplateArguments>()) {
+            if (child->is<TypeQualifier>() || child->is<Pointer>() || child->is<Reference>() ||
+                child->is<TemplateParameters>() || child->is<TemplateArguments>()) {
                 continue;
             }
             temp->add_child(child->clone());
@@ -69,7 +70,7 @@ namespace GodotObjectCompiler
     String Type::_type_name_unmodified_lazy_get() const
     {
         StreamWriter writer;
-        Ref<Type> temp = node_new<Type>();
+        const Ref<Type> temp = node_new<Type>();
         for (const Ref<Node>& child : _children) {
             if (child->is<TypeQualifier>() || child->is<Pointer>() || child->is<Reference>()) {
                 continue;
@@ -85,7 +86,7 @@ namespace GodotObjectCompiler
     String Type::_type_name_unmodified_ptr_lazy_get() const
     {
         StreamWriter writer;
-        Ref<Type> temp = node_new<Type>();
+        const Ref<Type> temp = node_new<Type>();
         for (const Ref<Node>& child : _children) {
             if (child->is<TypeQualifier>() || child->is<Reference>()) {
                 continue;
@@ -123,11 +124,10 @@ namespace GodotObjectCompiler
             return result;
         }
 
-        Ref<TemplateArguments> template_arguments = result->template_arguments();
-        if (template_arguments) {
-            Ref<TemplateArguments> replacement_arguments = node_new<TemplateArguments>();
+        if (const Ref<TemplateArguments> template_arguments = result->template_arguments()) {
+            const Ref<TemplateArguments> replacement_arguments = node_new<TemplateArguments>();
             for (const Ref<Node>& argument : *this->template_arguments()) {
-                if (Ref<Type> type = argument->as<Type>(); type) {
+                if (const Ref<Type> type = argument->as<Type>(); type) {
                     replacement_arguments->add_child(type->qualified());
                 } else {
                     replacement_arguments->add_child(argument->clone());
@@ -136,11 +136,11 @@ namespace GodotObjectCompiler
             result->replace_child(template_arguments, replacement_arguments);
         }
 
-        Ref<Namespace> namespace_ = find_ancestor<Namespace>();
-        Ref<Identifier> identifier = result->find_child<Identifier>();
-        Result<Node> type_result =
+        const Ref<Namespace> namespace_ = find_ancestor<Namespace>();
+        const Ref<Identifier> identifier = result->find_child<Identifier>();
+        const Result<Node> type_result =
             LibraryContext::instance()->get_type_db()->get_type_data(result, namespace_);
-        Ref<NamedContext> named =
+        const Ref<NamedContext> named =
             type_result.has_result() ? type_result.get_result()->as<NamedContext>() : nullptr;
         if (type_result.has_error()) {
             type_result.get_error()->set_handled();

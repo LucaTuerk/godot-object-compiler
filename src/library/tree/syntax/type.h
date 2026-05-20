@@ -65,7 +65,7 @@ namespace GodotObjectCompiler
         LAZY(Type, Ref<TemplateArguments>, template_arguments);
 
       private:
-        bool is_qualified;
+        bool is_qualified = false;
     };
 
     class PlaceholderType : public Node
