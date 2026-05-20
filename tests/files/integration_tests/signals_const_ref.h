@@ -75,7 +75,7 @@ namespace Tests
         void typed_dictionary_signal(const TypedDictionary<int, Resource>& p_param);
 
         GODOT_SIGNAL();
-        void float_signal(const float& p_param);
+        void float_signal(const float&);
 
         GODOT_SIGNAL();
         void real_t_signal(const real_t& p_param);
@@ -99,7 +99,7 @@ namespace Tests
         void packed_byte_array_signal(const PackedByteArray& p_param);
 
         GODOT_SIGNAL();
-        void packed_color_array_signal(const PackedColorArray& p_param);
+        void packed_color_array_signal(const PackedColorArray&);
 
         GODOT_SIGNAL();
         void packed_float32_array_signal(const PackedFloat32Array& p_param);
@@ -132,7 +132,7 @@ namespace Tests
         void projection_signal(const Projection& p_param);
 
         GODOT_SIGNAL();
-        void quaternion_signal(const Quaternion& p_param);
+        void quaternion_signal(const Quaternion&);
 
         GODOT_SIGNAL();
         void rect2_signal(const Rect2& p_param);

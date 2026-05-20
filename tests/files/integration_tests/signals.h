@@ -48,7 +48,7 @@ namespace Tests
         void variant_signal(Variant p_param);
 
         GODOT_SIGNAL();
-        void aabb_signal(AABB p_param);
+        void aabb_signal(AABB);
 
         GODOT_SIGNAL();
         void array_signal(Array p_param);
@@ -90,7 +90,7 @@ namespace Tests
         void long_signal(long p_param);
 
         GODOT_SIGNAL();
-        void node_path_signal(NodePath p_param);
+        void node_path_signal(NodePath);
 
         GODOT_SIGNAL();
         void object_signal(Object* p_param);
@@ -102,7 +102,7 @@ namespace Tests
         void packed_color_array_signal(PackedColorArray p_param);
 
         GODOT_SIGNAL();
-        void packed_float32_array_signal(PackedFloat32Array p_param);
+        void packed_float32_array_signal(PackedFloat32Array);
 
         GODOT_SIGNAL();
         void packed_float64_array_signal(PackedFloat64Array p_param);

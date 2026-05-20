@@ -975,12 +975,10 @@ namespace GodotObjectCompiler
         Ref<GodotPropertyHintArgument> property_hint;
         Ref<GodotPropertyUsageFlagsArgument> usage_flags;
 
-        if (!get_defaults_for_type(
-                p_type, variant_type, property_hint, usage_flags, p_from_namespace, p_usage)) {
-            ERROR(
-                "Failed to get default property info for type:\n%s",
-                p_type->pretty_print().c_str());
-        }
+        ERROR_COND(
+            !get_defaults_for_type(
+                p_type, variant_type, property_hint, usage_flags, p_from_namespace, p_usage),
+            "Failed to get default property info for type:\n%s", p_type->pretty_print().c_str());
 
         return build_property_info(variant_type, property_hint, {usage_flags}, p_property_name);
     }
