@@ -47,15 +47,22 @@ namespace GodotObjectCompiler
 
     bool IdentifierHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
     {
+        Ref<TreeSitterNode> previous = p_current_src->get_parent() == nullptr
+                                           ? nullptr
+                                           : p_current_src->get_previous_sibling<TreeSitterNode>();
         return string_contains(p_current_src->type, "identifier") &&
-               !(p_current_src->type == "qualified_identifier" ||
-                 p_current_src->type == "type_identifier");
+               ((previous && previous->type == "=") ||
+                !(p_current_src->type == "qualified_identifier" ||
+                  p_current_src->type == "type_identifier"));
     }
 
     ParserStep IdentifierHandler::handle(
         const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
     {
-        Ref<TreeSitterNode> previous = p_current_src->get_previous_sibling<TreeSitterNode>();
+
+        Ref<TreeSitterNode> previous = p_current_src->get_parent() == nullptr
+                                           ? nullptr
+                                           : p_current_src->get_previous_sibling<TreeSitterNode>();
         if (r_current_target->is<Field>() && previous && previous->type == "=") {
             r_current_target->create_child<Literal>(p_current_src->content());
             return ParserStep::StepOver();

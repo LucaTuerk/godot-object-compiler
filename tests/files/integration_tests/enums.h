@@ -37,6 +37,21 @@
 #include "enums.generated.h"
 
 GODOT_CLASS();
+class ExernalEnums : public Object
+{
+    GODOT_GENERATED_BODY();
+
+    GODOT_ENUM();
+    enum RegularEnum {
+        REGULAR_VALUE_1,
+        REGULAR_VALUE_2,
+    };
+
+    GODOT_ENUM(EnumFlags);
+    enum FlagsEnum { FLAG_0 = 0, FLAG_1 = 1 };
+};
+
+GODOT_CLASS();
 class Enums : public Object
 {
     GODOT_GENERATED_BODY();
@@ -49,6 +64,30 @@ class Enums : public Object
 
     GODOT_ENUM(EnumFlags);
     enum FlagsEnum { FLAG_0 = 0, FLAG_1 = 1 };
+
+    GODOT_PROPERTY();
+    RegularEnum regular = REGULAR_VALUE_1;
+
+    GODOT_PROPERTY();
+    FlagsEnum flags = FLAG_0;
+
+    GODOT_PROPERTY();
+    ExernalEnums::RegularEnum regular_external = ExernalEnums::REGULAR_VALUE_1;
+
+    GODOT_PROPERTY();
+    ExernalEnums::FlagsEnum flags_external = ExernalEnums::FLAG_0;
+
+    GODOT_PROPERTY();
+    RegularEnum regular_int = 0;
+
+    GODOT_PROPERTY();
+    FlagsEnum flags_int = 0;
+
+    GODOT_PROPERTY();
+    ExernalEnums::RegularEnum regular_external_int = 0;
+
+    GODOT_PROPERTY();
+    ExernalEnums::FlagsEnum flags_external_int = 0;
 };
 
 GODOT_GENERATED_GLOBAL();

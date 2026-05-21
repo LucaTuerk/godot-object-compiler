@@ -473,11 +473,15 @@ namespace GodotObjectCompiler
             template_parameter_count = count;
         }
 
+        constexpr std::hash<std::string> hash{};
+
         if (template_parameter_count == 0) {
-            return qualified_name;
+            return std::to_string(hash(qualified_name));
         }
 
-        return format("%s_T_ARGS_%d_", name_writer.get_string().c_str(), template_parameter_count);
+        return format(
+            "%s_T_ARGS_%d_", std::to_string(hash(name_writer.get_string())).c_str(),
+            template_parameter_count);
     }
 
     Vector<String> TypeDB::resolve_possible_namespaces(
@@ -490,6 +494,7 @@ namespace GodotObjectCompiler
         }
 
         const Vector<String> namespaces_names = from_namespace->namespaces_names();
+        const Vector<String> qualified_names = string_split(qualified_name, "::");
 
         for (Size current_size = 0; current_size <= namespaces_names.size(); current_size++) {
             StreamWriter writer;
@@ -497,8 +502,18 @@ namespace GodotObjectCompiler
                 writer.write(namespaces_names[i]);
                 writer.write("::");
             }
-            writer.write(qualified_name);
-            result.push_back(writer.get_string());
+
+            for (Size current_start = 0; current_start < qualified_names.size(); current_start++) {
+                StreamWriter inner;
+                inner.write(writer.get_string());
+                for (Size i = current_start; i < qualified_names.size(); ++i) {
+                    inner.write(qualified_names[i]);
+                    if (i != qualified_names.size() - 1) {
+                        inner.write("::");
+                    }
+                }
+                result.push_back(inner.get_string());
+            }
         }
 
         return result;

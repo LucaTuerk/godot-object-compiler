@@ -63,15 +63,13 @@ namespace GodotObjectCompiler
         return p_to;
     }
 
-    NodeDB::~NodeDB()
-    {
-    }
+    NodeDB::~NodeDB() = default;
 
     Ref<Node> NodeDB::create(const String& p_type)
     {
         NodeDB* db = LibraryContext::instance()->get_node_db();
 
-        auto itr = db->_node_constructors.find(p_type);
+        const auto itr = db->_node_constructors.find(p_type);
 
         if (itr == db->_node_constructors.end()) {
             return nullptr;
@@ -87,9 +85,9 @@ namespace GodotObjectCompiler
 
     UID NodeDB::generate_unique_id()
     {
-        std::random_device rd;
-        std::mt19937_64 gen(rd());
-        std::uniform_int_distribution<uint64_t> dis;
+        static std::random_device rd;
+        static std::mt19937_64 gen(rd());
+        static std::uniform_int_distribution<uint64_t> dis;
 
         UID generated = dis(gen);
         while (_has_uid(generated)) {
@@ -100,7 +98,7 @@ namespace GodotObjectCompiler
         return generated;
     }
 
-    bool NodeDB::_has_uid(UID p_uid)
+    bool NodeDB::_has_uid(const UID p_uid)
     {
         return _uids.find(p_uid) != _uids.end();
     }
