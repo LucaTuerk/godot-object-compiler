@@ -473,12 +473,14 @@ namespace GodotObjectCompiler
             template_parameter_count = count;
         }
 
+        constexpr std::hash<std::string> hash{};
+
         if (template_parameter_count == 0) {
-            return std::to_string(std::hash<String>{}(qualified_name));
+            return std::to_string(hash(qualified_name));
         }
 
         return format(
-            "%s_T_ARGS_%d_", std::to_string(std::hash<String>{}(name_writer.get_string())).c_str(),
+            "%s_T_ARGS_%d_", std::to_string(hash(name_writer.get_string())).c_str(),
             template_parameter_count);
     }
 
