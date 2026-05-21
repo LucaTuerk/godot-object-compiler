@@ -474,10 +474,12 @@ namespace GodotObjectCompiler
         }
 
         if (template_parameter_count == 0) {
-            return qualified_name;
+            return std::to_string(std::hash<String>{}(qualified_name));
         }
 
-        return format("%s_T_ARGS_%d_", name_writer.get_string().c_str(), template_parameter_count);
+        return format(
+            "%s_T_ARGS_%d_", std::to_string(std::hash<String>{}(name_writer.get_string())).c_str(),
+            template_parameter_count);
     }
 
     Vector<String> TypeDB::resolve_possible_namespaces(
