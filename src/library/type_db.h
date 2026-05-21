@@ -33,6 +33,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include <utility>
+
 #include "core/assumption.h"
 #include "core/core.h"
 #include "core/result.h"
@@ -63,8 +65,8 @@ namespace GodotObjectCompiler
 
         AssumeType() = default;
 
-        AssumeType(const String& type_name, const Size& template_arg_count = 0)
-            : name(type_name), template_parameter_count(template_arg_count)
+        explicit AssumeType(String type_name, const Size& template_arg_count = 0)
+            : name(std::move(type_name)), template_parameter_count(template_arg_count)
         {
         }
 
@@ -138,7 +140,7 @@ namespace GodotObjectCompiler
 
         TypeDB() = delete;
 
-        TypeDB(Private)
+        explicit TypeDB(Private)
         {
         }
 
@@ -174,10 +176,10 @@ namespace GodotObjectCompiler
 
     template <typename T>
     Result<T> TypeDB::get_type_data(
-        const String& qualified_name, Size template_parameter_count,
+        const String& qualified_name, const Size template_parameter_count,
         const Ref<Namespace>& from_namespace)
     {
-        Result<Node> result =
+        const Result<Node> result =
             get_type_data(qualified_name, template_parameter_count, from_namespace);
         RESULT_ERROR_PASS_ON(Error, result, node);
         ERROR_COND(
@@ -189,7 +191,7 @@ namespace GodotObjectCompiler
     template <typename T>
     Result<T> TypeDB::get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace)
     {
-        Result<Node> result = get_type_data(type, from_namespace);
+        const Result<Node> result = get_type_data(type, from_namespace);
         RESULT_ERROR_PASS_ON(Error, result, node);
         ERROR_COND(
             !node->is<T>(), "Invalid type. Expected \"%s\" but is \"%s\"",
@@ -201,7 +203,7 @@ namespace GodotObjectCompiler
     Result<T>
     TypeDB::get_type_attribute(const Ref<Type>& type, const Ref<Namespace>& from_namespace)
     {
-        Result<Attribute> result = get_type_attribute(
+        const Result<Attribute> result = get_type_attribute(
             type->qualified_name(), T::get_type_static(), type->template_argument_count(),
             from_namespace);
         RESULT_ERROR_PASS_ON(Error, result, node);

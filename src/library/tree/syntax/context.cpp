@@ -60,11 +60,11 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    void Context::add_child(Ref<Node> p_child)
+    void Context::add_child(const Ref<Node>& p_child)
     {
         PANIC_COND(p_child == nullptr, "Trying to add null child.");
 
-        Ref<Context> parent = p_child->get_parent();
+        const Ref<Context> parent = p_child->get_parent();
         if (parent != nullptr) {
             if (this == parent.get()) {
                 return;
@@ -81,7 +81,7 @@ namespace GodotObjectCompiler
         _children.push_back(p_child);
     }
 
-    void Context::add_child_before(Ref<Node> p_child, Ref<Node> p_existing)
+    void Context::add_child_before(const Ref<Node>& p_child, const Ref<Node>& p_existing)
     {
         auto itr = std::find(_children.begin(), _children.end(), p_existing);
         PANIC_COND(p_child == nullptr, "Trying to add null child.");
@@ -124,7 +124,7 @@ namespace GodotObjectCompiler
         return count;
     }
 
-    Ref<Node> Context::get_child(SignedIndex p_idx) const
+    Ref<Node> Context::get_child(const SignedIndex p_idx) const
     {
         Index actual_idx = p_idx;
         if (p_idx < 0) {
@@ -140,7 +140,7 @@ namespace GodotObjectCompiler
         return *itr;
     }
 
-    Ref<Node> Context::get_child_strict(SignedIndex p_idx) const
+    Ref<Node> Context::get_child_strict(const SignedIndex p_idx) const
     {
         if (p_idx < 0 || static_cast<Size>(p_idx) >= _children.size()) {
             return nullptr;
@@ -181,7 +181,7 @@ namespace GodotObjectCompiler
     }
 
     Context::ChildIterator
-    Context::reparent_child(decltype(_children)::iterator p_itr, Ref<Context> p_new_parent)
+    Context::reparent_child(decltype(_children)::iterator p_itr, const Ref<Context>& p_new_parent)
     {
         if (p_itr != _children.end()) {
             Ref<Node> child = *p_itr;
@@ -211,11 +211,11 @@ namespace GodotObjectCompiler
     void Context::replace_child(
         const Ref<Node>& p_child, const Ref<Node>& p_new_child, bool p_take_children)
     {
-        auto itr = std::find(_children.begin(), _children.end(), p_child);
-        if (itr != _children.end()) {
+        if (const auto itr = std::find(_children.begin(), _children.end(), p_child);
+            itr != _children.end()) {
             *itr = p_new_child;
 
-            UID child_uid = p_child->get_id();
+            const UID child_uid = p_child->get_id();
             p_new_child->_index = p_child->_index;
             p_new_child->_parent = this->as<Context>();
             p_child->_id = LibraryContext::instance()->get_node_db()->request_id_change(child_uid);
@@ -223,13 +223,13 @@ namespace GodotObjectCompiler
                 p_new_child->get_id(), child_uid);
             p_child->_parent = {};
 
-            Ref<Context> child_context = p_child->as<Context>();
-            Ref<Context> new_child_context = p_new_child->as<Context>();
+            const Ref<Context> child_context = p_child->as<Context>();
 
-            if (p_take_children && child_context && new_child_context) {
-                for (auto itr = child_context->_children.begin();
-                     itr != child_context->_children.end();) {
-                    itr = child_context->reparent_child(itr, new_child_context);
+            if (const Ref<Context> new_child_context = p_new_child->as<Context>();
+                p_take_children && child_context && new_child_context) {
+                for (auto inner_itr = child_context->_children.begin();
+                     inner_itr != child_context->_children.end();) {
+                    inner_itr = child_context->reparent_child(inner_itr, new_child_context);
                 }
             }
         }
@@ -247,7 +247,7 @@ namespace GodotObjectCompiler
 
     String NamedContext::_name_lazy_get() const
     {
-        Ref<Identifier> identifier = find_child<Identifier>();
+        const Ref<Identifier> identifier = find_child<Identifier>();
         if (!identifier) {
             return "";
         }
@@ -263,9 +263,9 @@ namespace GodotObjectCompiler
     {
         StreamWriter writer;
 
-        if (Ref<Namespace> ns = find_ancestor<Namespace>()) {
-            auto parent_qualified_name = ns->qualified_name();
-            if (!parent_qualified_name.empty()) {
+        if (const Ref<Namespace> ns = find_ancestor<Namespace>()) {
+            if (const auto parent_qualified_name = ns->qualified_name();
+                !parent_qualified_name.empty()) {
                 writer.write(parent_qualified_name);
                 writer.write("::");
             }
@@ -331,7 +331,7 @@ namespace GodotObjectCompiler
         Size template_parameter_count = 0;
         for (const Ref<Node>& child : _children) {
             if (const Ref<TemplateParameters> parameters = child->as<TemplateParameters>()) {
-                template_parameter_count = parameters->get_child_count();
+                template_parameter_count = parameters->parameter_count;
             } else if (const Ref<TemplateArguments> arguments = child->as<TemplateArguments>()) {
                 template_parameter_count = arguments->get_child_count();
             }

@@ -192,9 +192,22 @@ GOC_TEST(TemplateClass)
         BFS, NamedContextPredicates::name<Class>("TemplateClass"));
     GOC_TEST_ASSERT(template_class, "Class named TemplateClass not found.");
 
-    Ref<TemplateParameters> template_parameters = template_class->find_child<TemplateParameters>();
-    GOC_TEST_ASSERT(template_parameters, "TemplateParameters not found.");
-    GOC_TEST_EQ(template_parameters->get_child_count(), 1, "Wrong parameter count.");
+    GOC_TEST_EQ(template_class->template_parameter_count(), 1, "Wrong parameter count.");
+
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(TemplateClassDefaults)
+{
+    GOC_TEST_PARSE_FILE("tests/files/class_tests/template_class_defaults.h");
+
+    Ref<Class> template_class = global_namespace->find_descendant<Class>(
+        BFS, NamedContextPredicates::name<Class>("TemplateClassDefaults"));
+    GOC_TEST_ASSERT(template_class, "Class named TemplateClass not found.");
+
+    GOC_TEST_EQ(template_class->template_parameter_count(), 2, "Wrong parameter count.");
+    GOC_TEST_EQ(
+        template_class->optional_template_parameter_count(), 1, "Wrong optional parameter count.");
 
     return TEST_RESULT_SUCCESS;
 };

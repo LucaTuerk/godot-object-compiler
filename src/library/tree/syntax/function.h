@@ -63,6 +63,13 @@ namespace GodotObjectCompiler
     class TemplateParameters : public Context
     {
         NODE_TYPE(TemplateParameters);
+
+      public:
+        int parameter_count = 0;
+        int optional_parameter_count = 0;
+
+        void read_from(IStructuredReader* p_reader) override;
+        void write_to(IStructuredWriter* p_writer) override;
     };
 
     class TemplateArguments : public Context

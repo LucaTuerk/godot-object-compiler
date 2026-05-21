@@ -54,14 +54,15 @@ namespace GodotObjectCompiler
     {
         NODE_TYPE(Class);
 
-      public:
         LAZY(Class, Size, template_parameter_count);
+        LAZY(Class, Size, optional_template_parameter_count);
+        LAZY(Class, bool, has_generated_class_attribute);
+        LAZY(Class, String, first_base_qualifed_name);
+
         /* collections */
         LAZY(Class, Vector<String>, direct_bases_names);
         LAZY_MUT(Class, Vector<Ref<Class>>, base_classes);
-        LAZY(Class, bool, has_generated_class_attribute);
         LAZY(Class, Vector<Ref<Attribute>>, attributes);
-        LAZY(Class, String, first_base_qualifed_name);
         // Functions
         LAZY(Class, Vector<Ref<Function>>, member_functions);
         LAZY(Class, Vector<Ref<Function>>, public_member_functions);
@@ -75,7 +76,6 @@ namespace GodotObjectCompiler
 
       public:
         bool has_function_named(const String& name) const;
-        bool copy_to(const Ref<Node>& p_other) const override;
     };
 
 } // namespace GodotObjectCompiler
