@@ -140,7 +140,6 @@ namespace GodotObjectCompiler
             // godot-cpp includes need to be changed to godot
             // internal includes for this case
             PANIC("UNIMPLEMENTED");
-            break;
         }
 
         register_types_header->add_children(

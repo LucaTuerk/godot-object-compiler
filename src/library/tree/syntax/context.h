@@ -56,7 +56,7 @@ namespace GodotObjectCompiler
     template <typename NodeT, typename... Args> class Builder
     {
       public:
-        Builder(Args... args);
+        Builder(Args&&... args);
 
         operator Ref<NodeT>();
 
@@ -67,10 +67,10 @@ namespace GodotObjectCompiler
 
         Builder& operator[](const Ref<Node>& p_node);
 
-        template <typename B, typename... BArgs> Builder& with_child(BArgs... child_args);
+        template <typename B, typename... BArgs> Builder& with_child(BArgs&&... child_args);
 
         template <typename B, typename... BArgs>
-        Builder& with_child_ref(Ref<B>* ptr, BArgs... child_args);
+        Builder& with_child_ref(Ref<B>* ptr, BArgs&&... child_args);
 
         Builder& with_child(const Ref<Node>& p_child);
 
@@ -85,7 +85,7 @@ namespace GodotObjectCompiler
         Builder& $(const String& p_tag);
 
       private:
-        Builder(Ref<Context> parent, Args... args);
+        Builder(Ref<Context> parent, Args&&... args);
 
         Ref<NodeT> _created;
 
@@ -443,13 +443,13 @@ namespace GodotObjectCompiler
         return results;
     }
 
-    template <typename T, typename... Args> Builder<T, Args...>::Builder(Args... args)
+    template <typename T, typename... Args> Builder<T, Args...>::Builder(Args&&... args)
     {
         _created = node_new<T>(std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>
-    Builder<T, Args...>::Builder(Ref<Context> parent, Args... args)
+    Builder<T, Args...>::Builder(Ref<Context> parent, Args&&... args)
     {
         _created = node_new<T>(std::forward<Args>(args)...);
         if (parent) {
@@ -489,7 +489,7 @@ namespace GodotObjectCompiler
 
     template <typename T, typename... Args>
     template <typename B, typename... BArgs>
-    Builder<T, Args...>& Builder<T, Args...>::with_child(BArgs... child_args)
+    Builder<T, Args...>& Builder<T, Args...>::with_child(BArgs&&... child_args)
     {
         _created->add_child(node_new<B>(std::forward<BArgs>(child_args)...));
         return *this;
@@ -497,7 +497,7 @@ namespace GodotObjectCompiler
 
     template <typename T, typename... Args>
     template <typename B, typename... BArgs>
-    Builder<T, Args...>& Builder<T, Args...>::with_child_ref(Ref<B>* ptr, BArgs... child_args)
+    Builder<T, Args...>& Builder<T, Args...>::with_child_ref(Ref<B>* ptr, BArgs&&... child_args)
     {
         Ref<B> child = node_new<B>(std::forward<BArgs>(child_args)...);
         _created->add_child(child);
@@ -548,26 +548,27 @@ namespace GodotObjectCompiler
         return with_tag(p_tag);
     }
 
-    template <typename T, typename... Args> Builder<T, Args...> build(Args... args)
+    template <typename T, typename... Args> Builder<T, Args...> build(Args&&... args)
     {
-        return Builder<T, Args...>(args...);
+        return Builder<T, Args...>(std::forward<Args>(args)...);
     }
 
-    template <typename T, typename... Args> Builder<T, Args...> build_ref(Ref<T>* ptr, Args... args)
+    template <typename T, typename... Args>
+    Builder<T, Args...> build_ref(Ref<T>* ptr, Args&&... args)
     {
-        Builder<T, Args...> builder(args...);
+        Builder<T, Args...> builder(std::forward<Args>(args)...);
         *ptr = builder;
         return builder;
     }
 
-    template <typename T, typename... Args> Builder<T, Args...> B(Args... args)
+    template <typename T, typename... Args> Builder<T, Args...> B(Args&&... args)
     {
-        return build<T, Args...>(args...);
+        return build<T, Args...>(std::forward<Args>(args)...);
     }
 
-    template <typename T, typename... Args> Builder<T, Args...> R(Ref<T>* ptr, Args... args)
+    template <typename T, typename... Args> Builder<T, Args...> R(Ref<T>* ptr, Args&&... args)
     {
-        return build_ref<T, Args...>(ptr, args...);
+        return build_ref<T, Args...>(ptr, std::forward<Args>(args)...);
     }
 
 } // namespace GodotObjectCompiler

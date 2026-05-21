@@ -189,7 +189,7 @@ namespace GodotObjectCompiler
             const String base = path_concat(
                 _cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
             return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
-        } break;
+        }
         }
         PANIC("Unhandled cache type.");
     }
