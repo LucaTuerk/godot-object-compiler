@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* signals.h                                                              */
+/* signals_const_ref.h                                                    */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,7 +34,7 @@
 /**************************************************************************/
 #pragma once
 
-#include "signals.generated.h"
+#include "signals_const_ref.generated.h"
 
 namespace Tests
 {
@@ -45,139 +45,139 @@ namespace Tests
         GODOT_GENERATED_BODY();
 
         GODOT_SIGNAL();
-        void variant_signal(Variant p_param);
+        void variant_signal(const Variant& p_param);
 
         GODOT_SIGNAL();
-        void aabb_signal(AABB);
+        void aabb_signal(const AABB& p_param);
 
         GODOT_SIGNAL();
-        void array_signal(Array p_param);
+        void array_signal(const Array& p_param);
 
         GODOT_SIGNAL();
-        void typed_array_signal(TypedArray<Resource> p_param);
+        void typed_array_signal(const TypedArray<Resource>& p_param);
 
         GODOT_SIGNAL();
-        void basis_signal(Basis p_param);
+        void basis_signal(const Basis& p_param);
 
         GODOT_SIGNAL();
-        void bool_signal(bool p_param);
+        void bool_signal(const bool& p_param);
 
         GODOT_SIGNAL();
-        void callable_signal(Callable p_param);
+        void callable_signal(const Callable& p_param);
 
         GODOT_SIGNAL();
-        void color_signal(Color p_param);
+        void color_signal(const Color& p_param);
 
         GODOT_SIGNAL();
-        void dictionary_signal(Dictionary p_param);
+        void dictionary_signal(const Dictionary& p_param);
 
         GODOT_SIGNAL();
-        void typed_dictionary_signal(TypedDictionary<int, Resource> p_param);
+        void typed_dictionary_signal(const TypedDictionary<int, Resource>& p_param);
 
         GODOT_SIGNAL();
-        void float_signal(float p_param);
+        void float_signal(const float&);
 
         GODOT_SIGNAL();
-        void real_t_signal(real_t p_param);
+        void real_t_signal(const real_t& p_param);
 
         GODOT_SIGNAL();
-        void double_signal(double p_param);
+        void double_signal(const double& p_param);
 
         GODOT_SIGNAL();
-        void int_signal(int p_param);
+        void int_signal(const int& p_param);
 
         GODOT_SIGNAL();
-        void long_signal(long p_param);
+        void long_signal(const long& p_param);
 
         GODOT_SIGNAL();
-        void node_path_signal(NodePath);
+        void node_path_signal(const NodePath& p_param);
 
         GODOT_SIGNAL();
-        void object_signal(Object* p_param);
+        void object_signal(const Object*& p_param);
 
         GODOT_SIGNAL();
-        void packed_byte_array_signal(PackedByteArray p_param);
+        void packed_byte_array_signal(const PackedByteArray& p_param);
 
         GODOT_SIGNAL();
-        void packed_color_array_signal(PackedColorArray p_param);
+        void packed_color_array_signal(const PackedColorArray&);
 
         GODOT_SIGNAL();
-        void packed_float32_array_signal(PackedFloat32Array);
+        void packed_float32_array_signal(const PackedFloat32Array& p_param);
 
         GODOT_SIGNAL();
-        void packed_float64_array_signal(PackedFloat64Array p_param);
+        void packed_float64_array_signal(const PackedFloat64Array& p_param);
 
         GODOT_SIGNAL();
-        void packed_int32_array_signal(PackedInt32Array p_param);
+        void packed_int32_array_signal(const PackedInt32Array& p_param);
 
         GODOT_SIGNAL();
-        void packed_int64_array_signal(PackedInt64Array p_param);
+        void packed_int64_array_signal(const PackedInt64Array& p_param);
 
         GODOT_SIGNAL();
-        void packed_string_array_signal(PackedStringArray p_param);
+        void packed_string_array_signal(const PackedStringArray& p_param);
 
         GODOT_SIGNAL();
-        void packed_vector2_array_signal(PackedVector2Array p_param);
+        void packed_vector2_array_signal(const PackedVector2Array& p_param);
 
         GODOT_SIGNAL();
-        void packed_vector3_array_signal(PackedVector3Array p_param);
+        void packed_vector3_array_signal(const PackedVector3Array& p_param);
 
         GODOT_SIGNAL();
-        void packed_vector4_array_signal(PackedVector4Array p_param);
+        void packed_vector4_array_signal(const PackedVector4Array& p_param);
 
         GODOT_SIGNAL();
-        void plane_signal(Plane p_param);
+        void plane_signal(const Plane& p_param);
 
         GODOT_SIGNAL();
-        void projection_signal(Projection p_param);
+        void projection_signal(const Projection& p_param);
 
         GODOT_SIGNAL();
-        void quaternion_signal(Quaternion p_param);
+        void quaternion_signal(const Quaternion&);
 
         GODOT_SIGNAL();
-        void rect2_signal(Rect2 p_param);
+        void rect2_signal(const Rect2& p_param);
 
         GODOT_SIGNAL();
-        void rect2i_signal(Rect2i p_param);
+        void rect2i_signal(const Rect2i& p_param);
 
         GODOT_SIGNAL();
-        void signal_signal(Signal p_param);
+        void signal_signal(const Signal& p_param);
 
         GODOT_SIGNAL();
-        void string_signal(String p_param);
+        void string_signal(const String& p_param);
 
         GODOT_SIGNAL();
-        void string_name_signal(StringName p_param);
+        void string_name_signal(const StringName& p_param);
 
         GODOT_SIGNAL();
-        void transform2D_signal(Transform2D p_param);
+        void transform2D_signal(const Transform2D& p_param);
 
         GODOT_SIGNAL();
-        void transform3D_signal(Transform3D p_param);
+        void transform3D_signal(const Transform3D& p_param);
 
         GODOT_SIGNAL();
-        void vector2_signal(Vector2 p_param);
+        void vector2_signal(const Vector2& p_param);
 
         GODOT_SIGNAL();
-        void vector2i_signal(Vector2i p_param);
+        void vector2i_signal(const Vector2i& p_param);
 
         GODOT_SIGNAL();
-        void vector3_signal(Vector3 p_param);
+        void vector3_signal(const Vector3& p_param);
 
         GODOT_SIGNAL();
-        void vector3i_signal(Vector3i p_param);
+        void vector3i_signal(const Vector3i& p_param);
 
         GODOT_SIGNAL();
-        void vector4_signal(Vector4 p_param);
+        void vector4_signal(const Vector4& p_param);
 
         GODOT_SIGNAL();
-        void vector4i_signal(Vector4i p_param);
+        void vector4i_signal(const Vector4i& p_param);
 
         GODOT_SIGNAL();
-        void node_signal(Node* p_param);
+        void node_signal(const Node*& p_param);
 
         GODOT_SIGNAL();
-        void resource_signal(Ref<Resource> p_param);
+        void resource_signal(const Ref<Resource>& p_param);
     };
 } // namespace Tests
 

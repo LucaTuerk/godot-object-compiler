@@ -46,8 +46,8 @@ namespace GodotObjectCompiler
         NODE_TYPE(Error);
 
       public:
-        explicit Error(ErrorLevel level, const String& message)
-            : error_level(level), message(message)
+        explicit Error(const ErrorLevel level, String message)
+            : error_level(level), message(std::move(message))
         {
         }
 
@@ -59,7 +59,7 @@ namespace GodotObjectCompiler
         void read_from(IStructuredReader* p_reader) override;
         void set_handled();
 
-        ErrorLevel error_level;
+        ErrorLevel error_level = ERROR;
         String message;
 
         static inline const Ref<Error> OK = nullptr;
@@ -73,7 +73,8 @@ namespace GodotObjectCompiler
         NODE_TYPE(GeneratorError);
 
       public:
-        explicit GeneratorError(ErrorLevel level, const String& message) : Error(level, message)
+        explicit GeneratorError(const ErrorLevel level, const String& message)
+            : Error(level, message)
         {
         }
 
@@ -92,7 +93,7 @@ namespace GodotObjectCompiler
         NODE_TYPE(ParserError);
 
       public:
-        explicit ParserError(ErrorLevel level, const String& message) : Error(level, message)
+        explicit ParserError(const ErrorLevel level, const String& message) : Error(level, message)
         {
         }
 
@@ -109,7 +110,7 @@ namespace GodotObjectCompiler
 #define ERROR_CAST(type, error)                                                                    \
     (error->is<type>() ? error->as<type>() : node_new<type>(error->error_level, error->message))
 
-#define ERROR(...) return node_new<Error>(ErrorLevel::ERROR, format(__VA_ARGS__));
+#define ERROR(...) return node_new<Error>(ErrorLevel::ERROR, format(__VA_ARGS__))
 
 #define ERROR_COND(condition, ...)                                                                 \
     if (condition) {                                                                               \

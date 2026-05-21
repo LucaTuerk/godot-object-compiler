@@ -99,7 +99,7 @@ namespace GodotObjectCompiler
         return p_typename;
     }
     bool GodotGeneratorUtils::get_type_header(
-        Ref<Type> p_type, Ref<Namespace> p_from_namespace, String& r_header)
+        const Ref<Type>& p_type, const Ref<Namespace>& p_from_namespace, String& r_header)
     {
         Result<NamedContext> type_result =
             LibraryContext::instance()->get_type_db()->get_type_data<NamedContext>(
@@ -138,7 +138,7 @@ namespace GodotObjectCompiler
             ERROR_COND(type == nullptr, "Failed to find type for signal parameter.");
 
             type = type->qualified();
-            Ref<Identifier> identifier = parameter->find_child<Identifier>();
+            const Ref<Identifier> identifier = parameter->find_child<Identifier>();
             String name = identifier ? identifier->name : format("p_param_%d", i);
 
             Result<Node> property_info_result = build_property_info_defaults(
@@ -737,8 +737,7 @@ namespace GodotObjectCompiler
         const Ref<Namespace>& p_from_namespace)
     {
         UNUSED(p_from_namespace);
-        Vector<Ref<Type>> inner_types;
-        if (type_is_assumed_template_type(
+        if (Vector<Ref<Type>> inner_types; type_is_assumed_template_type(
                 p_target_type, AssumedGodotTypes::GodotRef(), inner_types)) {
             p_inner_type = inner_types[0];
             return true;
@@ -752,8 +751,7 @@ namespace GodotObjectCompiler
         const Ref<Namespace>& p_from_namespace)
     {
         UNUSED(p_from_namespace);
-        Vector<Ref<Type>> inner_types;
-        if (type_is_assumed_template_type(
+        if (Vector<Ref<Type>> inner_types; type_is_assumed_template_type(
                 p_target_type, AssumedGodotTypes::TypedArray(), inner_types)) {
             p_inner_type = inner_types[0];
             return true;
@@ -977,10 +975,10 @@ namespace GodotObjectCompiler
         Ref<GodotPropertyHintArgument> property_hint;
         Ref<GodotPropertyUsageFlagsArgument> usage_flags;
 
-        if (!get_defaults_for_type(
-                p_type, variant_type, property_hint, usage_flags, p_from_namespace, p_usage)) {
-            ERROR("Failed to get default property info.")
-        }
+        ERROR_COND(
+            !get_defaults_for_type(
+                p_type, variant_type, property_hint, usage_flags, p_from_namespace, p_usage),
+            "Failed to get default property info for type:\n%s", p_type->pretty_print().c_str());
 
         return build_property_info(variant_type, property_hint, {usage_flags}, p_property_name);
     }

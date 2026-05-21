@@ -61,7 +61,8 @@ namespace GodotObjectCompiler
 
         String type_name_remove_usings(String p_typename);
 
-        bool get_type_header(Ref<Type> p_type, Ref<Namespace> p_from_namespace, String& r_header);
+        bool get_type_header(
+            const Ref<Type>& p_type, const Ref<Namespace>& p_from_namespace, String& r_header);
 
         Ref<Type> const_ref(const String& p_type_name);
 

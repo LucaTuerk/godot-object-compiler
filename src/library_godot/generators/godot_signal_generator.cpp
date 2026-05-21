@@ -70,8 +70,8 @@ namespace GodotObjectCompiler
             Ref<Type> type = parameter->find_child<Type>();
             GEN_ERROR_COND(!type, p_current_node, "Failed to get function argument type.");
             type = type->qualified();
-            Ref<Identifier> identifier = parameter->find_child<Identifier>();
-            String name = identifier ? identifier->name : format("p_param_%d", i);
+            const Ref<Identifier> identifier = parameter->find_child<Identifier>();
+            const String name = identifier ? identifier->name : format("p_param_%d", i);
 
             func_parameters->B<Parameter>()[{
                 type->clone(),
