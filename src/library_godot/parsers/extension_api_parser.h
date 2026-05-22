@@ -34,9 +34,9 @@
 /**************************************************************************/
 
 #pragma once
-#include "library/parser/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/enum.h"
+#include "library/tree_sitter_parser/parser.h"
 
 namespace GodotObjectCompiler
 {

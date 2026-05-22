@@ -38,8 +38,8 @@
 #include "generate_type_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
-#include "library/parser/parser.h"
 #include "library/tree/syntax/namespace.h"
+#include "library/tree_sitter_parser/parser.h"
 #include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler

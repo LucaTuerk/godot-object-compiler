@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(goc VERSION 0.0 LANGUAGES CXX)
 include(CTest)
 
@@ -23,6 +23,7 @@ if (CPP_CHECK)
     endif ()
 endif ()
 
+find_package(Clang CONFIG REQUIRED)
 
 set(EXEC_NAME "goc")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -57,12 +58,14 @@ target_include_directories(${EXEC_NAME} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tree-sitter/lib/include
         ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tree-sitter-cpp/bindings/c
         ${CMAKE_CURRENT_LIST_DIR}/thirdparty/json/single_include
+        ${CLANG_INCLUDE_DIRS}
 )
 
 target_link_libraries(${EXEC_NAME} PRIVATE
         tree-sitter
         tree-sitter-cpp
         nlohmann_json
+        libclang
 )
 
 if (NOT WIN32)
@@ -92,6 +95,7 @@ if (GOC_TESTS_ENABLED)
             ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tree-sitter/lib/include
             ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tree-sitter-cpp/bindings/c
             ${CMAKE_CURRENT_LIST_DIR}/thirdparty/json/single_include
+            ${CLANG_INCLUDE_DIRS}
     )
 
     target_sources(${EXEC_NAME_TEST} PRIVATE
@@ -102,6 +106,7 @@ if (GOC_TESTS_ENABLED)
             tree-sitter
             tree-sitter-cpp
             nlohmann_json
+            libclang
     )
 
     target_compile_definitions(${EXEC_NAME_TEST} PRIVATE DEV_BUILD=1)

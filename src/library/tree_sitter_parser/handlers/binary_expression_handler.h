@@ -1,0 +1,62 @@
+/**************************************************************************/
+/* binary_expression_handler.h                                            */
+/*                        ___  ___  ___   ___ _____                       */
+/*                       / __|/ _ \|   \ / _ \_   _|                      */
+/*                      | (_ | (_) | |) | (_) || |                        */
+/*                       \___|\___/|___/ \___/ |_|                        */
+/*   ___  ___    _ ___ ___ _____    ___ ___  __  __ ___ ___ _    ___ ___  */
+/*  / _ \| _ )_ | | __/ __|_   _|  / __/ _ \|  \/  | _ \_ _| |  | __| _ \ */
+/* | (_) | _ \ || | _| (__  | |   | (_| (_) | |\/| |  _/| || |__| _||   / */
+/*  \___/|___/\__/|___\___| |_|    \___\___/|_|  |_|_| |___|____|___|_|_\ */
+/*                                                                        */
+/*              This file is part of Godot Object Compiler                */
+/*                  Copyright (c) 2026 Luca Ian Tuerk                     */
+/**************************************************************************/
+/*                            MIT LICENCE                                 */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
+
+#pragma once
+#include "library/tree_sitter_parser/node_handler.h"
+#include "library/tree_sitter_parser/parser.h"
+
+namespace GodotObjectCompiler
+{
+
+    class EnumValue;
+
+    class BinaryExpressionHandler : public ITreeSitterNodeHandler
+    {
+        NODE_HANDLER(BinaryExpressionHandler)
+      public:
+        bool handles_node(const Ref<TreeSitterNode>& p_current_src) override;
+
+        ParserStep
+        handle(const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target) override;
+
+        static Opt<int> calculate_binary_expression(
+            const Ref<TreeSitterNode>& left_operand, const Ref<TreeSitterNode>& expr_operator,
+            const Ref<TreeSitterNode>& right_operand, const Ref<EnumValue>& current_target);
+
+        static Opt<int>
+        find_value_for_identifier(const String& identifier, const Ref<EnumValue>& current_target);
+    };
+
+} // namespace GodotObjectCompiler

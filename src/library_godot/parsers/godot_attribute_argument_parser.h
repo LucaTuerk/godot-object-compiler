@@ -36,7 +36,7 @@
 #pragma once
 #include "library/attribute_db.h"
 #include "library/generator/attribute_parameter_type.h"
-#include "library/parser/attribute_argument_parser.h"
+#include "library/tree_sitter_parser/attribute_argument_parser.h"
 
 namespace GodotObjectCompiler
 {

@@ -40,12 +40,12 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 #include "library/library_context.h"
-#include "library/parser/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/define.h"
 #include "library/tree/syntax/enum.h"
 #include "library/tree/syntax/namespace.h"
 #include "library/tree/syntax/struct.h"
+#include "library/tree_sitter_parser/parser.h"
 #include "library/type_db.h"
 #include "library_godot/parsers/extension_api_parser.h"
 

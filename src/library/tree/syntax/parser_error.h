@@ -35,7 +35,7 @@
 #pragma once
 #include "library/core/core.h"
 #include "library/core/reader_writer.h"
-#include "library/parser/parser_context.h"
+#include "library/tree_sitter_parser/parser_context.h"
 #include "node.h"
 
 namespace GodotObjectCompiler

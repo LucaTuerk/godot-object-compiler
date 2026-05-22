@@ -37,9 +37,9 @@
 
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
-#include "library/parser/parser.h"
-#include "library/parser/tree_sitter_node.h"
 #include "library/tree/syntax/namespace.h"
+#include "library/tree_sitter_parser/parser.h"
+#include "library/tree_sitter_parser/tree_sitter_node.h"
 
 namespace GodotObjectCompiler
 {
