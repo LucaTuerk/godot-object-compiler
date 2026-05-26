@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* main.cpp                                                               */
+/* enum_handler.h                                                         */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,35 +32,18 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
-#include "main.h"
-
-#include "application/application.h"
-#include "application/programs/generate_resources.h"
+#pragma once
+#include "library/clang_parser/handler.h"
 #include "library/clang_parser/parser.h"
-#include "library/core/config.h"
-#include "library/core/core.h"
-#include "library/library_context.h"
-#include "library_godot/parsers/extension_api_parser.h"
 
-using namespace GodotObjectCompiler;
-
-int main(int argc, char* argv[])
+namespace GodotObjectCompiler::ClangASTHandlers
 {
-    ClangParser parser;
-    Ref<Context> context = node_new<Context>();
-    Ref<ParserError> error = parser.parse_file(
-        "/home/luca/Repositories/godot-object-compiler/tests/files/class_tests/simple_class.h",
-        context);
-    std::cout << context->pretty_print();
-    return 0;
+    class EnumHandler : public IClangASTHandler
+    {
+        CLANG_AST_HANDLER(EnumHandler);
 
-    Vector<String> args;
-    for (int i = 1; i < argc; i++) {
-        args.emplace_back(argv[i]);
-    }
-
-    Application application;
-    LibraryContext::instance()->set_error_level(ERROR, FULL);
-    return application.run(args);
-}
+      public:
+        bool handles_node(CXCursor p_cursor) override;
+        Step handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) override;
+    };
+} // namespace GodotObjectCompiler::ClangASTHandlers

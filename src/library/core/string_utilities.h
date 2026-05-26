@@ -94,4 +94,7 @@ namespace GodotObjectCompiler
 
     Vector<String> string_split_length(const String& p_content, Size length);
 
+    Vector<String> string_get_enclosed_sections(
+        const String& p_content, char p_open, char p_close, char p_seperator);
+
 } // namespace GodotObjectCompiler

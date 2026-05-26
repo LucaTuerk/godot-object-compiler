@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* main.cpp                                                               */
+/* method_handler.cpp                                                     */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,35 +32,50 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+#include "method_handler.h"
 
-#include "main.h"
+#include "library/tree/syntax/function.h"
+#include "library/tree/syntax/identifier.h"
+#include "library/tree/syntax/modifiers.h"
 
-#include "application/application.h"
-#include "application/programs/generate_resources.h"
-#include "library/clang_parser/parser.h"
-#include "library/core/config.h"
-#include "library/core/core.h"
-#include "library/library_context.h"
-#include "library_godot/parsers/extension_api_parser.h"
-
-using namespace GodotObjectCompiler;
-
-int main(int argc, char* argv[])
+namespace GodotObjectCompiler::ClangASTHandlers
 {
-    ClangParser parser;
-    Ref<Context> context = node_new<Context>();
-    Ref<ParserError> error = parser.parse_file(
-        "/home/luca/Repositories/godot-object-compiler/tests/files/class_tests/simple_class.h",
-        context);
-    std::cout << context->pretty_print();
-    return 0;
 
-    Vector<String> args;
-    for (int i = 1; i < argc; i++) {
-        args.emplace_back(argv[i]);
+    bool MethodHandler::handles_node(CXCursor p_cursor)
+    {
+        return cursor_kind_in(p_cursor, {CXCursor_CXXMethod, CXCursor_FunctionDecl});
     }
 
-    Application application;
-    LibraryContext::instance()->set_error_level(ERROR, FULL);
-    return application.run(args);
-}
+    IClangASTHandler::Step
+    MethodHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    {
+        const ClangString name = clang_getCursorSpelling(p_cursor);
+
+        const auto type_result = get_cursor_type(p_cursor);
+        RESULT_ERROR_PASS_ON(ParserError, type_result, type);
+
+        p_root = p_target->B<Function>();
+
+        if (p_cursor.kind == CXCursor_CXXMethod) {
+            if (clang_CXXMethod_isStatic(p_cursor)) {
+                p_root->B<Static>();
+            }
+
+            if (clang_CXXMethod_isVirtual(p_cursor)) {
+                p_root->B<Virtual>();
+            }
+        }
+
+        p_root->B<Identifier>(name);
+
+        p_target = p_root->B<Parameters>();
+
+        if (p_cursor.kind == CXCursor_CXXMethod) {
+            if (clang_CXXMethod_isConst(p_cursor)) {
+                p_root->B<Const>();
+            }
+        }
+
+        return Step::Into();
+    }
+} // namespace GodotObjectCompiler::ClangASTHandlers

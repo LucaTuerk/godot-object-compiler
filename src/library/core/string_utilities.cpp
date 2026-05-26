@@ -318,6 +318,53 @@ namespace GodotObjectCompiler
         return result;
     }
 
+    Vector<String> string_get_enclosed_sections(
+        const String& p_content, const char p_open, const char p_close, const char p_seperator)
+    {
+        Vector<String> result;
+        StreamWriter writer;
+
+        int open = 0;
+        int close = 0;
+
+        for (const char c : p_content) {
+            if (c == p_seperator && open > 0 && (open - 1) == close) {
+                if (writer.current_length() != 0) {
+                    result.emplace_back(string_trim(writer.get_string()));
+                    writer = StreamWriter();
+                }
+                continue;
+            }
+
+            if (c == p_close) {
+                close++;
+
+                if (open == close) {
+                    break;
+                }
+            }
+
+            if (c == p_open) {
+                open++;
+
+                if (open == 1) {
+                    if (writer.current_length() != 0) {
+                        result.emplace_back(string_trim(writer.get_string()));
+                        writer = StreamWriter();
+                    }
+                    continue;
+                }
+            }
+
+            writer.write_generic(c);
+        }
+
+        if (writer.current_length() != 0) {
+            result.emplace_back(string_trim(writer.get_string()));
+        }
+        return result;
+    }
+
     String format(const String& p_format_string)
     {
         return p_format_string;

@@ -1,4 +1,8 @@
 #pragma once
 #include "base_class_handler.h"
 #include "class_handler.h"
+#include "enum_handler.h"
 #include "field_handler.h"
+#include "literal_handler.h"
+#include "method_handler.h"
+#include "parameter_handler.h"
