@@ -79,6 +79,11 @@ namespace GodotObjectCompiler::ClangASTHandlers
         return error;
     }
 
+    int IClangASTHandler::get_priority() const
+    {
+        return 0;
+    }
+
     bool IClangASTHandler::cursor_kind_in(
         const CXCursor& p_cursor, std::initializer_list<CXCursorKind>&& p_kinds)
     {
@@ -99,15 +104,19 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         clang_tokenize(unit, range, &tokens, &num_tokens);
 
-        StreamWriter writer;
+        // for (unsigned i = 0; i < num_tokens; ++i) {
+        //     ClangString spelling = clang_getTokenSpelling(unit, tokens[i]);
+        //     writer.write(spelling);
+        // }
 
-        for (unsigned i = 0; i < num_tokens; ++i) {
-            ClangString spelling = clang_getTokenSpelling(unit, tokens[i]);
-            writer.write(spelling);
+        if (num_tokens > 0) {
+            ClangString spelling = clang_getTokenSpelling(unit, tokens[0]);
+            clang_disposeTokens(unit, tokens, num_tokens);
+            return spelling;
         }
 
         clang_disposeTokens(unit, tokens, num_tokens);
-        return writer.get_string();
+        return "";
     }
 
     Result<Type, ParserError> IClangASTHandler::get_cursor_type(const CXCursor& p_cursor)

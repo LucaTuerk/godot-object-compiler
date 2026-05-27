@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* field_handler.cpp                                                      */
+/* access_specifier_handler.h                                             */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,33 +32,18 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
-#include "field_handler.h"
-
-#include "library/tree/syntax/field.h"
-#include "library/tree/syntax/identifier.h"
-#include "library/tree/syntax/type.h"
+#pragma once
+#include "library/clang_parser/handler.h"
+#include "library/clang_parser/parser.h"
 
 namespace GodotObjectCompiler::ClangASTHandlers
 {
-
-    bool FieldHandler::handles_node(CXCursor p_cursor)
+    class AccessSpecifierHandler : public IClangASTHandler
     {
-        return cursor_kind_in(p_cursor, {CXCursor_FieldDecl, CXCursor_VarDecl});
-    }
+        CLANG_AST_HANDLER(AccessSpecifierHandler);
 
-    IClangASTHandler::Step
-    FieldHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
-    {
-        UNUSED(p_root);
-
-        const ClangString name = clang_getCursorDisplayName(p_cursor);
-        const ClangString type_name = clang_getTypeSpelling(clang_getCursorType(p_cursor));
-
-        auto type_result = get_cursor_type(p_cursor);
-        RESULT_ERROR_PASS_ON(ParserError, type_result, type);
-
-        p_target = p_target->B<Field>()[{type, B<Identifier>(name)}];
-        return Step::Into();
-    }
+      public:
+        bool handles_node(CXCursor p_cursor) override;
+        Step handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) override;
+    };
 } // namespace GodotObjectCompiler::ClangASTHandlers

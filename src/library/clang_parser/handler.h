@@ -74,6 +74,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
         };
 
         virtual ~IClangASTHandler() = default;
+        virtual int get_priority() const;
         virtual bool handles_node(CXCursor p_cursor) = 0;
         virtual Step handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) = 0;
 

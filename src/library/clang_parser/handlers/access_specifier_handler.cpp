@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* field_handler.cpp                                                      */
+/* access_specifier_handler.cpp                                           */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,33 +32,37 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
-#include "field_handler.h"
-
-#include "library/tree/syntax/field.h"
-#include "library/tree/syntax/identifier.h"
-#include "library/tree/syntax/type.h"
+#include "access_specifier_handler.h"
 
 namespace GodotObjectCompiler::ClangASTHandlers
 {
-
-    bool FieldHandler::handles_node(CXCursor p_cursor)
+    bool AccessSpecifierHandler::handles_node(CXCursor p_cursor)
     {
-        return cursor_kind_in(p_cursor, {CXCursor_FieldDecl, CXCursor_VarDecl});
+        return p_cursor.kind == CXCursor_CXXAccessSpecifier;
     }
 
     IClangASTHandler::Step
-    FieldHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    AccessSpecifierHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
-        UNUSED(p_root);
+        CX_CXXAccessSpecifier access_specifier = clang_getCXXAccessSpecifier(p_cursor);
 
-        const ClangString name = clang_getCursorDisplayName(p_cursor);
-        const ClangString type_name = clang_getTypeSpelling(clang_getCursorType(p_cursor));
+        switch (access_specifier) {
+        case CX_CXXInvalidAccessSpecifier:
+            break;
+        case CX_CXXPublic: {
+            p_target->B<AccessSpecifier>(AccessSpecifier::PUBLIC);
+            break;
+        }
+        case CX_CXXProtected: {
+            p_target->B<AccessSpecifier>(AccessSpecifier::PROTECTED);
+            break;
+        }
+        case CX_CXXPrivate: {
+            p_target->B<AccessSpecifier>(AccessSpecifier::PRIVATE);
+            break;
+        }
+        }
 
-        auto type_result = get_cursor_type(p_cursor);
-        RESULT_ERROR_PASS_ON(ParserError, type_result, type);
-
-        p_target = p_target->B<Field>()[{type, B<Identifier>(name)}];
-        return Step::Into();
+        return Step::Over();
     }
 } // namespace GodotObjectCompiler::ClangASTHandlers

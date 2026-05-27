@@ -66,6 +66,10 @@ namespace GodotObjectCompiler::ClangASTHandlers
             literal = node_new<Literal>(format("%f", clang_EvalResult_getAsDouble(result)));
             break;
         }
+        case CXEval_StrLiteral: {
+            literal = node_new<Literal>(format("\"%s\"", clang_EvalResult_getAsStr(result)));
+            break;
+        }
         default:
             literal = node_new<Literal>(get_cursor_spelling(p_cursor));
             break;

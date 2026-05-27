@@ -37,34 +37,72 @@
 
 #include "handler.h"
 #include "handlers/all.h"
+#include "library/attribute_db.h"
+#include "library/core/file_system_utilities.h"
+#include "library/core/permissions.h"
+#include "library/core/string_writer.h"
 #include "library/tree/predicates.h"
 
 #include <utility>
 
 namespace GodotObjectCompiler
 {
-    Ref<ParserError> ClangParser::parse(const String& p_input, Ref<Context> r_target)
+    Pair<String, String> split_lines_include(const String& p_input)
     {
-        UNUSED(p_input);
-        UNUSED(r_target);
-        PARSER_ERROR("Clang parser can only parse files.");
+        Size last_include = p_input.rfind("#include");
+        if (last_include == String::npos) {
+            return {"", p_input};
+        }
+
+        Size last_include_new_line = p_input.find('\n', last_include);
+        return {
+            p_input.substr(0, last_include_new_line), p_input.substr(last_include_new_line + 1)};
     }
 
-    Ref<ParserError> ClangParser::parse_file(const String& p_path, Ref<Context> r_target)
+    Ref<ParserError> ClangParser::parse(const String& p_input, Ref<Context> r_target)
     {
+        Permissions::instance()->add_write_path(path_cwd());
+        const char* tmp_file = "_clang_parser_tmp.h";
+        {
+            FileWriter writer{tmp_file};
+
+            auto parts = split_lines_include(p_input);
+            writer.write(parts.first);
+
+            auto macros = LibraryContext::instance()->get_attribute_db()->get_all_macros();
+            writer.write("#define MERGE_INNER(a,b) a##b\n");
+            writer.write("#define MERGE(a,b) MERGE_INNER(a,b)\n");
+            for (const auto& macro : macros) {
+                writer.write(format("#undef %s\n", macro.c_str()));
+                writer.write(format(
+                    "#define %s(...) const char* MERGE(__GOC_MACRO__%s__, __LINE__) = "
+                    "#__VA_ARGS__;\n",
+                    macro.c_str(), macro.c_str()));
+            }
+
+            writer.write(parts.second);
+
+            std::cout << writer.get_string() << std::endl;
+        }
+
         const char* args[] = {"-x", "c++", nullptr};
 
         CXIndex index = clang_createIndex(0, 0);
         CXTranslationUnit unit = clang_parseTranslationUnit(
-            index, p_path.c_str(), args, 2, nullptr, 0, CXTranslationUnit_SkipFunctionBodies);
-        PARSER_ERROR_COND(
-            unit == nullptr, "Failed to parse translation unit \"%s\"", p_path.c_str());
+            index, tmp_file, args, 2, nullptr, 0, CXTranslationUnit_SkipFunctionBodies);
+        PARSER_ERROR_COND(unit == nullptr, "Failed to parse translation unit", tmp_file);
         const CXCursor root = clang_getTranslationUnitCursor(unit);
 
         ClangParserContext context{.root = r_target, .current = r_target, .unit = unit};
         clang_visitChildren(root, &visitor, &context);
 
+        remove_file(tmp_file);
         return ParserError::OK;
+    }
+
+    Ref<ParserError> ClangParser::parse_file(const String& p_path, Ref<Context> r_target)
+    {
+        return parse(read_file(p_path), r_target);
     }
 
     void ClangParser::set_parse_attributes(const bool p_parse_attributes)
@@ -86,7 +124,7 @@ namespace GodotObjectCompiler
         std::cout << static_cast<String>(name) << " " << static_cast<String>(kind) << std::endl;
 #endif
 
-        for (const auto& [_, handler] : handlers) {
+        for (const auto& handler : handlers) {
             if (handler->handles_node(p_cursor)) {
                 Ref<Context> current = context->current;
                 Ref<Context> root = context->root;

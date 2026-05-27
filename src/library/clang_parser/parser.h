@@ -52,7 +52,7 @@ namespace GodotObjectCompiler
 
         Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target);
 
-        template <typename T> static bool register_handler(const String& p_name);
+        template <typename T> static bool register_handler();
 
         void set_parse_attributes(bool p_parse_attributes);
 
@@ -60,15 +60,18 @@ namespace GodotObjectCompiler
         static CXChildVisitResult
         visitor(CXCursor p_cursor, CXCursor p_parent, CXClientData p_data);
 
-        static inline Dictionary<String, Ref<ClangASTHandlers::IClangASTHandler>> handlers;
+        static inline Vector<Ref<ClangASTHandlers::IClangASTHandler>> handlers;
 
         bool parse_attributes = true;
     };
 
-    template <typename T> bool ClangParser::register_handler(const String& p_name)
+    template <typename T> bool ClangParser::register_handler()
     {
-        auto [itr, success] = handlers.emplace(p_name, new T());
-        return success;
+        handlers.push_back(std::make_shared<T>());
+        std::sort(handlers.begin(), handlers.end(), [](auto handler_a, auto p_handler_b) {
+            return handler_a->get_priority() > p_handler_b->get_priority();
+        });
+        return true;
     }
 
     class ClangString
@@ -87,4 +90,4 @@ namespace GodotObjectCompiler
 } // namespace GodotObjectCompiler
 
 #define CLANG_AST_HANDLER(type)                                                                    \
-    static inline bool __handler_registered__ = ClangParser::register_handler<type>(#type)
+    static inline bool __handler_registered__ = ClangParser::register_handler<type>()
