@@ -40,12 +40,14 @@
 #include "integration/all.h"
 #include "library/all.h"
 #include "library/core/permissions.h"
+#include "library/parsers/libclang/parser.h"
 #include "parser/all.h"
 #include "programs/all.h"
 #include "test_registry.h"
 
 int main(int argc, char* argv[])
 {
+
     Vector<String> failed_tests;
 
     bool run_integration_tests = false;
@@ -63,61 +65,15 @@ int main(int argc, char* argv[])
     Size failed_count = 0;
     Size success_count = 0, ignore_count = 0, all_count = 0;
 
-    for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
-        PRINT_INFO("Running test case \"%s\"", test_name.c_str());
-        all_count++;
+    for (const String& parser :
+         {TreeSitterParser::get_type_static(), ClangParser::get_type_static()}) {
+        LibraryContext::instance()->set_default_parser(parser, IParser::CAPABILITIES_SOURCE_PARSER);
 
-        TestResult result = TEST_RESULT_FAILURE;
-        try {
-            result = test_functor();
-        } catch (const std::exception& e) {
-            print_err(e.what());
-        }
+        PRINT_INFO("Running tests against parser: %s", parser.c_str());
 
-        switch (result) {
-        case TEST_RESULT_SUCCESS:
-            PRINT_INFO("%s\tSuccess!", test_name.c_str());
-            success_count++;
-            break;
-        case TEST_RESULT_FAILURE:
-            failed_tests.push_back(test_name);
-            PRINT_INFO("%s\tFailed!", test_name.c_str());
-            failed_count++;
-            break;
-        case TEST_RESULT_IGNORED:
-            PRINT_INFO("%s\tIgnored!", test_name.c_str());
-            ignore_count++;
-            break;
-        }
-    }
-
-    if (run_integration_tests) {
-        Vector<String> include_paths;
-        for (int i = 2; i < argc; i++) {
-            if (i == 2) {
-                TestRegistry::instance()->set_extension_api(argv[i]);
-            } else {
-                include_paths.emplace_back(argv[i]);
-            }
-        }
-        TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(include_paths);
-
-        for (const auto& [test_name, test_functor] :
-             TestRegistry::instance()->get_integration_tests()) {
-            all_count++;
+        for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
             PRINT_INFO("Running test case \"%s\"", test_name.c_str());
-            {
-                Application application;
-                const Vector<String> args =
-                    TestRegistry::instance()->get_test_application_arguments(
-                        {"generate", "type_db"});
-                if (application.run(args) != 0) {
-                    print_err("Failed to setup type db during test run.");
-                    PRINT_INFO("%s\tFailed!", test_name.c_str());
-                    failed_count++;
-                    continue;
-                }
-            }
+            all_count++;
 
             TestResult result = TEST_RESULT_FAILURE;
             try {
@@ -128,18 +84,80 @@ int main(int argc, char* argv[])
 
             switch (result) {
             case TEST_RESULT_SUCCESS:
-                PRINT_INFO("%s\tSuccess!", test_name.c_str());
+                PRINT_INFO("%s\tSuccess! (Parser: %s)", test_name.c_str(), parser.c_str());
                 success_count++;
                 break;
             case TEST_RESULT_FAILURE:
-                failed_tests.push_back(test_name);
-                PRINT_INFO("%s\tFailed!", test_name.c_str());
+                failed_tests.push_back(
+                    format("%s (Parser: %s)", test_name.c_str(), parser.c_str()));
+                PRINT_INFO("%s\tFailed! (Parser: %s)", test_name.c_str(), parser.c_str());
                 failed_count++;
                 break;
             case TEST_RESULT_IGNORED:
-                PRINT_INFO("%s\tIgnored!", test_name.c_str());
+                PRINT_INFO("%s\tIgnored! (Parser: %s)", test_name.c_str(), parser.c_str());
                 ignore_count++;
                 break;
+            }
+        }
+
+        if (run_integration_tests) {
+            Vector<String> include_paths;
+            for (int i = 2; i < argc; i++) {
+                if (i == 2) {
+                    TestRegistry::instance()->set_extension_api(argv[i]);
+                } else {
+                    include_paths.emplace_back(argv[i]);
+                }
+            }
+
+            for (const auto& [test_name, test_functor] :
+                 TestRegistry::instance()->get_integration_tests()) {
+
+                all_count++;
+                PRINT_INFO("Running test case \"%s\"", test_name.c_str());
+                {
+                    Application application;
+                    const Vector<String> args =
+                        TestRegistry::instance()->get_test_application_arguments(
+                            {"generate", "type_db"});
+                    if (application.run(args) != 0) {
+                        print_err("Failed to setup type db during test run.");
+                        PRINT_INFO("%s\tFailed!", test_name.c_str());
+                        failed_count++;
+                        continue;
+                    }
+                }
+
+                TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(
+                    include_paths);
+                Ref<IParser> source_parser = LibraryContext::instance()->get_default_parser(
+                    IParser::CAPABILITIES_SOURCE_PARSER);
+                PANIC_COND(source_parser == nullptr, "Could not get source parser.");
+                source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
+
+                TestResult result = TEST_RESULT_FAILURE;
+                try {
+                    result = test_functor();
+                } catch (const std::exception& e) {
+                    print_err(e.what());
+                }
+
+                switch (result) {
+                case TEST_RESULT_SUCCESS:
+                    PRINT_INFO("%s\tSuccess! (Parser: %s)", test_name.c_str(), parser.c_str());
+                    success_count++;
+                    break;
+                case TEST_RESULT_FAILURE:
+                    failed_tests.push_back(
+                        format("%s (Parser: %s)", test_name.c_str(), parser.c_str()));
+                    PRINT_INFO("%s\tFailed! (Parser: %s)", test_name.c_str(), parser.c_str());
+                    failed_count++;
+                    break;
+                case TEST_RESULT_IGNORED:
+                    PRINT_INFO("%s\tIgnored! (Parser: %s)", test_name.c_str(), parser.c_str());
+                    ignore_count++;
+                    break;
+                }
             }
         }
     }

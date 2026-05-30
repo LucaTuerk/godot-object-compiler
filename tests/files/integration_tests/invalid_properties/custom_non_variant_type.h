@@ -35,7 +35,14 @@
 
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
 #include "invalid_properties/custom_non_variant_type.generated.h"
+
+using namespace godot;
+
+class NonVariant
+{
+};
 
 GODOT_CLASS();
 class Invalid : Node
@@ -44,8 +51,8 @@ class Invalid : Node
 
     GODOT_PROPERTY("property", GetSet("get_property", "set_property"));
 
-    void set_property(const std::vector<int>& p_value);
-    std::vector<int> get_property() const;
+    void set_property(const NonVariant& p_value);
+    NonVariant get_property() const;
 };
 
 GODOT_GENERATED_GLOBAL();

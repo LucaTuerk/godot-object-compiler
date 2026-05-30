@@ -34,10 +34,12 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
 #include "godot_function/rpc.generated.h"
 
-GODOT_CLASS();
+using namespace godot;
 
+GODOT_CLASS();
 class Rpc : public Node
 {
     GODOT_GENERATED_BODY();

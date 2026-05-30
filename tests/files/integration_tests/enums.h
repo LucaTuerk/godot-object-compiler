@@ -34,13 +34,17 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/object.hpp"
 #include "enums.generated.h"
+
+using namespace godot;
 
 GODOT_CLASS();
 class ExernalEnums : public Object
 {
     GODOT_GENERATED_BODY();
 
+  public:
     GODOT_ENUM();
     enum RegularEnum {
         REGULAR_VALUE_1,
@@ -76,18 +80,6 @@ class Enums : public Object
 
     GODOT_PROPERTY();
     ExernalEnums::FlagsEnum flags_external = ExernalEnums::FLAG_0;
-
-    GODOT_PROPERTY();
-    RegularEnum regular_int = 0;
-
-    GODOT_PROPERTY();
-    FlagsEnum flags_int = 0;
-
-    GODOT_PROPERTY();
-    ExernalEnums::RegularEnum regular_external_int = 0;
-
-    GODOT_PROPERTY();
-    ExernalEnums::FlagsEnum flags_external_int = 0;
 };
 
 GODOT_GENERATED_GLOBAL();

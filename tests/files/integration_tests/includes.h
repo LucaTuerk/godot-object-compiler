@@ -33,7 +33,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-
+#include "godot_cpp/classes/node.hpp"
+#include "godot_cpp/classes/node3d.hpp"
+#include "godot_cpp/classes/resource.hpp"
+#include "godot_cpp/classes/texture2d.hpp"
+#include "godot_cpp/variant/typed_array.hpp"
+#include "godot_cpp/variant/typed_dictionary.hpp"
 #include "includes.generated.h"
 
 using namespace godot;

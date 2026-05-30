@@ -40,12 +40,12 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 #include "library/library_context.h"
+#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/define.h"
 #include "library/tree/syntax/enum.h"
 #include "library/tree/syntax/namespace.h"
 #include "library/tree/syntax/struct.h"
-#include "library/tree_sitter_parser/parser.h"
 #include "library/type_db.h"
 #include "library_godot/parsers/extension_api_parser.h"
 
@@ -79,13 +79,10 @@ namespace GodotObjectCompiler
 
         PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", path.c_str());
 
-        Ref<Namespace> global_namespace = node_new<Namespace>();
-        TreeSitterParser* tree_sitter_parser = dynamic_cast<TreeSitterParser*>(p_parser);
-        Ref<ParserError> error = tree_sitter_parser
-                                     ? tree_sitter_parser->parse_file(path, global_namespace)
-                                     : p_parser->parse(path, global_namespace);
+        const Ref<Namespace> global_namespace = node_new<Namespace>();
 
-        if (error != ParserError::OK) {
+        if (Ref<ParserError> error = p_parser->parse_file(path, global_namespace);
+            error != ParserError::OK) {
             return;
         }
 
@@ -135,8 +132,9 @@ namespace GodotObjectCompiler
             !p_context.paths_godot_cpp_include.has_value(),
             "No godot-cpp path specified. Cannot generate the TypeDB");
 
-        TreeSitterParser tree_sitter_parser;
-        tree_sitter_parser.set_parse_attributes(false);
+        const Ref<IParser> parser =
+            LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);
+        parser->config(IParser::CONFIG_SKIP_ATTRIBUTES);
 
         ExtensionAPIParser extension_api_parser;
         extension_api_parser.setup_include_paths(p_context.paths_godot_cpp_include.value());
@@ -151,7 +149,7 @@ namespace GodotObjectCompiler
                 include_path = path_absolute(include_path);
                 for (const String& file : directory_files_recursive(include_path)) {
                     generate_from_file(
-                        {path_absolute(file), include_path}, p_context, &tree_sitter_parser);
+                        {path_absolute(file), include_path}, p_context, parser.get());
                 }
             }
         }

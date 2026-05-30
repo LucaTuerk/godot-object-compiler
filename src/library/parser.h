@@ -40,7 +40,41 @@ namespace GodotObjectCompiler
     class IParser
     {
       public:
+        enum Capabilities {
+            CAPABILITIES_NONE = 0,
+            CAPABILITIES_SOURCE_PARSER = 1,
+            CAPABILITIES_JSON_CONFIG_PARSER = 1 << 1,
+            CAPABILITIES_SOURCE_SUPPORT_MACRO_EXPANSION = 1 << 2,
+        };
+
+        enum Config { CONFIG_PARSE_ATTRIBUTES, CONFIG_SKIP_ATTRIBUTES };
+
         virtual ~IParser() = default;
+
+        virtual String get_type() = 0;
+
+        virtual Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target) = 0;
+
         virtual Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) = 0;
+
+        virtual void config(Config p_config);
+
+        virtual int get_capabilities();
     };
 } // namespace GodotObjectCompiler
+
+#define PARSER(type)                                                                               \
+    static inline bool __source_parser_registered = LibraryContext::add_register_callback(         \
+        [](LibraryContext* p_context) { p_context->register_source_parser<type>(); });             \
+                                                                                                   \
+  public:                                                                                          \
+    String get_type() override                                                                     \
+    {                                                                                              \
+        return #type;                                                                              \
+    };                                                                                             \
+    static String get_type_static()                                                                \
+    {                                                                                              \
+        return #type;                                                                              \
+    }                                                                                              \
+                                                                                                   \
+  private:

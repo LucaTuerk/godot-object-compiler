@@ -34,7 +34,10 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/object.hpp"
 #include "godot_class/invalid_no_gen_global.generated.h"
+
+using namespace godot;
 
 GODOT_CLASS();
 class InvalidNoGenBody : public Object

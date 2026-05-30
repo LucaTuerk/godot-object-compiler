@@ -77,6 +77,10 @@ namespace GodotObjectCompiler
         p_writer->write("parameter_count", parameter_count);
         p_writer->write("optional_parameter_count", optional_parameter_count);
     }
+    String TemplateParameters::to_string() const
+    {
+        return format("%s: %d/%d", get_type().c_str(), parameter_count, optional_parameter_count);
+    }
 
     Ref<Type> Parameter::_type_lazy_get() const
     {

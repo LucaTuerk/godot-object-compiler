@@ -33,8 +33,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "../../parsers/attribute_argument_parser.h"
 #include "context.h"
-#include "library/tree_sitter_parser/attribute_argument_parser.h"
 
 #define ATTRIBUTE_TYPE(node_type, target_type, target)                                             \
     NODE_TYPE(node_type);                                                                          \

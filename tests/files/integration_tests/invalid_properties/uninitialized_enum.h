@@ -34,7 +34,10 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
 #include "invalid_properties/uninitialized_enum.generated.h"
+
+using namespace godot;
 
 GODOT_CLASS();
 

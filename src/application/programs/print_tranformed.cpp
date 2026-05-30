@@ -38,8 +38,8 @@
 #include "generate_type_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
+#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/syntax/namespace.h"
-#include "library/tree_sitter_parser/parser.h"
 #include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler
@@ -75,11 +75,12 @@ namespace GodotObjectCompiler
             "because the TypeDB generator has not found the relevant files.\nEnsure godot-cpp "
             "include path are known to goc via the -I= flag or in the .goc_project file.");
 
-        TreeSitterParser parser;
+        Ref<IParser> parser =
+            LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);
         const Ref<Namespace> ns = node_new<Namespace>();
 
         PROG_ERR_COND(
-            parser.parse_file(path, ns) != ParserError::OK, "Failed to parse file %s.",
+            parser->parse_file(path, ns) != ParserError::OK, "Failed to parse file %s.",
             path.c_str());
 
         print_ln(ns->pretty_print());

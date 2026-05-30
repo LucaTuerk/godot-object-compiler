@@ -67,6 +67,11 @@ GOC_INTEGRATION_TEST(ExportTypeDB)
 {
     String exported_folder = path_concat(TestRegistry::get_test_root_dir(), "exported");
 
+    Permissions::instance()->add_write_path(TestRegistry::get_test_root_dir());
+    if (directory_exits(exported_folder)) {
+        remove(exported_folder);
+    }
+
     Application application;
     const int result = application.run(TestRegistry::instance()->get_test_application_arguments(
         {"export", "type_db", exported_folder}));
@@ -76,7 +81,6 @@ GOC_INTEGRATION_TEST(ExportTypeDB)
         directory_files_recursive(TestRegistry::get_cache_path()).size(),
         directory_files_recursive(exported_folder).size(),
         "Invalid file count for exported TypeDB");
-
     return TEST_RESULT_SUCCESS;
 };
 

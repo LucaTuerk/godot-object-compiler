@@ -37,19 +37,27 @@
 
 #include "application/application.h"
 #include "application/programs/generate_resources.h"
-#include "library/clang_parser/parser.h"
 #include "library/core/config.h"
 #include "library/core/core.h"
 #include "library/library_context.h"
+#include "library/parsers/libclang/parser.h"
 #include "library_godot/parsers/extension_api_parser.h"
 
 using namespace GodotObjectCompiler;
 
 int main(int argc, char* argv[])
 {
-    ClangParser parser;
-    Ref<Context> context = node_new<Context>();
-    Ref<ParserError> error = parser.parse_file(
+    LibraryContext::instance()->set_default_parser<ClangParser>(
+        IParser::CAPABILITIES_SOURCE_PARSER | IParser::CAPABILITIES_SOURCE_SUPPORT_MACRO_EXPANSION);
+    LibraryContext::instance()->set_default_parser<TreeSitterParser>(
+        IParser::CAPABILITIES_SOURCE_PARSER);
+    LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(
+        IParser::CAPABILITIES_JSON_CONFIG_PARSER);
+
+    Ref<IParser> parser =
+        LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);
+    Ref<Context> context = node_new<Namespace>();
+    Ref<ParserError> error = parser->parse_file(
         "/home/luca/Repositories/godot-object-compiler/tests/files/class_tests/simple_class.h",
         context);
     std::cout << context->pretty_print();

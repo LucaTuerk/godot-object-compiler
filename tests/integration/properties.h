@@ -34,8 +34,8 @@
 /**************************************************************************/
 #pragma once
 #include "common.h"
+#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/syntax/namespace.h"
-#include "library/tree_sitter_parser/parser.h"
 #include "test_registry.h"
 
 using namespace GodotObjectCompiler;

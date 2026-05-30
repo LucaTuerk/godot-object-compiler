@@ -40,10 +40,10 @@
 #include "library/core/string_writer.h"
 #include "library/generator/generator.h"
 #include "library/library_context.h"
+#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/namespace.h"
-#include "library/tree_sitter_parser/parser.h"
 #include "library_godot/assumptions.h"
 #include "library_godot/attributes/godot_attributes.h"
 #include "library_godot/generators/godot_class_generator.h"
@@ -215,9 +215,12 @@ namespace GodotObjectCompiler
             processed.insert(input_file);
 
             PRINT_VERBOSE("Generating bindings for \"%s\"", input_file.c_str());
-            TreeSitterParser parser;
+            Ref<IParser> parser =
+                LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);
+            parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
+
             Ref<Namespace> global_namespace = node_new<Namespace>();
-            Ref<ParserError> error = parser.parse_file(input_file, global_namespace);
+            Ref<ParserError> error = parser->parse_file(input_file, global_namespace);
             PROG_ERR_COND(
                 error != ParserError::OK, "Failed to parse input file \"%s\"", input_file.c_str());
 

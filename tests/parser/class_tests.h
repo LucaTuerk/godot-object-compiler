@@ -33,12 +33,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/field.h"
 #include "library/tree/syntax/namespace.h"
 #include "library/tree/syntax/type.h"
-#include "library/tree_sitter_parser/parser.h"
 #include "test_registry.h"
 
 #define x3(x) x, x, x

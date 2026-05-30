@@ -44,6 +44,7 @@
 #include "library/core/core.h"
 #include "library/node_db.h"
 #include "node_db.h"
+#include "parser.h"
 #include "type_db.h"
 
 namespace GodotObjectCompiler
@@ -55,6 +56,45 @@ namespace GodotObjectCompiler
         clear_generated_files(p_path);
         last_modified_times.erase(absolute);
         out_last_modified_times.erase(absolute);
+    }
+
+    const Vector<Ref<IParser>>& LibraryContext::get_parsers()
+    {
+        return parsers;
+    }
+
+    void LibraryContext::set_default_parser(const String& p_name, int p_capabilities)
+    {
+        for (const auto& parser : parsers) {
+            if (parser->get_type() == p_name) {
+                PANIC_COND(
+                    (parser->get_capabilities() & p_capabilities) == 0,
+                    "Parser %s does not support the requested capabilities %d (has %d)",
+                    parser->get_type().c_str(), p_capabilities, parser->get_capabilities());
+                default_parsers.insert_or_assign(p_capabilities, parser);
+                return;
+            }
+        }
+        PANIC("Parser %s could not be found.", p_name.c_str());
+    }
+
+    Ref<IParser>
+    LibraryContext::get_default_parser(const int p_capabilities, bool p_get_most_capable)
+    {
+        if (p_get_most_capable) {
+            int max = 0;
+            Ref<IParser> default_parser = nullptr;
+            for (const auto& [capabilities, parser] : default_parsers) {
+                if ((capabilities & p_capabilities) == p_capabilities && capabilities > max) {
+                    max = capabilities;
+                    default_parser = parser;
+                }
+            }
+            return default_parser;
+        }
+
+        auto itr = default_parsers.find(p_capabilities);
+        return itr == default_parsers.end() ? nullptr : itr->second;
     }
 
     String error_level_to_string(ErrorLevel level)
@@ -95,6 +135,8 @@ namespace GodotObjectCompiler
         last_modified_times = {};
         out_last_modified_times = {};
         generic_singletons = {};
+        parsers = {};
+        // default_parsers = {};
         error_level = INFO;
         error_detail = FULL;
         initialized = true;

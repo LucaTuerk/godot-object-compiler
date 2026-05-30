@@ -178,8 +178,16 @@ namespace GodotObjectCompiler
 
             context.paths_include->push_back(*context.paths_root);
 
+            Vector<String> combined_include_paths;
+            combined_include_paths.insert(
+                combined_include_paths.end(), context.paths_include->begin(),
+                context.paths_include->end());
+            combined_include_paths.insert(
+                combined_include_paths.end(), context.paths_godot_cpp_include->begin(),
+                context.paths_godot_cpp_include->end());
+
             LibraryContext::instance()->get_type_db()->set_cache_directory(context.paths_cache);
-            LibraryContext::instance()->set_include_paths(*context.paths_include);
+            LibraryContext::instance()->set_include_paths(combined_include_paths);
 
             APP_ERR_COND(
                 init_local_resources.run(context) != ProgramError::OK,

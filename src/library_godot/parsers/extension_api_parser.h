@@ -34,23 +34,29 @@
 /**************************************************************************/
 
 #pragma once
+#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/enum.h"
-#include "library/tree_sitter_parser/parser.h"
 
 namespace GodotObjectCompiler
 {
     class JsonError : public ParserError
     {
       public:
-        JsonError(ErrorLevel p_level, const String& p_message) : ParserError(p_level, p_message){};
+        JsonError(ErrorLevel p_level, const String& p_message) : ParserError(p_level, p_message) {};
         JsonError(ErrorLevel p_level, const Json& p_json, const String& p_message);
     };
 
     class ExtensionAPIParser : public IParser
     {
+        PARSER(ExtensionAPIParser);
+
       public:
+        Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_context) override;
+
         Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
+
+        int get_capabilities() override;
 
         bool setup_include_paths(const Vector<String>& p_godot_cpp_include);
 

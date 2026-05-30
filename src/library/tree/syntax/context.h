@@ -269,10 +269,19 @@ namespace GodotObjectCompiler
                 }
                 break;
             case BY_SIBLINGS_PREV: {
+                if (current->get_parent() == nullptr) {
+                    return nullptr;
+                }
+
                 Node* prev = current->get_previous_sibling().get();
                 current = prev ? prev : current->get_parent().get();
+
             } break;
             case BY_SIBLINGS_NEXT: {
+                if (current->get_parent() == nullptr) {
+                    return nullptr;
+                }
+
                 Node* next = current->get_next_sibling().get();
                 current = next ? next : current->get_parent().get();
             } break;

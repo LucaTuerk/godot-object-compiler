@@ -38,6 +38,7 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
+#include "library/core/temp_file.h"
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/identifier.h"
 
@@ -115,17 +116,17 @@ namespace GodotObjectCompiler
         message = format("JsonError: %s", p_message.c_str());
     }
 
-    Ref<ParserError> ExtensionAPIParser::parse(const String& p_input, Ref<Context> r_target)
+    Ref<ParserError> ExtensionAPIParser::parse_file(const String& p_path, Ref<Context> r_target)
     {
         PARSER_ERROR_COND(!r_target, "ExtensionAPIParser: Invalid null target context.");
 
-        std::ifstream file(p_input);
+        std::ifstream file(p_path);
         Json json;
         try {
             json = Json::parse(file);
         } catch (std::exception& e) {
             PARSER_ERROR(
-                "ExtensionAPIParser: Exception occurred parsing file \"%s\": %s", p_input.c_str(),
+                "ExtensionAPIParser: Exception occurred parsing file \"%s\": %s", p_path.c_str(),
                 e.what());
         }
 
@@ -176,6 +177,17 @@ namespace GodotObjectCompiler
         r_target->add_child(core_context);
 
         return ParserError::OK;
+    }
+
+    Ref<ParserError> ExtensionAPIParser::parse(const String& p_input, Ref<Context> r_target)
+    {
+        const TempFile temp_file("json", p_input);
+        parse_file(temp_file, r_target);
+    }
+
+    int ExtensionAPIParser::get_capabilities()
+    {
+        return CAPABILITIES_JSON_CONFIG_PARSER;
     }
 
     bool ExtensionAPIParser::setup_include_paths(const Vector<String>& p_godot_cpp_include)

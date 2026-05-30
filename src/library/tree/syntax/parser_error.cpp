@@ -38,7 +38,7 @@
 #include "context.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
-#include "library/tree_sitter_parser/tree_sitter_node.h"
+#include "library/parsers/tree-sitter/tree_sitter_node.h"
 
 namespace GodotObjectCompiler
 {

@@ -34,7 +34,10 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/object.hpp"
 #include "godot_class/invalid_non_gd.generated.h"
+
+using namespace godot;
 
 GODOT_CLASS();
 class InvalidNonGD : public std::vector

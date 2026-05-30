@@ -118,12 +118,12 @@ namespace GodotObjectCompiler
 
 // clang-format off
 #define GOC_TEST(name)                               \
-  static inline bool __##name##__test_registered__ = \
+  static inline bool __## name## __test_registered__ = \
       GodotObjectCompiler::TestRegister(#name)       \
       << []() -> GodotObjectCompiler::TestResult
 
 #define GOC_INTEGRATION_TEST(name)                        \
-  static inline bool __##name##__test_registered__ =      \
+  static inline bool __## name## __test_registered__ =      \
       GodotObjectCompiler::IntegrationTestRegister(#name) \
       << []() -> GodotObjectCompiler::TestResult
 // clang-format on
@@ -161,8 +161,9 @@ namespace GodotObjectCompiler
 #define GOC_TEST_PARSE_FILE(path)                                                                  \
     Ref<Namespace> global_namespace = node_new<Namespace>();                                       \
     {                                                                                              \
-        TreeSitterParser parser;                                                                   \
-        Ref<ParserError> error = parser.parse_file(path, global_namespace);                        \
+        Ref<IParser> parser =                                                                      \
+            LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);   \
+        Ref<ParserError> error = parser->parse_file(path, global_namespace);                       \
         GOC_TEST_EQ(error, ParserError::OK, "Parser error occurred");                              \
     }                                                                                              \
     GOC_TEST_ASSERT(global_namespace, "Global Namespace is invalid.");

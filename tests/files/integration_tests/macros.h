@@ -34,10 +34,13 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
 #include "macros.generated.h"
 
+using namespace godot;
+
 GODOT_CLASS(GodotClass, LevelScene);
-class A
+class A : public Node
 {
     GODOT_GENERATED_BODY();
 
@@ -46,7 +49,7 @@ class A
     GODOT_SUBGROUP("C");
 
     GODOT_PROPERTY(VariantTypeInt, HintNone(), UsageDefault, PublicGet, PrivateSet);
-    int property;
+    int property = 0;
 
     GODOT_FUNCTION(NoVirtual, Disabled, Reliable, CallRemote, Channel(0));
     int function();
