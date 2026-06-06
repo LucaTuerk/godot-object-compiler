@@ -72,6 +72,8 @@ namespace GodotObjectCompiler
         static inline Vector<Ref<ClangASTHandlers::IClangASTHandler>> handlers;
 
         bool parse_attributes = false;
+
+        Opt<String> current_file;
     };
 
     template <typename T> bool ClangParser::register_handler()

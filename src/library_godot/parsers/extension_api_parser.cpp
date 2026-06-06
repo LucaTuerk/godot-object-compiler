@@ -159,9 +159,10 @@ namespace GodotObjectCompiler
             }
         }
 
-        TreeSitterParser tree_sitter_parser;
+        Ref<IParser> source_parser =
+            LibraryContext::instance()->get_default_parser(CAPABILITIES_SOURCE_PARSER);
         Ref<Context> core_context = node_new<Namespace>();
-        if (Ref<ParserError> error = tree_sitter_parser.parse(core_interface, core_context);
+        if (Ref<ParserError> error = source_parser->parse(core_interface, core_context);
             error != ParserError::OK) {
             return error;
         }
@@ -182,7 +183,7 @@ namespace GodotObjectCompiler
     Ref<ParserError> ExtensionAPIParser::parse(const String& p_input, Ref<Context> r_target)
     {
         const TempFile temp_file("json", p_input);
-        parse_file(temp_file, r_target);
+        return parse_file(temp_file, r_target);
     }
 
     int ExtensionAPIParser::get_capabilities()

@@ -47,22 +47,6 @@ using namespace GodotObjectCompiler;
 
 int main(int argc, char* argv[])
 {
-    LibraryContext::instance()->set_default_parser<ClangParser>(
-        IParser::CAPABILITIES_SOURCE_PARSER | IParser::CAPABILITIES_SOURCE_SUPPORT_MACRO_EXPANSION);
-    LibraryContext::instance()->set_default_parser<TreeSitterParser>(
-        IParser::CAPABILITIES_SOURCE_PARSER);
-    LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(
-        IParser::CAPABILITIES_JSON_CONFIG_PARSER);
-
-    Ref<IParser> parser =
-        LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);
-    Ref<Context> context = node_new<Namespace>();
-    Ref<ParserError> error = parser->parse_file(
-        "/home/luca/Repositories/godot-object-compiler/tests/files/class_tests/simple_class.h",
-        context);
-    std::cout << context->pretty_print();
-    return 0;
-
     Vector<String> args;
     for (int i = 1; i < argc; i++) {
         args.emplace_back(argv[i]);
@@ -70,5 +54,9 @@ int main(int argc, char* argv[])
 
     Application application;
     LibraryContext::instance()->set_error_level(ERROR, FULL);
+    LibraryContext::instance()->set_default_parser<ClangParser>(
+        IParser::CAPABILITIES_SOURCE_PARSER);
+    LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(
+        IParser::CAPABILITIES_JSON_CONFIG_PARSER);
     return application.run(args);
 }

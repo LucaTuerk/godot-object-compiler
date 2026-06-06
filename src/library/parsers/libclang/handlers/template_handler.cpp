@@ -52,6 +52,9 @@ namespace GodotObjectCompiler::ClangASTHandlers
         }
         case CXCursor_TemplateTypeParameter: {
             Ref<TemplateParameters> parameters = p_root->find_child<TemplateParameters>();
+            if (parameters == nullptr) {
+                return Step::Over();
+            }
             PARSER_ERROR_COND(
                 parameters == nullptr, "Could not find TemplateParameters child in current root");
 

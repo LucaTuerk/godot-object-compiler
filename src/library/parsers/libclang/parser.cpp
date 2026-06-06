@@ -51,8 +51,6 @@
 #include "library/tree/syntax/include.h"
 #include "library/tree/syntax/namespace.h"
 
-#include <utility>
-
 #define CLANG_PARSER_PRINT_DEBUG 0
 
 namespace GodotObjectCompiler
@@ -226,9 +224,12 @@ namespace GodotObjectCompiler
 
         Vector<const char*> args = {"-x", "c++"};
         Vector<String> include_args;
-
         Vector<String> includes = LibraryContext::instance()->get_include_paths();
-        includes.push_back(path_base(path_absolute(temp_file)));
+
+        if (current_file.has_value()) {
+            includes.push_back(path_base(*current_file));
+            current_file = {};
+        }
 
         for (const auto& include_path : includes) {
             String arg = format("-I%s", path_absolute(include_path).c_str());
@@ -261,6 +262,7 @@ namespace GodotObjectCompiler
 
     Ref<ParserError> ClangParser::parse_file(const String& p_path, Ref<Context> r_target)
     {
+        current_file = path_absolute(p_path);
         return parse(read_file(p_path), r_target);
     }
 

@@ -46,7 +46,6 @@
 
 namespace GodotObjectCompiler
 {
-
     class Node;
     class Function;
     class Type;
@@ -214,7 +213,7 @@ namespace GodotObjectCompiler
             p_inner_types = {};
 
             String name = type_name_remove_usings(p_target_type->type_name_untemplated());
-            if (name != p_assumed_type.type->name()) {
+            if (name != type_name_remove_usings(p_assumed_type.type->name())) {
                 return false;
             }
 

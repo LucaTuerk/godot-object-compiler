@@ -172,10 +172,6 @@ namespace GodotObjectCompiler
                 !context.paths_godot_cpp_include.has_value(),
                 "No godot-cpp include paths specified but are required for selected program.");
 
-            if (!context.paths_include.has_value()) {
-                context.paths_include = Vector<String>();
-            }
-
             context.paths_include->push_back(*context.paths_root);
 
             Vector<String> combined_include_paths;
