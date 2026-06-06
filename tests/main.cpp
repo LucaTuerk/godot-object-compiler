@@ -109,6 +109,8 @@ int main(int argc, char* argv[])
                     include_paths.emplace_back(argv[i]);
                 }
             }
+            TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(include_paths);
+
 
             for (const auto& [test_name, test_functor] :
                  TestRegistry::instance()->get_integration_tests()) {
@@ -128,8 +130,6 @@ int main(int argc, char* argv[])
                     }
                 }
 
-                TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(
-                    include_paths);
                 Ref<IParser> source_parser = LibraryContext::instance()->get_default_parser(
                     IParser::CAPABILITIES_SOURCE_PARSER);
                 PANIC_COND(source_parser == nullptr, "Could not get source parser.");
