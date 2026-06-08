@@ -42,9 +42,9 @@ namespace GodotObjectCompiler
       public:
         enum Capabilities {
             CAPABILITIES_NONE = 0,
-            CAPABILITIES_SOURCE_PARSER = 1,
-            CAPABILITIES_JSON_CONFIG_PARSER = 1 << 1,
-            CAPABILITIES_SOURCE_SUPPORT_MACRO_EXPANSION = 1 << 2,
+            SOURCE_PARSER = 1,
+            SUPPORT_MACRO_EXPANSION = 1 << 1,
+            JSON_CONFIG_PARSER = 1 << 15,
         };
 
         enum Config { CONFIG_PARSE_ATTRIBUTES, CONFIG_SKIP_ATTRIBUTES };
@@ -75,6 +75,15 @@ namespace GodotObjectCompiler
     static String get_type_static()                                                                \
     {                                                                                              \
         return #type;                                                                              \
+    }                                                                                              \
+                                                                                                   \
+  private:
+
+#define CAPABILITIES(capas)                                                                        \
+  public:                                                                                          \
+    int get_capabilities() override                                                                \
+    {                                                                                              \
+        return capas;                                                                              \
     }                                                                                              \
                                                                                                    \
   private:

@@ -39,6 +39,7 @@
 #include "application/programs/program.h"
 #include "library/core/core.h"
 #include "library/core/string_writer.h"
+#include "library/parser.h"
 #include "library/tree/syntax/function.h"
 
 namespace GodotObjectCompiler
@@ -162,7 +163,7 @@ namespace GodotObjectCompiler
     Ref<Namespace> global_namespace = node_new<Namespace>();                                       \
     {                                                                                              \
         Ref<IParser> parser =                                                                      \
-            LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);   \
+            LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);                \
         Ref<ParserError> error = parser->parse_file(path, global_namespace);                       \
         GOC_TEST_EQ(error, ParserError::OK, "Parser error occurred");                              \
     }                                                                                              \

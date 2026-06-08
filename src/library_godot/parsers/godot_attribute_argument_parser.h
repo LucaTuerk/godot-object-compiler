@@ -52,7 +52,8 @@ namespace GodotObjectCompiler
         Ref<ParserError>
         parse_attribute_arguments(const String& p_content, Ref<Context> p_target) override;
 
-        Ref<ParserError> parse_attribute_argument(const String& p_content, Ref<Context> p_target);
+        Ref<ParserError>
+        parse_attribute_argument(const String& p_content, const Ref<Context>& p_target) const;
 
         static Ref<ParserError> parse_inner_arguments(
             const String& p_content, const Ref<Context>& p_target,

@@ -33,7 +33,6 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/field.h"

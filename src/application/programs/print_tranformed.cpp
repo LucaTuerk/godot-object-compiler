@@ -38,7 +38,7 @@
 #include "generate_type_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
-#include "library/parsers/tree-sitter/parser.h"
+#include "library/parser.h"
 #include "library/tree/syntax/namespace.h"
 #include "library_godot/assumptions.h"
 
@@ -76,7 +76,7 @@ namespace GodotObjectCompiler
             "include path are known to goc via the -I= flag or in the .goc_project file.");
 
         Ref<IParser> parser =
-            LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);
+            LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
         const Ref<Namespace> ns = node_new<Namespace>();
 
         PROG_ERR_COND(

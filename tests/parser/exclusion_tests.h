@@ -34,7 +34,6 @@
 /**************************************************************************/
 #pragma once
 
-#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/field.h"
 #include "library/tree/syntax/namespace.h"

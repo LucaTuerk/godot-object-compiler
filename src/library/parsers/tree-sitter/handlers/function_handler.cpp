@@ -38,6 +38,7 @@
 #include "library/library_context.h"
 #include "library/parsers/tree-sitter/node_handler.h"
 #include "library/parsers/tree-sitter/parser.h"
+#include "library/parsers/tree-sitter/parser_context.h"
 #include "library/parsers/tree-sitter/tree_sitter_node.h"
 #include "library/tree/syntax/attribute.h"
 #include "library/tree/syntax/field.h"

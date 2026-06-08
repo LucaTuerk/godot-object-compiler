@@ -51,7 +51,8 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         bool handles_cursor(CXCursor p_cursor) override;
 
-        Step handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) override;
+        Step
+        handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) override;
     };
 
 } // namespace GodotObjectCompiler::ClangASTHandlers

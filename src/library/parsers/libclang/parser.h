@@ -34,6 +34,7 @@
 /**************************************************************************/
 
 #pragma once
+#include "clang-c/Index.h"
 #include "handler.h"
 #include "library/parser.h"
 
@@ -53,13 +54,12 @@ namespace GodotObjectCompiler
     class ClangParser : public IParser
     {
         PARSER(ClangParser);
+        CAPABILITIES(SOURCE_PARSER | SUPPORT_MACRO_EXPANSION);
 
       public:
         Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
 
         Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target) override;
-
-        int get_capabilities() override;
 
         template <typename T> static bool register_handler();
 

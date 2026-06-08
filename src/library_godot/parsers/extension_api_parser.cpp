@@ -42,7 +42,7 @@
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/identifier.h"
 
-static const char* core_interface = R"(
+static auto core_interface = R"(
     namespace godot
     {
         enum ModuleInitializationLevel {
@@ -109,7 +109,7 @@ namespace GodotObjectCompiler
         return class_name_to_canonical_name(path_stem(p_path));
     }
 
-    JsonError::JsonError(ErrorLevel p_level, const Json& p_json, const String& p_message)
+    JsonError::JsonError(const ErrorLevel p_level, const Json& p_json, const String& p_message)
     {
         UNUSED(p_json); // TODO: Should be included in error message in collapsed form
         error_level = p_level;
@@ -159,8 +159,7 @@ namespace GodotObjectCompiler
             }
         }
 
-        Ref<IParser> source_parser =
-            LibraryContext::instance()->get_default_parser(CAPABILITIES_SOURCE_PARSER);
+        Ref<IParser> source_parser = LibraryContext::instance()->get_default_parser(SOURCE_PARSER);
         Ref<Context> core_context = node_new<Namespace>();
         if (Ref<ParserError> error = source_parser->parse(core_interface, core_context);
             error != ParserError::OK) {
@@ -184,11 +183,6 @@ namespace GodotObjectCompiler
     {
         const TempFile temp_file("json", p_input);
         return parse_file(temp_file, r_target);
-    }
-
-    int ExtensionAPIParser::get_capabilities()
-    {
-        return CAPABILITIES_JSON_CONFIG_PARSER;
     }
 
     bool ExtensionAPIParser::setup_include_paths(const Vector<String>& p_godot_cpp_include)

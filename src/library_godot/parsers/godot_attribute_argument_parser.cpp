@@ -44,7 +44,7 @@ namespace GodotObjectCompiler
 {
 
     Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_arguments(
-        const String& p_content, Ref<Context> p_target)
+        const String& p_content, const Ref<Context> p_target)
     {
         const Ref<Attribute> attribute = weak_attribute.lock();
 
@@ -84,7 +84,7 @@ namespace GodotObjectCompiler
     }
 
     Ref<ParserError> GodotAttributeArgumentParser::parse_attribute_argument(
-        const String& p_content, Ref<Context> p_target)
+        const String& p_content, const Ref<Context>& p_target) const
     {
         const Ref<Attribute> attribute = weak_attribute.lock();
         PARSER_ERROR_COND(

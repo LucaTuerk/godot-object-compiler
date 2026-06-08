@@ -40,7 +40,6 @@
 #include "integration/all.h"
 #include "library/all.h"
 #include "library/core/permissions.h"
-#include "library/parsers/libclang/parser.h"
 #include "parser/all.h"
 #include "programs/all.h"
 #include "test_registry.h"
@@ -65,11 +64,13 @@ int main(int argc, char* argv[])
     Size failed_count = 0;
     Size success_count = 0, ignore_count = 0, all_count = 0;
 
-    for (const String& parser :
-         {TreeSitterParser::get_type_static(), ClangParser::get_type_static()}) {
-        LibraryContext::instance()->set_default_parser(parser, IParser::CAPABILITIES_SOURCE_PARSER);
+    for (const auto& parser : LibraryContext::instance()->get_parsers()) {
+        if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
+            continue;
+        }
+        LibraryContext::instance()->set_default_parser(parser->get_type(), IParser::SOURCE_PARSER);
 
-        PRINT_INFO("Running tests against parser: %s", parser.c_str());
+        PRINT_INFO("Running tests against parser: %s", parser->get_type().c_str());
 
         for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
             PRINT_INFO("Running test case \"%s\"", test_name.c_str());
@@ -84,17 +85,20 @@ int main(int argc, char* argv[])
 
             switch (result) {
             case TEST_RESULT_SUCCESS:
-                PRINT_INFO("%s\tSuccess! (Parser: %s)", test_name.c_str(), parser.c_str());
+                PRINT_INFO(
+                    "%s\tSuccess! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
                 success_count++;
                 break;
             case TEST_RESULT_FAILURE:
                 failed_tests.push_back(
-                    format("%s (Parser: %s)", test_name.c_str(), parser.c_str()));
-                PRINT_INFO("%s\tFailed! (Parser: %s)", test_name.c_str(), parser.c_str());
+                    format("%s (Parser: %s)", test_name.c_str(), parser->get_type().c_str()));
+                PRINT_INFO(
+                    "%s\tFailed! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
                 failed_count++;
                 break;
             case TEST_RESULT_IGNORED:
-                PRINT_INFO("%s\tIgnored! (Parser: %s)", test_name.c_str(), parser.c_str());
+                PRINT_INFO(
+                    "%s\tIgnored! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
                 ignore_count++;
                 break;
             }
@@ -110,7 +114,6 @@ int main(int argc, char* argv[])
                 }
             }
             TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(include_paths);
-
 
             for (const auto& [test_name, test_functor] :
                  TestRegistry::instance()->get_integration_tests()) {
@@ -130,8 +133,8 @@ int main(int argc, char* argv[])
                     }
                 }
 
-                Ref<IParser> source_parser = LibraryContext::instance()->get_default_parser(
-                    IParser::CAPABILITIES_SOURCE_PARSER);
+                Ref<IParser> source_parser =
+                    LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
                 PANIC_COND(source_parser == nullptr, "Could not get source parser.");
                 source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
 
@@ -144,17 +147,20 @@ int main(int argc, char* argv[])
 
                 switch (result) {
                 case TEST_RESULT_SUCCESS:
-                    PRINT_INFO("%s\tSuccess! (Parser: %s)", test_name.c_str(), parser.c_str());
+                    PRINT_INFO(
+                        "%s\tSuccess! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
                     success_count++;
                     break;
                 case TEST_RESULT_FAILURE:
                     failed_tests.push_back(
-                        format("%s (Parser: %s)", test_name.c_str(), parser.c_str()));
-                    PRINT_INFO("%s\tFailed! (Parser: %s)", test_name.c_str(), parser.c_str());
+                        format("%s (Parser: %s)", test_name.c_str(), parser->get_type().c_str()));
+                    PRINT_INFO(
+                        "%s\tFailed! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
                     failed_count++;
                     break;
                 case TEST_RESULT_IGNORED:
-                    PRINT_INFO("%s\tIgnored! (Parser: %s)", test_name.c_str(), parser.c_str());
+                    PRINT_INFO(
+                        "%s\tIgnored! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
                     ignore_count++;
                     break;
                 }

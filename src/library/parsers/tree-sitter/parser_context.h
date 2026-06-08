@@ -36,6 +36,7 @@
 
 #include "library/core/core.h"
 #include "library/tree/syntax/node.h"
+#include "tree_sitter/api.h"
 
 namespace GodotObjectCompiler
 {

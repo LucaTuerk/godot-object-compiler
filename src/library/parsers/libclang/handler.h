@@ -35,6 +35,7 @@
 
 #pragma once
 
+#include "clang-c/Index.h"
 #include "library/core/core.h"
 #include "library/tree/syntax/context.h"
 #include "library/tree/syntax/parser_error.h"
@@ -80,7 +81,8 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         virtual bool handles_cursor(CXCursor p_cursor) = 0;
 
-        virtual Step handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) = 0;
+        virtual Step
+        handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) = 0;
 
       protected:
         static bool

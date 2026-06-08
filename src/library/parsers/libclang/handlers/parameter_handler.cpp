@@ -46,7 +46,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
     }
 
     IClangASTHandler::Step
-    ParameterHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    ParameterHandler::handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
         UNUSED(p_root);
 

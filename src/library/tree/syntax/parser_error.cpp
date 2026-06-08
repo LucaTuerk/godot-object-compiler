@@ -38,7 +38,10 @@
 #include "context.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
+
+#if GOC_TREE_SITTER_PARSER_ENABLED
 #include "library/parsers/tree-sitter/tree_sitter_node.h"
+#endif
 
 namespace GodotObjectCompiler
 {
@@ -113,6 +116,7 @@ namespace GodotObjectCompiler
         message = writer.get_string();
     }
 
+#if GOC_TREE_SITTER_PARSER_ENABLED
     ParserError::ParserError(
         ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message)
         : ParserError(
@@ -120,6 +124,7 @@ namespace GodotObjectCompiler
               node->start_point.row + 1, node->start_point.column + 1)
     {
     }
+#endif
 
     ParserError::ParserError(
         ErrorLevel level, const String& parser_name, const String& user_message,

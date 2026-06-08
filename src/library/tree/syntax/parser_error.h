@@ -35,7 +35,11 @@
 #pragma once
 #include "library/core/core.h"
 #include "library/core/reader_writer.h"
+
+#if GOC_TREE_SITTER_PARSER_ENABLED
 #include "library/parsers/tree-sitter/parser_context.h"
+#endif
+
 #include "node.h"
 
 namespace GodotObjectCompiler
@@ -97,8 +101,10 @@ namespace GodotObjectCompiler
         {
         }
 
+#if GOC_TREE_SITTER_PARSER_ENABLED
         explicit ParserError(
             ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message);
+#endif
 
         explicit ParserError(
             ErrorLevel level, const String& parser_name, const String& message,

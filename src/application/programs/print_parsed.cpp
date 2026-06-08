@@ -33,6 +33,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+#if GOC_TREE_SITTER_PARSER_ENABLED
 #include "print_parsed.h"
 
 #include "library/core/file_system_utilities.h"
@@ -72,3 +73,4 @@ namespace GodotObjectCompiler
     }
 
 } // namespace GodotObjectCompiler
+#endif

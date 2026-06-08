@@ -47,7 +47,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
     }
 
     IClangASTHandler::Step
-    MethodHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    MethodHandler::handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
         const ClangString name = clang_getCursorSpelling(p_cursor);
 

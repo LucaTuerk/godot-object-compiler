@@ -196,8 +196,8 @@ namespace GodotObjectCompiler
             ClassGeneratorResult& r_result);
 
         Result<Node> build_property_info_defaults(
-            const Ref<Type>& p_type, const String& p_property_name, ClassGeneratorResult& r_result,
-            const Ref<Namespace>& p_from_namespace,
+            const Ref<Type>& p_type, const String& p_property_name,
+            const ClassGeneratorResult& r_result, const Ref<Namespace>& p_from_namespace,
             DefaultsUsage p_usage = DEFAULTS_PROPERTY_BINDING);
 
         template <typename T>

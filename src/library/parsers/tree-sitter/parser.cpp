@@ -166,11 +166,6 @@ namespace GodotObjectCompiler
         return ParserError::OK;
     }
 
-    int TreeSitterParser::get_capabilities()
-    {
-        return CAPABILITIES_SOURCE_PARSER;
-    }
-
     void TreeSitterParser::config(Config p_config)
     {
         switch (p_config) {

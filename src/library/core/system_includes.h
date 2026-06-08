@@ -60,8 +60,4 @@
 #include <vector>
 using Json = nlohmann::ordered_json;
 
-#include "clang-c/Index.h"
-#include "tree-sitter-cpp.h"
-#include "tree_sitter/api.h"
-
 // GCOVR_EXCL_STOP

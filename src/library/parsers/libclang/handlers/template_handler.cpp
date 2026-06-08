@@ -43,7 +43,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
     }
 
     IClangASTHandler::Step
-    TemplateHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    TemplateHandler::handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
         switch (p_cursor.kind) {
         case CXCursor_ClassTemplate: {

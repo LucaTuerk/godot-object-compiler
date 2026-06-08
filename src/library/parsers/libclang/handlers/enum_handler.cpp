@@ -47,7 +47,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
     }
 
     IClangASTHandler::Step
-    EnumHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    EnumHandler::handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
         switch (p_cursor.kind) {
         case CXCursor_EnumDecl: {

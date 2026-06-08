@@ -266,11 +266,6 @@ namespace GodotObjectCompiler
         return parse(read_file(p_path), r_target);
     }
 
-    int ClangParser::get_capabilities()
-    {
-        return CAPABILITIES_SOURCE_PARSER | CAPABILITIES_SOURCE_SUPPORT_MACRO_EXPANSION;
-    }
-
     void ClangParser::config(Config p_config)
     {
         switch (p_config) {

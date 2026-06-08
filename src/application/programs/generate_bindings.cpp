@@ -40,7 +40,7 @@
 #include "library/core/string_writer.h"
 #include "library/generator/generator.h"
 #include "library/library_context.h"
-#include "library/parsers/tree-sitter/parser.h"
+#include "library/parser.h"
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/namespace.h"
@@ -216,7 +216,7 @@ namespace GodotObjectCompiler
 
             PRINT_VERBOSE("Generating bindings for \"%s\"", input_file.c_str());
             Ref<IParser> parser =
-                LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);
+                LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
             parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
 
             Ref<Namespace> global_namespace = node_new<Namespace>();

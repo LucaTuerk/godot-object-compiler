@@ -37,6 +37,7 @@
 
 #include "library/core/string_utilities.h"
 #include "library/tree/syntax/context.h"
+#include "tree_sitter/api.h"
 
 namespace GodotObjectCompiler
 {

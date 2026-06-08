@@ -56,12 +56,13 @@ namespace GodotObjectCompiler::ClangASTHandlers
         return is_attribute_name(name);
     }
 
-    CXCursor find_string_literal(CXCursor p_cursor)
+    CXCursor find_string_literal(const CXCursor& p_cursor)
     {
         CXCursor result = clang_getNullCursor();
         clang_visitChildren(
             p_cursor,
             [](CXCursor p_cursor, CXCursor p_parent, CXClientData p_result) {
+                UNUSED(p_parent);
                 if (p_cursor.kind == CXCursor_StringLiteral) {
                     CXCursor* result = static_cast<CXCursor*>(p_result);
                     *result = p_cursor;
@@ -73,8 +74,9 @@ namespace GodotObjectCompiler::ClangASTHandlers
     }
 
     IClangASTHandler::Step
-    AttributeHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    AttributeHandler::handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
+        UNUSED(p_root);
         const ClangString name = clang_getCursorSpelling(p_cursor);
 
         auto arguments_result = clang_Cursor_Evaluate(p_cursor);

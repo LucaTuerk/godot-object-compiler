@@ -40,7 +40,6 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 #include "library/library_context.h"
-#include "library/parsers/tree-sitter/parser.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/define.h"
 #include "library/tree/syntax/enum.h"
@@ -133,7 +132,7 @@ namespace GodotObjectCompiler
             "No godot-cpp path specified. Cannot generate the TypeDB");
 
         const Ref<IParser> parser =
-            LibraryContext::instance()->get_default_parser(IParser::CAPABILITIES_SOURCE_PARSER);
+            LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
         parser->config(IParser::CONFIG_SKIP_ATTRIBUTES);
 
         ExtensionAPIParser extension_api_parser;

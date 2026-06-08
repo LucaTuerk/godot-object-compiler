@@ -85,7 +85,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
     }
 
     IClangASTHandler::Step
-    LiteralHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    LiteralHandler::handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
         UNUSED(p_root);
         Result<Literal, ParserError> literal_result = cursor_to_literal(p_cursor);

@@ -41,12 +41,12 @@ namespace GodotObjectCompiler::ClangASTHandlers
         return p_cursor.kind == CXCursor_CXXAccessSpecifier;
     }
 
-    IClangASTHandler::Step
-    AccessSpecifierHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    IClangASTHandler::Step AccessSpecifierHandler::handle(
+        const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
-        CX_CXXAccessSpecifier access_specifier = clang_getCXXAccessSpecifier(p_cursor);
+        UNUSED(p_root);
 
-        switch (access_specifier) {
+        switch (clang_getCXXAccessSpecifier(p_cursor)) {
         case CX_CXXInvalidAccessSpecifier:
             break;
         case CX_CXXPublic: {

@@ -34,6 +34,7 @@
 /**************************************************************************/
 
 #pragma once
+#if GOC_TREE_SITTER_PARSER_ENABLED
 #include "program.h"
 
 namespace GodotObjectCompiler
@@ -49,3 +50,4 @@ namespace GodotObjectCompiler
     };
 
 } // namespace GodotObjectCompiler
+#endif

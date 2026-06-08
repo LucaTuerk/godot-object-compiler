@@ -46,7 +46,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
     }
 
     IClangASTHandler::Step
-    NamespaceHandler::handle(CXCursor p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
+    NamespaceHandler::handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
         ClangString name = clang_getCursorDisplayName(p_cursor);
         p_root = p_target->B<Namespace>()[{B<Identifier>(name)}];
