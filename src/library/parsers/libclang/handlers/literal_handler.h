@@ -49,7 +49,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         Result<Literal, ParserError> cursor_to_literal(const CXCursor& p_cursor);
 
-        bool handles_cursor(CXCursor p_cursor) override;
+        bool handles_cursor(const CXCursor& p_cursor) override;
 
         Step
         handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) override;

@@ -41,7 +41,7 @@
 
 namespace GodotObjectCompiler::ClangASTHandlers
 {
-    bool EnumHandler::handles_cursor(CXCursor p_cursor)
+    bool EnumHandler::handles_cursor(const CXCursor& p_cursor)
     {
         return cursor_kind_in(p_cursor, {CXCursor_EnumDecl, CXCursor_EnumConstantDecl});
     }

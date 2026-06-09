@@ -62,7 +62,7 @@ namespace GodotObjectCompiler
         return strstr.str();
     }
 
-    String extract_lines(
+    String string_extract_lines(
         const String& p_content, Size p_start_line, Size p_end_line, Size p_highlight_line)
     {
         std::stringstream content_stream(p_content);

@@ -79,7 +79,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         virtual int get_priority() const;
 
-        virtual bool handles_cursor(CXCursor p_cursor) = 0;
+        virtual bool handles_cursor(const CXCursor& p_cursor) = 0;
 
         virtual Step
         handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) = 0;

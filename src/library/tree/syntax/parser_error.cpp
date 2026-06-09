@@ -104,11 +104,11 @@ namespace GodotObjectCompiler
                 Ref<Context> context = node->as<Context>();
                 Size node_lines = context ? context->get_descendant_count() : 1;
 
-                writer.write(extract_lines(
+                writer.write(string_extract_lines(
                     pretty, line - std::min(line, static_cast<Size>(3)), line + node_lines + 3,
                     line));
             } else {
-                writer.write(extract_lines(node->pretty_print(), 0, 6, 1));
+                writer.write(string_extract_lines(node->pretty_print(), 0, 6, 1));
             }
         }
 
@@ -148,10 +148,10 @@ namespace GodotObjectCompiler
 
         if (LibraryContext::instance()->get_error_detail() == ErrorDetail::FULL) {
             writer.write("\nOccurred while processing source:\n");
-            writer.write(extract_lines(
+            writer.write(string_extract_lines(
                 file_content, line - std::min(line, static_cast<Size>(3)), line + 3, line));
         } else {
-            writer.write(extract_lines(file_content, line, line, line));
+            writer.write(string_extract_lines(file_content, line, line, line));
         }
 
         message = writer.get_string();

@@ -79,7 +79,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
         return literal;
     }
 
-    bool LiteralHandler::handles_cursor(CXCursor p_cursor)
+    bool LiteralHandler::handles_cursor(const CXCursor& p_cursor)
     {
         return cursor_is_literal(p_cursor);
     }

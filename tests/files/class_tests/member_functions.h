@@ -34,7 +34,14 @@
 /**************************************************************************/
 #pragma once
 
-class A
+class B
+{
+  protected:
+    virtual bool h();
+    virtual bool k(bool param);
+};
+
+class A : public B
 {
   public:
     int a();

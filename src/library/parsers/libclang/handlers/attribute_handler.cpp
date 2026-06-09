@@ -46,7 +46,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
         return string_prefix(p_name, "__GOC_MACRO__");
     }
 
-    bool AttributeHandler::handles_cursor(CXCursor p_cursor)
+    bool AttributeHandler::handles_cursor(const CXCursor& p_cursor)
     {
         if (!cursor_kind_in(p_cursor, {CXCursor_FieldDecl, CXCursor_VarDecl})) {
             return false;

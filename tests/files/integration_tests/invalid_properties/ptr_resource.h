@@ -35,8 +35,8 @@
 
 #pragma once
 
-#include "godot_cpp/classes/Resource.hpp"
 #include "godot_cpp/classes/node.hpp"
+#include "godot_cpp/classes/resource.hpp"
 #include "invalid_properties/ptr_resource.generated.h"
 
 using namespace godot;

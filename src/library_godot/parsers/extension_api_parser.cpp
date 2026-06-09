@@ -43,6 +43,8 @@
 #include "library/tree/syntax/identifier.h"
 
 static auto core_interface = R"(
+    using DefaultAllocator = int;
+
     namespace godot
     {
         enum ModuleInitializationLevel {

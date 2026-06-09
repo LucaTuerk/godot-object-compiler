@@ -41,7 +41,7 @@
 
 namespace GodotObjectCompiler::ClangASTHandlers
 {
-    bool ClassHandler::handles_cursor(CXCursor p_cursor)
+    bool ClassHandler::handles_cursor(const CXCursor& p_cursor)
     {
         return cursor_kind_in(
             p_cursor, {CXCursor_ClassDecl, CXCursor_StructDecl, CXCursor_ClassTemplate});

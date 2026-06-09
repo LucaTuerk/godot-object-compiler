@@ -40,7 +40,7 @@
 namespace GodotObjectCompiler::ClangASTHandlers
 {
 
-    bool ParameterHandler::handles_cursor(CXCursor p_cursor)
+    bool ParameterHandler::handles_cursor(const CXCursor& p_cursor)
     {
         return p_cursor.kind == CXCursor_ParmDecl;
     }

@@ -49,6 +49,9 @@ namespace GodotObjectCompiler
         bool parse_attributes;
         Size added_lines;
         Size added_characters;
+        Size first_line_added;
+
+        Size line_temp_to_original(Size temp_line);
     };
 
     class ClangParser : public IParser
@@ -98,6 +101,36 @@ namespace GodotObjectCompiler
         int* ref_count;
         CXString data{};
     };
+
+    template <typename T, auto Dispose> class ClangLocalRAII
+    {
+      public:
+        ClangLocalRAII(T data);
+        ~ClangLocalRAII();
+        operator T&();
+
+      private:
+        T _data;
+    };
+
+    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::ClangLocalRAII(T data)
+    {
+        _data = data;
+    }
+
+    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::~ClangLocalRAII()
+    {
+        Dispose(_data);
+    }
+
+    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::operator T&()
+    {
+        return _data;
+    }
+
+    using ClangTranslationUnit = ClangLocalRAII<CXTranslationUnit, &clang_disposeTranslationUnit>;
+    using ClangDisagnostic = ClangLocalRAII<CXDiagnostic, &clang_disposeDiagnostic>;
+
 } // namespace GodotObjectCompiler
 
 #define CLANG_AST_HANDLER(type)                                                                    \

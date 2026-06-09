@@ -60,7 +60,7 @@ namespace GodotObjectCompiler
     String string_replace(
         const String& p_target, const String& p_search_str, const String& p_replace_with);
 
-    String extract_lines(
+    String string_extract_lines(
         const String& p_content, Size p_start_line, Size p_end_line, Size p_highlight_line);
 
     String string_trim(const String& p_content);

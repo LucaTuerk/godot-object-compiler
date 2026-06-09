@@ -34,8 +34,6 @@
 /**************************************************************************/
 #pragma once
 
-using namespace godot;
-
 GODOT_CLASS();
 
 class A

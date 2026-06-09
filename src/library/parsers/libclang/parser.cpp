@@ -170,6 +170,11 @@ namespace GodotObjectCompiler
         return defines;
     }
 
+    Size ClangParserContext::line_temp_to_original(Size temp_line)
+    {
+        return temp_line <= first_line_added + added_lines ? temp_line : temp_line - added_lines;
+    }
+
     Ref<ParserError> ClangParser::parse(const String& p_input, Ref<Context> r_target)
     {
         PARSER_ERROR_COND(
@@ -182,7 +187,7 @@ namespace GodotObjectCompiler
 
         Permissions::instance()->add_write_path(path_cwd());
 
-        Size added_characters = 0, added_lines = 0;
+        Size added_characters = 0, added_lines = 0, first_line_added = 0;
         Ref<Body> body = r_target->B<Body>();
 
         StreamWriter writer;
@@ -198,6 +203,7 @@ namespace GodotObjectCompiler
         }
 
         writer.write(parts.first);
+        first_line_added = line_count(writer.get_string()) + 1;
         writer.write("\nint __GOC_CLANG_PARSER_START = 0;\n");
 
         auto macros = LibraryContext::instance()->get_attribute_db()->get_all_macros();
@@ -226,8 +232,10 @@ namespace GodotObjectCompiler
         Vector<String> include_args;
         Vector<String> includes = LibraryContext::instance()->get_include_paths();
 
+        String file_path = temp_file.get_path();
         if (current_file.has_value()) {
             includes.push_back(path_base(*current_file));
+            file_path = *current_file;
             current_file = {};
         }
 
@@ -238,11 +246,14 @@ namespace GodotObjectCompiler
         }
 
         CXIndex index = clang_createIndex(0, 0);
-        CXTranslationUnit unit = clang_parseTranslationUnit(
+        ClangTranslationUnit unit = clang_parseTranslationUnit(
             index, String(temp_file).c_str(), args.data(), static_cast<int>(args.size()), nullptr,
             0, CXTranslationUnit_SkipFunctionBodies);
-        PARSER_ERROR_COND(unit == nullptr, "Failed to parse translation unit.");
-        const CXCursor root = clang_getTranslationUnitCursor(unit);
+
+        if (unit == nullptr) {
+            clang_disposeTranslationUnit(unit);
+            PARSER_ERROR("Failed to parse source file.");
+        }
 
         ClangParserContext context{
             .root = r_target,
@@ -250,7 +261,37 @@ namespace GodotObjectCompiler
             .unit = unit,
             .parse_attributes = parse_attributes,
             .added_lines = added_lines,
-            .added_characters = added_characters};
+            .added_characters = added_characters,
+            .first_line_added = first_line_added};
+
+        for (unsigned i = 0; i < clang_getNumDiagnostics(unit); ++i) {
+
+            if (ClangDisagnostic diagnostic = clang_getDiagnostic(unit, i);
+                clang_getDiagnosticSeverity(diagnostic) >= CXDiagnostic_Error) {
+                StreamWriter error_writer;
+                ClangString spelling =
+                    clang_formatDiagnostic(diagnostic, CXDiagnostic_DisplayCategoryName);
+                if (string_contains(spelling, "stddef.h")) {
+                    continue;
+                }
+                error_writer.write("\n");
+                error_writer.write(spelling);
+
+                auto location = clang_getDiagnosticLocation(diagnostic);
+                unsigned line;
+                clang_getSpellingLocation(location, nullptr, &line, nullptr, nullptr);
+
+                error_writer.write("\n");
+                error_writer.write(string_extract_lines(
+                    p_input, context.line_temp_to_original(line - 3),
+                    context.line_temp_to_original(line + 3), context.line_temp_to_original(line)));
+
+                PARSER_ERROR(
+                    "ClangParser: %s%s", file_path.c_str(), error_writer.get_string().c_str());
+            }
+        }
+
+        const CXCursor root = clang_getTranslationUnitCursor(unit);
 
         clang_visitChildren(root, &visitor, &context);
 
