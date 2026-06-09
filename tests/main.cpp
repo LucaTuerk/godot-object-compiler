@@ -44,6 +44,8 @@
 #include "programs/all.h"
 #include "test_registry.h"
 
+constexpr Size NANO_TO_MILLIS = 1'000'000;
+
 int main(int argc, char* argv[])
 {
 
@@ -63,11 +65,13 @@ int main(int argc, char* argv[])
 
     Size failed_count = 0;
     Size success_count = 0, ignore_count = 0, all_count = 0;
+    Dictionary<String, Size> parsers_total_times;
 
     for (const auto& parser : LibraryContext::instance()->get_parsers()) {
         if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
             continue;
         }
+        Size timer_sum = 0;
         LibraryContext::instance()->set_default_parser(parser->get_type(), IParser::SOURCE_PARSER);
 
         PRINT_INFO("Running tests against parser: %s", parser->get_type().c_str());
@@ -77,28 +81,31 @@ int main(int argc, char* argv[])
             all_count++;
 
             TestResult result = TEST_RESULT_FAILURE;
+            TestTimer timer;
             try {
                 result = test_functor();
             } catch (const std::exception& e) {
                 print_err(e.what());
             }
+            timer_sum += timer.elapsed_nanoseconds();
 
             switch (result) {
             case TEST_RESULT_SUCCESS:
                 PRINT_INFO(
-                    "%s\tSuccess! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
+                    "%s (Parser: %s)\tSuccess! %dms", test_name.c_str(), parser->get_type().c_str(),
+                    timer.elapsed_nanoseconds() / NANO_TO_MILLIS);
                 success_count++;
                 break;
             case TEST_RESULT_FAILURE:
                 failed_tests.push_back(
                     format("%s (Parser: %s)", test_name.c_str(), parser->get_type().c_str()));
                 PRINT_INFO(
-                    "%s\tFailed! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
+                    "%s (Parser: %s)\tFailed!", test_name.c_str(), parser->get_type().c_str());
                 failed_count++;
                 break;
             case TEST_RESULT_IGNORED:
                 PRINT_INFO(
-                    "%s\tIgnored! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
+                    "%s (Parser: %s)\tIgnored!", test_name.c_str(), parser->get_type().c_str());
                 ignore_count++;
                 break;
             }
@@ -139,38 +146,60 @@ int main(int argc, char* argv[])
                 source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
 
                 TestResult result = TEST_RESULT_FAILURE;
+                TestTimer timer;
                 try {
                     result = test_functor();
                 } catch (const std::exception& e) {
                     print_err(e.what());
                 }
+                timer_sum += timer.elapsed_nanoseconds();
 
                 switch (result) {
                 case TEST_RESULT_SUCCESS:
                     PRINT_INFO(
-                        "%s\tSuccess! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
+                        "%s (Parser: %s)\tSuccess! %dms", test_name.c_str(),
+                        parser->get_type().c_str(), timer.elapsed_nanoseconds() / NANO_TO_MILLIS);
                     success_count++;
                     break;
                 case TEST_RESULT_FAILURE:
                     failed_tests.push_back(
                         format("%s (Parser: %s)", test_name.c_str(), parser->get_type().c_str()));
                     PRINT_INFO(
-                        "%s\tFailed! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
+                        "%s (Parser: %s)\tFailed!", test_name.c_str(), parser->get_type().c_str());
                     failed_count++;
                     break;
                 case TEST_RESULT_IGNORED:
                     PRINT_INFO(
-                        "%s\tIgnored! (Parser: %s)", test_name.c_str(), parser->get_type().c_str());
+                        "%s (Parser: %s)\tIgnored!", test_name.c_str(), parser->get_type().c_str());
                     ignore_count++;
                     break;
                 }
             }
         }
+
+        parsers_total_times[parser->get_type()] = timer_sum;
     }
 
+    PRINT_INFO("\nTotal Execution Times:")
+    PRINT_INFO(string_pad_right("", '-', 35).c_str());
+    Size sum = 0;
+    for (const auto& [parser_name, duration] : parsers_total_times) {
+        sum += duration;
+        PRINT_INFO(
+            "%s%s", string_pad_right(parser_name, ' ', 20).c_str(),
+            string_pad_left(format("%dms", duration / NANO_TO_MILLIS), ' ', 15).c_str());
+    }
+    PRINT_INFO(string_pad_right("", '-', 35).c_str());
     PRINT_INFO(
-        "Summary: %d failed, %d succeeded, %d ignored, %d tests run.", failed_count, success_count,
-        ignore_count, all_count);
+        "%s%s", string_pad_right("Sum", ' ', 20).c_str(),
+        string_pad_left(format("%dms", sum / NANO_TO_MILLIS), ' ', 15).c_str());
+    PRINT_INFO(
+        "%s%s", string_pad_right("Average", ' ', 20).c_str(),
+        string_pad_left(format("%dms", (sum / all_count) / NANO_TO_MILLIS), ' ', 15).c_str());
+
+    PRINT_INFO(
+        "\nSummary: %d failed, %d succeeded, %d ignored, %d tests run.", failed_count,
+        success_count, ignore_count, all_count);
 
     for (const String& test_name : failed_tests) {
         PRINT_INFO("Failed %s", test_name.c_str());

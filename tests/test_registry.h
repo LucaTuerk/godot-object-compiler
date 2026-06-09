@@ -49,6 +49,16 @@ namespace GodotObjectCompiler
 
     using TestFunctor = std::function<TestResult()>;
 
+    class TestTimer
+    {
+      public:
+        TestTimer();
+        Size elapsed_nanoseconds();
+
+      private:
+        std::chrono::time_point<std::chrono::high_resolution_clock> start;
+    };
+
     class TestRegistry
     {
       public:

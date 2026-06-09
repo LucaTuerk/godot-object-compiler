@@ -51,7 +51,7 @@ namespace GodotObjectCompiler
         Size added_characters;
         Size first_line_added;
 
-        Size line_temp_to_original(Size temp_line);
+        Size line_temp_to_original(Size temp_line) const;
     };
 
     class ClangParser : public IParser
@@ -88,32 +88,25 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    class ClangString
-    {
-      public:
-        ClangString(CXString p_string);
-        ClangString(const ClangString& p_string);
-        ~ClangString();
-
-        operator String() const;
-
-      private:
-        int* ref_count;
-        CXString data{};
-    };
-
     template <typename T, auto Dispose> class ClangLocalRAII
     {
       public:
-        ClangLocalRAII(T data);
+        ClangLocalRAII(T&& data);
         ~ClangLocalRAII();
         operator T&();
 
-      private:
+      protected:
         T _data;
     };
 
-    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::ClangLocalRAII(T data)
+    class ClangString : public ClangLocalRAII<CXString, &clang_disposeString>
+    {
+      public:
+        ClangString(CXString&& data) : ClangLocalRAII(std::move(data)) {};
+        operator String() const;
+    };
+
+    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::ClangLocalRAII(T&& data)
     {
         _data = data;
     }
@@ -129,7 +122,7 @@ namespace GodotObjectCompiler
     }
 
     using ClangTranslationUnit = ClangLocalRAII<CXTranslationUnit, &clang_disposeTranslationUnit>;
-    using ClangDisagnostic = ClangLocalRAII<CXDiagnostic, &clang_disposeDiagnostic>;
+    using ClangDiagnostic = ClangLocalRAII<CXDiagnostic, &clang_disposeDiagnostic>;
 
 } // namespace GodotObjectCompiler
 

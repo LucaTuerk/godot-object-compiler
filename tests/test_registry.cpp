@@ -40,6 +40,18 @@
 namespace GodotObjectCompiler
 {
 
+    TestTimer::TestTimer()
+    {
+        start = std::chrono::high_resolution_clock::now();
+    }
+
+    Size TestTimer::elapsed_nanoseconds()
+    {
+        using namespace std::chrono;
+        time_point<high_resolution_clock> now = high_resolution_clock::now();
+        return duration_cast<nanoseconds>(now - start).count();
+    }
+
     bool TestRegistry::register_test(const String& name, TestFunctor functor)
     {
         auto [_, success] = tests.emplace(name, functor);

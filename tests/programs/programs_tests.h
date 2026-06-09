@@ -113,6 +113,7 @@ GOC_TEST(InitLocalResources)
     return TEST_RESULT_SUCCESS;
 };
 
+#if GOC_TREE_SITTER_PARSER_ENABLED
 GOC_TEST(PrintParsed)
 {
     Application application;
@@ -122,6 +123,7 @@ GOC_TEST(PrintParsed)
     GOC_TEST_ASSERT(result == 0, "Failed to run program");
     return TEST_RESULT_SUCCESS;
 };
+#endif
 
 GOC_INTEGRATION_TEST(PrintTransformed)
 {
