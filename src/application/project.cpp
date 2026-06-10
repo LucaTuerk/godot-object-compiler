@@ -55,6 +55,9 @@ namespace GodotObjectCompiler
         paths_generated = p_reader->read<String, String>("GeneratedPath");
         paths_cache = p_reader->read<String, String>("CachePath");
         paths_include = string_split(p_reader->read<String, String>("IncludePaths"), ",", true);
+
+        p_reader->read_from_section("Options");
+        options_source_parser = p_reader->read<String, String>("SourceParser");
     }
 
     void Project::write_to(IStructuredWriter* p_writer)
@@ -69,6 +72,8 @@ namespace GodotObjectCompiler
         p_writer->write<String, String>("CachePath", paths_cache);
         p_writer->write<String, String>("GOCPath", paths_goc);
         p_writer->write<String, String>("IncludePaths", string_vector_combine(paths_include, ","));
+        p_writer->write_to_section("Options");
+        p_writer->write<String, String>("SourceParser", options_source_parser);
     }
 
     bool Project::read_from_file(const String& p_path)

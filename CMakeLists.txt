@@ -24,7 +24,9 @@ if (CPP_CHECK)
     endif ()
 endif ()
 
-find_package(Clang CONFIG REQUIRED)
+if (${GOC_LIBCLANG_PARSER_ENABLED})
+    find_package(Clang CONFIG REQUIRED)
+endif ()
 
 set(EXEC_NAME "goc")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

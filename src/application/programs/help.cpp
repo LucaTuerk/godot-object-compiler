@@ -45,6 +45,7 @@
 #include "library/core/resources.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
+#include "library/parser.h"
 
 namespace GodotObjectCompiler
 {
@@ -89,6 +90,36 @@ namespace GodotObjectCompiler
                 print_ln(
                     Resources::instance()->load_text_resource("res://help/header_content.txt"));
             }
+
+            print_ln("");
+            print_title("SOURCE PARSERS", 100);
+            {
+                for (const auto& parser : LibraryContext::instance()->get_parsers()) {
+                    if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
+                        continue;
+                    }
+
+                    bool is_default = LibraryContext::instance()->get_default_parser(
+                                          IParser::SOURCE_PARSER) == parser;
+
+                    String help_path = format("res://help/%s.txt", parser->get_type().c_str());
+
+                    String help_text = "No description available";
+                    if (Resources::instance()->has_resource(help_path)) {
+                        String content = Resources::instance()->load_text_resource(help_path);
+                        if (!content.empty()) {
+                            help_text = content;
+                        }
+                    }
+
+                    print_ln("");
+                    print_help_columns(
+                        {30, is_default ? format("%s (Default)", parser->get_type().c_str())
+                                        : parser->get_type()},
+                        {70, help_text});
+                }
+            }
+            print_ln("");
 
             print_title("PROGRAMS", 100);
         }

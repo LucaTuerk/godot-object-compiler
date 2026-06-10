@@ -5,16 +5,16 @@ programs are marked [!p] in the program list.
 The project can either be provided via a .goc_project file in the working directory OR via
 the following application arguments:
 
---root-path=, -R=
+--root_path=, -R=
     The projects root path, including the generator target files
 
---goc-path=, -P=
+--goc_path=, -P=
     The folder the godot-object-compiler can place files in
 
---generated-path=, -G=
+--generated_path=, -G=
     The folder the godot-object-compiler should place generated files in
 
---cache-path=, -C=
+--cache_path=, -C=
     The godot-object-compiler cache folder, including the type database
 
 --include_paths=, -I=
@@ -24,3 +24,11 @@ the following application arguments:
 --sources=, -S=
     The generators target source file paths, comma seperated.
 
+--godot_cpp=, -GPP=
+    The path to the godot-cpp repositories root used with your extension.
+
+--extension_api=, -E=
+    The path to the extension api json file to be used with your extension.
+
+--source_parser=, -SP=
+    The name of the source parser to be used by godot-object-compiler.

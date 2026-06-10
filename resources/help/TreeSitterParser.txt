@@ -1,0 +1,4 @@
+This parser uses TreeSitter to index your source files.
+It does not support macros extension and include substitution
+and parses your code on a "best guess" basis, but is slightly
+faster and more forgiving compared to the ClangParser.

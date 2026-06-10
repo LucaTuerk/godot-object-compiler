@@ -38,9 +38,13 @@
 #include "context.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
+#include "library/parsers/libclang/parser.h"
 
 #if GOC_TREE_SITTER_PARSER_ENABLED
 #include "library/parsers/tree-sitter/tree_sitter_node.h"
+#endif
+#if GOC_LIBCLANG_PARSER_ENABLED
+#include "library/parsers/libclang/parser_context.h"
 #endif
 
 namespace GodotObjectCompiler
@@ -122,6 +126,17 @@ namespace GodotObjectCompiler
         : ParserError(
               level, "TreeSitterParser", message, node->context->file_path, node->context->buffer,
               node->start_point.row + 1, node->start_point.column + 1)
+    {
+    }
+#endif
+
+#if GOC_LIBCLANG_PARSER_ENABLED
+    ParserError::ParserError(
+        ErrorLevel level, const ClangParserContext* context, const CXCursor& cursor,
+        const String& message)
+        : ParserError(
+              level, "ClangParser", message, context->file_path, context->original_content,
+              context->cursor_start_line(cursor), context->cursor_column(cursor))
     {
     }
 #endif

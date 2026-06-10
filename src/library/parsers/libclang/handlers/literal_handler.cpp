@@ -54,29 +54,21 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
     Result<Literal, ParserError> LiteralHandler::cursor_to_literal(const CXCursor& p_cursor)
     {
-        CXEvalResult result = clang_Cursor_Evaluate(p_cursor);
-        Ref<Literal> literal = nullptr;
+        ClangEvalResult result = clang_Cursor_Evaluate(p_cursor);
 
         switch (clang_EvalResult_getKind(result)) {
         case CXEval_Int: {
-            literal = node_new<Literal>(format("%d", clang_EvalResult_getAsInt(result)));
-            break;
+            return node_new<Literal>(format("%d", clang_EvalResult_getAsInt(result)));
         }
         case CXEval_Float: {
-            literal = node_new<Literal>(format("%f", clang_EvalResult_getAsDouble(result)));
-            break;
+            return node_new<Literal>(format("%f", clang_EvalResult_getAsDouble(result)));
         }
         case CXEval_StrLiteral: {
-            literal = node_new<Literal>(format("\"%s\"", clang_EvalResult_getAsStr(result)));
-            break;
+            return node_new<Literal>(format("\"%s\"", clang_EvalResult_getAsStr(result)));
         }
         default:
-            literal = node_new<Literal>(get_cursor_spelling(p_cursor));
-            break;
+            return node_new<Literal>(get_cursor_spelling(p_cursor));
         }
-
-        clang_EvalResult_dispose(result);
-        return literal;
     }
 
     bool LiteralHandler::handles_cursor(const CXCursor& p_cursor)
@@ -89,9 +81,12 @@ namespace GodotObjectCompiler::ClangASTHandlers
     {
         UNUSED(p_root);
         Result<Literal, ParserError> literal_result = cursor_to_literal(p_cursor);
-        RESULT_ERROR_PASS_ON(ParserError, literal_result, literal);
+        if (literal_result.has_error()) {
+            literal_result.get_error()->set_handled();
+            CLANG_PARSER_ERROR(literal_result.get_error()->message);
+        }
 
-        p_target->add_child(literal);
+        p_target->add_child(literal_result.get_result());
         return Step::Over();
     }
 } // namespace GodotObjectCompiler::ClangASTHandlers

@@ -21,6 +21,7 @@ jobs:
         run: |
           brew install tree-sitter-cli
           brew install scons
+          brew install llvm
 
       - name: Build Project
         run: |
@@ -57,7 +58,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include
+          ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include godot-cpp/gdextension
 
       - name: Upload Binary
         if: ${{inputs.create_artifact == true}}

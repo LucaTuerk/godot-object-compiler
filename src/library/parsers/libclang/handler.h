@@ -40,11 +40,11 @@
 #include "library/tree/syntax/context.h"
 #include "library/tree/syntax/parser_error.h"
 #include "library/tree/syntax/type.h"
+#include "parser_context.h"
 
 namespace GodotObjectCompiler
 {
     class ClangParser;
-    struct ClangParserContext;
 } // namespace GodotObjectCompiler
 
 namespace GodotObjectCompiler::ClangASTHandlers
@@ -101,3 +101,13 @@ namespace GodotObjectCompiler::ClangASTHandlers
     };
 
 } // namespace GodotObjectCompiler::ClangASTHandlers
+
+#define CLANG_PARSER_ERROR(...)                                                                    \
+    return node_new<ParserError>(ErrorLevel::ERROR, context, p_cursor, format(__VA_ARGS__))
+
+#define CLANG_PARSER_ERROR_COND(condition, ...)                                                    \
+    do {                                                                                           \
+        if ((condition)) {                                                                         \
+            CLANG_PARSER_ERROR(__VA_ARGS__);                                                       \
+        }                                                                                          \
+    } while (false)

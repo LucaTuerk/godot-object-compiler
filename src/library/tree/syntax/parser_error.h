@@ -42,8 +42,15 @@
 
 #include "node.h"
 
+#if GOC_LIBCLANG_PARSER_ENABLED
+#include <clang-c/Index.h>
+#endif
+
 namespace GodotObjectCompiler
 {
+#if GOC_LIBCLANG_PARSER_ENABLED
+    struct ClangParserContext;
+#endif
 
     class Error : public Node
     {
@@ -104,6 +111,12 @@ namespace GodotObjectCompiler
 #if GOC_TREE_SITTER_PARSER_ENABLED
         explicit ParserError(
             ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message);
+#endif
+
+#if GOC_LIBCLANG_PARSER_ENABLED
+        explicit ParserError(
+            ErrorLevel level, const ClangParserContext* context, const CXCursor& cursor,
+            const String& message);
 #endif
 
         explicit ParserError(

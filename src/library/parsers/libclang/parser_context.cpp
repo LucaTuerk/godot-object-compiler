@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* parser.h                                                               */
+/* parser_context.cpp                                                     */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,88 +33,65 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
-#include "clang-c/Index.h"
-#include "handler.h"
-#include "library/parser.h"
+#include "parser_context.h"
 
 namespace GodotObjectCompiler
 {
-
-    class ClangParser : public IParser
+    Size ClangParserContext::line_temp_to_original(const Size temp_line) const
     {
-        PARSER(ClangParser);
-        CAPABILITIES(SOURCE_PARSER | SUPPORT_MACRO_EXPANSION);
-
-      public:
-        Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
-
-        Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target) override;
-
-        template <typename T> static bool register_handler();
-
-        void config(Config p_config) override;
-
-      private:
-        static CXChildVisitResult
-        visitor(CXCursor p_cursor, CXCursor p_parent, CXClientData p_data);
-
-        static inline Vector<Ref<ClangASTHandlers::IClangASTHandler>> handlers;
-
-        bool parse_attributes = false;
-
-        Opt<String> current_file;
-    };
-
-    template <typename T> bool ClangParser::register_handler()
-    {
-        handlers.push_back(std::make_shared<T>());
-        std::sort(handlers.begin(), handlers.end(), [](auto handler_a, auto p_handler_b) {
-            return handler_a->get_priority() > p_handler_b->get_priority();
-        });
-        return true;
+        return temp_line < first_line_added + added_lines ? temp_line : temp_line - added_lines;
     }
 
-    template <typename T, auto Dispose> class ClangLocalRAII
+    Size ClangParserContext::offset_temp_to_original(const Size temp_offset) const
     {
-      public:
-        ClangLocalRAII(T&& data);
-        ~ClangLocalRAII();
-        operator T&();
-
-      protected:
-        T _data;
-    };
-
-    class ClangString : public ClangLocalRAII<CXString, &clang_disposeString>
-    {
-      public:
-        // clang-format off
-        ClangString(CXString&& data) : ClangLocalRAII(std::move(data)) {};
-        // clang-format on
-        operator String() const;
-    };
-
-    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::ClangLocalRAII(T&& data)
-    {
-        _data = data;
+        return temp_offset < first_character_added + added_characters
+                   ? temp_offset
+                   : temp_offset - added_characters;
     }
 
-    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::~ClangLocalRAII()
+    Size ClangParserContext::cursor_start_line(const CXCursor& cursor) const
     {
-        Dispose(_data);
+        const CXSourceRange extent = clang_getCursorExtent(cursor);
+        CXSourceLocation location = clang_getRangeStart(extent);
+        unsigned line;
+        clang_getFileLocation(location, nullptr, &line, nullptr, nullptr);
+        return line_temp_to_original(line);
     }
 
-    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::operator T&()
+    Size ClangParserContext::cursor_end_line(const CXCursor& cursor) const
     {
-        return _data;
+        const CXSourceRange extent = clang_getCursorExtent(cursor);
+        CXSourceLocation location = clang_getRangeEnd(extent);
+        unsigned line;
+        clang_getFileLocation(location, nullptr, &line, nullptr, nullptr);
+        return line_temp_to_original(line);
     }
 
-    using ClangTranslationUnit = ClangLocalRAII<CXTranslationUnit, &clang_disposeTranslationUnit>;
-    using ClangDiagnostic = ClangLocalRAII<CXDiagnostic, &clang_disposeDiagnostic>;
-    using ClangEvalResult = ClangLocalRAII<CXEvalResult, &clang_EvalResult_dispose>;
+    Size ClangParserContext::cursor_start_offset(const CXCursor& cursor) const
+    {
+        const CXSourceRange extent = clang_getCursorExtent(cursor);
+        CXSourceLocation location = clang_getRangeStart(extent);
+        unsigned offset;
+        clang_getFileLocation(location, nullptr, nullptr, nullptr, &offset);
+        return offset_temp_to_original(offset);
+    }
+
+    Size ClangParserContext::cursor_end_offset(const CXCursor& cursor) const
+    {
+        const CXSourceRange extent = clang_getCursorExtent(cursor);
+        CXSourceLocation location = clang_getRangeEnd(extent);
+        unsigned offset;
+        clang_getFileLocation(location, nullptr, nullptr, nullptr, &offset);
+        return offset_temp_to_original(offset);
+    }
+
+    Size ClangParserContext::cursor_column(const CXCursor& cursor) const
+    {
+        const CXSourceRange extent = clang_getCursorExtent(cursor);
+        CXSourceLocation location = clang_getRangeStart(extent);
+        unsigned column;
+        clang_getFileLocation(location, nullptr, nullptr, &column, nullptr);
+        return column;
+    }
 
 } // namespace GodotObjectCompiler
-
-#define CLANG_AST_HANDLER(type)                                                                    \
-    static inline bool __handler_registered__ = ClangParser::register_handler<type>()

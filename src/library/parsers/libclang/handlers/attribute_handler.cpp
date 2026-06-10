@@ -34,7 +34,6 @@
 /**************************************************************************/
 #include "attribute_handler.h"
 
-#include "library/attribute_db.h"
 #include "library/core/string_utilities.h"
 #include "library/parsers/common.h"
 #include "library/tree/syntax/attribute.h"
@@ -96,28 +95,26 @@ namespace GodotObjectCompiler::ClangASTHandlers
         clang_EvalResult_dispose(arguments_result);
 
         Vector<String> parts = string_split(name, "__");
-        PARSER_ERROR_COND(
+        CLANG_PARSER_ERROR_COND(
             parts.size() != 4, "Unexpected attribute \"%s\" can not be parsed.",
             String(name).c_str());
         const String& macro = parts[2];
 
-        CXFile file;
-        unsigned int start, end, line, _line_end, _column;
-        const CXSourceRange extent = clang_getCursorExtent(p_cursor);
-        clang_getFileLocation(clang_getRangeStart(extent), &file, &line, &_column, &start);
-        clang_getFileLocation(clang_getRangeEnd(extent), &file, &_line_end, &_column, &end);
-
         const SourceLocation location{
-            .start = start - context->added_characters,
-            .end = end - context->added_characters,
-            .line = line - context->added_lines,
+            .start = context->cursor_start_offset(p_cursor),
+            .end = context->cursor_end_offset(p_cursor),
+            .line = context->cursor_start_line(p_cursor),
         };
 
         const auto attribute_result = ParserUtilities::parse_attribute(
             macro, arguments_content, location, context->parse_attributes);
-        RESULT_ERROR_PASS_ON(ParserError, attribute_result, attribute);
-        p_target->add_child(attribute);
 
+        if (attribute_result.has_error()) {
+            attribute_result.get_error()->set_handled();
+            CLANG_PARSER_ERROR(attribute_result.get_error()->message.c_str());
+        }
+
+        p_target->add_child(attribute_result.get_result());
         return Step::Over();
     }
 

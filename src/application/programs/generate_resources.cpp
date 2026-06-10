@@ -45,6 +45,7 @@
 #include "library/core/permissions.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
+#include "library/parser.h"
 #include "library/tree/output/output.h"
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/identifier.h"
@@ -248,6 +249,11 @@ namespace GodotObjectCompiler
                 writer.write(rst_table(table));
                 write_file(param_doc_path, writer.get_string());
             }
+        }
+
+        for (const auto& parser : LibraryContext::instance()->get_parsers()) {
+            String path = path_concat_ext("resources/help", parser->get_type(), "txt");
+            write_initial_file_content(path, "");
         }
 
         Ref<Namespace> global_namespace = make_ref<Namespace>();

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* parser.h                                                               */
+/* parser_context.h                                                       */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,87 +34,35 @@
 /**************************************************************************/
 
 #pragma once
-#include "clang-c/Index.h"
-#include "handler.h"
-#include "library/parser.h"
+#include "library/core/core.h"
+#include "library/tree/syntax/context.h"
+
+#include <clang-c/Index.h>
 
 namespace GodotObjectCompiler
 {
+    class ParserError;
 
-    class ClangParser : public IParser
-    {
-        PARSER(ClangParser);
-        CAPABILITIES(SOURCE_PARSER | SUPPORT_MACRO_EXPANSION);
+    struct ClangParserContext {
+        bool active = false;
+        Ref<ParserError> error = nullptr;
+        Ref<Context> root;
+        Ref<Context> current;
+        CXTranslationUnit unit;
+        bool parse_attributes;
+        Size added_lines;
+        Size added_characters;
+        Size first_character_added;
+        Size first_line_added;
+        String file_path;
+        String original_content;
 
-      public:
-        Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
-
-        Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target) override;
-
-        template <typename T> static bool register_handler();
-
-        void config(Config p_config) override;
-
-      private:
-        static CXChildVisitResult
-        visitor(CXCursor p_cursor, CXCursor p_parent, CXClientData p_data);
-
-        static inline Vector<Ref<ClangASTHandlers::IClangASTHandler>> handlers;
-
-        bool parse_attributes = false;
-
-        Opt<String> current_file;
+        Size line_temp_to_original(Size temp_line) const;
+        Size offset_temp_to_original(Size temp_offset) const;
+        Size cursor_start_line(const CXCursor& cursor) const;
+        Size cursor_end_line(const CXCursor& cursor) const;
+        Size cursor_start_offset(const CXCursor& cursor) const;
+        Size cursor_end_offset(const CXCursor& cursor) const;
+        Size cursor_column(const CXCursor& cursor) const;
     };
-
-    template <typename T> bool ClangParser::register_handler()
-    {
-        handlers.push_back(std::make_shared<T>());
-        std::sort(handlers.begin(), handlers.end(), [](auto handler_a, auto p_handler_b) {
-            return handler_a->get_priority() > p_handler_b->get_priority();
-        });
-        return true;
-    }
-
-    template <typename T, auto Dispose> class ClangLocalRAII
-    {
-      public:
-        ClangLocalRAII(T&& data);
-        ~ClangLocalRAII();
-        operator T&();
-
-      protected:
-        T _data;
-    };
-
-    class ClangString : public ClangLocalRAII<CXString, &clang_disposeString>
-    {
-      public:
-        // clang-format off
-        ClangString(CXString&& data) : ClangLocalRAII(std::move(data)) {};
-        // clang-format on
-        operator String() const;
-    };
-
-    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::ClangLocalRAII(T&& data)
-    {
-        _data = data;
-    }
-
-    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::~ClangLocalRAII()
-    {
-        Dispose(_data);
-    }
-
-    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::operator T&()
-    {
-        return _data;
-    }
-
-    using ClangTranslationUnit = ClangLocalRAII<CXTranslationUnit, &clang_disposeTranslationUnit>;
-    using ClangDiagnostic = ClangLocalRAII<CXDiagnostic, &clang_disposeDiagnostic>;
-    using ClangEvalResult = ClangLocalRAII<CXEvalResult, &clang_EvalResult_dispose>;
-
 } // namespace GodotObjectCompiler
-
-#define CLANG_AST_HANDLER(type)                                                                    \
-    static inline bool __handler_registered__ = ClangParser::register_handler<type>()

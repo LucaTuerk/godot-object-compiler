@@ -18,8 +18,7 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt update
-          sudo apt install cmake -y
-          sudo apt install scons -y
+          sudo apt install cmake scons libclang-13-dev llvm -y
 
       - name: Build Project
         run: |
@@ -56,7 +55,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include
+          ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include godot-cpp/gdextension
           pip install gcovr
           cd ./build/CMakeFiles/goc_tests.dir/src
           gcovr -f . -e "/usr/include/.*" -e "/.*thirdparty/.*" -e "/.*tests/.*"\

@@ -43,6 +43,7 @@
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/library_context.h"
+#include "library/parser.h"
 #include "library/type_db.h"
 #include "programs/clear.h"
 #include "programs/help.h"
@@ -203,6 +204,11 @@ namespace GodotObjectCompiler
                 path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
 
             LibraryContext::instance()->clean_generated_files();
+
+            if (context.options_source_parser.has_value()) {
+                LibraryContext::instance()->set_default_parser(
+                    *context.options_source_parser, IParser::SOURCE_PARSER);
+            }
 
             if (context.project_target == TARGET_GDEXTENSION) {
                 LibraryContext::instance()->add_using("godot");

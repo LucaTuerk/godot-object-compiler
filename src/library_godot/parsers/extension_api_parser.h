@@ -43,7 +43,9 @@ namespace GodotObjectCompiler
     class JsonError : public ParserError
     {
       public:
+        // clang-format off
         JsonError(ErrorLevel p_level, const String& p_message) : ParserError(p_level, p_message) {};
+        // clang-format on
         JsonError(ErrorLevel p_level, const Json& p_json, const String& p_message);
     };
 

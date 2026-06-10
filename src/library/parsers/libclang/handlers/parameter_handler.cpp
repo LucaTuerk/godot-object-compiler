@@ -52,9 +52,13 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         const ClangString name = clang_getCursorDisplayName(p_cursor);
         auto type_result = get_cursor_type(p_cursor);
-        RESULT_ERROR_PASS_ON(ParserError, type_result, type);
 
-        p_target->B<Parameter>()[{type, B<Identifier>(name)}];
+        if (type_result.has_error()) {
+            type_result.get_error()->set_handled();
+            CLANG_PARSER_ERROR(type_result.get_error()->message);
+        }
+
+        p_target->B<Parameter>()[{type_result.get_result(), B<Identifier>(name)}];
         return Step::Over();
     }
 } // namespace GodotObjectCompiler::ClangASTHandlers

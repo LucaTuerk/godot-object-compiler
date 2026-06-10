@@ -57,7 +57,11 @@ namespace GodotObjectCompiler::ClangASTHandlers
         const ClangString type_name = clang_getTypeSpelling(clang_getCursorType(p_cursor));
 
         auto type_result = get_cursor_type(p_cursor);
-        RESULT_ERROR_PASS_ON(ParserError, type_result, type);
+        if (type_result.has_error()) {
+            type_result.get_error()->set_handled();
+            CLANG_PARSER_ERROR(type_result.get_error()->message);
+        }
+        auto type = type_result.get_result();
 
         auto storage_class = clang_Cursor_getStorageClass(p_cursor);
 

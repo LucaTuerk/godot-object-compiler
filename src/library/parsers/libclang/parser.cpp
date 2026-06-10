@@ -49,6 +49,7 @@
 #include "library/tree/syntax/identifier.h"
 #include "library/tree/syntax/include.h"
 #include "library/tree/syntax/namespace.h"
+#include "parser_context.h"
 
 namespace GodotObjectCompiler
 {
@@ -134,11 +135,6 @@ namespace GodotObjectCompiler
         return results;
     }
 
-    Size ClangParserContext::line_temp_to_original(const Size temp_line) const
-    {
-        return temp_line <= first_line_added + added_lines ? temp_line : temp_line - added_lines;
-    }
-
     Ref<ParserError> ClangParser::parse(const String& p_input, Ref<Context> r_target)
     {
         static CXIndex index = clang_createIndex(0, 0);
@@ -152,7 +148,7 @@ namespace GodotObjectCompiler
         const String local_input = ParserUtilities::strip_excluded_sections(p_input);
 
         Permissions::instance()->add_write_path(path_cwd());
-        Size added_characters = 0, added_lines = 0, first_line_added = 0;
+        Size added_characters = 0, added_lines = 0, first_line_added = 0, fist_character_added = 0;
         Ref<Body> body = r_target->B<Body>();
 
         StreamWriter writer;
@@ -163,6 +159,7 @@ namespace GodotObjectCompiler
 
         auto [include_section, post_include_section] = split_lines_include(local_input);
         writer.write(include_section);
+        fist_character_added = include_section.size();
         first_line_added = line_count(writer.get_string()) + 1;
 
         StreamWriter added_section_writer;
@@ -184,7 +181,7 @@ namespace GodotObjectCompiler
         writer.write(post_include_section);
 
         added_characters = added_section_writer.current_length();
-        added_lines += line_count(added_section_writer.get_string());
+        added_lines += line_count(added_section_writer.get_string()) - 2;
 
         String contents = writer.get_string();
 
@@ -208,9 +205,7 @@ namespace GodotObjectCompiler
 
         ClangTranslationUnit unit = clang_parseTranslationUnit(
             index, temp_file.get_path().c_str(), args.data(), static_cast<int>(args.size()),
-            nullptr, 0,
-            CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_CacheCompletionResults |
-                CXTranslationUnit_PrecompiledPreamble);
+            nullptr, 0, CXTranslationUnit_SkipFunctionBodies);
 
         PARSER_ERROR_COND(unit == nullptr, "Failed to parse source file \"%s\"", file_path.c_str());
 
@@ -221,7 +216,11 @@ namespace GodotObjectCompiler
             .parse_attributes = parse_attributes,
             .added_lines = added_lines,
             .added_characters = added_characters,
-            .first_line_added = first_line_added};
+            .first_character_added = fist_character_added,
+            .first_line_added = first_line_added,
+            .file_path = file_path,
+            .original_content = p_input,
+        };
 
         for (unsigned i = 0; i < clang_getNumDiagnostics(unit); ++i) {
             if (ClangDiagnostic diagnostic = clang_getDiagnostic(unit, i);
@@ -306,6 +305,7 @@ namespace GodotObjectCompiler
 
         for (const auto& handler : handlers) {
             handler->context = context;
+
             if (handler->handles_cursor(p_cursor)) {
                 Ref<Context> current = context->current;
                 Ref<Context> root = context->root;

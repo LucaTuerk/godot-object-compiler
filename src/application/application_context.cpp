@@ -53,6 +53,9 @@ namespace GodotObjectCompiler
         paths_goc = path_absolute(p_project.paths_goc);
         paths_godot_cpp_include = p_project.paths_godot_cpp_include;
         path_extension_api = p_project.path_extension_api;
+        options_source_parser = p_project.options_source_parser.empty()
+                                    ? std::nullopt
+                                    : Opt<String>(p_project.options_source_parser);
 
         for (const auto& include_path : p_project.paths_include) {
             if (!vector_contains(*paths_include, include_path)) {
@@ -122,11 +125,14 @@ namespace GodotObjectCompiler
             } else if (prefix_extract(arg, "--sources=", "-S=", content)) {
                 files_input = string_split(content, ",", true);
                 itr = p_application_arguments.erase(itr);
-            } else if (prefix_extract(arg, "--godot-cpp=", "-GPP=", content)) {
+            } else if (prefix_extract(arg, "--godot_cpp=", "-GPP=", content)) {
                 paths_godot_cpp_include = string_split(content, ",", true);
                 itr = p_application_arguments.erase(itr);
             } else if (prefix_extract(arg, "--extension_api=", "-E=", content)) {
                 path_extension_api = content;
+                itr = p_application_arguments.erase(itr);
+            } else if (prefix_extract(arg, "--source_parser=", "-SP=", content)) {
+                options_source_parser = content;
                 itr = p_application_arguments.erase(itr);
             } else {
                 ++itr;
