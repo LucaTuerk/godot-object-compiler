@@ -291,7 +291,8 @@ namespace GodotObjectCompiler
             for (Size curr = 0; curr < size - 1; ++curr) {
                 for (Size cmp = curr + 1; cmp < size; ++cmp) {
                     body->add_child(Output::FmtText(
-                        "static_assert(!std::is_same_v<T%d,T%d>, \"Duplicate argument types %d "
+                        "static_assert(!std::is_same<T%d,T%d>::value, \"Duplicate argument types "
+                        "%d "
                         "and "
                         "%d\");",
                         curr + 1, cmp + 1, curr + 1, cmp + 1));

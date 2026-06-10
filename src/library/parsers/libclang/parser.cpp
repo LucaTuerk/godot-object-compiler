@@ -185,7 +185,8 @@ namespace GodotObjectCompiler
 
         String contents = writer.get_string();
 
-        Vector<const char*> args = {"-x", "c++"};
+        // TODO: Allow setting C++ standard as application argument
+        Vector<const char*> args = {"-x", "c++", "-std=c++17"};
         Vector<String> include_args;
         Vector<String> includes = LibraryContext::instance()->get_include_paths();
 
@@ -205,7 +206,9 @@ namespace GodotObjectCompiler
 
         ClangTranslationUnit unit = clang_parseTranslationUnit(
             index, temp_file.get_path().c_str(), args.data(), static_cast<int>(args.size()),
-            nullptr, 0, CXTranslationUnit_SkipFunctionBodies);
+            nullptr, 0,
+            CXTranslationUnit_SkipFunctionBodies |
+                CXTranslationUnit_IgnoreNonErrorsFromIncludedFiles);
 
         PARSER_ERROR_COND(unit == nullptr, "Failed to parse source file \"%s\"", file_path.c_str());
 
@@ -229,7 +232,13 @@ namespace GodotObjectCompiler
                 ClangString spelling =
                     clang_formatDiagnostic(diagnostic, CXDiagnostic_DisplayCategoryName);
 
+                // TODO: Fix these
                 if (string_contains(spelling, "stddef.h")) {
+                    continue;
+                }
+
+                if (string_contains(spelling, ".generated.h") &&
+                    string_contains(spelling, "file not found")) {
                     continue;
                 }
 
