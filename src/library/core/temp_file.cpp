@@ -44,8 +44,14 @@ namespace GodotObjectCompiler
 {
     TempFile::TempFile(const String& p_extension, const String& p_content)
     {
-        path = path_absolute(format("temp_%d.%s", rand() % 1000, p_extension.c_str()));
-        Permissions::instance()->add_write_path(path_base(path));
+        static std::random_device rd;
+        static std::mt19937_64 gen(rd());
+        static std::uniform_int_distribution<uint64_t> dis;
+
+        path = path_concat_ext(
+            LibraryContext::instance()->get_temporary_path(), format("temp_%d", dis(gen) % 1000),
+            p_extension);
+
         FileWriter writer(path);
         writer.write(p_content);
     }
@@ -60,8 +66,4 @@ namespace GodotObjectCompiler
         return path;
     }
 
-    TempFile::operator std::string() const
-    {
-        return path;
-    }
 } // namespace GodotObjectCompiler

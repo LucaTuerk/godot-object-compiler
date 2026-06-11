@@ -75,10 +75,8 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         p_target = p_root->B<Parameters>();
 
-        if (p_cursor.kind == CXCursor_CXXMethod) {
-            if (clang_CXXMethod_isConst(p_cursor)) {
-                p_root->B<Const>();
-            }
+        if (p_cursor.kind == CXCursor_CXXMethod && clang_CXXMethod_isConst(p_cursor)) {
+            p_root->B<Const>();
         }
 
         return Step::Into();

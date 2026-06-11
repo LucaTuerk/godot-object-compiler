@@ -58,7 +58,7 @@ namespace GodotObjectCompiler
         out_last_modified_times.erase(absolute);
     }
 
-    const Vector<Ref<IParser>>& LibraryContext::get_parsers()
+    const Vector<Ref<IParser>>& LibraryContext::get_parsers() const
     {
         return parsers;
     }
@@ -97,6 +97,16 @@ namespace GodotObjectCompiler
         return itr == default_parsers.end() ? nullptr : itr->second;
     }
 
+    void LibraryContext::set_temporary_path(const String& p_path)
+    {
+        temp_path = p_path;
+    }
+
+    String LibraryContext::get_temporary_path() const
+    {
+        return temp_path;
+    }
+
     String error_level_to_string(ErrorLevel level)
     {
         switch (level) {
@@ -126,8 +136,8 @@ namespace GodotObjectCompiler
         node_db = make_ref<NodeDB>(NodeDB::Private());
         attribute_db = make_ref<AttributeDB>(AttributeDB::Private());
         type_db = make_ref<TypeDB>(TypeDB::Private());
-        cache_path = {};
         usings = {};
+        temp_path = {};
         input_files = {};
         remove_macros = {};
         include_paths = {};
@@ -136,7 +146,6 @@ namespace GodotObjectCompiler
         out_last_modified_times = {};
         generic_singletons = {};
         parsers = {};
-        // default_parsers = {};
         error_level = INFO;
         error_detail = FULL;
         initialized = true;

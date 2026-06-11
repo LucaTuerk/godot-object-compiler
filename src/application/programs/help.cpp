@@ -35,9 +35,6 @@
 
 #include "help.h"
 
-#include <functional>
-#include <unordered_set>
-
 #include "application/programs/program.h"
 #include "application/version.h"
 #include "library/core/core.h"
@@ -56,9 +53,88 @@ namespace GodotObjectCompiler
         return true;
     }
 
+    void Help::print_header()
+    {
+        print_title(
+            format(
+                "Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MINOR_VERSION,
+                GOC_VERSION_NAME),
+            100);
+        print_ln("");
+
+        if (Resources::instance()->has_resource("res://help/header_content.txt")) {
+            print_ln(Resources::instance()->load_text_resource("res://help/header_content.txt"));
+        }
+    }
+
+    void Help::print_parser_info()
+    {
+        print_title("SOURCE PARSERS", 100);
+        for (const auto& parser : LibraryContext::instance()->get_parsers()) {
+            if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
+                continue;
+            }
+
+            bool is_default =
+                LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER) == parser;
+
+            String help_path = format("res://help/%s.txt", parser->get_type().c_str());
+
+            String help_text = "No description available";
+            if (Resources::instance()->has_resource(help_path)) {
+                String content = Resources::instance()->load_text_resource(help_path);
+                if (!content.empty()) {
+                    help_text = content;
+                }
+            }
+
+            print_ln("");
+            print_help_columns(
+                {30, is_default ? format("%s (Default)", parser->get_type().c_str())
+                                : parser->get_type()},
+                {70, help_text});
+        }
+    }
+
+    void Help::print_program_info(const ProgramPath& p_path, const Ref<IProgram>& program)
+    {
+        for (auto itr = p_path.begin(); itr != p_path.end() - 1; ++itr) {
+            Vector<String> sub{p_path.begin(), itr + 1};
+            if (written.find(sub) != written.end()) {
+                continue;
+            }
+
+            StreamWriter sub_writer;
+            for (Size i = 0; i < sub.size() - 1; ++i) {
+                sub_writer.write("  ");
+            }
+            sub_writer.write(sub.back());
+            written.insert(sub);
+
+            print_ln("");
+            print_help_columns({30, sub_writer.get_string()}, {70, ""});
+        }
+
+        StreamWriter identifier_writer;
+        for (Size i = 0; i < p_path.size() - 1; ++i) {
+            identifier_writer.write("  ");
+        }
+        identifier_writer.write(p_path.back());
+
+        if (!program->requires_project()) {
+            identifier_writer.write(" [!p]");
+        }
+
+        print_ln("");
+        print_help_columns({30, identifier_writer.get_string()}, {70, get_help_text(p_path)});
+
+        written.insert(p_path);
+    }
+
     Ref<ProgramError> Help::run(ApplicationContext& p_context)
     {
         UNUSED(p_context);
+        written = {};
 
         Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
 
@@ -67,64 +143,17 @@ namespace GodotObjectCompiler
             return string_vector_combine(a.first, "") < string_vector_combine(b.first, "");
         };
 
-        struct ProgramPathHash {
-            size_t operator()(const ProgramPath& path) const
-            {
-                return std::hash<String>()(string_vector_combine(path, ""));
-            }
-        };
-
         Vector<Pair<ProgramPath, Ref<IProgram>>> programs_sorted;
         std::copy(programs.begin(), programs.end(), std::back_inserter(programs_sorted));
         std::sort(programs_sorted.begin(), programs_sorted.end(), cmp);
 
         if (p_context.program_arguments.empty()) {
-            print_title(
-                format(
-                    "Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MINOR_VERSION,
-                    GOC_VERSION_NAME),
-                100);
+            print_header();
             print_ln("");
-
-            if (Resources::instance()->has_resource("res://help/header_content.txt")) {
-                print_ln(
-                    Resources::instance()->load_text_resource("res://help/header_content.txt"));
-            }
-
+            print_parser_info();
             print_ln("");
-            print_title("SOURCE PARSERS", 100);
-            {
-                for (const auto& parser : LibraryContext::instance()->get_parsers()) {
-                    if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
-                        continue;
-                    }
-
-                    bool is_default = LibraryContext::instance()->get_default_parser(
-                                          IParser::SOURCE_PARSER) == parser;
-
-                    String help_path = format("res://help/%s.txt", parser->get_type().c_str());
-
-                    String help_text = "No description available";
-                    if (Resources::instance()->has_resource(help_path)) {
-                        String content = Resources::instance()->load_text_resource(help_path);
-                        if (!content.empty()) {
-                            help_text = content;
-                        }
-                    }
-
-                    print_ln("");
-                    print_help_columns(
-                        {30, is_default ? format("%s (Default)", parser->get_type().c_str())
-                                        : parser->get_type()},
-                        {70, help_text});
-                }
-            }
-            print_ln("");
-
             print_title("PROGRAMS", 100);
         }
-
-        std::unordered_set<ProgramPath, ProgramPathHash> written;
 
         for (const auto& [path, program] : programs_sorted) {
             if (path.empty()) {
@@ -142,37 +171,7 @@ namespace GodotObjectCompiler
                 continue;
             }
 
-            if (path.size() != 1) {
-                for (auto itr = path.begin(); itr != path.end() - 1; ++itr) {
-                    if (Vector<String> sub{path.begin(), itr + 1};
-                        written.find(sub) == written.end()) {
-                        StreamWriter sub_writer;
-                        for (Size i = 0; i < sub.size() - 1; ++i) {
-                            sub_writer.write("  ");
-                        }
-                        sub_writer.write(sub.back());
-                        written.insert(sub);
-
-                        print_ln("");
-                        print_help_columns({30, sub_writer.get_string()}, {70, ""});
-                    }
-                }
-            }
-
-            StreamWriter identifier_writer;
-            for (Size i = 0; i < path.size() - 1; ++i) {
-                identifier_writer.write("  ");
-            }
-            identifier_writer.write(path.back());
-
-            if (!program->requires_project()) {
-                identifier_writer.write(" [!p]");
-            }
-
-            print_ln("");
-            print_help_columns({30, identifier_writer.get_string()}, {70, get_help_text(path)});
-
-            written.insert(path);
+            print_program_info(path, program);
         }
 
         return ProgramError::OK;
@@ -213,6 +212,11 @@ namespace GodotObjectCompiler
         }
 
         return Resources::instance()->load_text_resource(res_path);
+    }
+
+    Size Help::ProgramPathHash::operator()(const ProgramPath& path) const
+    {
+        return std::hash<String>()(string_vector_combine(path, ""));
     }
 
     void Help::print_help_columns(const Column& column1, const Column& column2)

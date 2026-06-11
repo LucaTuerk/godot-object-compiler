@@ -174,6 +174,7 @@ namespace GodotObjectCompiler
     {                                                                                              \
         Ref<IParser> parser =                                                                      \
             LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);                \
+        LibraryContext::instance()->set_temporary_path(".goc_tests");                              \
         Ref<ParserError> error = parser->parse_file(path, global_namespace);                       \
         GOC_TEST_EQ(error, ParserError::OK, "Parser error occurred");                              \
     }                                                                                              \

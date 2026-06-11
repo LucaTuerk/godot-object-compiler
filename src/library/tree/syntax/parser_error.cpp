@@ -122,40 +122,40 @@ namespace GodotObjectCompiler
 
 #if GOC_TREE_SITTER_PARSER_ENABLED
     ParserError::ParserError(
-        ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message)
+        ErrorLevel p_level, const Ref<TreeSitterNode>& p_node, const String& p_message)
         : ParserError(
-              level, "TreeSitterParser", message, node->context->file_path, node->context->buffer,
-              node->start_point.row + 1, node->start_point.column + 1)
+              p_level, "TreeSitterParser", p_message, p_node->context->file_path,
+              p_node->context->buffer, p_node->start_point.row + 1, p_node->start_point.column + 1)
     {
     }
 #endif
 
 #if GOC_LIBCLANG_PARSER_ENABLED
     ParserError::ParserError(
-        ErrorLevel level, const ClangParserContext* context, const CXCursor& cursor,
-        const String& message)
+        ErrorLevel p_level, const ClangParserContext* p_context, const CXCursor& p_cursor,
+        const String& p_message)
         : ParserError(
-              level, "ClangParser", message, context->file_path, context->original_content,
-              context->cursor_start_line(cursor), context->cursor_column(cursor))
+              p_level, "ClangParser", p_message, p_context->file_path, p_context->original_content,
+              p_context->cursor_start_line(p_cursor), p_context->cursor_column(p_cursor))
     {
     }
 #endif
 
     ParserError::ParserError(
-        ErrorLevel level, const String& parser_name, const String& user_message,
-        const String& file_path, const String& file_content, Size line, Size column)
+        ErrorLevel p_level, const String& p_parser_name, const String& user_message,
+        const String& p_file_path, const String& p_file_content, Size p_line, Size p_column)
     {
-        error_level = level;
+        error_level = p_level;
         StreamWriter writer;
-        writer.write(error_level_to_string(level));
+        writer.write(error_level_to_string(p_level));
         writer.write(" ");
-        writer.write(parser_name);
+        writer.write(p_parser_name);
         writer.write(": ");
-        writer.write(file_path);
+        writer.write(p_file_path);
         writer.write(":");
-        writer.write_generic(line);
+        writer.write_generic(p_line);
         writer.write(":");
-        writer.write_generic(column);
+        writer.write_generic(p_column);
         writer.write(" ");
         writer.write("\n");
         writer.write(user_message);
@@ -164,9 +164,10 @@ namespace GodotObjectCompiler
         if (LibraryContext::instance()->get_error_detail() == ErrorDetail::FULL) {
             writer.write("\nOccurred while processing source:\n");
             writer.write(string_extract_lines(
-                file_content, line - std::min(line, static_cast<Size>(3)), line + 3, line));
+                p_file_content, p_line - std::min(p_line, static_cast<Size>(3)), p_line + 3,
+                p_line));
         } else {
-            writer.write(string_extract_lines(file_content, line, line, line));
+            writer.write(string_extract_lines(p_file_content, p_line, p_line, p_line));
         }
 
         message = writer.get_string();

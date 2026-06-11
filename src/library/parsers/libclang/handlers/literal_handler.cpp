@@ -40,7 +40,7 @@
 namespace GodotObjectCompiler::ClangASTHandlers
 {
 
-    bool LiteralHandler::cursor_is_literal(const CXCursor& cursor)
+    bool LiteralHandler::cursor_is_literal(const CXCursor& cursor) const
     {
         return cursor_kind_in(
             cursor, {
@@ -52,7 +52,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
                     });
     }
 
-    Result<Literal, ParserError> LiteralHandler::cursor_to_literal(const CXCursor& p_cursor)
+    Result<Literal, ParserError> LiteralHandler::cursor_to_literal(const CXCursor& p_cursor) const
     {
         ClangEvalResult result = clang_Cursor_Evaluate(p_cursor);
 

@@ -85,7 +85,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
     }
 
     bool IClangASTHandler::cursor_kind_in(
-        const CXCursor& p_cursor, std::initializer_list<CXCursorKind>&& p_kinds)
+        const CXCursor& p_cursor, const std::initializer_list<CXCursorKind>& p_kinds)
     {
         return std::any_of(p_kinds.begin(), p_kinds.end(), [&p_cursor](const auto& kind) {
             if (kind == p_cursor.kind) {

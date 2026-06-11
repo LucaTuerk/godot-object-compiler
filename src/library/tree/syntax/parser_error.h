@@ -104,24 +104,25 @@ namespace GodotObjectCompiler
         NODE_TYPE(ParserError);
 
       public:
-        explicit ParserError(const ErrorLevel level, const String& message) : Error(level, message)
+        explicit ParserError(const ErrorLevel p_level, const String& p_message)
+            : Error(p_level, p_message)
         {
         }
 
 #if GOC_TREE_SITTER_PARSER_ENABLED
         explicit ParserError(
-            ErrorLevel level, const Ref<TreeSitterNode>& node, const String& message);
+            ErrorLevel p_level, const Ref<TreeSitterNode>& p_node, const String& p_message);
 #endif
 
 #if GOC_LIBCLANG_PARSER_ENABLED
         explicit ParserError(
-            ErrorLevel level, const ClangParserContext* context, const CXCursor& cursor,
-            const String& message);
+            ErrorLevel p_level, const ClangParserContext* p_context, const CXCursor& p_cursor,
+            const String& p_message);
 #endif
 
         explicit ParserError(
-            ErrorLevel level, const String& parser_name, const String& message,
-            const String& file_path, const String& file_content, Size line, Size column);
+            ErrorLevel p_level, const String& p_parser_name, const String& p_message,
+            const String& p_file_path, const String& p_file_content, Size p_line, Size p_column);
 
         static inline const Ref<ParserError> OK = nullptr;
     };

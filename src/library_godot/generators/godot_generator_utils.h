@@ -67,7 +67,7 @@ namespace GodotObjectCompiler
 
         Result<Function> add_signal(
             const Ref<Class>& p_target_class, const String& p_signal_name,
-            const Ref<Parameters>& p_parameters, ClassGeneratorResult& r_result);
+            const Ref<Parameters>& p_parameters, const ClassGeneratorResult& r_result);
 
         Ref<Function> emit_signal(const String& p_signal_name, const Ref<Arguments>& p_arguments);
 
@@ -212,8 +212,8 @@ namespace GodotObjectCompiler
         {
             p_inner_types = {};
 
-            String name = type_name_remove_usings(p_target_type->type_name_untemplated());
-            if (name != type_name_remove_usings(p_assumed_type.type->name())) {
+            if (type_name_remove_usings(p_target_type->type_name_untemplated()) !=
+                type_name_remove_usings(p_assumed_type.type->name())) {
                 return false;
             }
 

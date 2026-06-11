@@ -45,9 +45,9 @@ namespace GodotObjectCompiler::ClangASTHandlers
         CLANG_AST_HANDLER(LiteralHandler);
 
       public:
-        bool cursor_is_literal(const CXCursor& cursor);
+        bool cursor_is_literal(const CXCursor& cursor) const;
 
-        Result<Literal, ParserError> cursor_to_literal(const CXCursor& p_cursor);
+        Result<Literal, ParserError> cursor_to_literal(const CXCursor& p_cursor) const;
 
         bool handles_cursor(const CXCursor& p_cursor) override;
 

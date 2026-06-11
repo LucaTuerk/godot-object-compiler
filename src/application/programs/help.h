@@ -45,14 +45,29 @@ namespace GodotObjectCompiler
 
       public:
         bool validate_arguments(ApplicationContext& p_context) override;
+
         Ref<ProgramError> run(ApplicationContext& p_context) override;
 
       private:
         using Column = Pair<Size, String>;
 
         static void print_title(const String& p_title, Size width);
+
         static void print_help_columns(const Column& column1, const Column& column2);
+
+        static void print_header();
+
+        static void print_parser_info();
+
+        static void print_program_info(const ProgramPath& p_path, const Ref<IProgram>& program);
+
         static String get_help_text(const ProgramPath& p_path);
+
+        struct ProgramPathHash {
+            size_t operator()(const ProgramPath& path) const;
+        };
+
+        static inline std::unordered_set<ProgramPath, ProgramPathHash> written;
     };
 
 } // namespace GodotObjectCompiler

@@ -42,11 +42,14 @@ namespace GodotObjectCompiler
     {
       public:
         TempFile(const String& p_extension, const String& p_content);
+
+        TempFile(const TempFile& p_other) = delete;
+
+        TempFile& operator=(const TempFile& p_other) = delete;
+
         ~TempFile();
 
         String get_path() const;
-
-        operator String() const;
 
       private:
         String path;

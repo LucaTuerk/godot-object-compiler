@@ -139,6 +139,72 @@ namespace GodotObjectCompiler::ParserUtilities
         return result.get_string();
     }
 
+    Vector<Size> find_macro_locations(const String& p_input, const String& p_macro)
+    {
+        Vector<Size> locations;
+        {
+            Size position = p_input.find(p_macro);
+            while (position != String::npos) {
+                locations.push_back(position);
+                position = p_input.find(p_macro, position + 1);
+            }
+        }
+        std::sort(locations.begin(), locations.end());
+        return locations;
+    }
+
+    Pair<Size, Size>
+    get_macro_arguments(const String& p_input, Size p_location, IStringWriter* p_content_writer)
+    {
+        Size open_index = p_location;
+        bool found_whitespace = false;
+        bool no_args = false;
+
+        auto itr = std::next(p_input.begin(), p_location);
+        while (itr != p_input.end()) {
+            if (*itr == '(') {
+                break;
+            }
+
+            bool whitespace = is_whitespace(*itr);
+            if (whitespace && !found_whitespace) {
+                found_whitespace = true;
+            } else if (!whitespace && found_whitespace) {
+                no_args = true;
+                break;
+            }
+
+            ++itr;
+            ++open_index;
+        }
+
+        if (no_args || itr == p_input.end()) {
+            return {0, 0};
+        }
+
+        Size opened = 1;
+        Size closed_index = open_index + 1;
+
+        ++itr;
+        while (itr != p_input.end()) {
+            if (*itr == '(') {
+                opened++;
+            }
+            if (*itr == ')') {
+                opened--;
+            }
+
+            if (opened == 0) {
+                break;
+            }
+            p_content_writer->write_generic(*itr);
+            ++itr;
+            ++closed_index;
+        }
+
+        return {open_index, closed_index};
+    }
+
     String strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters)
     {
         String local_input = p_input;
@@ -146,81 +212,25 @@ namespace GodotObjectCompiler::ParserUtilities
 
         for (const String& macro : macros) {
             Size index = 0;
-            Vector<Size> positions;
-            {
-                Size position = local_input.find(macro);
-                while (position != String::npos) {
-                    positions.push_back(position);
-                    position = local_input.find(macro, position + 1);
-                }
-            }
-
-            std::sort(positions.begin(), positions.end());
+            Vector<Size> locations = find_macro_locations(local_input, macro);
 
             StreamWriter writer;
-            for (Size position : positions) {
-                Size open_index = position;
-                bool found_whitespace = false;
-                bool no_args = false;
+            for (Size location : locations) {
+                StreamWriter content_writer;
+                auto [open, close] = get_macro_arguments(local_input, location, &content_writer);
+                String content = content_writer.get_string();
 
-                auto itr = std::next(local_input.begin(), position);
-                while (itr != local_input.end()) {
-                    if (*itr == '(') {
-                        break;
-                    }
+                r_parameters.try_emplace(location, content_writer.get_string());
+                writer.write(local_input.substr(index, open - index + 1));
 
-                    bool whitespace = is_whitespace(*itr);
-                    if (whitespace && !found_whitespace) {
-                        found_whitespace = true;
-                    } else if (!whitespace && found_whitespace) {
-                        no_args = true;
-                        break;
-                    }
-
-                    ++itr;
-                    ++open_index;
-                }
-
-                if (no_args) {
-                    continue;
-                }
-
-                StreamWriter content;
-                Size opened = 1;
-                Size closed_index = open_index + 1;
-
-                if (itr == local_input.end()) {
-                    continue;
-                }
-
-                ++itr;
-                while (itr != local_input.end()) {
-                    if (*itr == '(') {
-                        opened++;
-                    }
-                    if (*itr == ')') {
-                        opened--;
-                    }
-
-                    if (opened == 0) {
-                        break;
-                    }
-                    content.write_generic(*itr);
-                    ++itr;
-                    ++closed_index;
-                }
-
-                r_parameters.insert({position, content.get_string()});
-
-                writer.write(local_input.substr(index, open_index - index + 1));
-                for (char c : content.get_string()) {
+                for (char c : content) {
                     if (is_whitespace(c)) {
                         writer.write_generic(c);
                     } else {
                         writer.write(" ");
                     }
                 }
-                index = closed_index;
+                index = close;
             }
             writer.write(local_input.substr(index));
             local_input = writer.get_string();

@@ -104,6 +104,8 @@ namespace GodotObjectCompiler
 
     bool path_is_descendant(const String& p_possible_ancestor, const String& p_possible_child);
 
+    bool path_equals(const String& p_path1, const String& p_path2);
+
     bool could_be_path(const String& p_path);
 
     bool could_be_dir_path(const String& p_path);

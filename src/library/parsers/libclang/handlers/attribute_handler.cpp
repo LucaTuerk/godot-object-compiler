@@ -63,7 +63,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
             [](CXCursor p_cursor, CXCursor p_parent, CXClientData p_result) {
                 UNUSED(p_parent);
                 if (p_cursor.kind == CXCursor_StringLiteral) {
-                    CXCursor* result = static_cast<CXCursor*>(p_result);
+                    auto result = static_cast<CXCursor*>(p_result);
                     *result = p_cursor;
                 }
                 return CXChildVisit_Recurse;
@@ -78,23 +78,18 @@ namespace GodotObjectCompiler::ClangASTHandlers
         UNUSED(p_root);
         const ClangString name = clang_getCursorSpelling(p_cursor);
 
-        auto arguments_result = clang_Cursor_Evaluate(p_cursor);
         String arguments_content = "";
 
-        switch (clang_EvalResult_getKind(arguments_result)) {
-        case CXEval_StrLiteral: {
+        if (ClangEvalResult arguments_result = clang_Cursor_Evaluate(p_cursor);
+            clang_EvalResult_getKind(arguments_result) == CXEval_StrLiteral) {
             arguments_content = format("%s", clang_EvalResult_getAsStr(arguments_result));
-            break;
+        } else {
+            const CXCursor string_literal = find_string_literal(p_cursor);
+            ClangEvalResult result = clang_Cursor_Evaluate(string_literal);
+            arguments_content = format("%s", clang_EvalResult_getAsStr(result));
         }
-        default:
-            CXCursor string_literal = find_string_literal(p_cursor);
-            clang_EvalResult_dispose(arguments_result);
-            arguments_result = clang_Cursor_Evaluate(string_literal);
-            arguments_content = format("%s", clang_EvalResult_getAsStr(arguments_result));
-        }
-        clang_EvalResult_dispose(arguments_result);
 
-        Vector<String> parts = string_split(name, "__");
+        const Vector<String> parts = string_split(name, "__");
         CLANG_PARSER_ERROR_COND(
             parts.size() != 4, "Unexpected attribute \"%s\" can not be parsed.",
             String(name).c_str());

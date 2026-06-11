@@ -76,6 +76,66 @@ namespace GodotObjectCompiler
         return lines;
     }
 
+    Pair<Size, Size> get_define_content_range(const String& p_line, const Size& p_start)
+    {
+        bool record = false;
+        Size begin = 0;
+        Size end = p_line.size();
+
+        for (Size i = p_start + 8; i < p_line.size(); ++i) {
+            if (!record && p_line[i] != ' ') {
+                record = true;
+                begin = i;
+            }
+
+            if (record && !isalnum(p_line[i]) && p_line[i] != '_') {
+                end = i;
+                break;
+            }
+        }
+
+        if (begin >= end) {
+            return {0, 0};
+        }
+        return {begin, end};
+    }
+
+    Pair<Size, Size>
+    get_include_content_range(const String& p_line, const Size& p_start, bool& r_is_system_include)
+    {
+        bool brace_open = false;
+        bool chevron_open = false;
+        Size begin = 0;
+        Size end = 0;
+
+        for (Size i = p_start + 9; i < p_line.size(); ++i) {
+            if (p_line[i] == '"') {
+                if (!brace_open) {
+                    begin = i + 1;
+                    r_is_system_include = false;
+                    brace_open = true;
+                } else {
+                    end = i;
+                    break;
+                }
+            } else if (p_line[i] == '<') {
+                if (!chevron_open) {
+                    begin = i + 1;
+                    r_is_system_include = true;
+                    chevron_open = true;
+                }
+            } else if (p_line[i] == '>' && chevron_open) {
+                end = i;
+                break;
+            }
+        }
+
+        if (begin >= end) {
+            return {0, 0};
+        }
+        return {begin, end};
+    }
+
     Vector<Ref<Node>> parse_includes_and_defines(const String& p_input)
     {
         Vector<Ref<Node>> results;
@@ -84,52 +144,22 @@ namespace GodotObjectCompiler
         for (String line; std::getline(stream, line);) {
             if (const Size def = line.find("#define "); def != String::npos) {
                 StreamWriter writer;
-                bool record = false;
 
-                for (Size i = def + 8; i < line.size(); ++i) {
-                    if (!record && line[i] != ' ') {
-                        record = true;
-                    }
-
-                    if (record) {
-                        if (!isalnum(line[i]) && line[i] != '_') {
-                            break;
-                        }
-
-                        writer.write_generic(line[i]);
-                    }
+                auto [begin, end] = get_define_content_range(line, def);
+                if (begin == end) {
+                    continue;
                 }
-
-                if (writer.current_length() != 0) {
-                    Ref<Define> define = B<Define>()[{B<Identifier>(writer.get_string())}];
-                    results.push_back(define);
-                }
-
+                auto define_name = line.substr(begin, end - begin);
+                Ref<Define> define = B<Define>()[{B<Identifier>(define_name)}];
+                results.push_back(define);
             } else if (const Size incl = line.find("#include "); incl != String::npos) {
-                bool brace_open = false, chevron_open = false;
-                StreamWriter writer;
-
-                for (Size i = incl + 9; i < line.size(); ++i) {
-                    if (line[i] == '"') {
-                        if (!brace_open) {
-                            brace_open = true;
-                        } else {
-                            break;
-                        }
-                    } else if (line[i] == '<') {
-                        if (!chevron_open) {
-                            chevron_open = true;
-                        }
-                    } else if (line[i] == '>' && chevron_open) {
-                        break;
-                    } else if (chevron_open || brace_open) {
-                        writer.write_generic(line[i]);
-                    }
+                bool is_system_include = false;
+                auto [begin, end] = get_include_content_range(line, incl, is_system_include);
+                if (begin == end) {
+                    continue;
                 }
-
-                if (writer.current_length() != 0) {
-                    results.push_back(node_new<Include>(writer.get_string(), chevron_open));
-                }
+                auto include_path = line.substr(begin, end - begin);
+                results.push_back(node_new<Include>(include_path, is_system_include));
             }
         }
         return results;
@@ -147,8 +177,10 @@ namespace GodotObjectCompiler
 
         const String local_input = ParserUtilities::strip_excluded_sections(p_input);
 
-        Permissions::instance()->add_write_path(path_cwd());
-        Size added_characters = 0, added_lines = 0, first_line_added = 0, fist_character_added = 0;
+        Size added_characters = 0;
+        Size added_lines = 0;
+        Size first_line_added = 0;
+        Size fist_character_added = 0;
         Ref<Body> body = r_target->B<Body>();
 
         StreamWriter writer;
@@ -234,22 +266,24 @@ namespace GodotObjectCompiler
                 ClangString spelling =
                     clang_formatDiagnostic(diagnostic, CXDiagnostic_DisplayCategoryName);
 
-                // TODO: Fix these
-                if (string_contains(spelling, "'std") || string_contains(spelling, "'cstd")) {
+                CXFile file;
+                unsigned line;
+
+                CXSourceLocation location = clang_getDiagnosticLocation(diagnostic);
+                clang_getFileLocation(location, &file, &line, nullptr, nullptr);
+
+                if (!path_equals(ClangString(clang_getFileName(file)), temp_file.get_path())) {
+                    // Skip errors in included files.
                     continue;
                 }
 
-                if (string_contains(spelling, ".generated.h") &&
-                    string_contains(spelling, "file not found")) {
+                if (string_contains(spelling, ".generated.h")) {
+                    // Skip error, file is not yet generated
                     continue;
                 }
 
                 error_writer.write("\n");
                 error_writer.write(spelling);
-
-                auto location = clang_getDiagnosticLocation(diagnostic);
-                unsigned line;
-                clang_getSpellingLocation(location, nullptr, &line, nullptr, nullptr);
 
                 error_writer.write("\n");
                 error_writer.write(string_extract_lines(

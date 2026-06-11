@@ -78,11 +78,15 @@ namespace GodotObjectCompiler
     template <typename T, auto Dispose> class ClangLocalRAII
     {
       public:
-        ClangLocalRAII(T&& data);
-        ~ClangLocalRAII();
-        operator T&();
+        ClangLocalRAII(T&& p_data);
 
-      protected:
+        ClangLocalRAII(const ClangLocalRAII& p_other) = delete;
+
+        ClangLocalRAII& operator=(const ClangLocalRAII& p_other) = delete;
+
+        ~ClangLocalRAII();
+
+        operator T&();
         T _data;
     };
 
@@ -95,9 +99,9 @@ namespace GodotObjectCompiler
         operator String() const;
     };
 
-    template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::ClangLocalRAII(T&& data)
+    template <typename T, auto Dispose>
+    ClangLocalRAII<T, Dispose>::ClangLocalRAII(T&& p_data) : _data(std::move(p_data))
     {
-        _data = data;
     }
 
     template <typename T, auto Dispose> ClangLocalRAII<T, Dispose>::~ClangLocalRAII()

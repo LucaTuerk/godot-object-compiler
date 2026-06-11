@@ -452,15 +452,15 @@ namespace GodotObjectCompiler
         return results;
     }
 
-    template <typename T, typename... Args> Builder<T, Args...>::Builder(Args&&... args)
+    template <typename T, typename... Args>
+    Builder<T, Args...>::Builder(Args&&... args) : _created(node_new<T>(args...))
     {
-        _created = node_new<T>(std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>
     Builder<T, Args...>::Builder(Ref<Context> parent, Args&&... args)
+        : _created(node_new<T>(args...))
     {
-        _created = node_new<T>(std::forward<Args>(args)...);
         if (parent) {
             parent->add_child(_created);
         }

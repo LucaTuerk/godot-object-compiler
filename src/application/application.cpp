@@ -189,6 +189,7 @@ namespace GodotObjectCompiler
 
             LibraryContext::instance()->get_type_db()->set_cache_directory(context.paths_cache);
             LibraryContext::instance()->set_include_paths(combined_include_paths);
+            LibraryContext::instance()->set_temporary_path(context.paths_goc);
 
             APP_ERR_COND(
                 init_local_resources.run(context) != ProgramError::OK,

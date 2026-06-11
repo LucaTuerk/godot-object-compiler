@@ -125,4 +125,4 @@ namespace GodotObjectCompiler
     if (result.has_error()) {                                                                      \
         return ERROR_CAST(type, result.get_error());                                               \
     }                                                                                              \
-    auto unwrapped_name = result.get_result();
+    auto unwrapped_name = result.get_result()

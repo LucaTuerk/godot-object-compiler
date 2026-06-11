@@ -122,7 +122,7 @@ namespace GodotObjectCompiler
 
     Result<Function> GodotGeneratorUtils::add_signal(
         const Ref<Class>& p_target_class, const String& p_signal_name,
-        const Ref<Parameters>& p_parameters, ClassGeneratorResult& r_result)
+        const Ref<Parameters>& p_parameters, const ClassGeneratorResult& r_result)
     {
         Ref<Arguments> arguments;
         Ref<Function> add_signal = B<Function>()[{

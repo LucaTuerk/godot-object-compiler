@@ -42,11 +42,6 @@
 #include "library/tree/syntax/type.h"
 #include "parser_context.h"
 
-namespace GodotObjectCompiler
-{
-    class ClangParser;
-} // namespace GodotObjectCompiler
-
 namespace GodotObjectCompiler::ClangASTHandlers
 {
     class IClangASTHandler
@@ -84,9 +79,11 @@ namespace GodotObjectCompiler::ClangASTHandlers
         virtual Step
         handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root) = 0;
 
+        ClangParserContext* context = nullptr;
+
       protected:
-        static bool
-        cursor_kind_in(const CXCursor& p_cursor, std::initializer_list<CXCursorKind>&& p_kinds);
+        static bool cursor_kind_in(
+            const CXCursor& p_cursor, const std::initializer_list<CXCursorKind>& p_kinds);
 
         static String get_cursor_spelling(const CXCursor& p_cursor);
 
@@ -95,9 +92,6 @@ namespace GodotObjectCompiler::ClangASTHandlers
         static Result<Type, ParserError> get_type_from_spelling(const String& p_spelling);
 
         static String get_cursor_assigned_value(const CXCursor& p_cursor);
-
-        ClangParserContext* context = nullptr;
-        friend ClangParser;
     };
 
 } // namespace GodotObjectCompiler::ClangASTHandlers

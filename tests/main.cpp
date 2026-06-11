@@ -61,7 +61,6 @@ int main(int argc, char* argv[])
 
     using namespace GodotObjectCompiler;
     LibraryContext::instance()->set_error_level(VERBOSE, FULL);
-    Permissions::instance()->add_write_path(".goc_tests");
 
     Size failed_count = 0;
     Size success_count = 0, ignore_count = 0, all_count = 0;
@@ -81,6 +80,7 @@ int main(int argc, char* argv[])
             all_count++;
 
             TestResult result = TEST_RESULT_FAILURE;
+            Permissions::instance()->add_write_path(".goc_tests");
             TestTimer timer;
             try {
                 result = test_functor();
@@ -146,6 +146,7 @@ int main(int argc, char* argv[])
                 source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
 
                 TestResult result = TEST_RESULT_FAILURE;
+                Permissions::instance()->add_write_path(".goc_tests");
                 TestTimer timer;
                 try {
                     result = test_functor();

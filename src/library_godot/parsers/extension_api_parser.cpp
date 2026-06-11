@@ -42,7 +42,7 @@
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/identifier.h"
 
-static auto core_interface = R"(
+static const auto core_interface = R"(
     using DefaultAllocator = int;
 
     namespace godot
@@ -184,7 +184,7 @@ namespace GodotObjectCompiler
     Ref<ParserError> ExtensionAPIParser::parse(const String& p_input, Ref<Context> r_target)
     {
         const TempFile temp_file("json", p_input);
-        return parse_file(temp_file, r_target);
+        return parse_file(temp_file.get_path(), r_target);
     }
 
     bool ExtensionAPIParser::setup_include_paths(const Vector<String>& p_godot_cpp_include)
