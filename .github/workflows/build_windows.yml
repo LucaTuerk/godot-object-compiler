@@ -19,13 +19,17 @@ jobs:
       - name: Install Packages
         run: |
           choco install tree-sitter
-          choco install llvm --force
           python -m pip install scons
+
+      - name: Setup libclang
+        uses: ./.github/actions/setup_libclang
+        with:
+          platform: "windows"
 
       - name: Build Project
         run: |
           mkdir build -Force
-          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON
+          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DClang_DIR=libclang/lib/cmake/clang/
           cmake --build build --config Release
 
       - name: Checkout godot-cpp

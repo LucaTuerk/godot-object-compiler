@@ -1,0 +1,59 @@
+name: setup-libclang
+inputs:
+  mirror:
+    required: false
+    default: 'https://ftp.fau.de'
+    description: ""
+  path:
+    required: false
+    default: "qtproject/development_releases/prebuilt/libclang/qt"
+    description: ""
+  platform:
+    required: true
+    description: ""
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Restore LibClang
+      id: libclang-cache
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{github.workspace}}/libclang
+        key: ${{inputs.platform}}-libclang
+
+    - name: Download LibClang (Linux 🐧)
+      if: steps.libclang-cache.outputs.cache-hit != 'true'  && inputs.platform == 'linux'
+      shell: sh
+      run: |
+        curl -fO ${{inputs.mirror}}/${{inputs.path}}/libclang-llvmorg-20.1.0-linux-Ubuntu22.04-gcc11.2-x86_64.7z
+        curl -fO ${{inputs.mirror}}/${{inputs.path}}/libclang-llvmorg-20.1.0-md5.txt
+        md5sum -c libclang-*.txt --ignore-missing
+        mv libclang-*.7z libclang.7z
+        7z x libclang.7z
+
+    - name: Download LibClang (Windows 🪟)
+      if: steps.libclang-cache.outputs.cache-hit != 'true' && inputs.platform == 'windows'
+      shell: pwsh
+      run: |
+        curl -fO ${{inputs.mirror}}/${{inputs.path}}/libclang-llvmorg-20.1.0-windows-vs2022_64.7z
+        curl -fO ${{inputs.mirror}}/${{inputs.path}}/libclang-llvmorg-20.1.0-md5.txt
+        md5sum -c libclang-*.txt --ignore-missing
+        mv libclang-*.7z libclang.7z
+        7z x libclang.7z
+
+    - name: Download LibClang (MacOS 🍎)
+      if: steps.libclang-cache.outputs.cache-hit != 'true'  && inputs.platform == 'macos'
+      shell: sh
+      run: |
+        curl -fO ${{inputs.mirror}}/${{inputs.path}}/libclang-llvmorg-20.1.0-macos-universal.7z
+        curl -fO ${{inputs.mirror}}/${{inputs.path}}/libclang-llvmorg-20.1.0-md5.txt
+        md5sum -c libclang-*.txt --ignore-missing
+        mv libclang-*.7z libclang.7z
+        7z x libclang.7z
+
+    - name: Save LibClang
+      uses: actions/cache/save@v5
+      with:
+        path: ${{github.workspace}}/libclang
+        key: ${{inputs.platform}}-libclang

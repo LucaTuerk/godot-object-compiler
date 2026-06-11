@@ -18,12 +18,17 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt update
-          sudo apt install cmake scons libclang-13-dev llvm -y
+          sudo apt install cmake scons -y
+
+      - name: Setup libclang
+        uses: ./.github/actions/setup_libclang
+        with:
+          platform: "linux"
 
       - name: Build Project
         run: |
           mkdir -p build
-          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -Bbuild -S. -DGOC_TESTS_ENABLED=ON -DCMAKE_BUILD_TYPE=Release -DClang_DIR=libclang/lib/cmake/clang/
           cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
 
       - name: Checkout godot-cpp
