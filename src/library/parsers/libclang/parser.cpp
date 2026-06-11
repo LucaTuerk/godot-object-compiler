@@ -213,16 +213,18 @@ namespace GodotObjectCompiler
         PARSER_ERROR_COND(unit == nullptr, "Failed to parse source file \"%s\"", file_path.c_str());
 
         ClangParserContext context{
-            .root = r_target,
-            .current = body,
-            .unit = unit,
-            .parse_attributes = parse_attributes,
-            .added_lines = added_lines,
-            .added_characters = added_characters,
-            .first_character_added = fist_character_added,
-            .first_line_added = first_line_added,
-            .file_path = file_path,
-            .original_content = p_input,
+            false,
+            nullptr,
+            r_target,
+            body,
+            unit,
+            parse_attributes,
+            added_lines,
+            added_characters,
+            fist_character_added,
+            first_line_added,
+            file_path,
+            p_input,
         };
 
         for (unsigned i = 0; i < clang_getNumDiagnostics(unit); ++i) {
@@ -233,7 +235,7 @@ namespace GodotObjectCompiler
                     clang_formatDiagnostic(diagnostic, CXDiagnostic_DisplayCategoryName);
 
                 // TODO: Fix these
-                if (string_contains(spelling, "stddef.h")) {
+                if (string_contains(spelling, "'std") || string_contains(spelling, "'cstd")) {
                     continue;
                 }
 

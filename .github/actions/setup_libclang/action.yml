@@ -53,6 +53,7 @@ runs:
         7z x libclang.7z
 
     - name: Save LibClang
+      if: steps.libclang-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v5
       with:
         path: ${{github.workspace}}/libclang

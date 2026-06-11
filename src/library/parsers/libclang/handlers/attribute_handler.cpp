@@ -101,9 +101,9 @@ namespace GodotObjectCompiler::ClangASTHandlers
         const String& macro = parts[2];
 
         const SourceLocation location{
-            .start = context->cursor_start_offset(p_cursor),
-            .end = context->cursor_end_offset(p_cursor),
-            .line = context->cursor_start_line(p_cursor),
+            context->cursor_start_offset(p_cursor),
+            context->cursor_end_offset(p_cursor),
+            context->cursor_start_line(p_cursor),
         };
 
         const auto attribute_result = ParserUtilities::parse_attribute(
