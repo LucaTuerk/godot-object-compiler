@@ -60,9 +60,11 @@ int main(int argc, char* argv[])
     Application application;
     LibraryContext::instance()->set_error_level(ERROR, FULL);
 
-#if GOC_LIBCLANG_PARSER_ENABLED
+#ifdef GOC_LIBCLANG_PARSER_ENABLED
+#ifndef GOC_TREE_SITTER_PARSER_ENABLED
     LibraryContext::instance()->set_default_parser<ClangParser>(IParser::SOURCE_PARSER);
-#elif GOC_TREE_SITTER_PARSER_ENABLED
+#endif
+#elifdef GOC_TREE_SITTER_PARSER_ENABLED
     LibraryContext::instance()->set_default_parser<TreeSitterParser>(IParser::SOURCE_PARSER);
 #else
 #warning No source parser is enabled. Add a source parser by enabling the GOC_TREE_SITTER_PARSER_ENABLED or GOC_LIBCLANG_PARSER_ENABLED CMake options.
