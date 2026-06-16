@@ -46,7 +46,7 @@ GOC_INTEGRATION_TEST(ExtensionAPIParser)
         TestRegistry::instance()->get_integration_tests_godot_cpp_include_paths());
     const Ref<Context> global_context = node_new<Namespace>();
     const auto api_path = TestRegistry::instance()->get_extension_api();
-    const Ref<ParserError> error = parser.parse(api_path, global_context);
+    const Ref<ParserError> error = parser.parse_file(api_path, global_context);
     GOC_TEST_EQ(
         error, ParserError::OK, "Failed to parse extension api file \"%s\"", api_path.c_str());
 

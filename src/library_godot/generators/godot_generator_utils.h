@@ -46,7 +46,6 @@
 
 namespace GodotObjectCompiler
 {
-
     class Node;
     class Function;
     class Type;
@@ -68,7 +67,7 @@ namespace GodotObjectCompiler
 
         Result<Function> add_signal(
             const Ref<Class>& p_target_class, const String& p_signal_name,
-            const Ref<Parameters>& p_parameters, ClassGeneratorResult& r_result);
+            const Ref<Parameters>& p_parameters, const ClassGeneratorResult& r_result);
 
         Ref<Function> emit_signal(const String& p_signal_name, const Ref<Arguments>& p_arguments);
 
@@ -197,8 +196,8 @@ namespace GodotObjectCompiler
             ClassGeneratorResult& r_result);
 
         Result<Node> build_property_info_defaults(
-            const Ref<Type>& p_type, const String& p_property_name, ClassGeneratorResult& r_result,
-            const Ref<Namespace>& p_from_namespace,
+            const Ref<Type>& p_type, const String& p_property_name,
+            const ClassGeneratorResult& r_result, const Ref<Namespace>& p_from_namespace,
             DefaultsUsage p_usage = DEFAULTS_PROPERTY_BINDING);
 
         template <typename T>
@@ -213,8 +212,8 @@ namespace GodotObjectCompiler
         {
             p_inner_types = {};
 
-            String name = type_name_remove_usings(p_target_type->type_name_untemplated());
-            if (name != p_assumed_type.type->name()) {
+            if (type_name_remove_usings(p_target_type->type_name_untemplated()) !=
+                type_name_remove_usings(p_assumed_type.type->name())) {
                 return false;
             }
 

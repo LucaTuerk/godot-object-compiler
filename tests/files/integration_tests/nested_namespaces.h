@@ -34,7 +34,10 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/object.hpp"
 #include "nested_namespaces.generated.h"
+
+using namespace godot;
 
 namespace Tests
 {
@@ -50,6 +53,8 @@ namespace Tests
         };
         namespace B
         {
+            using namespace godot;
+
             GODOT_CLASS();
             class classAB : public Object
             {

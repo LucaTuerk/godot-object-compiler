@@ -119,7 +119,10 @@ namespace GodotObjectCompiler
         Ref<Function> target_function = p_attribute->TargetFunction();
         GEN_ERROR_COND(!target_function, p_target_class, "Failed to get signal target function");
 
-        const bool is_void = target_function->type()->name() == "void";
+        auto function_type = target_function->type();
+        GEN_ERROR_COND(!function_type, target_function, "Failed to get function type.");
+
+        const bool is_void = function_type->name() == "void";
         GEN_ERROR_COND(!is_void, target_function, "Signal target function does not return void.");
 
         String signal_name = target_function->name();

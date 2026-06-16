@@ -1,0 +1,5 @@
+This parser uses libclang to index your source files.
+It supports macro extension and include substitution ensuring
+the codes correctness along the way, but will fail if your build
+system is not setup correctly by, for example, missing include paths.
+It is the only available parser option for module development.

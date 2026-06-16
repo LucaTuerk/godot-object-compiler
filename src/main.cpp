@@ -42,6 +42,13 @@
 #include "library/library_context.h"
 #include "library_godot/parsers/extension_api_parser.h"
 
+#if GOC_LIBCLANG_PARSER_ENABLED
+#include "library/parsers/libclang/parser.h"
+#endif
+#if GOC_TREE_SITTER_PARSER_ENABLED
+#include "library/parsers/tree-sitter/parser.h"
+#endif
+
 using namespace GodotObjectCompiler;
 
 int main(int argc, char* argv[])
@@ -52,6 +59,17 @@ int main(int argc, char* argv[])
     }
 
     Application application;
-    LibraryContext::instance()->set_error_level(ERROR, FULL);
+    LibraryContext::instance()->set_error_level(INFO, FULL);
+
+#ifdef GOC_LIBCLANG_PARSER_ENABLED
+#ifndef GOC_TREE_SITTER_PARSER_ENABLED
+    LibraryContext::instance()->set_default_parser<ClangParser>(IParser::SOURCE_PARSER);
+#endif
+#endif
+#if GOC_TREE_SITTER_PARSER_ENABLED
+    LibraryContext::instance()->set_default_parser<TreeSitterParser>(IParser::SOURCE_PARSER);
+#endif
+
+    LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(IParser::JSON_CONFIG_PARSER);
     return application.run(args);
 }

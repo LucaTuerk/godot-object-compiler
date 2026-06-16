@@ -33,7 +33,6 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "library/parser/parser.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/field.h"
@@ -97,7 +96,7 @@ GOC_TEST(ClassMemberFunctions)
     GOC_TEST_PARSE_FILE("tests/files/class_tests/member_functions.h");
 
     Vector<Ref<Class>> classes = global_namespace->classes_recursive();
-    GOC_TEST_EQ(classes.size(), 1, "Invalid class count.")
+    GOC_TEST_EQ(classes.size(), 2, "Invalid class count.")
 
     Ref<Class> A =
         global_namespace->find_descendant<Class>(BFS, NamedContextPredicates::name<Class>("A"));

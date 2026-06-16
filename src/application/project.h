@@ -49,6 +49,7 @@ namespace GodotObjectCompiler
         String paths_generated = ".goc/generated";
         String paths_cache = ".goc/cache";
         String paths_goc = ".goc";
+        String options_source_parser;
         Vector<String> paths_godot_cpp_include;
         Vector<String> paths_include;
 

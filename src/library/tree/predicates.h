@@ -36,7 +36,6 @@
 #pragma once
 
 #include "library/core/core.h"
-#include "library/parser/tree_sitter_node.h"
 
 namespace GodotObjectCompiler
 {

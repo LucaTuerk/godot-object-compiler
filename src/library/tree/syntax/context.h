@@ -269,10 +269,19 @@ namespace GodotObjectCompiler
                 }
                 break;
             case BY_SIBLINGS_PREV: {
+                if (current->get_parent() == nullptr) {
+                    return nullptr;
+                }
+
                 Node* prev = current->get_previous_sibling().get();
                 current = prev ? prev : current->get_parent().get();
+
             } break;
             case BY_SIBLINGS_NEXT: {
+                if (current->get_parent() == nullptr) {
+                    return nullptr;
+                }
+
                 Node* next = current->get_next_sibling().get();
                 current = next ? next : current->get_parent().get();
             } break;
@@ -443,15 +452,15 @@ namespace GodotObjectCompiler
         return results;
     }
 
-    template <typename T, typename... Args> Builder<T, Args...>::Builder(Args&&... args)
+    template <typename T, typename... Args>
+    Builder<T, Args...>::Builder(Args&&... args) : _created(node_new<T>(args...))
     {
-        _created = node_new<T>(std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>
     Builder<T, Args...>::Builder(Ref<Context> parent, Args&&... args)
+        : _created(node_new<T>(args...))
     {
-        _created = node_new<T>(std::forward<Args>(args)...);
         if (parent) {
             parent->add_child(_created);
         }

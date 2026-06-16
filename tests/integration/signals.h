@@ -34,7 +34,6 @@
 /**************************************************************************/
 #pragma once
 #include "common.h"
-#include "library/parser/parser.h"
 #include "library/tree/syntax/namespace.h"
 #include "test_registry.h"
 

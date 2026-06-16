@@ -53,6 +53,7 @@ namespace GodotObjectCompiler
         Opt<Vector<String>> files_input;
         Opt<Vector<String>> paths_include;
         Opt<Vector<String>> paths_godot_cpp_include;
+        Opt<String> options_source_parser;
 
         String paths_goc = ".goc";
         String paths_cache = ".goc/cache";

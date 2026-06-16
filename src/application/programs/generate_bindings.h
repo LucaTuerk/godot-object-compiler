@@ -45,9 +45,11 @@ namespace GodotObjectCompiler
         NO_PROGRAM_ARGS
 
       public:
-        String file_id(const String& p_file_name);
+        static String file_id(const String& p_file_name);
 
-        String generated_macro_name(const String& p_header, Size p_line);
+        static String cache_path(const String& goc_path, const String& p_file_name);
+
+        static String generated_macro_name(const String& p_header, Size p_line);
 
         Ref<ProgramError> run(ApplicationContext& p_context) override;
     };

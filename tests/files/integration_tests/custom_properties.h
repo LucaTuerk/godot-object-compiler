@@ -34,10 +34,37 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
+#include "godot_cpp/classes/resource.hpp"
+#include "godot_cpp/variant/aabb.hpp"
+#include "godot_cpp/variant/array_helpers.hpp"
+#include "godot_cpp/variant/basis.hpp"
+#include "godot_cpp/variant/callable_custom.hpp"
+#include "godot_cpp/variant/char_string.hpp"
+#include "godot_cpp/variant/color.hpp"
+#include "godot_cpp/variant/plane.hpp"
+#include "godot_cpp/variant/projection.hpp"
+#include "godot_cpp/variant/quaternion.hpp"
+#include "godot_cpp/variant/rect2.hpp"
+#include "godot_cpp/variant/rect2i.hpp"
+#include "godot_cpp/variant/transform2d.hpp"
+#include "godot_cpp/variant/transform3d.hpp"
+#include "godot_cpp/variant/typed_array.hpp"
+#include "godot_cpp/variant/typed_dictionary.hpp"
+#include "godot_cpp/variant/variant.hpp"
+#include "godot_cpp/variant/variant_internal.hpp"
+#include "godot_cpp/variant/vector2.hpp"
+#include "godot_cpp/variant/vector2i.hpp"
+#include "godot_cpp/variant/vector3.hpp"
+#include "godot_cpp/variant/vector3i.hpp"
+#include "godot_cpp/variant/vector4.hpp"
+#include "godot_cpp/variant/vector4i.hpp"
 #include "custom_properties.generated.h"
 
 namespace Tests
 {
+    using namespace godot;
+
     GODOT_CLASS();
 
     class CustomProperties : public Node

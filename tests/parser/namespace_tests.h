@@ -33,7 +33,6 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "library/parser/parser.h"
 #include "library/tree/predicates.h"
 #include "library/tree/syntax/namespace.h"
 #include "test_registry.h"
@@ -41,10 +40,10 @@
 GOC_TEST(ParserSimpleNamespace)
 {
     using namespace GodotObjectCompiler;
-    TreeSitterParser parser;
+    Ref<IParser> parser = LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
 
     Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse("namespace A {}", global_namespace);
+    Ref<ParserError> error = parser->parse("namespace A {}", global_namespace);
     GOC_TEST_EQ(error, ParserError::OK, "ParserError occurred!");
 
     Vector<Ref<Namespace>> namespaces = global_namespace->find_children<Namespace>(true);
@@ -57,10 +56,10 @@ GOC_TEST(ParserSimpleNamespace)
 GOC_TEST(ParserNestedNamespace)
 {
     using namespace GodotObjectCompiler;
-    TreeSitterParser parser;
+    Ref<IParser> parser = LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
 
     Ref<Namespace> global_namespace = node_new<Namespace>();
-    Ref<ParserError> error = parser.parse("namespace A { namespace B {}}", global_namespace);
+    Ref<ParserError> error = parser->parse("namespace A { namespace B {}}", global_namespace);
     GOC_TEST_EQ(error, ParserError::OK, "ParserError occurred!");
 
     Vector<Ref<Namespace>> namespaces = global_namespace->find_children<Namespace>(true);

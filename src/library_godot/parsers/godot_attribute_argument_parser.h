@@ -34,9 +34,9 @@
 /**************************************************************************/
 
 #pragma once
+#include "../../library/parsers/attribute_argument_parser.h"
 #include "library/attribute_db.h"
 #include "library/generator/attribute_parameter_type.h"
-#include "library/parser/attribute_argument_parser.h"
 
 namespace GodotObjectCompiler
 {
@@ -52,7 +52,8 @@ namespace GodotObjectCompiler
         Ref<ParserError>
         parse_attribute_arguments(const String& p_content, Ref<Context> p_target) override;
 
-        Ref<ParserError> parse_attribute_argument(const String& p_content, Ref<Context> p_target);
+        Ref<ParserError>
+        parse_attribute_argument(const String& p_content, const Ref<Context>& p_target) const;
 
         static Ref<ParserError> parse_inner_arguments(
             const String& p_content, const Ref<Context>& p_target,

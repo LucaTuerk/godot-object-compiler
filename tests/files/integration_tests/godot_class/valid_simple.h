@@ -34,7 +34,10 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/object.hpp"
 #include "godot_class/valid_simple.generated.h"
+
+using namespace godot;
 
 GODOT_CLASS();
 class ValidSimple : public Object

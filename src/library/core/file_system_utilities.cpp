@@ -297,6 +297,13 @@ namespace GodotObjectCompiler
         return string_prefix(child_absolute, ancestor_absolute);
     }
 
+    bool path_equals(const String& p_path1, const String& p_path2)
+    {
+        std::filesystem::path path1 = p_path1;
+        std::filesystem::path path2 = p_path2;
+        return path1 == path2;
+    }
+
     bool could_be_path(const String& p_path)
     {
         return could_be_dir_path(p_path) || could_be_file_path(p_path);

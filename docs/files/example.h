@@ -1,4 +1,4 @@
-#include <godot-cpp/classes/node.h>
+#include <godot_cpp/classes/node.h>
 
 #include "godot_object_compiler/macros.h"
 #include "example.generated.h"

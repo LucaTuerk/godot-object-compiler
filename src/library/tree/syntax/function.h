@@ -70,6 +70,7 @@ namespace GodotObjectCompiler
 
         void read_from(IStructuredReader* p_reader) override;
         void write_to(IStructuredWriter* p_writer) override;
+        String to_string() const override;
     };
 
     class TemplateArguments : public Context

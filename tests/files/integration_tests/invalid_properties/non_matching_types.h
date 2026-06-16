@@ -35,7 +35,10 @@
 
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
 #include "invalid_properties/non_matching_types.generated.h"
+
+using namespace godot;
 
 GODOT_CLASS();
 

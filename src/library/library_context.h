@@ -38,6 +38,7 @@
 
 namespace GodotObjectCompiler
 {
+    class IParser;
 
     class NodeDB;
     class AttributeDB;
@@ -127,6 +128,20 @@ namespace GodotObjectCompiler
 
         void force_regenerate(const String& p_path);
 
+        template <typename T> void register_source_parser();
+
+        const Vector<Ref<IParser>>& get_parsers() const;
+
+        template <typename T> void set_default_parser(int p_capabilities);
+
+        void set_default_parser(const String& p_name, int p_capabilities);
+
+        Ref<IParser> get_default_parser(int p_capabilities, bool p_get_most_capable = true);
+
+        void set_temporary_path(const String& p_path);
+
+        String get_temporary_path() const;
+
       private:
         LibraryContext() = default;
         void init();
@@ -136,9 +151,11 @@ namespace GodotObjectCompiler
         Ref<NodeDB> node_db = nullptr;
         Ref<AttributeDB> attribute_db = nullptr;
         Ref<TypeDB> type_db = nullptr;
+        Vector<Ref<IParser>> parsers;
+        Dictionary<int, Ref<IParser>> default_parsers;
         Dictionary<TypeIndex, AnyType> generic_singletons;
 
-        String cache_path{};
+        String temp_path{};
         Vector<String> usings{};
         Vector<String> input_files{};
         Vector<String> remove_macros{};
@@ -166,6 +183,16 @@ namespace GodotObjectCompiler
         }
 
         return std::any_cast<Ref<T>>(itr->second);
+    }
+
+    template <typename T> void LibraryContext::register_source_parser()
+    {
+        parsers.push_back(make_ref<T>());
+    }
+
+    template <typename T> void LibraryContext::set_default_parser(int p_capabilities)
+    {
+        set_default_parser(T::get_type_static(), p_capabilities);
     }
 
 } // namespace GodotObjectCompiler

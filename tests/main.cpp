@@ -44,8 +44,11 @@
 #include "programs/all.h"
 #include "test_registry.h"
 
+constexpr Size NANO_TO_MILLIS = 1'000'000;
+
 int main(int argc, char* argv[])
 {
+
     Vector<String> failed_tests;
 
     bool run_integration_tests = false;
@@ -58,95 +61,146 @@ int main(int argc, char* argv[])
 
     using namespace GodotObjectCompiler;
     LibraryContext::instance()->set_error_level(VERBOSE, FULL);
-    Permissions::instance()->add_write_path(".goc_tests");
 
     Size failed_count = 0;
     Size success_count = 0, ignore_count = 0, all_count = 0;
+    Dictionary<String, Size> parsers_total_times;
 
-    for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
-        PRINT_INFO("Running test case \"%s\"", test_name.c_str());
-        all_count++;
-
-        TestResult result = TEST_RESULT_FAILURE;
-        try {
-            result = test_functor();
-        } catch (const std::exception& e) {
-            print_err(e.what());
+    for (const auto& parser : LibraryContext::instance()->get_parsers()) {
+        if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
+            continue;
         }
+        Size timer_sum = 0;
+        LibraryContext::instance()->set_default_parser(parser->get_type(), IParser::SOURCE_PARSER);
 
-        switch (result) {
-        case TEST_RESULT_SUCCESS:
-            PRINT_INFO("%s\tSuccess!", test_name.c_str());
-            success_count++;
-            break;
-        case TEST_RESULT_FAILURE:
-            failed_tests.push_back(test_name);
-            PRINT_INFO("%s\tFailed!", test_name.c_str());
-            failed_count++;
-            break;
-        case TEST_RESULT_IGNORED:
-            PRINT_INFO("%s\tIgnored!", test_name.c_str());
-            ignore_count++;
-            break;
-        }
-    }
+        PRINT_INFO("Running tests against parser: %s", parser->get_type().c_str());
 
-    if (run_integration_tests) {
-        Vector<String> include_paths;
-        for (int i = 2; i < argc; i++) {
-            if (i == 2) {
-                TestRegistry::instance()->set_extension_api(argv[i]);
-            } else {
-                include_paths.emplace_back(argv[i]);
-            }
-        }
-        TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(include_paths);
-
-        for (const auto& [test_name, test_functor] :
-             TestRegistry::instance()->get_integration_tests()) {
-            all_count++;
+        for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
             PRINT_INFO("Running test case \"%s\"", test_name.c_str());
-            {
-                Application application;
-                const Vector<String> args =
-                    TestRegistry::instance()->get_test_application_arguments(
-                        {"generate", "type_db"});
-                if (application.run(args) != 0) {
-                    print_err("Failed to setup type db during test run.");
-                    PRINT_INFO("%s\tFailed!", test_name.c_str());
-                    failed_count++;
-                    continue;
-                }
-            }
+            all_count++;
 
             TestResult result = TEST_RESULT_FAILURE;
+            Permissions::instance()->add_write_path(".goc_tests");
+            TestTimer timer;
             try {
                 result = test_functor();
             } catch (const std::exception& e) {
                 print_err(e.what());
             }
+            timer_sum += timer.elapsed_nanoseconds();
 
             switch (result) {
             case TEST_RESULT_SUCCESS:
-                PRINT_INFO("%s\tSuccess!", test_name.c_str());
+                PRINT_INFO(
+                    "%s (Parser: %s)\tSuccess! %dms", test_name.c_str(), parser->get_type().c_str(),
+                    timer.elapsed_nanoseconds() / NANO_TO_MILLIS);
                 success_count++;
                 break;
             case TEST_RESULT_FAILURE:
-                failed_tests.push_back(test_name);
-                PRINT_INFO("%s\tFailed!", test_name.c_str());
+                failed_tests.push_back(
+                    format("%s (Parser: %s)", test_name.c_str(), parser->get_type().c_str()));
+                PRINT_INFO(
+                    "%s (Parser: %s)\tFailed!", test_name.c_str(), parser->get_type().c_str());
                 failed_count++;
                 break;
             case TEST_RESULT_IGNORED:
-                PRINT_INFO("%s\tIgnored!", test_name.c_str());
+                PRINT_INFO(
+                    "%s (Parser: %s)\tIgnored!", test_name.c_str(), parser->get_type().c_str());
                 ignore_count++;
                 break;
             }
         }
+
+        if (run_integration_tests) {
+            Vector<String> include_paths;
+            for (int i = 2; i < argc; i++) {
+                if (i == 2) {
+                    TestRegistry::instance()->set_extension_api(argv[i]);
+                } else {
+                    include_paths.emplace_back(argv[i]);
+                }
+            }
+            TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(include_paths);
+
+            for (const auto& [test_name, test_functor] :
+                 TestRegistry::instance()->get_integration_tests()) {
+
+                all_count++;
+                PRINT_INFO("Running test case \"%s\"", test_name.c_str());
+                {
+                    Application application;
+                    const Vector<String> args =
+                        TestRegistry::instance()->get_test_application_arguments(
+                            {"generate", "type_db"});
+                    if (application.run(args) != 0) {
+                        print_err("Failed to setup type db during test run.");
+                        PRINT_INFO("%s\tFailed!", test_name.c_str());
+                        failed_count++;
+                        continue;
+                    }
+                }
+
+                Ref<IParser> source_parser =
+                    LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
+                PANIC_COND(source_parser == nullptr, "Could not get source parser.");
+                source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
+
+                TestResult result = TEST_RESULT_FAILURE;
+                Permissions::instance()->add_write_path(".goc_tests");
+                TestTimer timer;
+                try {
+                    result = test_functor();
+                } catch (const std::exception& e) {
+                    print_err(e.what());
+                }
+                timer_sum += timer.elapsed_nanoseconds();
+
+                switch (result) {
+                case TEST_RESULT_SUCCESS:
+                    PRINT_INFO(
+                        "%s (Parser: %s)\tSuccess! %dms", test_name.c_str(),
+                        parser->get_type().c_str(), timer.elapsed_nanoseconds() / NANO_TO_MILLIS);
+                    success_count++;
+                    break;
+                case TEST_RESULT_FAILURE:
+                    failed_tests.push_back(
+                        format("%s (Parser: %s)", test_name.c_str(), parser->get_type().c_str()));
+                    PRINT_INFO(
+                        "%s (Parser: %s)\tFailed!", test_name.c_str(), parser->get_type().c_str());
+                    failed_count++;
+                    break;
+                case TEST_RESULT_IGNORED:
+                    PRINT_INFO(
+                        "%s (Parser: %s)\tIgnored!", test_name.c_str(), parser->get_type().c_str());
+                    ignore_count++;
+                    break;
+                }
+            }
+        }
+
+        parsers_total_times[parser->get_type()] = timer_sum;
     }
 
+    PRINT_INFO("\nTotal Execution Times:")
+    PRINT_INFO(string_pad_right("", '-', 35).c_str());
+    Size sum = 0;
+    for (const auto& [parser_name, duration] : parsers_total_times) {
+        sum += duration;
+        PRINT_INFO(
+            "%s%s", string_pad_right(parser_name, ' ', 20).c_str(),
+            string_pad_left(format("%dms", duration / NANO_TO_MILLIS), ' ', 15).c_str());
+    }
+    PRINT_INFO(string_pad_right("", '-', 35).c_str());
     PRINT_INFO(
-        "Summary: %d failed, %d succeeded, %d ignored, %d tests run.", failed_count, success_count,
-        ignore_count, all_count);
+        "%s%s", string_pad_right("Sum", ' ', 20).c_str(),
+        string_pad_left(format("%dms", sum / NANO_TO_MILLIS), ' ', 15).c_str());
+    PRINT_INFO(
+        "%s%s", string_pad_right("Average", ' ', 20).c_str(),
+        string_pad_left(format("%dms", (sum / all_count) / NANO_TO_MILLIS), ' ', 15).c_str());
+
+    PRINT_INFO(
+        "\nSummary: %d failed, %d succeeded, %d ignored, %d tests run.", failed_count,
+        success_count, ignore_count, all_count);
 
     for (const String& test_name : failed_tests) {
         PRINT_INFO("Failed %s", test_name.c_str());

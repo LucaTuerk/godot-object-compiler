@@ -54,7 +54,7 @@ namespace GodotObjectCompiler
         for (const String& name : p_context.program_arguments) {
             const Result<Node, Error> type_result =
                 LibraryContext::instance()->get_type_db()->get_type_data(name);
-            RESULT_ERROR_PASS_ON(ProgramError, type_result, type_data)
+            RESULT_ERROR_PASS_ON(ProgramError, type_result, type_data);
             print_ln(type_data->pretty_print());
         }
 

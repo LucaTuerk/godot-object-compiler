@@ -34,7 +34,7 @@
 /**************************************************************************/
 #pragma once
 
-#include "library/parser/parser.h"
+#include "library/parser.h"
 #include "library/tree/syntax/namespace.h"
 #include "library_godot/attributes/godot_attributes.h"
 #include "test_registry.h"

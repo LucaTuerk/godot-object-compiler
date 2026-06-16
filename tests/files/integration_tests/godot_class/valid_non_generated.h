@@ -34,7 +34,11 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/object.hpp"
+
+using namespace godot;
+
 class ValidNonGenerated : public Object
 {
-    GDCLASS(Valid, Object);
+    GDCLASS(ValidNonGenerated, Object);
 };

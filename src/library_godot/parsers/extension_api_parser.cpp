@@ -38,10 +38,13 @@
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
+#include "library/core/temp_file.h"
 #include "library/tree/output/output_transformator.h"
 #include "library/tree/syntax/identifier.h"
 
-static const char* core_interface = R"(
+static const auto core_interface = R"(
+    using DefaultAllocator = int;
+
     namespace godot
     {
         enum ModuleInitializationLevel {
@@ -108,24 +111,24 @@ namespace GodotObjectCompiler
         return class_name_to_canonical_name(path_stem(p_path));
     }
 
-    JsonError::JsonError(ErrorLevel p_level, const Json& p_json, const String& p_message)
+    JsonError::JsonError(const ErrorLevel p_level, const Json& p_json, const String& p_message)
     {
         UNUSED(p_json); // TODO: Should be included in error message in collapsed form
         error_level = p_level;
         message = format("JsonError: %s", p_message.c_str());
     }
 
-    Ref<ParserError> ExtensionAPIParser::parse(const String& p_input, Ref<Context> r_target)
+    Ref<ParserError> ExtensionAPIParser::parse_file(const String& p_path, Ref<Context> r_target)
     {
         PARSER_ERROR_COND(!r_target, "ExtensionAPIParser: Invalid null target context.");
 
-        std::ifstream file(p_input);
+        std::ifstream file(p_path);
         Json json;
         try {
             json = Json::parse(file);
         } catch (std::exception& e) {
             PARSER_ERROR(
-                "ExtensionAPIParser: Exception occurred parsing file \"%s\": %s", p_input.c_str(),
+                "ExtensionAPIParser: Exception occurred parsing file \"%s\": %s", p_path.c_str(),
                 e.what());
         }
 
@@ -158,9 +161,9 @@ namespace GodotObjectCompiler
             }
         }
 
-        TreeSitterParser tree_sitter_parser;
+        Ref<IParser> source_parser = LibraryContext::instance()->get_default_parser(SOURCE_PARSER);
         Ref<Context> core_context = node_new<Namespace>();
-        if (Ref<ParserError> error = tree_sitter_parser.parse(core_interface, core_context);
+        if (Ref<ParserError> error = source_parser->parse(core_interface, core_context);
             error != ParserError::OK) {
             return error;
         }
@@ -176,6 +179,12 @@ namespace GodotObjectCompiler
         r_target->add_child(core_context);
 
         return ParserError::OK;
+    }
+
+    Ref<ParserError> ExtensionAPIParser::parse(const String& p_input, Ref<Context> r_target)
+    {
+        const TempFile temp_file("json", p_input);
+        return parse_file(temp_file.get_path(), r_target);
     }
 
     bool ExtensionAPIParser::setup_include_paths(const Vector<String>& p_godot_cpp_include)

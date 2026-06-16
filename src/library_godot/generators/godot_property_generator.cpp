@@ -114,6 +114,7 @@ namespace GodotObjectCompiler
         const GodotCustomPropertyBind& custom_bind, const Ref<GodotPropertyAttribute>& p_attribute,
         const Ref<Namespace>& p_from_namespace)
     {
+
         GEN_ERROR_COND(
             custom_bind.property_name.empty(), p_attribute,
             "Empty property name in custom bound property.");

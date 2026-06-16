@@ -34,9 +34,12 @@
 /**************************************************************************/
 #pragma once
 // clang-format off
+#include "godot_cpp/classes/object.hpp"
 #include "godot_class/invalid_include_order.generated.h"
 #include <vector>
 // clang-format on
+
+using namespace godot;
 
 GODOT_CLASS();
 class InvalidIncludeOrder : public Object

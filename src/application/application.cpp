@@ -43,6 +43,7 @@
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/library_context.h"
+#include "library/parser.h"
 #include "library/type_db.h"
 #include "programs/clear.h"
 #include "programs/help.h"
@@ -51,7 +52,6 @@
 
 namespace GodotObjectCompiler
 {
-
     bool Application::was_last_exit_graceful() const
     {
         String lock_path = path_concat(context.paths_goc, ".goc_graceful_lock");
@@ -74,7 +74,7 @@ namespace GodotObjectCompiler
         String lock_path = path_concat(context.paths_goc, ".goc_graceful_lock");
 
         if (file_exists(lock_path) && remove_file(lock_path)) {
-            PRINT_INFO("GOC: Graceful exit.");
+            PRINT_VERBOSE("GOC: Graceful exit.");
             return p_return_code;
         }
 
@@ -178,8 +178,17 @@ namespace GodotObjectCompiler
 
             context.paths_include->push_back(*context.paths_root);
 
+            Vector<String> combined_include_paths;
+            combined_include_paths.insert(
+                combined_include_paths.end(), context.paths_include->begin(),
+                context.paths_include->end());
+            combined_include_paths.insert(
+                combined_include_paths.end(), context.paths_godot_cpp_include->begin(),
+                context.paths_godot_cpp_include->end());
+
             LibraryContext::instance()->get_type_db()->set_cache_directory(context.paths_cache);
-            LibraryContext::instance()->set_include_paths(*context.paths_include);
+            LibraryContext::instance()->set_include_paths(combined_include_paths);
+            LibraryContext::instance()->set_temporary_path(context.paths_goc);
 
             APP_ERR_COND(
                 init_local_resources.run(context) != ProgramError::OK,
@@ -195,6 +204,11 @@ namespace GodotObjectCompiler
                 path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
 
             LibraryContext::instance()->clean_generated_files();
+
+            if (context.options_source_parser.has_value()) {
+                LibraryContext::instance()->set_default_parser(
+                    *context.options_source_parser, IParser::SOURCE_PARSER);
+            }
 
             if (context.project_target == TARGET_GDEXTENSION) {
                 LibraryContext::instance()->add_using("godot");
@@ -251,9 +265,8 @@ namespace GodotObjectCompiler
                 path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
         }
 
-        int return_code = exit_gracefully(0);
+        const int return_code = exit_gracefully(0);
         context = {};
         return return_code;
     }
-
 } // namespace GodotObjectCompiler

@@ -56,10 +56,9 @@
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 using Json = nlohmann::ordered_json;
 
-#include "tree-sitter-cpp.h"
-#include "tree_sitter/api.h"
 // GCOVR_EXCL_STOP

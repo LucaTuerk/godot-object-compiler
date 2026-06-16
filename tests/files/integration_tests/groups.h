@@ -34,10 +34,13 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
 #include "groups.generated.h"
 
 namespace Tests
 {
+    using namespace godot;
+
     GODOT_CLASS();
     class Groups : public Node
     {

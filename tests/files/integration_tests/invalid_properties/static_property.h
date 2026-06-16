@@ -34,7 +34,10 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
 #include "invalid_properties/static_property.generated.h"
+
+using namespace godot;
 
 GODOT_CLASS();
 

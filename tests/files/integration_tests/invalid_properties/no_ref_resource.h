@@ -34,7 +34,11 @@
 /**************************************************************************/
 #pragma once
 
+#include "godot_cpp/classes/node.hpp"
+#include "godot_cpp/classes/resource.hpp"
 #include "invalid_properties/no_ref_resource.generated.h"
+
+using namespace godot;
 
 GODOT_CLASS();
 
