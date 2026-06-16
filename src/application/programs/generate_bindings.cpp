@@ -54,8 +54,18 @@ namespace GodotObjectCompiler
 {
     String GenerateBindings::file_id(const String& p_file_name)
     {
-        Hasher<String> hasher;
+        constexpr Hasher<String> hasher;
         return hash_string(hasher(p_file_name));
+    }
+
+    String GenerateBindings::cache_path(const String& goc_path, const String& p_file_name)
+    {
+        const String input_cache = path_concat(goc_path, "input_cache");
+        auto cache_path = path_concat_ext(input_cache, file_id(p_file_name), ".gocdb");
+        if (!directory_exits(input_cache)) {
+            create_dir_recursive(input_cache);
+        }
+        return cache_path;
     }
 
     String GenerateBindings::generated_macro_name(const String& p_header, Size p_line)
@@ -212,19 +222,43 @@ namespace GodotObjectCompiler
             if (processed.find(input_file) != processed.end()) {
                 continue;
             }
+
             processed.insert(input_file);
-
-            PRINT_VERBOSE("Generating bindings for \"%s\"", input_file.c_str());
-            Ref<IParser> parser =
-                LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
-            parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
-
-            Ref<Namespace> global_namespace = node_new<Namespace>();
-            Ref<ParserError> error = parser->parse_file(input_file, global_namespace);
-            PROG_ERR_COND(
-                error != ParserError::OK, "Failed to parse input file \"%s\"", input_file.c_str());
-
             String relative_path = path_relative(input_file, *p_context.paths_root);
+
+            Ref<Namespace> global_namespace = nullptr;
+            String cached = cache_path(p_context.paths_goc, input_file);
+            ConfigNodeReaderWriter reader_writer;
+            if (!LibraryContext::instance()->file_modified(input_file) && file_exists(cached)) {
+                if (Result<Node> parsed = reader_writer.read_from_file(cached);
+                    parsed.has_error()) {
+                    parsed.get_error()->set_handled();
+                    remove_file(cached);
+                    fmt_print_err(
+                        "Failed to get cached input file for \"%s\": %s", input_file.c_str(),
+                        parsed.get_error()->message.c_str());
+                } else if (!parsed.get_result()->is<Namespace>()) {
+                    remove_file(cached);
+                    fmt_print_err(
+                        "Invalid node read from cached file \"%s\" for input file \"%s\"",
+                        cached.c_str(), input_file.c_str());
+                } else {
+                    global_namespace = parsed.get_result()->as<Namespace>();
+                }
+            }
+
+            if (global_namespace == nullptr) {
+                Ref<IParser> parser =
+                    LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
+                parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
+                global_namespace = node_new<Namespace>();
+                Ref<ParserError> error = parser->parse_file(input_file, global_namespace);
+                PROG_ERR_COND(
+                    error != ParserError::OK, "Failed to parse input file \"%s\"",
+                    input_file.c_str());
+                reader_writer.write_to_file(global_namespace, cached);
+            }
+
             String in_generated_path = path_concat(p_context.paths_generated, relative_path);
             String in_generated_base = path_base(in_generated_path);
             String in_generated_stem = path_stem(in_generated_path);
@@ -262,7 +296,7 @@ namespace GodotObjectCompiler
             Vector<ClassGeneratorResult> generate_results;
 
             for (const Ref<Class>& target_class : classes) {
-                PRINT_VERBOSE("Processing class \"%s\"", target_class->qualified_name().c_str());
+                PRINT_VERBOSE("Preprocessing class \"%s\"", target_class->qualified_name().c_str());
                 ClassGeneratorResult result{
                     input_file, target_class, header_includes, source_includes, register_includes};
                 result.initialize = register_body;
@@ -340,6 +374,8 @@ namespace GodotObjectCompiler
                         input_file.c_str());
                     continue;
                 }
+
+                PRINT_INFO("Generating class \"%s\"", target_class->name().c_str());
 
                 for (const Ref<Node>& child : *target_class->body()) {
                     if (Ref<Attribute> attribute = child->as<Attribute>()) {
@@ -437,7 +473,7 @@ namespace GodotObjectCompiler
         register_header_output->get_output(&register_header_writer);
         register_source_output->get_output(&register_source_writer);
 
+        PRINT_VERBOSE("Done generating bindings.");
         return ProgramError::OK;
     }
-
 } // namespace GodotObjectCompiler

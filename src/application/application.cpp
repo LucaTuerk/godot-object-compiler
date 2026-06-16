@@ -52,7 +52,6 @@
 
 namespace GodotObjectCompiler
 {
-
     bool Application::was_last_exit_graceful() const
     {
         String lock_path = path_concat(context.paths_goc, ".goc_graceful_lock");
@@ -75,7 +74,7 @@ namespace GodotObjectCompiler
         String lock_path = path_concat(context.paths_goc, ".goc_graceful_lock");
 
         if (file_exists(lock_path) && remove_file(lock_path)) {
-            PRINT_INFO("GOC: Graceful exit.");
+            PRINT_VERBOSE("GOC: Graceful exit.");
             return p_return_code;
         }
 
@@ -266,9 +265,8 @@ namespace GodotObjectCompiler
                 path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
         }
 
-        int return_code = exit_gracefully(0);
+        const int return_code = exit_gracefully(0);
         context = {};
         return return_code;
     }
-
 } // namespace GodotObjectCompiler
