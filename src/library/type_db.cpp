@@ -155,43 +155,19 @@ namespace GodotObjectCompiler
     }
 
     String TypeDB::_get_cache_file_path(
-        const String& p_qualified_name, CacheType p_cache_type,
-        Size p_template_argument_count) const
+        const String& p_qualified_name, Size p_template_argument_count) const
     {
-        switch (p_cache_type) {
-        case CacheType::READONLY_CACHE: {
-            return path_concat(
-                _readonly_cache_directory,
-                mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
-        }
-        case CacheType::READWRITE_CACHE: {
-            return path_concat(
-                _cache_directory,
-                mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
-        }
-        }
-
-        PANIC("Unhandled cache type.");
+        return path_concat(
+            _cache_directory, mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
     }
 
     String TypeDB::_get_attribute_cache_file_path(
         const String& p_qualified_name, const String& p_attribute_name,
-        const CacheType p_cache_type, const Size p_template_argument_count) const
+        const Size p_template_argument_count) const
     {
-        switch (p_cache_type) {
-        case CacheType::READONLY_CACHE: {
-            const String base = path_concat(
-                _readonly_cache_directory,
-                mangle_name(p_qualified_name, p_template_argument_count));
-            return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
-        }
-        case CacheType::READWRITE_CACHE: {
-            const String base = path_concat(
-                _cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
-            return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
-        }
-        }
-        PANIC("Unhandled cache type.");
+        const String base =
+            path_concat(_cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
+        return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
     }
 
     void
@@ -204,12 +180,10 @@ namespace GodotObjectCompiler
 
             for (Size i = 0; i <= _class->optional_template_parameter_count(); ++i) {
                 paths.push_back(_get_cache_file_path(
-                    p_type->qualified_name(), CacheType::READWRITE_CACHE,
-                    _class->template_parameter_count() - i));
+                    p_type->qualified_name(), _class->template_parameter_count() - i));
             }
         } else {
-            paths.push_back(
-                _get_cache_file_path(p_type->qualified_name(), CacheType::READWRITE_CACHE));
+            paths.push_back(_get_cache_file_path(p_type->qualified_name()));
         }
 
         for (const String& path : paths) {
@@ -239,12 +213,12 @@ namespace GodotObjectCompiler
             _class != nullptr && _class->template_parameter_count() > 0) {
             for (Size i = 0; i <= _class->optional_template_parameter_count(); ++i) {
                 paths.push_back(_get_attribute_cache_file_path(
-                    p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE,
+                    p_type->qualified_name(), p_attribute->get_type(),
                     _class->template_parameter_count() - i));
             }
         } else {
-            paths.push_back(_get_attribute_cache_file_path(
-                p_type->qualified_name(), p_attribute->get_type(), CacheType::READWRITE_CACHE));
+            paths.push_back(
+                _get_attribute_cache_file_path(p_type->qualified_name(), p_attribute->get_type()));
         }
 
         for (const String& path : paths) {
@@ -268,13 +242,12 @@ namespace GodotObjectCompiler
 
     Result<Node> TypeDB::_get_type_data(
         const String& p_qualified_name, const Size p_template_argument_count,
-        const Ref<Namespace>& p_from_namespace, const CacheType p_cache_type)
+        const Ref<Namespace>& p_from_namespace)
     {
         Reader reader;
 
         for (const String& name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
-            const String& cache_file_path =
-                _get_cache_file_path(name, p_cache_type, p_template_argument_count);
+            const String& cache_file_path = _get_cache_file_path(name, p_template_argument_count);
 
             if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
                 return itr->second->clone();
@@ -291,8 +264,7 @@ namespace GodotObjectCompiler
             }
             for (const String& using_ : LibraryContext::instance()->get_usings()) {
                 if (String using_path = _get_cache_file_path(
-                        format("%s::%s", using_.c_str(), name.c_str()), p_cache_type,
-                        p_template_argument_count);
+                        format("%s::%s", using_.c_str(), name.c_str()), p_template_argument_count);
                     file_exists(using_path)) {
                     Result<Node> root_result = reader.read_from_file(using_path);
                     if (root_result.has_result()) {
@@ -312,14 +284,13 @@ namespace GodotObjectCompiler
 
     Result<Attribute> TypeDB::_get_type_attribute(
         const String& p_qualified_name, const String& p_attribute_name,
-        const Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace,
-        const CacheType cache_type)
+        const Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace)
     {
         Reader reader;
 
         for (const String& name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
-            const String& cache_file_path = _get_attribute_cache_file_path(
-                name, p_attribute_name, cache_type, p_template_parameter_count);
+            const String& cache_file_path =
+                _get_attribute_cache_file_path(name, p_attribute_name, p_template_parameter_count);
 
             if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
                 return itr->second->as<Attribute>();
@@ -336,8 +307,7 @@ namespace GodotObjectCompiler
 
             for (const String& using_ : LibraryContext::instance()->get_usings()) {
                 if (String using_path = _get_attribute_cache_file_path(
-                        format("%s::%s", using_.c_str(), name.c_str()), p_attribute_name,
-                        cache_type);
+                        format("%s::%s", using_.c_str(), name.c_str()), p_attribute_name);
                     file_exists(using_path)) {
                     const Result<Node> root_result = reader.read_from_file(using_path);
                     if (root_result.has_result()) {
@@ -358,13 +328,8 @@ namespace GodotObjectCompiler
         const String& qualified_name, Size template_argument_count,
         const Ref<Namespace>& from_namespace)
     {
-        Result<Node> found_result = _get_type_data(
-            qualified_name, template_argument_count, from_namespace, CacheType::READWRITE_CACHE);
-        if (found_result.has_error()) {
-            found_result.get_error()->set_handled();
-            found_result = _get_type_data(
-                qualified_name, template_argument_count, from_namespace, CacheType::READONLY_CACHE);
-        }
+        Result<Node> found_result =
+            _get_type_data(qualified_name, template_argument_count, from_namespace);
         RESULT_ERROR_PASS_ON(Error, found_result, found);
         return found;
     }
@@ -374,15 +339,7 @@ namespace GodotObjectCompiler
         const Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace)
     {
         Result<Attribute> found_result = _get_type_attribute(
-            p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace,
-            CacheType::READWRITE_CACHE);
-
-        if (found_result.has_error()) {
-            found_result.get_error()->set_handled();
-            found_result = _get_type_attribute(
-                p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace,
-                CacheType::READONLY_CACHE);
-        }
+            p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace);
         RESULT_ERROR_PASS_ON(Error, found_result, found);
         return found;
     }

@@ -81,13 +81,4 @@ namespace GodotObjectCompiler
         return ProgramError::OK;
     }
 
-    Ref<ProgramError> ClearImportedTypeDB::run(ApplicationContext& p_context)
-    {
-        for (const String& entry : directory_entries(p_context.paths_readonly_cache)) {
-            PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
-        }
-
-        return ProgramError::OK;
-    }
-
 } // namespace GodotObjectCompiler

@@ -49,7 +49,6 @@ namespace GodotObjectCompiler
         paths_root = path_absolute(p_project.paths_root);
         paths_generated = path_absolute(p_project.paths_generated);
         paths_cache = path_absolute(p_project.paths_cache);
-        paths_readonly_cache = path_concat(paths_cache, ".readonly");
         paths_goc = path_absolute(p_project.paths_goc);
         paths_godot_cpp_include = p_project.paths_godot_cpp_include;
         path_extension_api = p_project.path_extension_api;
@@ -141,7 +140,6 @@ namespace GodotObjectCompiler
 
         paths_goc = path_absolute(paths_goc);
         paths_cache = path_absolute(paths_cache);
-        paths_readonly_cache = path_absolute(paths_readonly_cache);
         paths_generated = path_absolute(paths_generated);
 
         if (paths_godot_cpp_include.has_value()) {

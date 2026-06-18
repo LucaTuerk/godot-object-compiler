@@ -35,6 +35,7 @@
 
 #include "resources.h"
 
+#include "file_system_utilities.h"
 #include "string_utilities.h"
 
 namespace GodotObjectCompiler
@@ -62,7 +63,7 @@ namespace GodotObjectCompiler
     {
         for (ResourcePack* pack : _loaded_packs) {
             if (auto itr = pack->find(p_path); itr != pack->end()) {
-                return String(itr->second);
+                return itr->second;
             }
         }
         return "";
@@ -76,6 +77,41 @@ namespace GodotObjectCompiler
             }
         }
         return false;
+    }
+
+    bool Resources::copy_resource_to_file(
+        const String& p_resource_path, const String& p_target_file) const
+    {
+        if (!file_exists(p_target_file)) {
+            if (String folder_path = path_base(p_target_file);
+                !directory_exits(folder_path) && !create_dir_recursive(folder_path)) {
+                return false;
+            }
+            write_file(p_target_file, load_text_resource(p_resource_path));
+            return true;
+        }
+        return false;
+    }
+
+    bool Resources::copy_resources_to_folder(
+        const Vector<String>& p_resource_glob_paths, const String& p_target_folder) const
+    {
+        for (const String& copy_resources : p_resource_glob_paths) {
+            for (const String& res_path : resources_recursive(copy_resources)) {
+                String relative = path_relative(res_path, copy_resources);
+                auto file_path = path_concat(
+                    path_concat(p_target_folder, string_replace(copy_resources, "res://", "")),
+                    relative);
+                if (file_exists(file_path)) {
+                    continue;
+                }
+
+                if (!copy_resource_to_file(res_path, file_path)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 } // namespace GodotObjectCompiler

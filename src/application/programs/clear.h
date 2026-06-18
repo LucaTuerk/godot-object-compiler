@@ -66,13 +66,4 @@ namespace GodotObjectCompiler
         Ref<ProgramError> run(ApplicationContext& p_context) override;
     };
 
-    class ClearImportedTypeDB : public IProgram
-    {
-        PROGRAM(ClearImportedTypeDB, "clear/imported_type_db")
-        NO_PROGRAM_ARGS
-
-      public:
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
-    };
-
 } // namespace GodotObjectCompiler

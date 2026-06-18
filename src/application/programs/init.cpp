@@ -35,8 +35,8 @@
 
 #include "init.h"
 
+#include "application/application.h"
 #include "application/project.h"
-#include "init_local_resources.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
 #include "library/core/resources.h"
@@ -106,8 +106,6 @@ namespace GodotObjectCompiler
                     ERROR,
                     "Failed to setup ApplicationContext from provided project settings. Abort!");
             }
-
-            Ref<ProgramError> init_resources_error = InitLocalResources().run(p_context);
 
             String _ = input(format(
                 "\n|-> Successfully generated project file \"%s\" (enter to exit)",

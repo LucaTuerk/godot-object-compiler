@@ -46,7 +46,7 @@ namespace GodotObjectCompiler
     {
       public:
         String project_name;
-        ProjectTarget project_target = ProjectTarget::TARGET_GDEXTENSION;
+        ProjectTarget project_target = TARGET_GDEXTENSION;
 
         Opt<String> path_extension_api;
         Opt<String> paths_root;
@@ -57,7 +57,6 @@ namespace GodotObjectCompiler
 
         String paths_goc = ".goc";
         String paths_cache = ".goc/cache";
-        String paths_readonly_cache = ".goc/cache/.readonly";
         String paths_generated = ".goc/generated";
         Vector<String> application_arguments;
         Vector<String> program_arguments;
