@@ -34,10 +34,6 @@ jobs:
     needs: check-format
     secrets:
       CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
-
-  linux-run-testproject:
-    uses: ./.github/workflows/testproject_linux.yml
-    needs: check-format
     with:
       create_artifact: true
 
@@ -55,17 +51,15 @@ jobs:
     with:
       create_artifact: true
 
+  run-testproject:
+    uses: ./.github/workflows/testproject.yml
+    needs: check-format
+
   upload-artifacts:
     name: Upload release artifacts
     runs-on: ubuntu-22.04
     needs:
-      [
-        linux-build,
-        linux-run-testproject,
-        windows-build,
-        mac-build,
-        check-changed,
-      ]
+      [linux-build, windows-build, mac-build, run-testproject, check-changed]
     if: ${{ needs.check-changed.outputs.result == 1 }}
     permissions:
       contents: write

@@ -1,0 +1,45 @@
+name: setup_godot
+description: setup_godot
+inputs:
+  platform:
+    required: true
+    description: ""
+  version:
+    required: true
+    description: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Install Godot (Linux🐧 )
+      if: inputs.platform == 'linux.x86_64'
+      shell: sh
+      run: |
+        GODOT_DOWNLOAD_URL=https://github.com/godotengine/godot-builds/releases/download/${{inputs.version}}/Godot_v${{inputs.version}}_${{inputs.platform}}.zip
+        echo "Downloading: $GODOT_DOWNLOAD_URL"
+
+        curl -Lf $GODOT_DOWNLOAD_URL -o godot.zip
+        unzip godot.zip
+        rm godot.zip
+
+        mv Godot_v${{inputs.version}}_${{inputs.platform}} godot
+
+    - name: Install Godot (MacOS 🍎)
+      if: inputs.platform == 'macos.universal'
+      shell: sh
+      run: |
+        GODOT_DOWNLOAD_URL=https://github.com/godotengine/godot-builds/releases/download/${{inputs.version}}/Godot_v${{inputs.version}}_${{inputs.platform}}.zip
+        echo "Downloading: $GODOT_DOWNLOAD_URL"
+
+        curl -Lf $GODOT_DOWNLOAD_URL -o godot.zip
+        unzip godot.zip
+        rm godot.zip
+
+    - name: Install Godot (Windows 🪟)
+      if: inputs.platform == 'win64'
+      shell: pwsh
+      run: |
+        curl -Lf https://github.com/godotengine/godot-builds/releases/download/${{inputs.version}}/Godot_v${{inputs.version}}_${{inputs.platform}}.exe.zip -o godot.zip
+        unzip godot.zip
+        rm godot.zip
+
+        mv Godot_v${{inputs.version}}_${{inputs.platform}}.exe godot.exe

@@ -17,8 +17,8 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
 
-  linux-run-testproject:
-    uses: ./.github/workflows/testproject_linux.yml
+  run-testproject:
+    uses: ./.github/workflows/testproject.yml
     needs: check-format
 
   windows-build:
