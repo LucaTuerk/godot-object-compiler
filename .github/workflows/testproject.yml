@@ -52,8 +52,8 @@ jobs:
 
       - name: Run Project
         run: |
-          godot --headless --path project --editor --quit || true
-          godot --headless --path project
+          ./godot --headless --path project --editor --quit || true
+          ./godot --headless --path project
 
   windows-test-project:
     name: Run Test Project (Windows 🪟)
@@ -104,8 +104,8 @@ jobs:
 
       - name: Run Project
         run: |
-          godot.exe --headless --path project --editor --quit || true
-          godot.exe --headless --path project
+          .\godot.exe --headless --path project --editor --quit || true
+          .\godot.exe --headless --path project
 
   macos-test-project:
     name: Run Test Project (MacOS 🍎)
@@ -156,5 +156,5 @@ jobs:
 
       - name: Run Project
         run: |
-          Godot.app/Contents/MacOS/Godot --headless --path project --editor --quit || true
-          Godot.app/Contents/MacOS/Godot --headless --path project
+          ./Godot.app/Contents/MacOS/Godot --headless --path project --editor --quit || true
+          ./Godot.app/Contents/MacOS/Godot --headless --path project
