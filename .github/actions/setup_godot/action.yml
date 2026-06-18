@@ -24,7 +24,7 @@ runs:
         echo "Downloading: $GODOT_DOWNLOAD_URL"
 
         cd $INSTALL_DIR
-        curl -f $GODOT_DOWNLOAD_URL -o godot.zip
+        curl -Lf $GODOT_DOWNLOAD_URL -o godot.zip
         unzip godot.zip
         rm godot.zip
 
@@ -47,7 +47,7 @@ runs:
         echo "Downloading: $GODOT_DOWNLOAD_URL"
 
         cd $INSTALL_DIR
-        curl -f $GODOT_DOWNLOAD_URL -o godot.zip
+        curl -Lf $GODOT_DOWNLOAD_URL -o godot.zip
         unzip godot.zip
         rm godot.zip
 
