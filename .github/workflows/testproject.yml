@@ -156,5 +156,5 @@ jobs:
 
       - name: Run Project
         run: |
-          godot --headless --path project --editor --quit || true
-          godot --headless --path project
+          Godot.app/Contents/MacOS/Godot --headless --path project --editor --quit || true
+          Godot.app/Contents/MacOS/Godot --headless --path project
