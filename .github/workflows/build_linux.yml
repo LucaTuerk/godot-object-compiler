@@ -4,6 +4,11 @@ on:
     secrets:
       CODECOV_TOKEN:
         required: true
+    inputs:
+      create_artifact:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   linux-build:
@@ -79,3 +84,13 @@ jobs:
         with:
           files: ./build/CMakeFiles/goc_tests.dir/src/coverage.cobertura.xml
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload Binary
+        if: ${{inputs.create_artifact == true}}
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-binary
+          path: build/goc
+          compression-level: 9
+          if-no-files-found: error
+          overwrite: true
