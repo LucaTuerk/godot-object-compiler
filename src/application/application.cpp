@@ -47,7 +47,6 @@
 #include "library/type_db.h"
 #include "programs/clear.h"
 #include "programs/help.h"
-#include "programs/init_local_resources.h"
 #include "programs/program.h"
 
 namespace GodotObjectCompiler
@@ -81,6 +80,19 @@ namespace GodotObjectCompiler
         APP_ERR("GOC: Tried to exit gracefully but lock file no longer exists. This indicates a "
                 "corrupted GOC directory.\nYou may want to clear your cache to ensure smooth "
                 "operations.")
+    }
+
+    bool Application::init_local_resources() const
+    {
+        if (!Resources::instance()->copy_resources_to_folder(
+                {
+                    "res://variant_types",
+                    "res://macros",
+                },
+                context.paths_goc)) {
+            return false;
+        }
+        return true;
     }
 
     int Application::run(const Vector<String>& p_arguments)
@@ -137,7 +149,6 @@ namespace GodotObjectCompiler
 
         if (context.program->requires_project()) {
             Clear clear;
-            InitLocalResources init_local_resources;
             Vector<String> cwd_files = directory_files(path_cwd());
             auto project_path_itr =
                 std::find_if(cwd_files.begin(), cwd_files.end(), [](const String& path) {
@@ -190,9 +201,7 @@ namespace GodotObjectCompiler
             LibraryContext::instance()->set_include_paths(combined_include_paths);
             LibraryContext::instance()->set_temporary_path(context.paths_goc);
 
-            APP_ERR_COND(
-                init_local_resources.run(context) != ProgramError::OK,
-                "Failed to initialize local resources.");
+            APP_ERR_COND(!init_local_resources(), "Failed to initialize local resources.");
 
             LibraryContext::instance()->set_remove_macros(
                 read_lines(path_concat(context.paths_goc, "macros/macro_remove.txt")));

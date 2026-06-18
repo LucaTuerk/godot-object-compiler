@@ -56,13 +56,19 @@ namespace GodotObjectCompiler
 
       private:
         int setup_context(Vector<String> p_arguments);
+
         int run_program(const Ref<IProgram>& p_program);
 
         int cleanup();
+
         bool was_last_exit_graceful() const;
+
         int exit_gracefully(int p_return_code) const;
 
+        bool init_local_resources() const;
+
         ApplicationContext context;
+
         static inline bool has_application = false;
     };
 

@@ -148,23 +148,19 @@ namespace GodotObjectCompiler
         using Reader = ConfigNodeReaderWriter;
         using Writer = ConfigNodeReaderWriter;
 
-        enum class CacheType { READONLY_CACHE, READWRITE_CACHE };
-
         Result<Node> _get_type_data(
             const String& p_qualified_name, Size template_parameter_count,
-            const Ref<Namespace>& p_from_namespace, CacheType p_cache_type);
+            const Ref<Namespace>& p_from_namespace);
 
         Result<Attribute> _get_type_attribute(
             const String& p_qualified_name, const String& p_attribute_name,
-            Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace,
-            CacheType cache_type);
+            Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace);
 
         [[nodiscard]] String _get_cache_file_path(
-            const String& p_qualified_name, CacheType p_cache_type,
-            Size p_template_argument_count = INVALID_SIZE) const;
+            const String& p_qualified_name, Size p_template_argument_count = INVALID_SIZE) const;
 
         [[nodiscard]] String _get_attribute_cache_file_path(
-            const String& p_qualified_name, const String& p_attribute_name, CacheType p_cache_type,
+            const String& p_qualified_name, const String& p_attribute_name,
             Size p_template_argument_count = INVALID_SIZE) const;
 
         Dictionary<String, Ref<Node>> _cache;

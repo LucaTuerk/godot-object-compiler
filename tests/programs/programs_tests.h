@@ -63,53 +63,12 @@ GOC_INTEGRATION_TEST(Clear)
     return TEST_RESULT_SUCCESS;
 };
 
-GOC_INTEGRATION_TEST(ExportTypeDB)
-{
-    String exported_folder = path_concat(TestRegistry::get_test_root_dir(), "exported");
-
-    Permissions::instance()->add_write_path(TestRegistry::get_test_root_dir());
-    if (directory_exits(exported_folder)) {
-        remove(exported_folder);
-    }
-
-    Application application;
-    const int result = application.run(TestRegistry::instance()->get_test_application_arguments(
-        {"export", "type_db", exported_folder}));
-
-    GOC_TEST_ASSERT(result == 0, "Failed to run program");
-    GOC_TEST_EQ(
-        directory_files_recursive(TestRegistry::get_cache_path()).size(),
-        directory_files_recursive(exported_folder).size(),
-        "Invalid file count for exported TypeDB");
-    return TEST_RESULT_SUCCESS;
-};
-
 GOC_TEST(Help)
 {
     Application application;
     const int result =
         application.run(TestRegistry::instance()->get_test_application_arguments({"help"}));
     GOC_TEST_ASSERT(result == 0, "Failed to run program");
-    return TEST_RESULT_SUCCESS;
-};
-
-GOC_TEST(InitLocalResources)
-{
-    Application application;
-    const int result = application.run(
-        TestRegistry::instance()->get_test_application_arguments({"init", "local_resources"}));
-    GOC_TEST_ASSERT(result == 0, "Failed to run program");
-
-    Vector<String> paths = {"variant_types", "macros"};
-
-    for (const String& path : paths) {
-        String abs_path = path_concat(TestRegistry::get_goc_path(), path);
-        GOC_TEST_ASSERT(
-            directory_exits(abs_path), "Expected directory %s does not exist.", abs_path.c_str());
-        GOC_TEST_ASSERT(
-            !directory_files(abs_path).empty(), "No resources generated in directory %s",
-            abs_path.c_str());
-    }
     return TEST_RESULT_SUCCESS;
 };
 
