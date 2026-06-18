@@ -93,8 +93,8 @@ jobs:
       - name: Build Project
         run: |
           mkdir -p build
-          cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
-          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
+          cmake -Bbuild -S. -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
+          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN) --config Release
 
       - name: Install Godot
         uses: ./godot-object-compiler/.github/actions/setup_godot
