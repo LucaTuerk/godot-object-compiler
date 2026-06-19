@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: true
 
@@ -38,7 +38,7 @@ jobs:
 
       - name: Checkout godot-cpp
         id: godot-cpp-cache
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "godotengine/godot-cpp"
           ref: "4.5"
