@@ -8,20 +8,20 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Test Repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler-test"
           submodules: "false"
 
       - name: Checkout Godot Object Compiler
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler"
           submodules: "recursive"
           path: "godot-object-compiler"
 
       - name: Checkout godot-cpp
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "godotengine/godot-cpp"
           submodules: "true"
@@ -60,20 +60,20 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout Test Repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler-test"
           submodules: "false"
 
       - name: Checkout Godot Object Compiler
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler"
           submodules: "recursive"
           path: "godot-object-compiler"
 
       - name: Checkout godot-cpp
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "godotengine/godot-cpp"
           submodules: "true"
@@ -112,20 +112,20 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout Test Repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler-test"
           submodules: "false"
 
       - name: Checkout Godot Object Compiler
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler"
           submodules: "recursive"
           path: "godot-object-compiler"
 
       - name: Checkout godot-cpp
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: "godotengine/godot-cpp"
           submodules: "true"
