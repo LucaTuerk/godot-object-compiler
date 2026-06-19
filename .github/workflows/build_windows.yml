@@ -40,6 +40,7 @@ jobs:
           path: "godot-cpp"
 
       - name: Restore godot-cpp Cache
+        id: godot-cpp-cache
         uses: actions/cache/restore@v5
         with:
           path: ${{github.workspace}}/godot-cpp/.scons_cache/
@@ -54,6 +55,7 @@ jobs:
           cd ..
 
       - name: Save godot-cpp Cache
+        if: steps.godot-cpp-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: ${{github.workspace}}/godot-cpp/.scons_cache/

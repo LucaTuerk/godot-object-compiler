@@ -1,4 +1,4 @@
-name: Windows Build
+name: Mac Build
 on:
   workflow_call:
     inputs:
@@ -8,7 +8,7 @@ on:
         default: false
 
 jobs:
-  windows-build:
+  mac-build:
     name: Build (Mac 🍎)
     runs-on: macos-latest
     steps:
@@ -41,6 +41,7 @@ jobs:
           path: "godot-cpp"
 
       - name: Restore godot-cpp Cache
+        id: godot-cpp-cache
         uses: actions/cache/restore@v5
         with:
           path: ${{github.workspace}}/godot-cpp/.scons_cache/
@@ -55,6 +56,7 @@ jobs:
           cd ..
 
       - name: Save godot-cpp Cache
+        if: steps.godot-cpp-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: ${{github.workspace}}/godot-cpp/.scons_cache/

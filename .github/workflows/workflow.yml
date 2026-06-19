@@ -17,14 +17,14 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
 
-  run-testproject:
-    uses: ./.github/workflows/testproject.yml
-    needs: check-format
-
   windows-build:
     uses: ./.github/workflows/build_windows.yml
     needs: check-format
 
   mac-build:
     uses: ./.github/workflows/build_mac.yml
+    needs: check-format
+
+  run-testproject:
+    uses: ./.github/workflows/testproject.yml
     needs: check-format

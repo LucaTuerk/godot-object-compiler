@@ -1,4 +1,4 @@
-name: format.yml
+name: Check Formating
 on:
   workflow_call:
 

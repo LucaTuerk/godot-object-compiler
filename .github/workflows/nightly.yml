@@ -39,27 +39,26 @@ jobs:
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml
-    needs: [check-format, check-changed]
+    needs: check-changed
     if: ${{ needs.check-changed.outputs.result == 1 }}
     with:
       create_artifact: true
 
   mac-build:
     uses: ./.github/workflows/build_mac.yml
-    needs: [check-format, check-changed]
+    needs: check-changed
     if: ${{ needs.check-changed.outputs.result == 1 }}
     with:
       create_artifact: true
 
   run-testproject:
     uses: ./.github/workflows/testproject.yml
-    needs: check-format
+    needs: check-changed
 
   upload-artifacts:
     name: Upload release artifacts
     runs-on: ubuntu-22.04
-    needs:
-      [linux-build, windows-build, mac-build, run-testproject, check-changed]
+    needs: [linux-build, windows-build, mac-build, run-testproject]
     if: ${{ needs.check-changed.outputs.result == 1 }}
     permissions:
       contents: write
