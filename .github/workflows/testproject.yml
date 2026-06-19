@@ -1,4 +1,4 @@
-name: Linux Run Test Project
+name: Run Test Project
 on:
   workflow_call:
 
