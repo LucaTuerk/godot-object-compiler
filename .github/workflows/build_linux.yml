@@ -75,9 +75,8 @@ jobs:
             --exclude-unreachable-branches\
             --exclude-throw-branches\
             --exclude-noncode-lines\
-            --exclude-lines-by-pattern .*PANIC_COND\
-            --exclude-lines-by-pattern .*ERR_COND\
-            --exclude-lines-by-pattern .*RESULT_ERROR_PASS_ON\
+            --exclude-lines-by-pattern .*PANIC\
+            --exclude-lines-by-pattern .*ERR\
             --sonarqube coverage.xml\
             --cobertura coverage.cobertura.xml
 

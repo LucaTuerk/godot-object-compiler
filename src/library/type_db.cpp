@@ -330,7 +330,7 @@ namespace GodotObjectCompiler
     {
         Result<Node> found_result =
             _get_type_data(qualified_name, template_argument_count, from_namespace);
-        RESULT_ERROR_PASS_ON(Error, found_result, found);
+        RESULT_ERR_PASS_ON(Error, found_result, found);
         return found;
     }
 
@@ -340,7 +340,7 @@ namespace GodotObjectCompiler
     {
         Result<Attribute> found_result = _get_type_attribute(
             p_qualified_name, p_attribute_name, p_template_parameter_count, p_from_namespace);
-        RESULT_ERROR_PASS_ON(Error, found_result, found);
+        RESULT_ERR_PASS_ON(Error, found_result, found);
         return found;
     }
 

@@ -144,7 +144,7 @@ namespace GodotObjectCompiler
 
             Result<Node> property_info_result = build_property_info_defaults(
                 type, name, r_result, p_target_class, DEFAULTS_SIGNAL_ARGUMENT);
-            RESULT_ERROR_PASS_ON(Error, property_info_result, property_info);
+            RESULT_ERR_PASS_ON(Error, property_info_result, property_info);
 
             arguments->B<Argument>()[property_info];
             i += 1;

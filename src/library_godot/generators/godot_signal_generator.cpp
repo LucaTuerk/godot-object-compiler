@@ -57,7 +57,7 @@ namespace GodotObjectCompiler
 
         Result<Function> signal_result =
             add_signal(p_target_class, p_signal_name, p_parameters, r_result);
-        RESULT_ERROR_PASS_ON(GeneratorError, signal_result, signal);
+        RESULT_ERR_PASS_ON(GeneratorError, signal_result, signal);
 
         bind_methods->add_child(signal);
 

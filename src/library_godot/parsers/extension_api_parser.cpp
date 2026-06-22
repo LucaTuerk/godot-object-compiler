@@ -138,7 +138,7 @@ namespace GodotObjectCompiler
         if (json.contains("global_enums")) {
             for (auto& element : json["global_enums"]) {
                 auto result = parse_enum(element);
-                RESULT_ERROR_PASS_ON(JsonError, result, global_enum);
+                RESULT_ERR_PASS_ON(JsonError, result, global_enum);
                 body->add_child(global_enum);
             }
         }
@@ -156,7 +156,7 @@ namespace GodotObjectCompiler
         if (json.contains("classes")) {
             for (auto& element : json["classes"]) {
                 auto result = parse_class(element);
-                RESULT_ERROR_PASS_ON(JsonError, result, godot_class);
+                RESULT_ERR_PASS_ON(JsonError, result, godot_class);
                 body->add_child(godot_class);
             }
         }
@@ -263,7 +263,7 @@ namespace GodotObjectCompiler
             if (p_input.contains("values")) {
                 for (auto& element : p_input["values"]) {
                     auto value_result = parse_enum_value(element);
-                    RESULT_ERROR_PASS_ON(JsonError, value_result, value);
+                    RESULT_ERR_PASS_ON(JsonError, value_result, value);
 
                     enum_values->add_child(value);
 
