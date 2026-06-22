@@ -52,15 +52,13 @@ namespace GodotObjectCompiler::ClangASTHandlers
         UNUSED(p_target);
 
         Ref<Class> _class = p_root->as<Class>();
-        CLANG_PARSER_ERROR_COND(_class == nullptr, "Invalid root for base class handler");
+        CLANG_PARS_ERR_COND(_class == nullptr, "Invalid root for base class handler");
 
         Ref<BaseClasses> base_classes = _class->find_child<BaseClasses>();
-        CLANG_PARSER_ERROR_COND(
-            base_classes == nullptr, "Could not find base classes in root class.");
+        CLANG_PARS_ERR_COND(base_classes == nullptr, "Could not find base classes in root class.");
 
         const CXCursor defintion = clang_getCursorDefinition(p_cursor);
-        CLANG_PARSER_ERROR_COND(
-            clang_Cursor_isNull(defintion), "Failed to get base class definition.");
+        CLANG_PARS_ERR_COND(clang_Cursor_isNull(defintion), "Failed to get base class definition.");
 
         const ClangString name = clang_getCursorSpelling(defintion);
         base_classes->B<Type>()[{B<Identifier>(name)}];

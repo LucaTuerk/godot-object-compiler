@@ -51,13 +51,8 @@
 namespace GodotObjectCompiler
 {
 
-    struct File {
-        String path;
-        Opt<String> include_path;
-    };
-
-    void
-    generate_from_file(const File& p_file, const ApplicationContext& p_context, IParser* p_parser)
+    void GenerateTypeDB::generate_from_file(
+        const File& p_file, const ApplicationContext& p_context, IParser* p_parser)
     {
         auto& [path, include_path] = p_file;
 
@@ -72,11 +67,12 @@ namespace GodotObjectCompiler
                 p_context.files_input->end();
 
         if (!is_input_file && !LibraryContext::instance()->file_modified(path)) {
-            PRINT_VERBOSE("TypeDB:\tSkipping \"%s\". Not modified.", path.c_str());
+            PRINT_VERBOSE("Skipping \"%s\". Not modified.", path.c_str());
             return;
         }
 
-        PRINT_VERBOSE("TypeDB:\tProcessing \"%s\"", path.c_str());
+        PRINT_VERBOSE("Scanning \"%s\"", path.c_str());
+        file_count++;
 
         const Ref<Namespace> global_namespace = node_new<Namespace>();
 
@@ -104,15 +100,15 @@ namespace GodotObjectCompiler
 
                     if (Ref<NamedContext> type = attr->resolve_target()->as<NamedContext>();
                         type && is_valid_type_target(type)) {
-                        PRINT_VERBOSE(
-                            "TypeDB:\tSaving attribute \"%s\"", node->qualified_name().c_str());
+                        PRINT_VERBOSE("Discovered attribute %s", node->get_type().c_str());
                         LibraryContext::instance()->get_type_db()->save_type_attribute(
                             type, attr, path);
                     }
                     continue;
                 }
 
-                PRINT_VERBOSE("TypeDB:\tSaving type \"%s\"", node->qualified_name().c_str());
+                PRINT_VERBOSE("Discovered type %s", node->qualified_name().c_str());
+                type_count++;
 
                 if (include_path.has_value()) {
                     node->header = header_path(include_path.value(), path);
@@ -126,10 +122,15 @@ namespace GodotObjectCompiler
     {
         PROG_ERR_COND(
             !p_context.path_extension_api.has_value(),
-            "No extension api path specified. Cannot generate the TypeDB.");
+            "No extension api path specified. Please provide it using --extension_api= or the "
+            "shorthand -E=");
         PROG_ERR_COND(
             !p_context.paths_godot_cpp_include.has_value(),
-            "No godot-cpp path specified. Cannot generate the TypeDB");
+            "No godot-cpp path specified. Please provide them using --godot_cpp= or the shorthand "
+            "-GPP=");
+
+        file_count = 0;
+        type_count = 0;
 
         const Ref<IParser> parser =
             LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
@@ -151,6 +152,14 @@ namespace GodotObjectCompiler
                         {path_absolute(file), include_path}, p_context, parser.get());
                 }
             }
+        }
+
+        if (file_count > 0) {
+            PRINT_INFO(
+                "Generate TypeDB: Scanned %d file(s) discovering %d type(s).", file_count,
+                type_count);
+        } else {
+            PRINT_VERBOSE("Generate TypeDB: No files scanned.");
         }
 
         return ProgramError::OK;

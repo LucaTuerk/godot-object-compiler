@@ -81,17 +81,15 @@ namespace GodotObjectCompiler
     Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context)
     {
         PROG_ERR_COND(
-            !p_context.paths_root.has_value(),
-            "No project root path specified. Can not generate bindings.");
+            !p_context.paths_root.has_value(), "No project root path specified. Please provide it "
+                                               "using --root_path= or the shorthand -R=");
         PROG_ERR_COND(
             !p_context.files_input.has_value(),
-            "No input files specified. Can not generate bindings.");
-        PROG_ERR_COND(
-            !p_context.paths_godot_cpp_include.has_value(),
-            "No godot-cpp include paths specified. Can not generate bindings.");
+            "No input files specified. Please provide them using --sources= or the shorthand -S=");
         PROG_ERR_COND(
             !p_context.path_extension_api.has_value(),
-            "No extension api file specified. Can not generate bindings.");
+            "No godot-cpp include paths specified. Please provide it using --extension_api or the "
+            "shorthand -R=");
         PROG_ERR_COND(
             !(AssumedGodotTypes::validate_assumptions() &&
               AssumedParameterValues::validate_assumptions()),
@@ -354,14 +352,17 @@ namespace GodotObjectCompiler
                 Ref<GeneratorError> class_gen_error =
                     class_generator.generate(target_class, class_attribute, result);
 
-                PROG_ERR_COND(class_gen_error != GeneratorError::OK, "Failed to generate class.");
+                PROG_ERR_COND(
+                    class_gen_error != GeneratorError::OK, "Failed to generate class %s.",
+                    target_class->name().c_str());
 
                 Ref<GeneratorError> init_gen_error = class_generator.generate_initialization(
                     target_class, class_attribute, result.initialize, result.uninitialize);
 
                 PROG_ERR_COND(
                     init_gen_error != GeneratorError::OK,
-                    "Failed to generate class initialization code.")
+                    "Failed to generate class registration for class %s",
+                    target_class->name().c_str());
 
                 if (result.initialize->get_child_count() > 0 ||
                     result.uninitialize->get_child_count() > 0) {
@@ -397,7 +398,10 @@ namespace GodotObjectCompiler
                                 Ref<GeneratorError> attr_error =
                                     generator->generate(target_class, attribute, result);
 
-                                PROG_ERR_COND(attr_error, "Failed to generate attribute code.");
+                                PROG_ERR_COND(
+                                    attr_error,
+                                    "Failed to generate attribute %s in target class %s",
+                                    attribute->get_type().c_str(), target_class->name().c_str());
                             }
                         }
                     }

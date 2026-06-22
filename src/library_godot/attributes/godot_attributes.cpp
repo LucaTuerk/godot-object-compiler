@@ -56,6 +56,7 @@ namespace GodotObjectCompiler
     {
         const Ref<Literal> literal =
             p_attribute->find_chain<Literal, Arguments, StringLiteralArgument>();
+
         if (!literal) {
             ERR("Failed to find literal");
             return "";

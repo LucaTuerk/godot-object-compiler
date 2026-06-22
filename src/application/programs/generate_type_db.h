@@ -49,6 +49,18 @@ namespace GodotObjectCompiler
 
       public:
         Ref<ProgramError> run(ApplicationContext& p_context) override;
+
+      private:
+        struct File {
+            String path;
+            Opt<String> include_path;
+        };
+
+        void generate_from_file(
+            const File& p_file, const ApplicationContext& p_context, IParser* p_parser);
+
+        Size file_count = 0;
+        Size type_count = 0;
     };
 
 } // namespace GodotObjectCompiler

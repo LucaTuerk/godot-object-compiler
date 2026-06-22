@@ -96,12 +96,12 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
 } // namespace GodotObjectCompiler::ClangASTHandlers
 
-#define CLANG_PARSER_ERROR(...)                                                                    \
+#define CLANG_PARS_ERR(...)                                                                        \
     return node_new<ParserError>(ErrorLevel::ERROR, context, p_cursor, format(__VA_ARGS__))
 
-#define CLANG_PARSER_ERROR_COND(condition, ...)                                                    \
+#define CLANG_PARS_ERR_COND(condition, ...)                                                        \
     do {                                                                                           \
         if ((condition)) {                                                                         \
-            CLANG_PARSER_ERROR(__VA_ARGS__);                                                       \
+            CLANG_PARS_ERR(__VA_ARGS__);                                                           \
         }                                                                                          \
     } while (false)

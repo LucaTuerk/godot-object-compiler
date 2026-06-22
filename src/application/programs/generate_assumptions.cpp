@@ -79,7 +79,7 @@ namespace GodotObjectCompiler
 
         GenerateTypeDB generate_type_db;
         PROG_ERR_COND(
-            generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the type db.");
+            generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the TypeDB.");
 
         Permissions::instance()->add_write_path("src/library_godot/generated_assumptions");
         String header_path = "src/library_godot/generated_assumptions/parameter_types.h";

@@ -155,9 +155,8 @@ namespace GodotObjectCompiler
         PROG_ERR_COND(
             !(AssumedGodotTypes::validate_assumptions() &&
               AssumedParameterValues::validate_assumptions()),
-            "Failed to validate some assumptions on available Godot types and macros, probably "
-            "because the TypeDB generator has not found the relevant files.\nEnsure godot-cpp "
-            "include path are known to goc via the -I= flag or in the .goc_project file.");
+            "Failed to validate some assumptions on available Godot types and macros. Supplied "
+            "extension api files or godot-cpp include paths might be invalid.");
 
         Permissions::instance()->add_write_path("resources");
         Permissions::instance()->add_write_path("docs");

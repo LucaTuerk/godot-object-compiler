@@ -71,10 +71,6 @@ namespace GodotObjectCompiler
     Ref<ProgramError> ClearCache::run(ApplicationContext& p_context)
     {
         for (const String& entry : directory_entries(p_context.paths_cache)) {
-            if (string_contains(entry, ".readonly")) {
-                continue;
-            }
-
             PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
         }
 

@@ -48,8 +48,8 @@ namespace GodotObjectCompiler
     {
         const Ref<Attribute> attribute = weak_attribute.lock();
 
-        PARSER_ERROR_COND(
-            !attribute, "Invalid attribute parser for . Associated attribute has exited scope.");
+        PARS_ERR_COND(
+            !attribute, "Invalid attribute parser. Associated attribute has exited scope.");
 
         const Vector<String> arguments = split_arguments(p_content);
 
@@ -63,14 +63,14 @@ namespace GodotObjectCompiler
         const Vector<Ref<IAttributeParameterType>> types =
             LibraryContext::instance()->get_attribute_db()->get_parameters_for_macro(
                 property_macro);
-        PARSER_ERROR_COND(
+        PARS_ERR_COND(
             arguments.size() > types.size(),
-            "Invalid argument count, expected at most %d but found %d", types.size(),
+            "Invalid attribute argument count, expected at most %d but found %d", types.size(),
             arguments.size());
 
         for (const String& argument : arguments) {
             for (const String& single : split_flags(argument)) {
-                PARSER_ERROR_COND(
+                PARS_ERR_COND(
                     single.empty(), "Invalid empty sub argument found in argument \"%s\"",
                     argument.c_str());
                 Ref<ParserError> error = parse_attribute_argument(single, p_target);
@@ -87,9 +87,9 @@ namespace GodotObjectCompiler
         const String& p_content, const Ref<Context>& p_target) const
     {
         const Ref<Attribute> attribute = weak_attribute.lock();
-        PARSER_ERROR_COND(
-            !attribute, "Invalid attribute parser for " + p_content +
-                            ". Associated attribute has exited scope.");
+        PARS_ERR_COND(
+            !attribute, "Invalid attribute parser for %s. Associated attribute has exited scope.",
+            p_content.c_str());
 
         const String property_macro =
             LibraryContext::instance()->get_attribute_db()->get_macro_for_attribute(
@@ -97,7 +97,7 @@ namespace GodotObjectCompiler
         Vector<Ref<IAttributeParameterType>> types =
             LibraryContext::instance()->get_attribute_db()->get_parameters_for_macro(
                 property_macro);
-        PARSER_ERROR_COND(
+        PARS_ERR_COND(
             types.empty(), "No valid parameter types found for attribute %s",
             attribute->get_type().c_str());
 
@@ -109,7 +109,7 @@ namespace GodotObjectCompiler
                 str_literal) {
                 if (string_enclosed_by(p_content, "\"")) {
                     const Ref<Argument> argument = str_literal->create_argument();
-                    PARSER_ERROR_COND(
+                    PARS_ERR_COND(
                         !argument, "Failed to create argument node for type \"%s\"",
                         type->get_return_type().c_str());
                     p_target->add_child(argument);
@@ -129,7 +129,7 @@ namespace GodotObjectCompiler
             no_match = false;
 
             Ref<Argument> argument_node = type->create_argument();
-            PARSER_ERROR_COND(
+            PARS_ERR_COND(
                 !argument_node, "Failed to create argument node for type \"%s\"",
                 type->get_return_type().c_str());
 
@@ -144,7 +144,7 @@ namespace GodotObjectCompiler
             Vector<String> arguments = split_arguments(inner);
             auto parameters = type->get_arguments();
 
-            PARSER_ERROR_COND(
+            PARS_ERR_COND(
                 arguments.size() > parameters.size(),
                 "Invalid inner argument count for \"%s\", expected at most %d but found %d",
                 p_content.c_str(), parameters.size(), arguments.size());
@@ -158,7 +158,7 @@ namespace GodotObjectCompiler
                 }
 
                 Size diff = parameters.size() - arguments.size();
-                PARSER_ERROR_COND(
+                PARS_ERR_COND(
                     diff > optional_count,
                     "Invalid inner argument count %d for \"%s\", expected %d parameters with %d "
                     "being optional.",
@@ -170,14 +170,14 @@ namespace GodotObjectCompiler
                         parse_inner_arguments(arguments[i], inner_arguments, parameters[i]);
                     error != ParserError::OK) {
                     error->set_handled();
-                    PARSER_ERROR(
+                    PARS_ERR(
                         "Failed to parse argument \"%s\". %s", p_content.c_str(),
                         attribute->get_type().c_str(), error->message.c_str());
                 }
             }
         }
 
-        PARSER_ERROR_COND(
+        PARS_ERR_COND(
             no_match,
             "Failed to find matching argument type with value name \"%s\" for attribute %s",
             p_content.c_str(), attribute->get_type().c_str());

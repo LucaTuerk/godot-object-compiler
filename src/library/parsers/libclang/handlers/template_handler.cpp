@@ -55,7 +55,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
             if (parameters == nullptr) {
                 return Step::Over();
             }
-            CLANG_PARSER_ERROR_COND(
+            CLANG_PARS_ERR_COND(
                 parameters == nullptr, "Could not find TemplateParameters child in current root");
 
             parameters->parameter_count += 1;
@@ -66,7 +66,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
             return Step::Over();
         }
         default:
-            CLANG_PARSER_ERROR("Invalid cursor kind.");
+            CLANG_PARS_ERR("Invalid cursor kind.");
         }
     }
 } // namespace GodotObjectCompiler::ClangASTHandlers

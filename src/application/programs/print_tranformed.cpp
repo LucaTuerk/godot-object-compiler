@@ -55,7 +55,7 @@ namespace GodotObjectCompiler
     {
         PROG_ERR_COND(
             p_context.program_arguments.size() != 1,
-            "Invalid argument count for program %s. Expected 1 path argument.",
+            "Invalid argument count for program %s. Expected the path to the target file.",
             get_type_static().c_str());
 
         auto path = path_absolute(p_context.program_arguments[0]);
@@ -66,14 +66,13 @@ namespace GodotObjectCompiler
 
         GenerateTypeDB generate_type_db;
         PROG_ERR_COND(
-            generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the type db.");
+            generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the TypeDB.");
 
         PROG_ERR_COND(
             !(AssumedGodotTypes::validate_assumptions() &&
               AssumedParameterValues::validate_assumptions()),
-            "Failed to validate some assumptions on available Godot types and macros, probably "
-            "because the TypeDB generator has not found the relevant files.\nEnsure godot-cpp "
-            "include path are known to goc via the -I= flag or in the .goc_project file.");
+            "Failed to validate some assumptions on available Godot types and macros. Supplied "
+            "extension api files or godot-cpp include paths might be invalid.");
 
         Ref<IParser> parser =
             LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);

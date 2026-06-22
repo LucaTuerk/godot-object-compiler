@@ -120,14 +120,14 @@ namespace GodotObjectCompiler
 
     Ref<ParserError> ExtensionAPIParser::parse_file(const String& p_path, Ref<Context> r_target)
     {
-        PARSER_ERROR_COND(!r_target, "ExtensionAPIParser: Invalid null target context.");
+        PARS_ERR_COND(!r_target, "ExtensionAPIParser: Invalid null target context.");
 
         std::ifstream file(p_path);
         Json json;
         try {
             json = Json::parse(file);
         } catch (std::exception& e) {
-            PARSER_ERROR(
+            PARS_ERR(
                 "ExtensionAPIParser: Exception occurred parsing file \"%s\": %s", p_path.c_str(),
                 e.what());
         }
@@ -171,7 +171,7 @@ namespace GodotObjectCompiler
         for (const Ref<Class>& core_class : core_context->find_children<Class>(true)) {
             auto name = core_class->name();
             auto include_itr = include_paths.find(class_name_to_canonical_name(name));
-            PARSER_ERROR_COND(
+            PARS_ERR_COND(
                 include_itr == include_paths.end(), "Could not find include path for class \"%s\"",
                 name.c_str());
             core_class->header = include_itr->second;

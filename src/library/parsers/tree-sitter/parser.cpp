@@ -48,7 +48,7 @@ namespace GodotObjectCompiler
 
     Ref<ParserError> TreeSitterParser::parse_file(const String& p_path, Ref<Context> r_target)
     {
-        PARSER_ERROR_COND(!file_exists(p_path), "Input file \"%s\" not found.", p_path.c_str());
+        PARS_ERR_COND(!file_exists(p_path), "Input file \"%s\" not found.", p_path.c_str());
         input_path = path_absolute(p_path);
         return parse(read_file(input_path), std::move(r_target));
     }
@@ -56,7 +56,7 @@ namespace GodotObjectCompiler
     Ref<ParserError> TreeSitterParser::parse(const String& p_input, Ref<Context> r_target)
     {
         auto global_namespace = r_target->as<Namespace>();
-        PARSER_ERROR_COND(
+        PARS_ERR_COND(
             !global_namespace || !global_namespace->qualified_name().empty(),
             "TreeSitterParser: Invalid target node, expected to be the global namespace.");
 

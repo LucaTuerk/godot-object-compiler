@@ -264,7 +264,7 @@ namespace GodotObjectCompiler
         node_new<error_type>(error_level, __VA_ARGS__);                                            \
     }
 
-#define GEN_ERROR_PASS_ON(target)                                                                  \
+#define GEN_ERR_PASS_ON(target)                                                                    \
     {                                                                                              \
         Ref<GeneratorError> __err = target;                                                        \
         if (__err != GeneratorError::OK) {                                                         \
@@ -272,11 +272,11 @@ namespace GodotObjectCompiler
         }                                                                                          \
     }
 
-#define GEN_ERROR(target, ...)                                                                     \
+#define GEN_ERR(target, ...)                                                                       \
     ERROR_NODE_LEVEL(                                                                              \
         GeneratorError, ErrorLevel::ERROR, get_type_static(), format(__VA_ARGS__), target)
 
-#define GEN_ERROR_COND(condition, target, ...)                                                     \
+#define GEN_ERR_COND(condition, target, ...)                                                       \
     if ((condition)) {                                                                             \
         ERROR_NODE_LEVEL(                                                                          \
             GeneratorError, ErrorLevel::ERROR, get_type_static(), format(__VA_ARGS__), target)     \

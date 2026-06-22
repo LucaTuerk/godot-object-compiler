@@ -61,18 +61,16 @@ namespace GodotObjectCompiler
         Ref<Context> p_generated_global = r_result.generated_global;
 
         const Ref<Node> target_node = p_attribute->resolve_target();
-        GEN_ERROR_COND(!target_node, p_target_class, "Could not find target for Enum marco.");
+        GEN_ERR_COND(!target_node, p_target_class, "Could not resolve target for enum marco.");
 
         const Ref<Enum> target_enum = target_node->as<Enum>();
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             !target_enum, p_target_class,
             "Resolved target for enum macro is not an enum, but " + target_node->get_type());
 
         const Ref<Identifier> enum_options_identifier =
             p_attribute->find_chain<Identifier, Arguments, EnumGeneratorOptionsArgument>();
-        GEN_ERROR_COND(
-            !enum_options_identifier, p_attribute,
-            "Invalid enum options argument. No identifier found");
+        GEN_ERR_COND(!enum_options_identifier, p_attribute, "Invalid enum options argument.");
 
         const Ref<Define> cast_define =
             enum_options_identifier->name == EnumGeneratorOptionsArgument::EnumDefault
@@ -88,7 +86,7 @@ namespace GodotObjectCompiler
                 ? AssumedGodotTypes::BIND_BITFIELD_FLAG().type
                 : nullptr;
 
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             cast_define == nullptr || bind_define == nullptr, p_attribute,
             "Unknown enum options name");
 
