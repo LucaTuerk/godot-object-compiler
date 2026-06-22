@@ -169,10 +169,10 @@ namespace GodotObjectCompiler
     {
         static CXIndex index = clang_createIndex(0, 0);
 
-        PARSER_ERROR_COND(
+        PARS_ERR_COND(
             !r_target->is<Namespace>(),
             "Invalid target node. Expected to be the global namespace.");
-        PARSER_ERROR_COND(
+        PARS_ERR_COND(
             r_target->get_child_count() > 0, "Invalid target node. Expected to be the empty.");
 
         const String local_input = ParserUtilities::strip_excluded_sections(p_input);
@@ -242,7 +242,7 @@ namespace GodotObjectCompiler
             CXTranslationUnit_SkipFunctionBodies |
                 CXTranslationUnit_IgnoreNonErrorsFromIncludedFiles);
 
-        PARSER_ERROR_COND(unit == nullptr, "Failed to parse source file \"%s\"", file_path.c_str());
+        PARS_ERR_COND(unit == nullptr, "Failed to parse source file \"%s\"", file_path.c_str());
 
         ClangParserContext context{
             false,
@@ -290,8 +290,7 @@ namespace GodotObjectCompiler
                     p_input, context.line_temp_to_original(line - 3),
                     context.line_temp_to_original(line + 3), context.line_temp_to_original(line)));
 
-                PARSER_ERROR(
-                    "ClangParser: %s%s", file_path.c_str(), error_writer.get_string().c_str());
+                PARS_ERR("ClangParser: %s%s", file_path.c_str(), error_writer.get_string().c_str());
             }
         }
 

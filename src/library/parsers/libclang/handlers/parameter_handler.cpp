@@ -55,7 +55,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         if (type_result.has_error()) {
             type_result.get_error()->set_handled();
-            CLANG_PARSER_ERROR(type_result.get_error()->message);
+            CLANG_PARS_ERR(type_result.get_error()->message);
         }
 
         p_target->B<Parameter>()[{type_result.get_result(), B<Identifier>(name)}];

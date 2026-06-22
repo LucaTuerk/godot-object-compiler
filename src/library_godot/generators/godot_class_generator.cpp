@@ -53,9 +53,10 @@ namespace GodotObjectCompiler
         const Ref<Identifier> init_level_identifier =
             p_class_attribute
                 ->find_chain<Identifier, Arguments, GodotModuleInitializationLevelArgument>();
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             !init_level_identifier, p_target_class,
-            "Could not determine GodotModuleInitializationLevelArgument identifier.");
+            "Could not determine the initialization level for class %s",
+            p_target_class->name().c_str());
 
         const String init_level_name = init_level_identifier->name;
         const Ref<GodotModuleInitializationLevelParameterType> init_level_type =
@@ -64,17 +65,16 @@ namespace GodotObjectCompiler
         String godot_init_level;
         if (!init_level_type->get_godot_init_level_for_value_name(
                 init_level_name, godot_init_level)) {
-            GEN_ERROR(
-                p_target_class,
-                "Failed to get ModuleInitializationLevel enum value for value name " +
-                    init_level_name)
+            GEN_ERR(
+                p_target_class, "Could not determine the initialization level for class %s",
+                p_target_class->name().c_str())
         }
 
         const Ref<Identifier> class_type_identifier =
             p_class_attribute->find_chain<Identifier, Arguments, GodotClassTypeArgument>();
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             !class_type_identifier, p_target_class,
-            "Could not determine GodotClassTypeArgument identifier.");
+            "Could not determine the class type for class %s", p_target_class->name().c_str());
 
         const String class_type_name = class_type_identifier->name;
         const Ref<GodotClassTypeParameterType> class_type_type =
@@ -132,28 +132,26 @@ namespace GodotObjectCompiler
 
         using namespace GodotGeneratorUtils;
 
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             p_attribute->resolve_target() != p_target_class, p_target_class,
             "Resolved class is not the provided target class.");
 
         Vector<String> bases = p_target_class->direct_bases_names();
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             bases.empty(), p_target_class,
-            "Target class does not name base classes and thus cannot inherit from a Godot object "
-            "type.");
+            "No base classes. Target class %s must inherit from a godot object class",
+            p_target_class->name().c_str());
 
         if (!class_is_godot_object_type(p_target_class)) {
-            GEN_ERROR(
-                p_target_class, "Target class does not inherit from a godot object class or the "
-                                "class was not found.");
+            GEN_ERR(
+                p_target_class, "Target class %s must inherit from a godot object class",
+                p_target_class->name().c_str());
         }
 
         Ref<Include> last_include = p_target_class->find_ancestor<Include>(BY_SIBLINGS_PREV);
-        GEN_ERROR_COND(
-            !last_include, p_attribute, "No includes found. Requires generated header \"%s\"",
-            r_result.generated_header_include_path.c_str());
-        GEN_ERROR_COND(
-            last_include->include_path != r_result.generated_header_include_path, last_include,
+        GEN_ERR_COND(
+            !last_include || last_include->include_path != r_result.generated_header_include_path,
+            last_include ? last_include->as<Node>() : p_attribute->as<Node>(),
             "Generated header \"%s\" must be the last include.",
             r_result.generated_header_include_path.c_str());
 

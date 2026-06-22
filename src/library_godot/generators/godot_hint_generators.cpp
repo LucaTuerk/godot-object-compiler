@@ -63,7 +63,7 @@ namespace GodotObjectCompiler
 
         const Ref<Body> bind_methods_body =
             get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
-        GEN_ERROR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
+        GEN_ERR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
 
         bind_methods_body->B<Function>()[{
             B<Identifier>(AssumedGodotTypes::ADD_GROUP().type->name()),
@@ -99,7 +99,7 @@ namespace GodotObjectCompiler
 
         const Ref<Body> bind_methods_body =
             get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
-        GEN_ERROR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
+        GEN_ERR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
 
         bind_methods_body->B<Function>()[{
             B<Identifier>(AssumedGodotTypes::ADD_GROUP().type->name()),
@@ -131,7 +131,7 @@ namespace GodotObjectCompiler
 
         const Ref<Body> bind_methods_body =
             get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
-        GEN_ERROR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
+        GEN_ERR_COND(!bind_methods_body, p_attribute, "Failed to get bind_methods body.");
 
         bind_methods_body->B<Function>()[{
             B<Identifier>(AssumedGodotTypes::ADD_SUBGROUP().type->name()),

@@ -177,7 +177,7 @@ namespace GodotObjectCompiler
     {
         const Result<Node> result =
             get_type_data(qualified_name, template_parameter_count, from_namespace);
-        RESULT_ERROR_PASS_ON(Error, result, node);
+        RESULT_ERR_PASS_ON(Error, result, node);
         ERROR_COND(
             !node->is<T>(), "Invalid type. Expected \"%s\" but is \"%s\"",
             T::get_type_static().c_str(), node->get_type().c_str());
@@ -188,7 +188,7 @@ namespace GodotObjectCompiler
     Result<T> TypeDB::get_type_data(const Ref<Type>& type, const Ref<Namespace>& from_namespace)
     {
         const Result<Node> result = get_type_data(type, from_namespace);
-        RESULT_ERROR_PASS_ON(Error, result, node);
+        RESULT_ERR_PASS_ON(Error, result, node);
         ERROR_COND(
             !node->is<T>(), "Invalid type. Expected \"%s\" but is \"%s\"",
             T::get_type_static().c_str(), node->get_type().c_str());
@@ -202,7 +202,7 @@ namespace GodotObjectCompiler
         const Result<Attribute> result = get_type_attribute(
             type->qualified_name(), T::get_type_static(), type->template_argument_count(),
             from_namespace);
-        RESULT_ERROR_PASS_ON(Error, result, node);
+        RESULT_ERR_PASS_ON(Error, result, node);
         ERROR_COND(
             !node->is<T>(), "Invalid type. Expected \"%s\" but is \"%s\"",
             T::get_type_static().c_str(), node->get_type().c_str());

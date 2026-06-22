@@ -171,7 +171,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
                     spelling = template_args[i];
                 } else {
                     auto type_result = get_type_from_spelling(template_args[i]);
-                    RESULT_ERROR_PASS_ON(ParserError, type_result, type);
+                    RESULT_ERR_PASS_ON(ParserError, type_result, type);
                     arguments->add_child(type);
                 }
             }

@@ -81,7 +81,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
             return Step::Into();
         }
         default:
-            CLANG_PARSER_ERROR("Unhandled cursor kind.");
+            CLANG_PARS_ERR("Unhandled cursor kind.");
         }
     }
 } // namespace GodotObjectCompiler::ClangASTHandlers

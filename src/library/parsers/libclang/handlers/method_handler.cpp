@@ -54,7 +54,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
         const auto type_result = get_cursor_type(p_cursor);
         if (type_result.has_error()) {
             type_result.get_error()->set_handled();
-            CLANG_PARSER_ERROR(type_result.get_error()->message);
+            CLANG_PARS_ERR(type_result.get_error()->message);
         }
         auto type = type_result.get_result();
 

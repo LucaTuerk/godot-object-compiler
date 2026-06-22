@@ -55,7 +55,7 @@ namespace GodotObjectCompiler
     {
         PROG_ERR_COND(
             p_context.program_arguments.size() != 1,
-            "Invalid argument count for program %s. Expected 1 path argument.",
+            "Invalid argument count for program %s. Expected path to the target file.",
             get_type_static().c_str());
 
         const auto path = path_absolute(p_context.program_arguments[0]);

@@ -76,18 +76,22 @@ namespace GodotObjectCompiler
 
 #define APP_ERR(...)                                                                               \
     print_err(format(__VA_ARGS__));                                                                \
-    return 1;
+    return 1
 
 #define APP_TOP_LEVEL_ERR(...)                                                                     \
     print_err(format(__VA_ARGS__));                                                                \
-    return exit_gracefully(1);
+    return exit_gracefully(1)
 
 #define APP_ERR_COND(condition, ...)                                                               \
-    if ((condition)) {                                                                             \
-        APP_ERR(__VA_ARGS__)                                                                       \
-    }
+    do {                                                                                           \
+        if ((condition)) {                                                                         \
+            APP_ERR(__VA_ARGS__);                                                                  \
+        }                                                                                          \
+    } while (false)
 
 #define APP_TOP_LEVEL_ERR_COND(condition, ...)                                                     \
-    if ((condition)) {                                                                             \
-        APP_TOP_LEVEL_ERR(__VA_ARGS__)                                                             \
-    }
+    do {                                                                                           \
+        if ((condition)) {                                                                         \
+            APP_TOP_LEVEL_ERR(__VA_ARGS__);                                                        \
+        }                                                                                          \
+    } while (false)

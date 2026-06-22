@@ -120,14 +120,14 @@ namespace GodotObjectCompiler
 
     Ref<ParserError> ExtensionAPIParser::parse_file(const String& p_path, Ref<Context> r_target)
     {
-        PARSER_ERROR_COND(!r_target, "ExtensionAPIParser: Invalid null target context.");
+        PARS_ERR_COND(!r_target, "ExtensionAPIParser: Invalid null target context.");
 
         std::ifstream file(p_path);
         Json json;
         try {
             json = Json::parse(file);
         } catch (std::exception& e) {
-            PARSER_ERROR(
+            PARS_ERR(
                 "ExtensionAPIParser: Exception occurred parsing file \"%s\": %s", p_path.c_str(),
                 e.what());
         }
@@ -138,7 +138,7 @@ namespace GodotObjectCompiler
         if (json.contains("global_enums")) {
             for (auto& element : json["global_enums"]) {
                 auto result = parse_enum(element);
-                RESULT_ERROR_PASS_ON(JsonError, result, global_enum);
+                RESULT_ERR_PASS_ON(JsonError, result, global_enum);
                 body->add_child(global_enum);
             }
         }
@@ -156,7 +156,7 @@ namespace GodotObjectCompiler
         if (json.contains("classes")) {
             for (auto& element : json["classes"]) {
                 auto result = parse_class(element);
-                RESULT_ERROR_PASS_ON(JsonError, result, godot_class);
+                RESULT_ERR_PASS_ON(JsonError, result, godot_class);
                 body->add_child(godot_class);
             }
         }
@@ -171,7 +171,7 @@ namespace GodotObjectCompiler
         for (const Ref<Class>& core_class : core_context->find_children<Class>(true)) {
             auto name = core_class->name();
             auto include_itr = include_paths.find(class_name_to_canonical_name(name));
-            PARSER_ERROR_COND(
+            PARS_ERR_COND(
                 include_itr == include_paths.end(), "Could not find include path for class \"%s\"",
                 name.c_str());
             core_class->header = include_itr->second;
@@ -263,7 +263,7 @@ namespace GodotObjectCompiler
             if (p_input.contains("values")) {
                 for (auto& element : p_input["values"]) {
                     auto value_result = parse_enum_value(element);
-                    RESULT_ERROR_PASS_ON(JsonError, value_result, value);
+                    RESULT_ERR_PASS_ON(JsonError, value_result, value);
 
                     enum_values->add_child(value);
 

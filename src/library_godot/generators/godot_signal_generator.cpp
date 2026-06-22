@@ -51,14 +51,13 @@ namespace GodotObjectCompiler
         using namespace GodotGeneratorUtils;
         const Ref<Body> bind_methods =
             get_bind_methods_body(p_target_class, p_generated_body, p_generated_sources);
-        GEN_ERROR_COND(
-            !bind_methods, p_target_class, "Failed to get or generate bind methods body.");
+        GEN_ERR_COND(!bind_methods, p_target_class, "Failed to get or generate bind methods body.");
 
         Ref<Arguments> arguments;
 
         Result<Function> signal_result =
             add_signal(p_target_class, p_signal_name, p_parameters, r_result);
-        RESULT_ERROR_PASS_ON(GeneratorError, signal_result, signal);
+        RESULT_ERR_PASS_ON(GeneratorError, signal_result, signal);
 
         bind_methods->add_child(signal);
 
@@ -68,7 +67,7 @@ namespace GodotObjectCompiler
         Size i = 1;
         for (const Ref<Parameter>& parameter : p_parameters->find_children<Parameter>()) {
             Ref<Type> type = parameter->find_child<Type>();
-            GEN_ERROR_COND(!type, p_current_node, "Failed to get function argument type.");
+            GEN_ERR_COND(!type, p_current_node, "Failed to get function argument type.");
             type = type->qualified();
             const Ref<Identifier> identifier = parameter->find_child<Identifier>();
             const String name = identifier ? identifier->name : format("p_param_%d", i);
@@ -93,7 +92,7 @@ namespace GodotObjectCompiler
         }];
 
         const Ref<Body> signal_names_body = get_signal_names_body(p_target_class, p_generated_body);
-        GEN_ERROR_COND(!signal_names_body, p_current_node, "Failed to get signal names body.");
+        GEN_ERR_COND(!signal_names_body, p_current_node, "Failed to get signal names body.");
 
         signal_names_body->add_child(Output::Text(format(
             "static const StringName& %s() {static const StringName sn = \"%s\"; return sn; }",
@@ -117,13 +116,13 @@ namespace GodotObjectCompiler
         ClassGeneratorResult& r_result)
     {
         Ref<Function> target_function = p_attribute->TargetFunction();
-        GEN_ERROR_COND(!target_function, p_target_class, "Failed to get signal target function");
+        GEN_ERR_COND(!target_function, p_target_class, "Failed to get signal target function");
 
         auto function_type = target_function->type();
-        GEN_ERROR_COND(!function_type, target_function, "Failed to get function type.");
+        GEN_ERR_COND(!function_type, target_function, "Failed to get function type.");
 
         const bool is_void = function_type->name() == "void";
-        GEN_ERROR_COND(!is_void, target_function, "Signal target function does not return void.");
+        GEN_ERR_COND(!is_void, target_function, "Signal target function does not return void.");
 
         String signal_name = target_function->name();
         Ref<Literal> name_literal =

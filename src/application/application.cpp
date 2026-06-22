@@ -73,13 +73,15 @@ namespace GodotObjectCompiler
         String lock_path = path_concat(context.paths_goc, ".goc_graceful_lock");
 
         if (file_exists(lock_path) && remove_file(lock_path)) {
-            PRINT_VERBOSE("GOC: Graceful exit.");
+            PRINT_VERBOSE("Graceful exit.");
             return p_return_code;
         }
 
-        APP_ERR("GOC: Tried to exit gracefully but lock file no longer exists. This indicates a "
-                "corrupted GOC directory.\nYou may want to clear your cache to ensure smooth "
-                "operations.")
+        APP_ERR(
+            "Tried to exit gracefully but the lock file no longer exists. This indicates a "
+            "corrupted cache directory.\nPlease delete the \"%s\" directory to ensure proper "
+            "operations.",
+            context.paths_goc.c_str());
     }
 
     bool Application::init_local_resources() const
@@ -101,7 +103,8 @@ namespace GodotObjectCompiler
         APP_TOP_LEVEL_ERR_COND(
             setup_context(p_arguments) != 0, "Failed to setup application context.");
         APP_TOP_LEVEL_ERR_COND(
-            run_program(context.program) != 0, "Failed to run the provided program.");
+            run_program(context.program) != 0, "Failed to run the %s program.",
+            context.program->program_name().c_str());
         return cleanup();
     }
 
@@ -168,20 +171,22 @@ namespace GodotObjectCompiler
                 PRINT_INFO("GOC: Last exit was ungraceful. Clearing context and files.");
                 APP_ERR_COND(
                     clear.run(context) != ProgramError::OK,
-                    "Failed to clear the goc directories after an ungraceful exit was "
-                    "detected.\nPlease delete your goc folders manually to ensure smooth "
-                    "operations.")
+                    "Failed to clear the cache directory after an ungraceful exit was "
+                    "detected.\nPlease delete the \"%s\" directory to ensure proper operations.",
+                    context.paths_goc.c_str());
             }
 
             APP_ERR_COND(
-                !context.paths_root.has_value(),
-                "No project root path specified but is required for selected program.");
+                !context.paths_root.has_value(), "No project root path specified. Please provide "
+                                                 "using --root_path= or shorthand -R=");
             APP_ERR_COND(
                 !context.path_extension_api.has_value(),
-                "No extension api file specified but is required for selected program.");
+                "No extension api file specified. Please provide using --extension_api= or "
+                "shorthand -E=");
             APP_ERR_COND(
                 !context.paths_godot_cpp_include.has_value(),
-                "No godot-cpp include paths specified but are required for selected program.");
+                "No godot-cpp include paths specified. Please provide using --godot_cpp or "
+                "shorthand -GPP=");
 
             if (!context.paths_include.has_value()) {
                 context.paths_include = Vector<String>();
@@ -230,9 +235,10 @@ namespace GodotObjectCompiler
                     last_build_num != build_num) {
                     APP_ERR_COND(
                         clear.run(context) != ProgramError::OK,
-                        "Failed to clear the goc directories after a change in goc version was "
-                        "detected.\nPlease delete your goc folders manually to ensure smooth "
-                        "operations.")
+                        "Failed to clear the cache after a change in goc version was "
+                        "detected.\nPlease delete the \"%s\" directory to ensure proper "
+                        "operations.",
+                        context.paths_goc.c_str());
                 }
             }
 
@@ -244,7 +250,7 @@ namespace GodotObjectCompiler
 
     int Application::run_program(const Ref<IProgram>& p_program)
     {
-        APP_ERR_COND(p_program == nullptr, "Null program provided");
+        APP_ERR_COND(p_program == nullptr, "No program was provided.");
         context.program = p_program;
         if (!context.program->validate_arguments(context)) {
             fmt_print_err(

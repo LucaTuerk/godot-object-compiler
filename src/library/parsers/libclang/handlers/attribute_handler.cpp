@@ -90,7 +90,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
         }
 
         const Vector<String> parts = string_split(name, "__");
-        CLANG_PARSER_ERROR_COND(
+        CLANG_PARS_ERR_COND(
             parts.size() != 4, "Unexpected attribute \"%s\" can not be parsed.",
             String(name).c_str());
         const String& macro = parts[2];
@@ -106,7 +106,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
         if (attribute_result.has_error()) {
             attribute_result.get_error()->set_handled();
-            CLANG_PARSER_ERROR(attribute_result.get_error()->message.c_str());
+            CLANG_PARS_ERR(attribute_result.get_error()->message.c_str());
         }
 
         p_target->add_child(attribute_result.get_result());

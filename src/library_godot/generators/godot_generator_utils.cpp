@@ -144,7 +144,7 @@ namespace GodotObjectCompiler
 
             Result<Node> property_info_result = build_property_info_defaults(
                 type, name, r_result, p_target_class, DEFAULTS_SIGNAL_ARGUMENT);
-            RESULT_ERROR_PASS_ON(Error, property_info_result, property_info);
+            RESULT_ERR_PASS_ON(Error, property_info_result, property_info);
 
             arguments->B<Argument>()[property_info];
             i += 1;
@@ -457,16 +457,16 @@ namespace GodotObjectCompiler
     {
         r_public_members =
             p_generated_body->find_child(0, NodePredicates::tag<Context>("public_members"));
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             r_public_members == nullptr, p_generated_body, "Failed to get public members group");
         r_protected_members =
             p_generated_body->find_child(0, NodePredicates::tag<Context>("protected_members"));
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             r_protected_members == nullptr, p_generated_body,
             "Failed to get protected members group");
         r_private_members =
             p_generated_body->find_child(0, NodePredicates::tag<Context>("private_members"));
-        GEN_ERROR_COND(
+        GEN_ERR_COND(
             r_private_members == nullptr, p_generated_body, "Failed to get private members group");
 
         return GeneratorError::OK;

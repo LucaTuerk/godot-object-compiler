@@ -51,7 +51,7 @@ namespace GodotObjectCompiler::ParserUtilities
 
         const Result<Attribute> attribute_result =
             LibraryContext::instance()->get_attribute_db()->create_for_macro(p_macro);
-        RESULT_ERROR_PASS_ON(Error, attribute_result, attribute);
+        RESULT_ERR_PASS_ON(Error, attribute_result, attribute);
 
         attribute->start = p_sourceLocation.start;
         attribute->end = p_sourceLocation.end;

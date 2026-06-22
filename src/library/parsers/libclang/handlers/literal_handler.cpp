@@ -83,7 +83,7 @@ namespace GodotObjectCompiler::ClangASTHandlers
         Result<Literal, ParserError> literal_result = cursor_to_literal(p_cursor);
         if (literal_result.has_error()) {
             literal_result.get_error()->set_handled();
-            CLANG_PARSER_ERROR(literal_result.get_error()->message);
+            CLANG_PARS_ERR(literal_result.get_error()->message);
         }
 
         p_target->add_child(literal_result.get_result());

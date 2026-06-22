@@ -121,7 +121,7 @@ namespace GodotObjectCompiler
     }
 } // namespace GodotObjectCompiler
 
-#define RESULT_ERROR_PASS_ON(type, result, unwrapped_name)                                         \
+#define RESULT_ERR_PASS_ON(type, result, unwrapped_name)                                           \
     if (result.has_error()) {                                                                      \
         return ERROR_CAST(type, result.get_error());                                               \
     }                                                                                              \
