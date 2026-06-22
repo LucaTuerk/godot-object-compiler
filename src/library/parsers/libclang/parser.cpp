@@ -277,7 +277,8 @@ namespace GodotObjectCompiler
                     continue;
                 }
 
-                if (string_contains(spelling, ".generated.h")) {
+                if (string_contains(spelling, ".generated.h") ||
+                    string_contains(spelling, "godot_object_compiler")) {
                     // Skip error, file is not yet generated
                     continue;
                 }

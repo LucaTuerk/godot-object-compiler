@@ -70,6 +70,16 @@ int main(int argc, char* argv[])
         if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
             continue;
         }
+
+        {
+            Application application;
+            const Vector<String> args =
+                TestRegistry::instance()->get_test_application_arguments({"clear"});
+            PANIC_COND(
+                application.run(args),
+                "Failed to clear the cache before running tests with parser %s",
+                parser->get_type().c_str());
+        }
         Size timer_sum = 0;
         LibraryContext::instance()->set_default_parser(parser->get_type(), IParser::SOURCE_PARSER);
 
@@ -132,12 +142,7 @@ int main(int argc, char* argv[])
                     const Vector<String> args =
                         TestRegistry::instance()->get_test_application_arguments(
                             {"generate", "type_db"});
-                    if (application.run(args) != 0) {
-                        print_err("Failed to setup type db during test run.");
-                        PRINT_INFO("%s\tFailed!", test_name.c_str());
-                        failed_count++;
-                        continue;
-                    }
+                    PANIC_COND(application.run(args), "Failed to setup type db during test run.");
                 }
 
                 Ref<IParser> source_parser =
