@@ -13,6 +13,7 @@ MaxEmptyLinesToKeep: 1
 AllowShortFunctionsOnASingleLine: None
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
+InsertNewlineAtEOF: true
 TypenameMacros:
     - GOC_TEST
     - GOC_INTEGRATION_TEST
