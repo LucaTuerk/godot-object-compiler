@@ -1,1 +1,0 @@
-Clear the imported type db.

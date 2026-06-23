@@ -48,18 +48,22 @@ namespace GodotObjectCompiler
 
         Ref<ProgramError> run(ApplicationContext& p_context) override;
 
+        static bool get_help(IStringWriter* p_writer, const Vector<String>& p_args);
+
       private:
         using Column = Pair<Size, String>;
 
-        static void print_title(const String& p_title, Size width);
+        static void write_title(IStringWriter* p_writer, const String& p_title, Size width);
 
-        static void print_help_columns(const Column& column1, const Column& column2);
+        static void
+        write_help_columns(IStringWriter* p_writer, const Column& column1, const Column& column2);
 
-        static void print_header();
+        static void write_header(IStringWriter* p_writer);
 
-        static void print_parser_info();
+        static void write_parser_info(IStringWriter* p_writer);
 
-        static void print_program_info(const ProgramPath& p_path, const Ref<IProgram>& program);
+        static void write_program_info(
+            IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& program);
 
         static String get_help_text(const ProgramPath& p_path);
 
