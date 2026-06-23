@@ -5,7 +5,7 @@ Using the CLI directly is not recommended, instead you should opt for integratio
 build system. See :doc:`/integrations/index` for information on what is
 supported out of the box.
 
-If you need to adjust you build system integration or want to develop your own, the following
+If you need to adjust your build system integration or want to develop your own, the following
 pages describe all of the available programs in godot-object-compiler.
 
 .. toctree::

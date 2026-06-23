@@ -120,7 +120,6 @@ namespace GodotObjectCompiler
             }
             sub_writer.write(sub.back());
             written.insert(sub);
-
             p_writer->write("\n");
             write_help_columns(p_writer, {30, sub_writer.get_string()}, {70, ""});
         }
@@ -146,7 +145,8 @@ namespace GodotObjectCompiler
     {
         StreamWriter writer;
         PROG_ERR_COND(
-            !get_help(&writer, p_context.application_arguments), "Failed to get help content.");
+            !get_help(&writer, p_context.program_arguments), "Failed to get help content.");
+        print(writer.get_string());
         return ProgramError::OK;
     }
 

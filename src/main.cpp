@@ -36,11 +36,14 @@
 #include "main.h"
 
 #include "application/application.h"
-#include "application/programs/generate_resources.h"
+#include "application/programs/all.h"
 #include "library/core/config.h"
 #include "library/core/core.h"
 #include "library/library_context.h"
 #include "library_godot/parsers/extension_api_parser.h"
+#if DEV_BUILD
+#include "application/programs_dev/all.h"
+#endif
 
 #if GOC_LIBCLANG_PARSER_ENABLED
 #include "library/parsers/libclang/parser.h"

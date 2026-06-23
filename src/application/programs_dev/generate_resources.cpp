@@ -37,10 +37,9 @@
 #include "generate_resources.h"
 
 #include "application/application.h"
-#include "generate.h"
-#include "generate_bindings.h"
-#include "generate_type_db.h"
-#include "help.h"
+#include "application/programs/generate_bindings.h"
+#include "application/programs/generate_type_db.h"
+#include "application/programs/help.h"
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"

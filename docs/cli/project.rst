@@ -1,7 +1,7 @@
 .. HINT::
 
-    This program requires a project to work with, please provide the project information
-    by supplying the following arguments:
+    This program requires a project to work with.
+    Please provide the project information by supplying the following arguments:
 
     .. include:: args.rst
 

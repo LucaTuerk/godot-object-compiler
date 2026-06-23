@@ -36,7 +36,8 @@
 #include "generate_assumptions.h"
 
 #include "application/application_context.h"
-#include "generate_type_db.h"
+#include "application/programs/generate_type_db.h"
+#include "application/programs/program.h"
 #include "library/core/core.h"
 #include "library/core/permissions.h"
 #include "library/core/string_utilities.h"
@@ -57,7 +58,6 @@
 #include "library_godot/attributes/godot_rpc.h"
 #include "library_godot/attributes/godot_variant_type.h"
 #include "library_godot/attributes/godot_virtual.h"
-#include "program.h"
 
 namespace GodotObjectCompiler
 {

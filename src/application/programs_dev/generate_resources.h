@@ -34,7 +34,7 @@
 /**************************************************************************/
 #pragma once
 #ifdef DEV_BUILD
-#include "program.h"
+#include "application/programs/program.h"
 
 namespace GodotObjectCompiler
 {

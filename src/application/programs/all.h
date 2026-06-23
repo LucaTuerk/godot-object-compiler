@@ -1,9 +1,7 @@
 #pragma once
 #include "clear.h"
 #include "generate.h"
-#include "generate_assumptions.h"
 #include "generate_bindings.h"
-#include "generate_resources.h"
 #include "generate_type_db.h"
 #include "help.h"
 #include "init.h"

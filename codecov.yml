@@ -1,10 +1,14 @@
 comment:
   layout: "header, diff, flags, components"
 
+ignore:
+  - "src/application/programs_dev"
+  - "tests"
+
 component_management:
   default_rules:
     statuses:
-      - type: project # in this case every component that doens't have a status defined will have a project type one
+      - type: project
         target: auto
         branches:
           - "!main"
