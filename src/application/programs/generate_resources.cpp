@@ -40,6 +40,7 @@
 #include "generate.h"
 #include "generate_bindings.h"
 #include "generate_type_db.h"
+#include "help.h"
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
@@ -195,6 +196,20 @@ namespace GodotObjectCompiler
 
             FileWriter description_writer(desc_file_path);
             description_writer.write(description);
+        }
+
+        if (file_exists("resources/help/args.txt")) {
+            FileWriter writer("docs/cli/args.rst");
+            writer.write(read_file("resources/help/args.txt"));
+        }
+
+        {
+            StreamWriter help_writer;
+
+            if (Help::get_help(&help_writer, {})) {
+                FileWriter writer("docs/cli/help_content.rst");
+                writer.write(help_writer.get_string());
+            }
         }
 
         // Generate macro help docs

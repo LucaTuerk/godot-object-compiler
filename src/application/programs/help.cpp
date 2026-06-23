@@ -53,23 +53,31 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    void Help::print_header()
+    void Help::write_header(IStringWriter* p_writer)
     {
-        print_title(
+        write_title(
+            p_writer,
             format(
                 "Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MINOR_VERSION,
                 GOC_VERSION_NAME),
             100);
-        print_ln("");
+        p_writer->write("\n");
 
         if (Resources::instance()->has_resource("res://help/header_content.txt")) {
-            print_ln(Resources::instance()->load_text_resource("res://help/header_content.txt"));
+            p_writer->write(
+                Resources::instance()->load_text_resource("res://help/header_content.txt"));
+            p_writer->write("\n");
+        }
+
+        if (Resources::instance()->has_resource("res://help/args.txt")) {
+            p_writer->write(Resources::instance()->load_text_resource("res://help/args.txt"));
+            p_writer->write("\n");
         }
     }
 
-    void Help::print_parser_info()
+    void Help::write_parser_info(IStringWriter* p_writer)
     {
-        print_title("SOURCE PARSERS", 100);
+        write_title(p_writer, "SOURCE PARSERS", 100);
         for (const auto& parser : LibraryContext::instance()->get_parsers()) {
             if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
                 continue;
@@ -88,15 +96,17 @@ namespace GodotObjectCompiler
                 }
             }
 
-            print_ln("");
-            print_help_columns(
+            p_writer->write("\n");
+            write_help_columns(
+                p_writer,
                 {30, is_default ? format("%s (Default)", parser->get_type().c_str())
                                 : parser->get_type()},
                 {70, help_text});
         }
     }
 
-    void Help::print_program_info(const ProgramPath& p_path, const Ref<IProgram>& program)
+    void Help::write_program_info(
+        IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& program)
     {
         for (auto itr = p_path.begin(); itr != p_path.end() - 1; ++itr) {
             Vector<String> sub{p_path.begin(), itr + 1};
@@ -111,8 +121,8 @@ namespace GodotObjectCompiler
             sub_writer.write(sub.back());
             written.insert(sub);
 
-            print_ln("");
-            print_help_columns({30, sub_writer.get_string()}, {70, ""});
+            p_writer->write("\n");
+            write_help_columns(p_writer, {30, sub_writer.get_string()}, {70, ""});
         }
 
         StreamWriter identifier_writer;
@@ -125,15 +135,23 @@ namespace GodotObjectCompiler
             identifier_writer.write(" [!p]");
         }
 
-        print_ln("");
-        print_help_columns({30, identifier_writer.get_string()}, {70, get_help_text(p_path)});
+        p_writer->write("\n");
+        write_help_columns(
+            p_writer, {30, identifier_writer.get_string()}, {70, get_help_text(p_path)});
 
         written.insert(p_path);
     }
 
     Ref<ProgramError> Help::run(ApplicationContext& p_context)
     {
-        UNUSED(p_context);
+        StreamWriter writer;
+        PROG_ERR_COND(
+            !get_help(&writer, p_context.application_arguments), "Failed to get help content.");
+        return ProgramError::OK;
+    }
+
+    bool Help::get_help(IStringWriter* p_writer, const Vector<String>& p_args)
+    {
         written = {};
 
         Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
@@ -147,12 +165,12 @@ namespace GodotObjectCompiler
         std::copy(programs.begin(), programs.end(), std::back_inserter(programs_sorted));
         std::sort(programs_sorted.begin(), programs_sorted.end(), cmp);
 
-        if (p_context.program_arguments.empty()) {
-            print_header();
-            print_ln("");
-            print_parser_info();
-            print_ln("");
-            print_title("PROGRAMS", 100);
+        if (p_args.empty()) {
+            write_header(p_writer);
+            p_writer->write("\n");
+            write_parser_info(p_writer);
+            p_writer->write("\n");
+            write_title(p_writer, "PROGRAMS", 100);
         }
 
         for (const auto& [path, program] : programs_sorted) {
@@ -161,8 +179,8 @@ namespace GodotObjectCompiler
             }
 
             bool skip = false;
-            for (Size i = 0; i < path.size() && i < p_context.program_arguments.size(); i++) {
-                if (path[i] != p_context.program_arguments[i]) {
+            for (Size i = 0; i < path.size() && i < p_args.size(); i++) {
+                if (path[i] != p_args[i]) {
                     skip = true;
                 }
             }
@@ -171,33 +189,34 @@ namespace GodotObjectCompiler
                 continue;
             }
 
-            print_program_info(path, program);
+            write_program_info(p_writer, path, program);
         }
 
-        return ProgramError::OK;
+        return true;
     }
 
-    void Help::print_title(const String& p_title, Size width)
+    void Help::write_title(IStringWriter* p_writer, const String& p_title, Size width)
     {
         if (p_title.size() + 4 >= width) {
-            print_ln(p_title);
+            p_writer->write(p_title);
+            p_writer->write("\n");
         }
 
         Size available_width = width - 4 - p_title.size();
         StreamWriter writer;
 
         for (Size i = 0; i < available_width / 2; i++) {
-            writer.write("=");
+            p_writer->write("=");
         }
 
-        writer.write("[ ");
-        writer.write(p_title);
-        writer.write(" ]");
+        p_writer->write("[ ");
+        p_writer->write(p_title);
+        p_writer->write(" ]");
 
         for (Size i = 0; i < available_width / 2 + available_width % 2; i++) {
-            writer.write("=");
+            p_writer->write("=");
         }
-        print_ln(writer.get_string());
+        p_writer->write("\n");
     }
 
     String Help::get_help_text(const ProgramPath& p_path)
@@ -219,7 +238,8 @@ namespace GodotObjectCompiler
         return std::hash<String>()(string_vector_combine(path, ""));
     }
 
-    void Help::print_help_columns(const Column& column1, const Column& column2)
+    void
+    Help::write_help_columns(IStringWriter* p_writer, const Column& column1, const Column& column2)
     {
         Vector<String> rows1;
         Vector<String> rows2;
@@ -242,7 +262,8 @@ namespace GodotObjectCompiler
             String row2 = i < rows2.size() ? rows2[i] : "";
             row1 = string_pad_right(row1, ' ', column1.first);
             row2 = string_pad_right(row2, ' ', column2.first);
-            fmt_print_ln("%s %s", row1.c_str(), row2.c_str());
+            p_writer->write(format("%s %s", row1.c_str(), row2.c_str()));
+            p_writer->write("\n");
         }
     }
 
