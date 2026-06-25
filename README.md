@@ -24,11 +24,7 @@ ___
 
 <p align='center'>
 The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It generates bindings and other builderplate code for <b>efficent development in C++</b> while maintaining full configurability via <b>expressive macros</b> generated directly from the godot-cpp source used to build your extension.
-</p> 
-
-> [!WARNING]
-> This is experimental software, please do not use this application in a production environment.
-> This project is currently only tested on Linux. Everything is still subject to change.
+</p>
 
 # Example
 
