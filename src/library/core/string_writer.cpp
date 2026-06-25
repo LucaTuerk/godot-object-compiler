@@ -35,7 +35,7 @@
 
 #include "string_writer.h"
 
-#include "application/version.h"
+#include "application/build_info.h"
 #include "file_system_utilities.h"
 #include "library/library_context.h"
 #include "permissions.h"
@@ -142,8 +142,10 @@ namespace GodotObjectCompiler
         content = string_replace(
             content, version_search_string,
             string_pad_right(
-                format("%d.%d", GOC_MAJOR_VERSION, GOC_MINOR_VERSION), ' ',
-                version_search_string.length()));
+                format(
+                    "%d.%d.%d", BuildInfo::major_version, BuildInfo::minor_version,
+                    BuildInfo::patch_version),
+                ' ', version_search_string.length()));
         return content;
     }
 
