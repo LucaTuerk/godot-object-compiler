@@ -34,9 +34,7 @@
 /**************************************************************************/
 
 #include "version.h"
-
 #include "application/build_info.h"
-#include "application/version.h"
 
 namespace GodotObjectCompiler
 {
@@ -45,8 +43,8 @@ namespace GodotObjectCompiler
     {
         UNUSED(p_context);
         fmt_print_ln(
-            "%d.%d \"%s\"", BuildInfo::major_version, BuildInfo::minor_version,
-            BuildInfo::version_name);
+            "%d.%d.%d \"%s\"", BuildInfo::major_version, BuildInfo::minor_version,
+            BuildInfo::patch_version, BuildInfo::version_name);
         return ProgramError::OK;
     }
 

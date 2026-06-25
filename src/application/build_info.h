@@ -44,5 +44,6 @@ namespace GodotObjectCompiler
         static const char* version_name;
         static const int major_version;
         static const int minor_version;
+        static const int patch_version;
     };
 } // namespace GodotObjectCompiler

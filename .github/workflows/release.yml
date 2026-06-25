@@ -1,32 +1,11 @@
-name: Nightly Workflow
+name: Release Workflow
 on:
-  schedule:
-    - cron: "0 2 * * *"
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
 
 jobs:
-  check-changed:
-    runs-on: ubuntu-22.04
-    outputs:
-      result: ${{ steps.compare.outputs.result }}
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v7
-      - id: compare
-        name: Compare Commit Hashes
-        run: |
-          gh release download nightly -p goc_nightly-linux.x86_64.zip
-          unzip goc_nightly-linux.x86_64.zip
-          chmod +x ./linux/goc
-          ./linux/goc build_num >> last_hash
-          git rev-parse HEAD >> current_hash
-          diff last_hash current_hash && echo "result=0" >> ${GITHUB_OUTPUT} || echo "result=1" >> ${GITHUB_OUTPUT}
-
   check-format:
-    needs: check-changed
-    if: ${{ needs.check-changed.outputs.result == 1 }}
     uses: ./.github/workflows/format.yml
 
   linux-build:
@@ -39,27 +18,24 @@ jobs:
 
   windows-build:
     uses: ./.github/workflows/build_windows.yml
-    needs: check-changed
-    if: ${{ needs.check-changed.outputs.result == 1 }}
+    needs: check-format
     with:
       create_artifact: true
 
   mac-build:
     uses: ./.github/workflows/build_mac.yml
-    needs: check-changed
-    if: ${{ needs.check-changed.outputs.result == 1 }}
+    needs: check-format
     with:
       create_artifact: true
 
   run-testproject:
+    needs: check-format
     uses: ./.github/workflows/testproject.yml
-    needs: check-changed
 
   upload-artifacts:
     name: Upload release artifacts
     runs-on: ubuntu-22.04
-    needs: [linux-build, windows-build, mac-build, run-testproject]
-    if: ${{ needs.check-changed.outputs.result == 1 }}
+    needs: [ linux-build, windows-build, mac-build, run-testproject ]
     permissions:
       contents: write
     steps:
@@ -90,20 +66,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          zip goc_nightly-linux.x86_64.zip linux/goc
-          zip goc_nightly-win64.zip windows/goc.exe
-          zip goc_nightly-macos.universal.zip macos/goc
+          zip goc_${{github.ref_name}}-linux.x86_64.zip linux/goc
+          zip goc_${{github.ref_name}}-win64.zip windows/goc.exe
+          zip goc_${{github.ref_name}}-macos.universal.zip macos/goc
 
-          gh release upload nightly goc_nightly-linux.x86_64.zip --clobber
-          gh release upload nightly goc_nightly-win64.zip --clobber
-          gh release upload nightly goc_nightly-macos.universal.zip --clobber
+          gh release upload ${{github.ref_name}} goc_${{github.ref_name}}-linux.x86_64.zip --clobber
+          gh release upload ${{github.ref_name}} goc_${{github.ref_name}}-win64.zip --clobber
+          gh release upload ${{github.ref_name}} goc_${{github.ref_name}}-macos.universal.zip --clobber
 
       - uses: Ayowel/butler-to-itch@v1
         with:
           butler_key: ${{ secrets.BUTLER_API_KEY }}
           itch_user: lucatuerk
           itch_game: godot-object-compiler
-          version: nightly
+          version: ${{github.ref_name}}
           files: |
             windows windows/goc.exe
             linux linux/goc

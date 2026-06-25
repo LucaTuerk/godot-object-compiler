@@ -8,10 +8,6 @@ It generates bindings and other builderplate code for **efficent development in 
 Check out the :doc:`about/example` for a general overview of the features and :doc:`example` for a peek at the
 generated code.
 
-.. WARNING::
-    This is experimental software, please do not use this application in a production environment.
-    This project is currently only tested on Linux. Everything is still subject to change.
-
 .. toctree::
     :caption: Examples
     :name: sec-example

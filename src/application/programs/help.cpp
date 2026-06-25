@@ -35,8 +35,8 @@
 
 #include "help.h"
 
+#include "application/build_info.h"
 #include "application/programs/program.h"
-#include "application/version.h"
 #include "library/core/core.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/resources.h"
@@ -58,8 +58,8 @@ namespace GodotObjectCompiler
         write_title(
             p_writer,
             format(
-                "Godot Object Compiler v%d.%d \"%s\"", GOC_MAJOR_VERSION, GOC_MINOR_VERSION,
-                GOC_VERSION_NAME),
+                "Godot Object Compiler v%d.%d.%d \"%s\"", BuildInfo::major_version,
+                BuildInfo::minor_version, BuildInfo::patch_version, BuildInfo::version_name),
             100);
         p_writer->write("\n");
 

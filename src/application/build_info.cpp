@@ -37,7 +37,8 @@
 
 namespace GodotObjectCompiler
 {
-    const char* BuildInfo::version_name = "public experimental";
     const int BuildInfo::major_version = 0;
     const int BuildInfo::minor_version = 1;
+    const int BuildInfo::patch_version = 0;
+    const char* BuildInfo::version_name = "Automatic Ada";
 } // namespace GodotObjectCompiler
