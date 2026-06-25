@@ -11,15 +11,18 @@ jobs:
   get-tag:
     runs-on: ubuntu-22.04
     outputs:
-      tag: ${{steps.get.tag}}
+      tag: ${{steps.get.outputs.tag}}
     steps:
       - name: Get Version Tag
         id: get
         run: |
-          if [ "${{github.event.release.tag_name}}" = ""]; then
+          if [[ "${{github.event.release.tag_name}}" == "" ]]; then
+            echo "Using tag nightly"
             echo "tag=nightly" >> ${GITHUB_OUTPUT}
           else
+            echo "Using tag ${{github.event.release.tag_name}}"
             echo "tag=${{github.event.release.tag_name}}" >> ${GITHUB_OUTPUT}
+          fi
 
   check-changed:
     runs-on: ubuntu-22.04
@@ -76,7 +79,7 @@ jobs:
     name: Upload release artifacts
     runs-on: ubuntu-22.04
     needs: [linux-build, windows-build, mac-build, run-testproject, get-tag]
-    if: ${{ needs.check-changed.outputs.result == 1 && needs.get-tag.outputs.tag == 'nightly'}}
+    if: ${{ needs.check-changed.outputs.result == 1 }}
     permissions:
       contents: write
     steps:
