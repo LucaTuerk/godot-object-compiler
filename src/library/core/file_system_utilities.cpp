@@ -196,10 +196,6 @@ namespace GodotObjectCompiler
     String path_file_name(const String& p_path)
     {
         std::filesystem::path path = p_path;
-        if (!is_regular_file(path)) {
-            return "";
-        }
-
         return path.filename().generic_string();
     }
 
