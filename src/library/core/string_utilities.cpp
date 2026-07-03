@@ -165,17 +165,94 @@ namespace GodotObjectCompiler
         return result;
     }
 
+    bool char_in_range(char c, char min, char max)
+    {
+        return c >= min && c <= max;
+    }
+
+    bool char_is_unsigned_or_long_mod(char c)
+    {
+        return c == 'l' || c == 'L' || c == 'u' || c == 'U';
+    }
+
+    bool string_to_int_binary(const String& p_content, int& result)
+    {
+        // stoi fails for binary literals on some std versions, so implement it here.
+        result = 0;
+        int idx = 0;
+        for (char c : p_content) {
+            if (idx++ < 2) {
+                continue;
+            }
+
+            if (c == '0' || c == '1') {
+                result <<= 1;
+
+                if (c == '1') {
+                    result |= 1;
+                }
+            } else if (c != 'U' && c != 'u' && c != 'L' && c != 'l') {
+                result = 0;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool validate_hex(const String& p_content)
+    {
+        int idx = 0;
+        for (char c : p_content) {
+            if (idx++ < 2) {
+                continue;
+            }
+
+            if (!(char_in_range(c, '0', '9') || char_in_range(c, 'A', 'F') ||
+                  char_is_unsigned_or_long_mod(c))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool validate_oct(const String& p_content)
+    {
+        int idx = 0;
+        for (char c : p_content) {
+            if (idx++ < 1) {
+                continue;
+            }
+
+            if (!(char_in_range(c, '0', '7') || char_is_unsigned_or_long_mod(c))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     bool string_to_int(const String& p_content, int& r_result)
     {
         try {
             size_t idx = 0;
-            if (string_prefix(p_content, "0b")) {
+            if (string_prefix(p_content, "0b") || string_prefix(p_content, "0B")) {
                 idx = 2;
-                r_result = stoi(p_content, &idx, 2);
+                return string_to_int_binary(p_content, r_result);
+            } else if (string_prefix(p_content, "0x") || string_prefix(p_content, "0X")) {
+                if (!validate_hex(p_content)) {
+                    return false;
+                }
+                idx = 2;
+                r_result = stoi(p_content, &idx, 16);
+            } else if (string_prefix(p_content, "0")) {
+                if (!validate_oct(p_content)) {
+                    return false;
+                }
+                idx = 1;
+                r_result = stoi(p_content, &idx, 8);
             } else {
-                r_result = stoi(p_content, &idx, 0);
+                r_result = stoi(p_content, &idx, 10);
             }
-
             return true;
         } catch (const std::exception& e) {
             return false;
