@@ -152,3 +152,29 @@ GOC_TEST(StringEnumToExposedName)
         "Failed to convert to  exposed enum name.")
     return TEST_RESULT_SUCCESS;
 };
+
+GOC_TEST(StringToInt)
+{
+    using namespace GodotObjectCompiler;
+    GOC_TEST_EQ(string_to_int("0b10"), 2, "");
+    GOC_TEST_EQ(string_to_int("0B100"), 4, "");
+    GOC_TEST_EQ(string_to_int("0b10ul"), 2, "");
+    GOC_TEST_EQ(string_to_int("0B100ul"), 4, "");
+    GOC_TEST_EQ(string_to_int("0x10"), 16, "");
+    GOC_TEST_EQ(string_to_int("0X100"), 256, "");
+    GOC_TEST_EQ(string_to_int("0x10ul"), 16, "");
+    GOC_TEST_EQ(string_to_int("0X100ul"), 256, "");
+    GOC_TEST_EQ(string_to_int("010"), 8, "");
+    GOC_TEST_EQ(string_to_int("0100"), 64, "");
+    GOC_TEST_EQ(string_to_int("010ul"), 8, "");
+    GOC_TEST_EQ(string_to_int("0100ul"), 64, "");
+    GOC_TEST_EQ(string_to_int("10"), 10, "");
+
+    int _;
+    GOC_TEST_ASSERT(!string_to_int("0babc", _), "");
+    GOC_TEST_ASSERT(!string_to_int("0xXYZ", _), "");
+    GOC_TEST_ASSERT(!string_to_int("0ABC", _), "");
+    GOC_TEST_ASSERT(!string_to_int("This is not a number", _), "");
+
+    return TEST_RESULT_SUCCESS;
+};
