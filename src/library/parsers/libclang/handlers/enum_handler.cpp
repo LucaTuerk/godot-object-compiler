@@ -67,18 +67,9 @@ namespace GodotObjectCompiler::ClangASTHandlers
 
             p_target = p_target->B<EnumValue>()[{
                 B<Identifier>(name),
-            }];
+                B<Literal>(std::to_string(clang_getEnumConstantDeclValue(p_cursor)))}];
 
-            if (const Ref<EnumValue> prev = p_target->find_previous_sibling<EnumValue>()) {
-                if (const Ref<Literal> literal = prev->find_child<Literal>()) {
-                    const int val = string_to_int(literal->content);
-                    p_target->B<Literal>(std::to_string(val + 1));
-                }
-            } else {
-                p_target->B<Literal>(std::to_string(0));
-            }
-
-            return Step::Into();
+            return Step::Over();
         }
         default:
             CLANG_PARS_ERR("Unhandled cursor kind.");
