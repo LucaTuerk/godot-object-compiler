@@ -130,25 +130,13 @@ namespace GodotObjectCompiler
         Vector<String> registered_classes_headers;
 
         register_types_header->add_child(Output::PragmaOnce());
-
-        switch (p_context.project_target) {
-        case TARGET_GDEXTENSION:
-            register_types_header->add_children({
-                Output::Include("godot_cpp/godot.hpp"),
-                Output::Text("using namespace godot;"),
-            });
-            register_types_source->add_children(
-                {Output::Include("gdextension_interface.h"),
-                 Output::Include("godot_cpp/core/class_db.hpp"),
-                 Output::Include("godot_cpp/core/defs.hpp")});
-            break;
-        case TARGET_MODULE:
-            // This should not be reachable as project target can
-            // currently not be changed. If implemented the above
-            // godot-cpp includes need to be changed to godot
-            // internal includes for this case
-            PANIC("UNIMPLEMENTED");
-        }
+        register_types_header->add_children({
+            Output::PragmaOnce(),
+            Output::Include("godot_object_compiler/core_includes.h"),
+            Output::Text("using namespace godot;"),
+        });
+        register_types_source->add_children(
+            {Output::Include("godot_object_compiler/core_includes.h")});
 
         register_types_header->add_children(
             {Output::NewLine(),

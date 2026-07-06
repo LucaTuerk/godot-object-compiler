@@ -35,7 +35,6 @@
 
 #pragma once
 #include "library/core/core.h"
-#include "project.h"
 
 namespace GodotObjectCompiler
 {
@@ -46,7 +45,6 @@ namespace GodotObjectCompiler
     {
       public:
         String project_name;
-        ProjectTarget project_target = TARGET_GDEXTENSION;
 
         Opt<String> path_extension_api;
         Opt<String> paths_root;
@@ -61,8 +59,6 @@ namespace GodotObjectCompiler
         Vector<String> application_arguments;
         Vector<String> program_arguments;
         Ref<IProgram> program;
-
-        bool set_from_project(const Project& p_project);
 
         bool set_from_application_arguments(Vector<String>& p_application_arguments);
 
