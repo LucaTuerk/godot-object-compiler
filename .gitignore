@@ -21,6 +21,9 @@ goc
 .goc_tests
 -.goc_project
 
+#docs
+docs/generated_files/godot_object_compiler
+
 #scon
 .sconsign.dblite
 __pycache__
