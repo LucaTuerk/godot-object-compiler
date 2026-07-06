@@ -1,4 +1,4 @@
-========================[ Godot Object Compiler v0.1 "public experimental" ]========================
+========================[ Godot Object Compiler v0.2.0 "Binary Bresenham" ]=========================
 
 Usage: goc [PROGRAM PATH...] [PROGRAM ARGS...] [APPLICATION ARGS...]
 
@@ -72,7 +72,7 @@ generate                       Generate the type database and bindings.
 
 help [!p]                      Show this help section.                                               
 
-init [!p]                      Interactively initialize a .goc_project file in this directory.       
+init                                                                                                 
 
   tools [!p]                   Initialize included tool script such as build tools.                  
                                [args]                                                                
