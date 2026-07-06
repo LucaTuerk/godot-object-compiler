@@ -153,9 +153,9 @@ namespace GodotObjectCompiler
         if (context.program->requires_project()) {
             Clear clear;
 
-            if (!context.set_from_application_arguments(context.application_arguments)) {
-                return 1;
-            }
+            APP_ERR_COND(
+                !context.set_from_application_arguments(context.application_arguments),
+                "Invalid application arguments, failed to setup application context.");
 
             if (!was_last_exit_graceful()) {
                 PRINT_INFO("GOC: Last exit was ungraceful. Clearing context and files.");
