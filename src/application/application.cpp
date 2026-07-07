@@ -152,20 +152,10 @@ namespace GodotObjectCompiler
 
         if (context.program->requires_project()) {
             Clear clear;
-            Vector<String> cwd_files = directory_files(path_cwd());
-            auto project_path_itr =
-                std::find_if(cwd_files.begin(), cwd_files.end(), [](const String& path) {
-                    return string_suffix(path, ".goc_project");
-                });
 
-            if (Project project;
-                project_path_itr != cwd_files.end() && project.read_from_file(*project_path_itr)) {
-                if (!context.set_from_project(project)) {
-                    return 1;
-                }
-            } else if (!context.set_from_application_arguments(context.application_arguments)) {
-                return 1;
-            }
+            APP_ERR_COND(
+                !context.set_from_application_arguments(context.application_arguments),
+                "Invalid application arguments, failed to setup application context.");
 
             if (!was_last_exit_graceful()) {
                 PRINT_INFO("GOC: Last exit was ungraceful. Clearing context and files.");
@@ -224,9 +214,7 @@ namespace GodotObjectCompiler
                     *context.options_source_parser, IParser::SOURCE_PARSER);
             }
 
-            if (context.project_target == TARGET_GDEXTENSION) {
-                LibraryContext::instance()->add_using("godot");
-            }
+            LibraryContext::instance()->add_using("godot");
 
             auto build_num_file = path_concat(context.paths_goc, "last_goc_build_number.txt");
             String build_num = BuildInfo::commit_hash;

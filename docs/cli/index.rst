@@ -16,7 +16,7 @@ pages describe all of the available programs in godot-object-compiler.
     clear
     generate
     help
-    init
+    init_tools
     print_parsed
     print_transformed
     print_type

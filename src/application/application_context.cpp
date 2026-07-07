@@ -43,50 +43,6 @@
 namespace GodotObjectCompiler
 {
 
-    bool ApplicationContext::set_from_project(const Project& p_project)
-    {
-        project_target = p_project.project_target;
-        paths_root = path_absolute(p_project.paths_root);
-        paths_generated = path_absolute(p_project.paths_generated);
-        paths_cache = path_absolute(p_project.paths_cache);
-        paths_goc = path_absolute(p_project.paths_goc);
-        paths_godot_cpp_include = p_project.paths_godot_cpp_include;
-        path_extension_api = p_project.path_extension_api;
-        options_source_parser = p_project.options_source_parser.empty()
-                                    ? std::nullopt
-                                    : Opt<String>(p_project.options_source_parser);
-
-        for (const auto& include_path : p_project.paths_include) {
-            if (!vector_contains(*paths_include, include_path)) {
-                paths_include->push_back(include_path);
-            }
-        }
-
-        if (!paths_include.has_value()) {
-            paths_include = Vector<String>();
-        }
-
-        if (!vector_contains(*paths_include, p_project.paths_root)) {
-            paths_include->push_back(p_project.paths_root);
-        }
-
-        files_input = Vector<String>();
-        for (const String& file_path : directory_files_recursive(p_project.paths_root)) {
-            if (string_suffix(file_path, ".h") || string_suffix(file_path, ".hpp")) {
-                files_input->push_back(file_path);
-            }
-        }
-
-        if (paths_include.has_value()) {
-            std::transform(
-                paths_include->begin(), paths_include->end(), paths_include->begin(),
-                &path_absolute);
-        }
-        std::transform(
-            files_input->begin(), files_input->end(), files_input->begin(), &path_absolute);
-        return validate();
-    }
-
     bool ApplicationContext::set_from_application_arguments(Vector<String>& p_application_arguments)
     {
         auto prefix_extract = [](const String& p_str, const String& p_long, const String& p_short,
