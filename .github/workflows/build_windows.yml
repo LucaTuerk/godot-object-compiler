@@ -39,31 +39,17 @@ jobs:
           ref: "4.5"
           path: "godot-cpp"
 
-      - name: Restore godot-cpp Cache
-        id: godot-cpp-cache
-        uses: actions/cache/restore@v6
-        with:
-          path: ${{github.workspace}}/godot-cpp/.scons_cache/
-          key: windows-godot-cpp
-
-      - name: Build godot-cpp
-        env:
-          SCONS_CACHE: ${{github.workspace}}/godot-cpp/.scons_cache/
+      - name: Generate godot-cpp bindings
         run: |
           cd godot-cpp
-          scons
-          cd ..
-
-      - name: Save godot-cpp Cache
-        if: steps.godot-cpp-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6
-        with:
-          path: ${{github.workspace}}/godot-cpp/.scons_cache/
-          key: windows-godot-cpp
+          mkdir build -Force
+          cd build
+          cmake ..
+          cmake --build . --target generate_bindings
 
       - name: Run Tests
         run: |
-          ./build/goc_tests.exe run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include godot-cpp/gdextension
+          ./build/goc_tests.exe run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/build/gen/include godot-cpp/gdextension
 
       - name: Upload Binary
         if: ${{inputs.create_artifact == true}}
