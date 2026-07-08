@@ -19,7 +19,6 @@ jobs:
       - name: Install Packages
         run: |
           choco install tree-sitter
-          python -m pip install scons
 
       - name: Setup libclang
         uses: ./.github/actions/setup_libclang

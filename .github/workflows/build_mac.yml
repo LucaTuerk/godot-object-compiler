@@ -20,7 +20,6 @@ jobs:
       - name: Install Packages
         run: |
           brew install tree-sitter-cli
-          brew install scons
 
       - name: Setup libclang
         uses: ./.github/actions/setup_libclang
