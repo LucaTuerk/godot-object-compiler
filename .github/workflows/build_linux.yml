@@ -23,7 +23,7 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt update
-          sudo apt install cmake scons -y
+          sudo apt install cmake -y
 
       - name: Setup libclang
         uses: ./.github/actions/setup_libclang
@@ -44,30 +44,17 @@ jobs:
           ref: "4.5"
           path: "godot-cpp"
 
-      - name: Restore godot-cpp Cache
-        uses: actions/cache/restore@v6
-        with:
-          path: ${{github.workspace}}/godot-cpp/.scons_cache/
-          key: linux-godot-cpp
-
-      - name: Build godot-cpp
-        env:
-          SCONS_CACHE: ${{github.workspace}}/godot-cpp/.scons_cache/
+      - name: Generate godot-cpp bindings
         run: |
           cd godot-cpp
-          scons
-          cd ..
-
-      - name: Save godot-cpp Cache
-        uses: actions/cache/save@v6
-        if: steps.godot-cpp-cache.outputs.cache-hit != 'true'
-        with:
-          path: ${{github.workspace}}/godot-cpp/.scons_cache/
-          key: linux-godot-cpp
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build . --target generate_bindings
 
       - name: Run Tests
         run: |
-          ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/gen/include godot-cpp/gdextension
+          ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/build/gen/include godot-cpp/gdextension
           pip install gcovr
           cd ./build/CMakeFiles/goc_tests.dir/src
           gcovr -f . -e "/usr/include/.*" -e "/.*thirdparty/.*" -e "/.*tests/.*"\

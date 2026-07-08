@@ -100,7 +100,7 @@ jobs:
         run: |
           mkdir -p build
           cmake -Bbuild -S. -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
-          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN) --config Release
+          cmake --build build --parallel $(Get-CimInstance -ClassName Win32_ComputerSystem).NumberOfLogicalProcessors --config Release
 
       - name: Run Project
         run: |
