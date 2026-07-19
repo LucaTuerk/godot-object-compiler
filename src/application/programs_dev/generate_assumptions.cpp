@@ -73,7 +73,7 @@ namespace GodotObjectCompiler
         return Output::Text(format);
     }
 
-    Ref<ProgramError> GenerateAssumptions::run(ApplicationContext& p_context)
+    Ref<ProgramError> GenerateAssumptions::execute(ApplicationContext& p_context)
     {
         UNUSED(p_context);
 

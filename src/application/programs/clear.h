@@ -34,36 +34,42 @@
 /**************************************************************************/
 
 #pragma once
+#include "application/arguments/argument_parsers.h"
 #include "program.h"
 
 namespace GodotObjectCompiler
 {
-
     class Clear : public IProgram
     {
         PROGRAM(Clear, "clear")
-        NO_PROGRAM_ARGS
 
       public:
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
     };
 
     class ClearGenerated : public IProgram
     {
         PROGRAM(ClearGenerated, "clear/generated")
-        NO_PROGRAM_ARGS
 
       public:
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
     };
 
-    class ClearCache : public IProgram
+    class ClearTypeDB : public IProgram
     {
-        PROGRAM(ClearCache, "clear/type_db")
-        NO_PROGRAM_ARGS
+        PROGRAM(ClearTypeDB, "clear/type_db")
 
       public:
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
     };
 
 } // namespace GodotObjectCompiler

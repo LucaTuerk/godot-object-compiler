@@ -142,7 +142,8 @@ int main(int argc, char* argv[])
                     const Vector<String> args =
                         TestRegistry::instance()->get_test_application_arguments(
                             {"generate", "type_db"});
-                    PANIC_COND(application.run(args), "Failed to setup type db during test run.");
+                    PANIC_COND(
+                        application.run(args) != 0, "Failed to setup type db during test run.");
                 }
 
                 Ref<IParser> source_parser =

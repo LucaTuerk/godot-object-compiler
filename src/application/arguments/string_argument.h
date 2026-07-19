@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_parsed.h                                                         */
+/* string_argument.h                                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,31 +34,31 @@
 /**************************************************************************/
 
 #pragma once
-#if GOC_TREE_SITTER_PARSER_ENABLED
-#include "application/arguments/argument_parsers.h"
-#include "program.h"
+
+#pragma once
+#include "argument.h"
 
 namespace GodotObjectCompiler
 {
-    class PrintParsedArguments : public ICommandLineArgumentList
+    class StringCommandLineArgumentParser : public ICommandLineArgumentParser<String>
     {
       public:
-        Ref<CommandLineArgument> input_files =
-            CommandLineArgument::positional(CLIArgs::Path, "The input files to parse and display.");
+        Opt<String> parse_argument(const String& p_argument) override;
 
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
+        String get_argument_type_string() override
+        {
+            return "String";
+        }
     };
 
-    class PrintParsed : public IProgram
+    class StringListCommandLineArgumentParser : public ICommandLineArgumentParser<Vector<String>>
     {
-        PROGRAM(PrintParsed, "print/parsed")
-
       public:
-        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+        Opt<Vector<String>> parse_argument(const String& p_argument) override;
 
-        [[nodiscard]] CommandLineArgumentParseResult
-        register_required_arguments(ApplicationContext& p_context) const override;
+        String get_argument_type_string() override
+        {
+            return "StringList";
+        }
     };
-
 } // namespace GodotObjectCompiler
-#endif

@@ -36,6 +36,7 @@
 #include "main.h"
 
 #include "application/application.h"
+#include "application/arguments/flag_argument.h"
 #include "application/programs/all.h"
 #include "library/core/config.h"
 #include "library/core/core.h"
@@ -43,13 +44,6 @@
 #include "library_godot/parsers/extension_api_parser.h"
 #if DEV_BUILD
 #include "application/programs_dev/all.h"
-#endif
-
-#if GOC_LIBCLANG_PARSER_ENABLED
-#include "library/parsers/libclang/parser.h"
-#endif
-#if GOC_TREE_SITTER_PARSER_ENABLED
-#include "library/parsers/tree-sitter/parser.h"
 #endif
 
 using namespace GodotObjectCompiler;
@@ -62,17 +56,17 @@ int main(int argc, char* argv[])
     }
 
     Application application;
-    LibraryContext::instance()->set_error_level(INFO, FULL);
 
-#ifdef GOC_LIBCLANG_PARSER_ENABLED
-#ifndef GOC_TREE_SITTER_PARSER_ENABLED
-    LibraryContext::instance()->set_default_parser<ClangParser>(IParser::SOURCE_PARSER);
-#endif
-#endif
-#if GOC_TREE_SITTER_PARSER_ENABLED
-    LibraryContext::instance()->set_default_parser<TreeSitterParser>(IParser::SOURCE_PARSER);
-#endif
+    const CLIArgs::ApplicationArgs arguments;
+    CLI_PARS_ERR_V(CommandLineArgument::parse(arguments.get_arguments(), args), 1);
 
+    const auto error_level = arguments.log_level->get<ErrorLevel>();
+    const auto error_detail = arguments.log_detail->get<ErrorDetail>();
+    const auto source_parser = arguments.source_parser->get<String>();
+
+    LibraryContext::instance()->set_error_level(error_level, error_detail);
+    LibraryContext::instance()->set_default_parser(source_parser, IParser::SOURCE_PARSER);
     LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(IParser::JSON_CONFIG_PARSER);
+
     return application.run(args);
 }

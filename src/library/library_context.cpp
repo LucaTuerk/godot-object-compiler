@@ -155,6 +155,19 @@ namespace GodotObjectCompiler
         }
     }
 
+    void LibraryContext::ensure_unique_include_paths()
+    {
+        HashSet<Path> paths;
+        for (auto itr = include_paths.begin(); itr != include_paths.end();) {
+            if (paths.find(*itr) == paths.end()) {
+                paths.insert(*itr);
+                ++itr;
+            } else {
+                itr = include_paths.erase(itr);
+            }
+        }
+    }
+
     bool LibraryContext::add_register_callback(const RegisterCallback& callback)
     {
         register_callbacks.push_back(callback);
@@ -200,6 +213,13 @@ namespace GodotObjectCompiler
     void LibraryContext::set_include_paths(const Vector<String>& p_value)
     {
         include_paths = p_value;
+        ensure_unique_include_paths();
+    }
+
+    void LibraryContext::add_include_paths(const Vector<String>& p_value)
+    {
+        include_paths.insert(include_paths.begin(), p_value.begin(), p_value.end());
+        ensure_unique_include_paths();
     }
 
     void LibraryContext::set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail)

@@ -34,29 +34,35 @@
 /**************************************************************************/
 
 #pragma once
+#include "application/arguments/argument_parsers.h"
 #include "program.h"
 
 namespace GodotObjectCompiler
 {
 
+    class HelpArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> program_path =
+            CommandLineArgument::positional(CLIArgs::String, "");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
+    };
+
     class Help : public IProgram
     {
-        PROJECTLESS_PROGRAM(Help, "help")
+        PROGRAM(Help, "help")
 
       public:
-        bool validate_arguments(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
 
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
 
         static bool get_help(IStringWriter* p_writer, const Vector<String>& p_args);
 
       private:
-        using Column = Pair<Size, String>;
-
         static void write_title(IStringWriter* p_writer, const String& p_title, Size width);
-
-        static void
-        write_help_columns(IStringWriter* p_writer, const Column& column1, const Column& column2);
 
         static void write_header(IStringWriter* p_writer);
 

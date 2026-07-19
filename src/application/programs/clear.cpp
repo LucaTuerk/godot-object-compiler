@@ -35,15 +35,22 @@
 
 #include "clear.h"
 
+#include "help.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler
 {
 
-    Ref<ProgramError> Clear::run(ApplicationContext& p_context)
+    CommandLineArgumentParseResult
+    Clear::register_required_arguments(ApplicationContext& p_context) const
     {
-        ClearCache clear_cache;
+        return p_context.register_argument_lists<CLIArgs::GeneratorArguments>();
+    }
+
+    Ref<ProgramError> Clear::execute(ApplicationContext& p_context)
+    {
+        ClearTypeDB clear_cache;
         if (Ref<ProgramError> clear_cache_error = clear_cache.run(p_context);
             clear_cache_error != ProgramError::OK) {
             return clear_cache_error;
@@ -60,20 +67,39 @@ namespace GodotObjectCompiler
         return ProgramError::OK;
     }
 
-    Ref<ProgramError> ClearGenerated::run(ApplicationContext& p_context)
+    CommandLineArgumentParseResult
+    ClearGenerated::register_required_arguments(ApplicationContext& p_context) const
     {
-        for (const String& entry : directory_entries(p_context.paths_generated)) {
-            PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
+        return p_context.register_argument_lists<CLIArgs::GeneratorArguments>();
+    }
+
+    Ref<ProgramError> ClearGenerated::execute(ApplicationContext& p_context)
+    {
+        const auto arguments = p_context.get_argument_list<CLIArgs::GeneratorArguments>();
+
+        if (directory_exits(arguments->generated_path->get<Path>())) {
+            for (const String& entry : directory_entries(arguments->generated_path->get<Path>())) {
+                PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
+            }
         }
         return ProgramError::OK;
     }
 
-    Ref<ProgramError> ClearCache::run(ApplicationContext& p_context)
+    CommandLineArgumentParseResult
+    ClearTypeDB::register_required_arguments(ApplicationContext& p_context) const
     {
-        for (const String& entry : directory_entries(p_context.paths_cache)) {
-            PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
-        }
+        return p_context.register_argument_lists<CLIArgs::GeneratorArguments>();
+    }
 
+    Ref<ProgramError> ClearTypeDB::execute(ApplicationContext& p_context)
+    {
+        const auto arguments = p_context.get_argument_list<CLIArgs::GeneratorArguments>();
+
+        if (directory_exits(arguments->type_db_path->get<Path>())) {
+            for (const String& entry : directory_entries(arguments->type_db_path->get<Path>())) {
+                PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
+            }
+        }
         return ProgramError::OK;
     }
 

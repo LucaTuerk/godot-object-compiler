@@ -78,7 +78,7 @@ namespace GodotObjectCompiler
 
         static String get_goc_path();
 
-        static String get_cache_path();
+        static String get_type_db_path();
 
         Vector<String> get_test_application_arguments(const ProgramPath& p_program_path);
 
@@ -143,6 +143,7 @@ namespace GodotObjectCompiler
 
 #define GOC_TEST_ASSERT(condition, ...)                                                            \
     if (!(condition)) {                                                                            \
+        fmt_print_err("Failed test assert %s:%d ", __FILE__, __LINE__);                            \
         fmt_print_err(__VA_ARGS__);                                                                \
         return GodotObjectCompiler::TEST_RESULT_FAILURE;                                           \
     }
@@ -150,6 +151,7 @@ namespace GodotObjectCompiler
 #define GOC_TEST_EQ(a, b, ...)                                                                     \
     if (!((a) == (b))) {                                                                           \
         GodotObjectCompiler::StreamWriter writer;                                                  \
+        writer.write(format("Failed test eq %s:%d\n", __FILE__, __LINE__));                        \
         writer.write(format(__VA_ARGS__));                                                         \
         writer.write(" Expected to be ");                                                          \
         writer.write_generic(b);                                                                   \
@@ -161,6 +163,7 @@ namespace GodotObjectCompiler
 #define GOC_TEST_NEQ(a, b, ...)                                                                    \
     if (((a) == (b))) {                                                                            \
         GodotObjectCompiler::StreamWriter writer;                                                  \
+        writer.write(format("Failed test neq %s:%d\n", __FILE__, __LINE__));                       \
         writer.write(format(__VA_ARGS__));                                                         \
         writer.write(" Expected not equal to ");                                                   \
         writer.write_generic(b);                                                                   \

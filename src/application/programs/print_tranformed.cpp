@@ -37,7 +37,6 @@
 
 #include "generate_type_db.h"
 #include "library/core/file_system_utilities.h"
-#include "library/core/string_utilities.h"
 #include "library/parser.h"
 #include "library/tree/syntax/namespace.h"
 #include "library_godot/assumptions.h"
@@ -45,45 +44,48 @@
 namespace GodotObjectCompiler
 {
 
-    bool PrintTransformed::validate_arguments(ApplicationContext& p_context)
+    Vector<Ref<CommandLineArgument>> PrintTransformedArguments::get_arguments() const
     {
-        return p_context.program_arguments.size() == 1 &&
-               could_be_file_path(p_context.program_arguments[0]);
+        return {input_files};
     }
 
-    Ref<ProgramError> PrintTransformed::run(ApplicationContext& p_context)
+    CommandLineArgumentParseResult
+    PrintTransformed::register_required_arguments(ApplicationContext& p_context) const
     {
-        PROG_ERR_COND(
-            p_context.program_arguments.size() != 1,
-            "Invalid argument count for program %s. Expected the path to the target file.",
-            get_type_static().c_str());
+        return p_context.register_argument_lists<PrintTransformedArguments>();
+    }
 
-        auto path = path_absolute(p_context.program_arguments[0]);
+    Ref<ProgramError> PrintTransformed::execute(ApplicationContext& p_context)
+    {
+        const Ref<PrintTransformedArguments> arguments =
+            p_context.get_argument_list<PrintTransformedArguments>();
 
-        PROG_ERR_COND(
-            !file_exists(path), "Invalid path argument for program %s. File does not exist.",
-            get_type_static().c_str());
+        for (const auto& path : arguments->input_files->get_vector<Path>()) {
+            PROG_ERR_COND(
+                !file_exists(path), "Invalid path argument for program %s. File does not exist.",
+                get_type_static().c_str());
 
-        GenerateTypeDB generate_type_db;
-        PROG_ERR_COND(
-            generate_type_db.run(p_context) != ProgramError::OK, "Failed to generate the TypeDB.");
+            GenerateTypeDB generate_type_db;
+            PROG_ERR_COND(
+                generate_type_db.run(p_context) != ProgramError::OK,
+                "Failed to generate the TypeDB.");
 
-        PROG_ERR_COND(
-            !(AssumedGodotTypes::validate_assumptions() &&
-              AssumedParameterValues::validate_assumptions()),
-            "Failed to validate some assumptions on available Godot types and macros. Supplied "
-            "extension api files or godot-cpp include paths might be invalid.");
+            PROG_ERR_COND(
+                !(AssumedGodotTypes::validate_assumptions() &&
+                  AssumedParameterValues::validate_assumptions()),
+                "Failed to validate some assumptions on available Godot types and macros. Supplied "
+                "extension api files or godot-cpp include paths might be invalid.");
 
-        Ref<IParser> parser =
-            LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
-        const Ref<Namespace> ns = node_new<Namespace>();
+            Ref<IParser> parser =
+                LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
+            const Ref<Namespace> ns = node_new<Namespace>();
 
-        PROG_ERR_COND(
-            parser->parse_file(path, ns) != ParserError::OK, "Failed to parse file %s.",
-            path.c_str());
+            PROG_ERR_COND(
+                parser->parse_file(path, ns) != ParserError::OK, "Failed to parse file %s.",
+                path.c_str());
 
-        print_ln(ns->pretty_print());
+            print_ln(ns->pretty_print());
+        }
         return ProgramError::OK;
     }
-
 } // namespace GodotObjectCompiler

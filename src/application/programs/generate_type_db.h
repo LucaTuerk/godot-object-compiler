@@ -45,10 +45,12 @@ namespace GodotObjectCompiler
     class GenerateTypeDB : public IProgram
     {
         PROGRAM(GenerateTypeDB, "generate/type_db");
-        NO_PROGRAM_ARGS
 
       public:
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
 
       private:
         struct File {

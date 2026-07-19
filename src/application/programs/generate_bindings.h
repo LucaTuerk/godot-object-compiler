@@ -42,16 +42,18 @@ namespace GodotObjectCompiler
     class GenerateBindings : public IProgram
     {
         PROGRAM(GenerateBindings, "generate/bindings")
-        NO_PROGRAM_ARGS
 
       public:
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
+
         static String file_id(const String& p_file_name);
 
         static String cache_path(const String& goc_path, const String& p_file_name);
 
         static String generated_macro_name(const String& p_header, Size p_line);
 
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
     };
 
 } // namespace GodotObjectCompiler

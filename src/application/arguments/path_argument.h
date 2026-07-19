@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_parsed.h                                                         */
+/* path_argument.h                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,31 +34,29 @@
 /**************************************************************************/
 
 #pragma once
-#if GOC_TREE_SITTER_PARSER_ENABLED
-#include "application/arguments/argument_parsers.h"
-#include "program.h"
+#include "argument.h"
 
 namespace GodotObjectCompiler
 {
-    class PrintParsedArguments : public ICommandLineArgumentList
+    class PathCommandLineArgumentParser : public ICommandLineArgumentParser<Path>
     {
       public:
-        Ref<CommandLineArgument> input_files =
-            CommandLineArgument::positional(CLIArgs::Path, "The input files to parse and display.");
+        Opt<Path> parse_argument(const String& p_argument) override;
 
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
+        String get_argument_type_string() override
+        {
+            return "Path";
+        };
     };
 
-    class PrintParsed : public IProgram
+    class PathListCommandLineArgumentParser : public ICommandLineArgumentParser<Vector<Path>>
     {
-        PROGRAM(PrintParsed, "print/parsed")
-
       public:
-        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+        Opt<Vector<Path>> parse_argument(const String& p_argument) override;
 
-        [[nodiscard]] CommandLineArgumentParseResult
-        register_required_arguments(ApplicationContext& p_context) const override;
+        String get_argument_type_string() override
+        {
+            return "PathList";
+        }
     };
-
 } // namespace GodotObjectCompiler
-#endif

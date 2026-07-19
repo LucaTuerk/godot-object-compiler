@@ -35,6 +35,7 @@
 
 #pragma once
 #include "application/application_context.h"
+#include "application/arguments/argument.h"
 #include "library/core/core.h"
 #include "library/tree/syntax/parser_error.h"
 
@@ -57,11 +58,19 @@ namespace GodotObjectCompiler
     {
       public:
         virtual ~IProgram() = default;
+
+        Ref<ProgramError> run(ApplicationContext& p_application_context);
+
         [[nodiscard]] virtual String get_type() const = 0;
+
         [[nodiscard]] virtual String program_name() const = 0;
-        [[nodiscard]] virtual bool requires_project() const = 0;
-        virtual bool validate_arguments(ApplicationContext& p_context) = 0;
-        virtual Ref<ProgramError> run(ApplicationContext& p_context) = 0;
+
+        [[nodiscard]] virtual CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const = 0;
+
+        virtual Ref<ProgramError> execute(ApplicationContext& p_context) = 0;
+
+        [[nodiscard]] virtual bool is_readonly() const;
     };
 
     using ProgramPath = Vector<String>;
@@ -102,15 +111,28 @@ namespace GodotObjectCompiler
     }
 
 #define NO_PROGRAM_ARGS                                                                            \
-    bool validate_arguments(ApplicationContext& p_context) override                                \
+  public:                                                                                          \
+    [[nodiscard]] CommandLineArgumentParseResult register_required_arguments(                      \
+        ApplicationContext& p_context) const override                                              \
     {                                                                                              \
-        return p_context.program_arguments.empty();                                                \
-    }
+        return p_context.register_argument_lists<>();                                              \
+    }                                                                                              \
+                                                                                                   \
+  private:
 
 #define PROG_ERR_COND(condition, ...)                                                              \
     if ((condition)) {                                                                             \
         PROG_ERR(__VA_ARGS__)                                                                      \
     }
+
+#define READONLY_PROGRAM                                                                           \
+  public:                                                                                          \
+    [[nodiscard]] bool is_readonly() const override                                                \
+    {                                                                                              \
+        return true;                                                                               \
+    }                                                                                              \
+                                                                                                   \
+  private:
 
 #define PROGRAM(type, name)                                                                        \
   public:                                                                                          \
@@ -125,33 +147,6 @@ namespace GodotObjectCompiler
     virtual String program_name() const override                                                   \
     {                                                                                              \
         return name;                                                                               \
-    }                                                                                              \
-    virtual bool requires_project() const override                                                 \
-    {                                                                                              \
-        return true;                                                                               \
-    }                                                                                              \
-                                                                                                   \
-  private:                                                                                         \
-    static inline bool __program_registered_##type = Programs::instance()->register_program(       \
-        std::dynamic_pointer_cast<IProgram>(make_ref<type>()));
-
-#define PROJECTLESS_PROGRAM(type, name)                                                            \
-  public:                                                                                          \
-    static String get_type_static()                                                                \
-    {                                                                                              \
-        return #type;                                                                              \
-    }                                                                                              \
-    virtual String get_type() const override                                                       \
-    {                                                                                              \
-        return #type;                                                                              \
-    }                                                                                              \
-    virtual String program_name() const override                                                   \
-    {                                                                                              \
-        return name;                                                                               \
-    }                                                                                              \
-    virtual bool requires_project() const override                                                 \
-    {                                                                                              \
-        return false;                                                                              \
     }                                                                                              \
                                                                                                    \
   private:                                                                                         \

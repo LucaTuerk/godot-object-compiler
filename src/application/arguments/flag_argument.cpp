@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_parsed.h                                                         */
+/* flag_argument.cpp                                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,32 +33,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
-#if GOC_TREE_SITTER_PARSER_ENABLED
-#include "application/arguments/argument_parsers.h"
-#include "program.h"
+#include "flag_argument.h"
 
 namespace GodotObjectCompiler
 {
-    class PrintParsedArguments : public ICommandLineArgumentList
-    {
-      public:
-        Ref<CommandLineArgument> input_files =
-            CommandLineArgument::positional(CLIArgs::Path, "The input files to parse and display.");
-
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
-    };
-
-    class PrintParsed : public IProgram
-    {
-        PROGRAM(PrintParsed, "print/parsed")
-
-      public:
-        Ref<ProgramError> execute(ApplicationContext& p_context) override;
-
-        [[nodiscard]] CommandLineArgumentParseResult
-        register_required_arguments(ApplicationContext& p_context) const override;
-    };
-
 } // namespace GodotObjectCompiler
-#endif

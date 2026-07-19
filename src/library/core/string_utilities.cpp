@@ -550,4 +550,32 @@ namespace GodotObjectCompiler
         return result;
     }
 
+    void write_columns(IStringWriter* p_writer, const Column& column1, const Column& column2)
+    {
+        Vector<String> rows1;
+        Vector<String> rows2;
+
+        const Vector<String> lines1 = string_split(column1.second, "\n");
+        const Vector<String> lines2 = string_split(column2.second, "\n");
+
+        for (const String& line1 : lines1) {
+            Vector<String> line_split = string_split_length(line1, column1.first);
+            rows1.insert(rows1.end(), line_split.begin(), line_split.end());
+        }
+
+        for (const String& line2 : lines2) {
+            Vector<String> line_split = string_split_length(line2, column2.first);
+            rows2.insert(rows2.end(), line_split.begin(), line_split.end());
+        }
+
+        for (Size i = 0; i < std::max(rows1.size(), rows2.size()); ++i) {
+            String row1 = i < rows1.size() ? rows1[i] : "";
+            String row2 = i < rows2.size() ? rows2[i] : "";
+            row1 = string_pad_right(row1, ' ', column1.first);
+            row2 = string_pad_right(row2, ' ', column2.first);
+            p_writer->write(format("%s %s", row1.c_str(), row2.c_str()));
+            p_writer->write("\n");
+        }
+    }
+
 } // namespace GodotObjectCompiler

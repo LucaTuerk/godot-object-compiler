@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_parsed.h                                                         */
+/* path_argument.cpp                                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,32 +33,38 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
-#if GOC_TREE_SITTER_PARSER_ENABLED
-#include "application/arguments/argument_parsers.h"
-#include "program.h"
+#include "path_argument.h"
 
+#include "library/core/file_system_utilities.h"
+#include "library/core/string_utilities.h"
 namespace GodotObjectCompiler
 {
-    class PrintParsedArguments : public ICommandLineArgumentList
+
+    Opt<Path> PathCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
-      public:
-        Ref<CommandLineArgument> input_files =
-            CommandLineArgument::positional(CLIArgs::Path, "The input files to parse and display.");
+        String argument = path_absolute(p_argument);
 
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
-    };
+        if (!could_be_path(argument)) {
+            return std::nullopt;
+        }
 
-    class PrintParsed : public IProgram
+        return argument;
+    }
+
+    Opt<Vector<Path>> PathListCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
-        PROGRAM(PrintParsed, "print/parsed")
+        const String argument = p_argument;
+        Vector<String> paths = string_split(argument, ",");
+        Vector<String> results;
 
-      public:
-        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+        for (const String& path : paths) {
+            if (!could_be_path(path)) {
+                return std::nullopt;
+            }
 
-        [[nodiscard]] CommandLineArgumentParseResult
-        register_required_arguments(ApplicationContext& p_context) const override;
-    };
+            results.push_back(path_absolute(path));
+        }
 
+        return results;
+    }
 } // namespace GodotObjectCompiler
-#endif

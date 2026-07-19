@@ -51,7 +51,7 @@ namespace GodotObjectCompiler
         String rst_header(const String& p_text, char p_punctuation);
         String rst_table(const Table& table);
 
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
     };
 
 } // namespace GodotObjectCompiler

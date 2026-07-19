@@ -35,50 +35,43 @@
 #pragma once
 #include "library/core/core.h"
 
-bool generate_files(
-    const GodotObjectCompiler::String& p_path, GodotObjectCompiler::String& r_generated_header,
-    GodotObjectCompiler::String& r_generated_source, GodotObjectCompiler::String& r_register_header,
-    GodotObjectCompiler::String& r_register_source);
+namespace GodotObjectCompiler
+{
+    bool generate_files(
+        const String& p_path, String& r_generated_header, String& r_generated_source,
+        String& r_register_header, String& r_register_source);
 
-GodotObjectCompiler::String get_line_that_contains(
-    const GodotObjectCompiler::String& p_content,
-    const GodotObjectCompiler::Vector<GodotObjectCompiler::String>& p_search);
+    String get_line_that_contains(const String& p_content, const Vector<String>& p_search);
 
-GodotObjectCompiler::Size find_line_that_contains(
-    const GodotObjectCompiler::String& p_content,
-    const GodotObjectCompiler::Vector<GodotObjectCompiler::String>& p_search,
-    GodotObjectCompiler::Size p_start_line = 0);
+    Size find_line_that_contains(
+        const String& p_content, const Vector<String>& p_search, Size p_start_line = 0);
 
-bool enum_bound(
-    const char* p_enum_name, bool p_is_flags, std::initializer_list<const char*>&& p_check_values,
-    const GodotObjectCompiler::String& p_generated_source,
-    const GodotObjectCompiler::String& p_generated_header);
+    bool enum_bound(
+        const char* p_enum_name, bool p_is_flags,
+        std::initializer_list<const char*>&& p_check_values, const String& p_generated_source,
+        const String& p_generated_header);
 
-bool property_bound(
-    const char* p_property_name, const char* p_variant_type,
-    const GodotObjectCompiler::String& p_generated_header,
-    const GodotObjectCompiler::String& p_generated_source);
+    bool property_bound(
+        const char* p_property_name, const char* p_variant_type, const String& p_generated_header,
+        const String& p_generated_source);
 
-bool custom_property_bound(
-    const char* p_property_name, const char* p_variant_type,
-    const GodotObjectCompiler::String& p_generated_source);
+    bool custom_property_bound(
+        const char* p_property_name, const char* p_variant_type, const String& p_generated_source);
 
-bool signal_bound(
-    const char* p_signal_name, const char* p_variant_type,
-    const GodotObjectCompiler::String& p_generated_header,
-    const GodotObjectCompiler::String& p_generated_source, bool p_no_args);
+    bool signal_bound(
+        const char* p_signal_name, const char* p_variant_type, const String& p_generated_header,
+        const String& p_generated_source, bool p_no_args);
 
-bool function_bound(
-    const char* p_function_name, const GodotObjectCompiler::String& p_generated_header,
-    const GodotObjectCompiler::String& p_generated_source);
+    bool function_bound(
+        const char* p_function_name, const String& p_generated_header,
+        const String& p_generated_source);
 
-bool virtual_function_bound(
-    const char* p_function_name, const char* p_type,
-    const GodotObjectCompiler::String& p_generated_header,
-    const GodotObjectCompiler::String& p_generated_source);
+    bool virtual_function_bound(
+        const char* p_function_name, const char* p_type, const String& p_generated_header,
+        const String& p_generated_source);
 
-bool class_included(
-    const char* p_class_name, const GodotObjectCompiler::String& p_generated_source);
+    bool class_included(const char* p_class_name, const String& p_generated_source);
+} // namespace GodotObjectCompiler
 
 #define GOC_INTEGRATION_TEST_GEN_FILE(file)                                                        \
     String generated_header, generated_source, register_header, register_source;                   \

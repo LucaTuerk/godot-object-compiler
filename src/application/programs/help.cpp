@@ -47,12 +47,6 @@
 namespace GodotObjectCompiler
 {
 
-    bool Help::validate_arguments(ApplicationContext& p_context)
-    {
-        UNUSED(p_context);
-        return true;
-    }
-
     void Help::write_header(IStringWriter* p_writer)
     {
         write_title(
@@ -97,7 +91,7 @@ namespace GodotObjectCompiler
             }
 
             p_writer->write("\n");
-            write_help_columns(
+            write_columns(
                 p_writer,
                 {30, is_default ? format("%s (Default)", parser->get_type().c_str())
                                 : parser->get_type()},
@@ -121,7 +115,7 @@ namespace GodotObjectCompiler
             sub_writer.write(sub.back());
             written.insert(sub);
             p_writer->write("\n");
-            write_help_columns(p_writer, {30, sub_writer.get_string()}, {70, ""});
+            write_columns(p_writer, {30, sub_writer.get_string()}, {70, ""});
         }
 
         StreamWriter identifier_writer;
@@ -130,24 +124,37 @@ namespace GodotObjectCompiler
         }
         identifier_writer.write(p_path.back());
 
-        if (!program->requires_project()) {
+        if (program->is_readonly()) {
             identifier_writer.write(" [!p]");
         }
 
         p_writer->write("\n");
-        write_help_columns(
-            p_writer, {30, identifier_writer.get_string()}, {70, get_help_text(p_path)});
+        write_columns(p_writer, {30, identifier_writer.get_string()}, {70, get_help_text(p_path)});
 
         written.insert(p_path);
     }
 
-    Ref<ProgramError> Help::run(ApplicationContext& p_context)
+    Vector<Ref<CommandLineArgument>> HelpArguments::get_arguments() const
     {
+        return {program_path};
+    }
+
+    Ref<ProgramError> Help::execute(ApplicationContext& p_context)
+    {
+        const auto arguments = p_context.get_argument_list<HelpArguments>();
+
         StreamWriter writer;
         PROG_ERR_COND(
-            !get_help(&writer, p_context.program_arguments), "Failed to get help content.");
+            !get_help(&writer, arguments->program_path->get_vector<String>()),
+            "Failed to get help content.");
         print(writer.get_string());
         return ProgramError::OK;
+    }
+
+    CommandLineArgumentParseResult
+    Help::register_required_arguments(ApplicationContext& p_context) const
+    {
+        return p_context.register_argument_lists<HelpArguments>();
     }
 
     bool Help::get_help(IStringWriter* p_writer, const Vector<String>& p_args)
@@ -236,35 +243,6 @@ namespace GodotObjectCompiler
     Size Help::ProgramPathHash::operator()(const ProgramPath& path) const
     {
         return std::hash<String>()(string_vector_combine(path, ""));
-    }
-
-    void
-    Help::write_help_columns(IStringWriter* p_writer, const Column& column1, const Column& column2)
-    {
-        Vector<String> rows1;
-        Vector<String> rows2;
-
-        const Vector<String> lines1 = string_split(column1.second, "\n");
-        const Vector<String> lines2 = string_split(column2.second, "\n");
-
-        for (const String& line1 : lines1) {
-            Vector<String> line_split = string_split_length(line1, column1.first);
-            rows1.insert(rows1.end(), line_split.begin(), line_split.end());
-        }
-
-        for (const String& line2 : lines2) {
-            Vector<String> line_split = string_split_length(line2, column2.first);
-            rows2.insert(rows2.end(), line_split.begin(), line_split.end());
-        }
-
-        for (Size i = 0; i < std::max(rows1.size(), rows2.size()); ++i) {
-            String row1 = i < rows1.size() ? rows1[i] : "";
-            String row2 = i < rows2.size() ? rows2[i] : "";
-            row1 = string_pad_right(row1, ' ', column1.first);
-            row2 = string_pad_right(row2, ' ', column2.first);
-            p_writer->write(format("%s %s", row1.c_str(), row2.c_str()));
-            p_writer->write("\n");
-        }
     }
 
 } // namespace GodotObjectCompiler

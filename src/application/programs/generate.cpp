@@ -35,33 +35,38 @@
 
 #include "generate.h"
 
+#include "application/arguments/argument_parsers.h"
+#include "application/arguments/flag_argument.h"
+#include "application/arguments/path_argument.h"
 #include "generate_bindings.h"
 #include "generate_type_db.h"
-#include "library/core/file_system_utilities.h"
 
 namespace GodotObjectCompiler
 {
-    static auto flag_regenerate_bindings = "regenerate_bindings";
-
-    HashSet<String> Generate::flags = {flag_regenerate_bindings};
-
-    bool Generate::validate_arguments(ApplicationContext& p_context)
+    Vector<Ref<CommandLineArgument>> GenerateArguments::get_arguments() const
     {
-        return std::all_of(
-            p_context.program_arguments.begin(), p_context.program_arguments.end(),
-            [](const String& p_arg) { return flags.find(p_arg) != flags.end(); });
+        return {flags};
     }
 
-    Ref<ProgramError> Generate::run(ApplicationContext& p_context)
+    CommandLineArgumentParseResult
+    Generate::register_required_arguments(ApplicationContext& p_context) const
     {
+        return p_context
+            .register_argument_lists<CLIArgs::GDExtensionProjectAruments, GenerateArguments>();
+    }
+
+    Ref<ProgramError> Generate::execute(ApplicationContext& p_context)
+    {
+        const auto project_arguments =
+            p_context.get_argument_list<CLIArgs::GDExtensionProjectAruments>();
+        const auto generate_arguments = p_context.get_argument_list<GenerateArguments>();
+
         GenerateTypeDB generate_type_db;
         GenerateBindings generate_bindings;
 
-        for (const String& argument : p_context.program_arguments) {
-            if (argument == flag_regenerate_bindings) {
-                for (const String& input_file : *p_context.files_input) {
-                    LibraryContext::instance()->force_regenerate(input_file);
-                }
+        if (generate_arguments->flags->value_equals(REGENERATE_BINDINGS)) {
+            for (const String& input_file : project_arguments->sources->get<Vector<Path>>()) {
+                LibraryContext::instance()->force_regenerate(input_file);
             }
         }
 

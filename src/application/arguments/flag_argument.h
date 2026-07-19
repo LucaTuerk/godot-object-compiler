@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* print_parsed.h                                                         */
+/* flag_argument.h                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -34,31 +34,49 @@
 /**************************************************************************/
 
 #pragma once
-#if GOC_TREE_SITTER_PARSER_ENABLED
-#include "application/arguments/argument_parsers.h"
-#include "program.h"
+#include "argument.h"
 
 namespace GodotObjectCompiler
 {
-    class PrintParsedArguments : public ICommandLineArgumentList
+    template <typename T> class FlagCommandLineArgumentParser : public ICommandLineArgumentParser<T>
     {
       public:
-        Ref<CommandLineArgument> input_files =
-            CommandLineArgument::positional(CLIArgs::Path, "The input files to parse and display.");
+        using InitList = std::initializer_list<Pair<String, T>>;
 
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
+        FlagCommandLineArgumentParser() = delete;
+
+        FlagCommandLineArgumentParser(InitList&& p_values);
+
+        Opt<T> parse_argument(const String& p_argument) override;
+
+        String get_argument_type_string() override
+        {
+            return "Flag";
+        }
+
+      private:
+        Dictionary<String, T> values;
     };
 
-    class PrintParsed : public IProgram
+    template <typename T>
+    FlagCommandLineArgumentParser<T>::FlagCommandLineArgumentParser(InitList&& p_values)
     {
-        PROGRAM(PrintParsed, "print/parsed")
+        for (const auto& [key, value] : p_values) {
+            values[key] = value;
+        }
+    }
 
-      public:
-        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+    template <typename T>
+    Opt<T> FlagCommandLineArgumentParser<T>::parse_argument(const String& p_argument)
+    {
+        auto itr = values.find(p_argument);
 
-        [[nodiscard]] CommandLineArgumentParseResult
-        register_required_arguments(ApplicationContext& p_context) const override;
-    };
+        if (itr == values.end()) {
+            return std::nullopt;
+        }
+
+        T& val = itr->second;
+        return val;
+    }
 
 } // namespace GodotObjectCompiler
-#endif

@@ -148,7 +148,7 @@ namespace GodotObjectCompiler
         return writer.get_string();
     }
 
-    Ref<ProgramError> GenerateResources::run(ApplicationContext& p_context)
+    Ref<ProgramError> GenerateResources::execute(ApplicationContext& p_context)
     {
         GenerateTypeDB generate_type_db;
         PROG_ERR_PASS_ON(generate_type_db.run(p_context));
@@ -323,13 +323,14 @@ namespace GodotObjectCompiler
         transformator.transform(global_namespace)->get_output(&writer);
 
         GenerateBindings generate_example;
-        p_context.paths_root = path_absolute("docs/files");
-        p_context.paths_include->push_back(*p_context.paths_root);
-        p_context.paths_generated = path_absolute("docs/generated_files");
+        // TODO: Fix this
+        p_context.arguments = {
+            format("--root=%s", path_absolute("docs/files").c_str()),
+            format("--include_paths=%s", path_absolute("docs/files").c_str()),
+            format("--generated_path=%s", path_absolute("docs/generated_files").c_str())};
         PROG_ERR_PASS_ON(generate_example.run(p_context));
 
         return ProgramError::OK;
     }
-
 } // namespace GodotObjectCompiler
 #endif
