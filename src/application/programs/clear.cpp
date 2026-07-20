@@ -35,6 +35,7 @@
 
 #include "clear.h"
 
+#include "application/arguments/argument_lists.h"
 #include "help.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
@@ -45,7 +46,7 @@ namespace GodotObjectCompiler
     CommandLineArgumentParseResult
     Clear::register_required_arguments(ApplicationContext& p_context) const
     {
-        return p_context.register_argument_lists<CLIArgs::GeneratorArguments>();
+        return p_context.register_argument_lists<GeneratorArguments>();
     }
 
     Ref<ProgramError> Clear::execute(ApplicationContext& p_context)
@@ -70,12 +71,12 @@ namespace GodotObjectCompiler
     CommandLineArgumentParseResult
     ClearGenerated::register_required_arguments(ApplicationContext& p_context) const
     {
-        return p_context.register_argument_lists<CLIArgs::GeneratorArguments>();
+        return p_context.register_argument_lists<GeneratorArguments>();
     }
 
     Ref<ProgramError> ClearGenerated::execute(ApplicationContext& p_context)
     {
-        const auto arguments = p_context.get_argument_list<CLIArgs::GeneratorArguments>();
+        const auto arguments = p_context.get_argument_list<GeneratorArguments>();
 
         if (directory_exits(arguments->generated_path->get<Path>())) {
             for (const String& entry : directory_entries(arguments->generated_path->get<Path>())) {
@@ -88,12 +89,12 @@ namespace GodotObjectCompiler
     CommandLineArgumentParseResult
     ClearTypeDB::register_required_arguments(ApplicationContext& p_context) const
     {
-        return p_context.register_argument_lists<CLIArgs::GeneratorArguments>();
+        return p_context.register_argument_lists<GeneratorArguments>();
     }
 
     Ref<ProgramError> ClearTypeDB::execute(ApplicationContext& p_context)
     {
-        const auto arguments = p_context.get_argument_list<CLIArgs::GeneratorArguments>();
+        const auto arguments = p_context.get_argument_list<GeneratorArguments>();
 
         if (directory_exits(arguments->type_db_path->get<Path>())) {
             for (const String& entry : directory_entries(arguments->type_db_path->get<Path>())) {

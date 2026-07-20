@@ -36,6 +36,7 @@
 #include "generate_type_db.h"
 
 #include "application/application_context.h"
+#include "application/arguments/argument_lists.h"
 #include "application/arguments/argument_parsers.h"
 #include "library/core/config.h"
 #include "library/core/file_system_utilities.h"
@@ -55,15 +56,13 @@ namespace GodotObjectCompiler
     CommandLineArgumentParseResult
     GenerateTypeDB::register_required_arguments(ApplicationContext& p_context) const
     {
-        return p_context.register_argument_lists<
-            CLIArgs::GeneratorArguments, CLIArgs::GDExtensionProjectAruments>();
+        return p_context.register_argument_lists<GeneratorArguments, GDExtensionProjectArguments>();
     }
 
     void GenerateTypeDB::generate_from_file(
         const File& p_file, const ApplicationContext& p_context, IParser* p_parser)
     {
-        const auto project_args =
-            p_context.get_argument_list<CLIArgs::GDExtensionProjectAruments>();
+        const auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
 
         auto& [path, include_path] = p_file;
 
@@ -130,9 +129,8 @@ namespace GodotObjectCompiler
 
     Ref<ProgramError> GenerateTypeDB::execute(ApplicationContext& p_context)
     {
-        const auto project_args =
-            p_context.get_argument_list<CLIArgs::GDExtensionProjectAruments>();
-        const auto generator_args = p_context.get_argument_list<CLIArgs::GeneratorArguments>();
+        const auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
+        const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
 
         LibraryContext::instance()->add_include_paths(project_args->godot_cpp->get<Vector<Path>>());
 
@@ -152,7 +150,7 @@ namespace GodotObjectCompiler
             {project_args->extension_api->get<Path>(), std::nullopt}, p_context,
             &extension_api_parser);
 
-        Vector<Path> includes = generator_args->include_paths->get<Vector<Path>>();
+        auto includes = generator_args->include_paths->get<Vector<Path>>();
         includes.push_back(generator_args->root_path->get<Path>());
 
         for (String include_path : includes) {

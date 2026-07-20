@@ -34,6 +34,7 @@
 /**************************************************************************/
 #include "generate_bindings.h"
 
+#include "application/arguments/argument_lists.h"
 #include "application/arguments/argument_parsers.h"
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
@@ -57,8 +58,7 @@ namespace GodotObjectCompiler
     GenerateBindings::register_required_arguments(ApplicationContext& p_context) const
     {
         return p_context.register_argument_lists<
-            CLIArgs::ApplicationArguments, CLIArgs::GeneratorArguments,
-            CLIArgs::GDExtensionProjectAruments>();
+            ApplicationArguments, GeneratorArguments, GDExtensionProjectArguments>();
     }
 
     String GenerateBindings::file_id(const String& p_file_name)
@@ -89,9 +89,9 @@ namespace GodotObjectCompiler
 
     Ref<ProgramError> GenerateBindings::execute(ApplicationContext& p_context)
     {
-        auto application_args = p_context.get_argument_list<CLIArgs::ApplicationArguments>();
-        auto project_args = p_context.get_argument_list<CLIArgs::GDExtensionProjectAruments>();
-        auto generator_args = p_context.get_argument_list<CLIArgs::GeneratorArguments>();
+        auto application_args = p_context.get_argument_list<ApplicationArguments>();
+        auto generator_args = p_context.get_argument_list<GeneratorArguments>();
+        auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
 
         PROG_ERR_COND(
             !(AssumedGodotTypes::validate_assumptions() &&

@@ -43,11 +43,6 @@
 namespace GodotObjectCompiler
 {
 
-    Vector<Ref<CommandLineArgument>> InitToolsArguments::get_arguments() const
-    {
-        return {tools_path};
-    }
-
     CommandLineArgumentParseResult
     InitTools::register_required_arguments(ApplicationContext& p_context) const
     {

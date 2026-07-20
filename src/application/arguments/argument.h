@@ -36,6 +36,7 @@
 #pragma once
 #include "library/core/core.h"
 #include "library/core/string_utilities.h"
+#include "library/tree/syntax/function.h"
 
 namespace GodotObjectCompiler
 {
@@ -72,6 +73,86 @@ namespace GodotObjectCompiler
 
         friend class CommandLineArgument;
         friend class ApplicationContext;
+    };
+
+    class CommandLineArgumentImpl
+    {
+      public:
+        CommandLineArgumentImpl() = default;
+
+        CommandLineArgumentImpl(const CommandLineArgumentImpl& other) = default;
+
+        CommandLineArgumentImpl(CommandLineArgumentImpl&& other) noexcept = default;
+
+        [[nodiscard]] bool is_required() const;
+
+        [[nodiscard]] bool is_positional() const;
+
+        [[nodiscard]] bool has_value() const;
+
+        [[nodiscard]] Size size() const;
+
+        [[nodiscard]] String get_name() const;
+
+        [[nodiscard]] String get_short_name() const;
+
+        [[nodiscard]] String get_argument_type() const;
+
+        [[nodiscard]] String get_description();
+
+        [[nodiscard]] bool has_correct_name(const String& p_argument) const;
+
+        [[nodiscard]] String get_argument_part(const String& p_argument) const;
+
+        void parse_arguments(const Vector<String>& p_arguments);
+
+      protected:
+        std::function<bool(const CommandLineArgumentImpl*)> has_value_function;
+        std::function<Size(const CommandLineArgumentImpl*)> get_size_function;
+        std::function<void(CommandLineArgumentImpl*, const Vector<String>&)>
+            parse_arguments_function;
+        std::function<String(const CommandLineArgumentImpl*)> get_argument_type_function;
+
+        String name;
+        String short_name;
+        String name_prefix;
+        String short_name_prefix;
+        String description;
+        bool value_available = false;
+        bool required_arg = false;
+        bool positional_arg = false;
+
+        friend CommandLineArgument;
+    };
+
+    template <class T> class CommandLineArgumentImplT : public CommandLineArgumentImpl
+    {
+      public:
+        CommandLineArgumentImplT();
+
+        CommandLineArgumentImplT(const CommandLineArgumentImplT& other) = default;
+
+        CommandLineArgumentImplT(CommandLineArgumentImplT&& other) noexcept = default;
+
+        [[nodiscard]] bool value_equals(const T& p_value) const;
+
+        [[nodiscard]] T get(Index p_index = 0) const;
+
+        [[nodiscard]] Vector<T> get_vector() const;
+
+      private:
+        bool has_value_impl() const;
+
+        Size get_size_impl() const;
+
+        void parse_arguments_impl(const Vector<String>& p_arguments);
+
+        String get_argument_type_impl() const;
+
+        Vector<T> values;
+        Ref<ICommandLineArgumentParser<T>> parser;
+
+        friend CommandLineArgument;
     };
 
     class CommandLineArgument
@@ -134,27 +215,8 @@ namespace GodotObjectCompiler
         static bool validate_arguments(const Vector<CommandLineArgument>& p_arguments);
 
       private:
-        template <typename T> void parse_arguments_t(const Vector<String>& p_arguments);
-
-        template <typename T> String get_argument_type_t() const;
-
-        [[nodiscard]] bool has_correct_name(const String& p_argument) const;
-
-        [[nodiscard]] String get_argument_part(const String& p_argument) const;
-
-        std::function<void(CommandLineArgument*, const Vector<String>&)> parse_arguments_func;
-        std::function<String(const CommandLineArgument*)> get_argument_type_func;
-        std::type_index type = typeid(void);
-        Vector<std::any> values;
-        std::any parser;
-        String name;
-        String short_name;
-        String name_prefix;
-        String short_name_prefix;
-        String description;
-        bool value_available = false;
-        bool required_arg = false;
-        bool positional_arg = false;
+        TypeIndex type = typeid(void);
+        Ref<CommandLineArgumentImpl> impl;
     };
 
     class ICommandLineArgumentList
@@ -176,100 +238,67 @@ namespace GodotObjectCompiler
         }
     }
 
-    template <typename P>
-    Ref<CommandLineArgument>
-    CommandLineArgument::positional(const Ref<P>& p_parser, const String& p_description)
+    template <class T> CommandLineArgumentImplT<T>::CommandLineArgumentImplT()
     {
-        Ref<CommandLineArgument> result = make_ref<CommandLineArgument>();
-        result->positional_arg = true;
-        result->parser =
-            std::dynamic_pointer_cast<ICommandLineArgumentParser<typename P::ValueType>>(p_parser);
-        result->type = typeid(typename P::ValueType);
-        result->description = p_description;
-        result->parse_arguments_func =
-            &CommandLineArgument::parse_arguments_t<typename P::ValueType>;
-        return result;
-    }
-    template <typename P>
-    Ref<CommandLineArgument> CommandLineArgument::optional(
-        const Ref<P>& p_parser, const String& p_name, const String& p_short_name,
-        const String& p_description)
-    {
-        Ref<CommandLineArgument> result = make_ref<CommandLineArgument>();
-        result->type = typeid(typename P::ValueType);
-        result->parser =
-            std::dynamic_pointer_cast<ICommandLineArgumentParser<typename P::ValueType>>(p_parser);
-        result->name = p_name;
-        result->short_name = p_short_name;
-        result->name_prefix = format("--%s=", p_name.c_str());
-        result->short_name_prefix = format("-%s=", p_short_name.c_str());
-        result->description = p_description;
-        result->parse_arguments_func =
-            &CommandLineArgument::parse_arguments_t<typename P::ValueType>;
-        result->get_argument_type_func =
-            &CommandLineArgument::get_argument_type_t<typename P::ValueType>;
-        return result;
+        has_value_function = [](const CommandLineArgumentImpl* ptr) {
+            return static_cast<const CommandLineArgumentImplT*>(ptr)->has_value_impl();
+        };
+
+        get_size_function = [](const CommandLineArgumentImpl* ptr) {
+            return static_cast<const CommandLineArgumentImplT*>(ptr)->get_size_impl();
+        };
+
+        get_argument_type_function = [](const CommandLineArgumentImpl* ptr) {
+            return static_cast<const CommandLineArgumentImplT*>(ptr)->get_argument_type_impl();
+        };
+
+        parse_arguments_function = [](CommandLineArgumentImpl* ptr,
+                                      const Vector<String>& p_arguments) {
+            return static_cast<CommandLineArgumentImplT*>(ptr)->parse_arguments_impl(p_arguments);
+        };
     }
 
-    template <typename P>
-    Ref<CommandLineArgument> CommandLineArgument::defaulted(
-        const Ref<P>& p_parser, const String& p_name, const String& p_short_name,
-        const String& p_description, const typename P::ValueType& p_default)
+    template <class T> bool CommandLineArgumentImplT<T>::value_equals(const T& p_value) const
     {
-        Ref<CommandLineArgument> result = make_ref<CommandLineArgument>();
-        result->type = typeid(typename P::ValueType);
-        result->parser =
-            std::dynamic_pointer_cast<ICommandLineArgumentParser<typename P::ValueType>>(p_parser);
-        result->name = p_name;
-        result->short_name = p_short_name;
-        result->name_prefix = format("--%s=", p_name.c_str());
-        result->short_name_prefix = format("-%s=", p_short_name.c_str());
-        result->description = p_description;
-        result->value_available = true;
-        result->values.push_back(p_default);
-        result->parse_arguments_func =
-            &CommandLineArgument::parse_arguments_t<typename P::ValueType>;
-        result->get_argument_type_func =
-            &CommandLineArgument::get_argument_type_t<typename P::ValueType>;
-        return result;
+        if (!has_value()) {
+            return false;
+        }
+        return values[0] == p_value;
     }
 
-    template <typename P>
-    Ref<CommandLineArgument> CommandLineArgument::required(
-        const Ref<P>& p_parser, const String& p_name, const String& p_short_name,
-        const String& p_description)
+    template <class T> T CommandLineArgumentImplT<T>::get(Index p_index) const
     {
-        Ref<CommandLineArgument> result = make_ref<CommandLineArgument>();
-        result->type = typeid(typename P::ValueType);
-        result->parser =
-            std::dynamic_pointer_cast<ICommandLineArgumentParser<typename P::ValueType>>(p_parser);
-        result->name = p_name;
-        result->short_name = p_short_name;
-        result->name_prefix = format("--%s=", p_name.c_str());
-        result->short_name_prefix = format("-%s=", p_short_name.c_str());
-        result->description = p_description;
-        result->required_arg = true;
-        result->parse_arguments_func =
-            &CommandLineArgument::parse_arguments_t<typename P::ValueType>;
-        result->get_argument_type_func =
-            &CommandLineArgument::get_argument_type_t<typename P::ValueType>;
-        return result;
-    }
-
-    template <typename T>
-    void CommandLineArgument::parse_arguments_t(const Vector<String>& p_arguments)
-    {
+        PANIC_COND(p_index >= values.size(), "Invalid out of bounds access");
         PANIC_COND(
-            parser.type() != typeid(Ref<ICommandLineArgumentParser<T>>), "Invalid parser type.");
+            !positional_arg && p_index != 0, "Invalid positional access on no positional argument");
+        return values[p_index];
+    }
 
+    template <class T> Vector<T> CommandLineArgumentImplT<T>::get_vector() const
+    {
+        return values;
+    }
+
+    template <class T> bool CommandLineArgumentImplT<T>::has_value_impl() const
+    {
+        return !values.empty();
+    }
+
+    template <class T> Size CommandLineArgumentImplT<T>::get_size_impl() const
+    {
+        return values.size();
+    }
+
+    template <class T>
+    void CommandLineArgumentImplT<T>::parse_arguments_impl(const Vector<String>& p_arguments)
+    {
         auto is_named_arg = [](const String& p_argument) { return string_prefix(p_argument, "-"); };
 
-        auto parser_t = std::any_cast<Ref<ICommandLineArgumentParser<T>>>(parser);
         Index positional_i = 0;
 
         for (const auto& argument : p_arguments) {
             if (has_correct_name(argument)) {
-                Opt<T> opt_value = parser_t->parse_argument(get_argument_part(argument));
+                Opt<T> opt_value = parser->parse_argument(get_argument_part(argument));
                 if (opt_value.has_value()) {
                     value_available = true;
                     values.clear();
@@ -279,7 +308,7 @@ namespace GodotObjectCompiler
                     values.clear();
                 }
             } else if (positional_arg && !is_named_arg(argument)) {
-                Opt<T> opt_value = parser_t->parse_argument(argument);
+                Opt<T> opt_value = parser->parse_argument(argument);
                 if (opt_value.has_value()) {
                     value_available = true;
                     if (values.size() >= positional_i) {
@@ -295,12 +324,79 @@ namespace GodotObjectCompiler
         }
     }
 
-    template <typename T> String CommandLineArgument::get_argument_type_t() const
+    template <class T> String CommandLineArgumentImplT<T>::get_argument_type_impl() const
     {
-        PANIC_COND(
-            parser.type() != typeid(Ref<ICommandLineArgumentParser<T>>), "Invalid parser type.");
-        auto parser_t = std::any_cast<Ref<ICommandLineArgumentParser<T>>>(parser);
-        return parser_t->get_argument_type_string();
+        return parser->get_argument_type_string();
+    }
+
+    template <typename P>
+    Ref<CommandLineArgument>
+    CommandLineArgument::positional(const Ref<P>& p_parser, const String& p_description)
+    {
+        auto result = make_ref<CommandLineArgument>();
+        auto impl = make_ref<CommandLineArgumentImplT<typename P::ValueType>>();
+        result->impl = std::dynamic_pointer_cast<CommandLineArgumentImpl>(impl);
+        result->type = typeid(typename P::ValueType);
+        impl->positional_arg = true;
+        impl->parser = p_parser;
+        impl->description = p_description;
+        return result;
+    }
+    template <typename P>
+    Ref<CommandLineArgument> CommandLineArgument::optional(
+        const Ref<P>& p_parser, const String& p_name, const String& p_short_name,
+        const String& p_description)
+    {
+        auto result = make_ref<CommandLineArgument>();
+        auto impl = make_ref<CommandLineArgumentImplT<typename P::ValueType>>();
+        result->impl = std::dynamic_pointer_cast<CommandLineArgumentImpl>(impl);
+        result->type = typeid(typename P::ValueType);
+        impl->parser = p_parser;
+        impl->name = p_name;
+        impl->short_name = p_short_name;
+        impl->name_prefix = format("--%s=", p_name.c_str());
+        impl->short_name_prefix = format("-%s=", p_short_name.c_str());
+        impl->description = p_description;
+        return result;
+    }
+
+    template <typename P>
+    Ref<CommandLineArgument> CommandLineArgument::defaulted(
+        const Ref<P>& p_parser, const String& p_name, const String& p_short_name,
+        const String& p_description, const typename P::ValueType& p_default)
+    {
+        auto result = make_ref<CommandLineArgument>();
+        auto impl = make_ref<CommandLineArgumentImplT<typename P::ValueType>>();
+        result->impl = std::dynamic_pointer_cast<CommandLineArgumentImpl>(impl);
+        result->type = typeid(typename P::ValueType);
+        impl->parser = p_parser;
+        impl->name = p_name;
+        impl->short_name = p_short_name;
+        impl->name_prefix = format("--%s=", p_name.c_str());
+        impl->short_name_prefix = format("-%s=", p_short_name.c_str());
+        impl->description = p_description;
+        impl->value_available = true;
+        impl->values.push_back(p_default);
+        return result;
+    }
+
+    template <typename P>
+    Ref<CommandLineArgument> CommandLineArgument::required(
+        const Ref<P>& p_parser, const String& p_name, const String& p_short_name,
+        const String& p_description)
+    {
+        auto result = make_ref<CommandLineArgument>();
+        auto impl = make_ref<CommandLineArgumentImplT<typename P::ValueType>>();
+        result->impl = std::dynamic_pointer_cast<CommandLineArgumentImpl>(impl);
+        result->type = typeid(typename P::ValueType);
+        impl->parser = p_parser;
+        impl->name = p_name;
+        impl->short_name = p_short_name;
+        impl->name_prefix = format("--%s=", p_name.c_str());
+        impl->short_name_prefix = format("-%s=", p_short_name.c_str());
+        impl->description = p_description;
+        impl->required_arg = true;
+        return result;
     }
 
     template <typename T>
@@ -332,39 +428,22 @@ namespace GodotObjectCompiler
     template <typename T> bool CommandLineArgument::value_equals(const T& p_value) const
     {
         PANIC_COND(type != typeid(T), "Invalid type access.");
-        if (!has_value()) {
-            return false;
-        }
-        return get<T>() == p_value;
+        auto impl_t = static_cast<CommandLineArgumentImplT<T>*>(impl.get());
+        return impl_t->value_equals(p_value);
     }
 
     template <typename T> T CommandLineArgument::get(Index p_index) const
     {
-        PANIC_COND(
-            !positional_arg && p_index != 0, "%s: Invalid positional access.", get_name().c_str());
-        PANIC_COND(
-            !value_available || p_index >= values.size(),
-            "%s: Invalid value access. No value available.", get_name().c_str());
-        PANIC_COND(
-            values[p_index].type() != typeid(T), "%s: Invalid argument type access.",
-            get_name().c_str());
-        return std::any_cast<T>(values[p_index]);
+        PANIC_COND(type != typeid(T), "Invalid type access.");
+        auto impl_t = static_cast<CommandLineArgumentImplT<T>*>(impl.get());
+        return impl_t->get(p_index);
     }
 
     template <typename T> Vector<T> CommandLineArgument::get_vector() const
     {
-        PANIC_COND(
-            !positional_arg, "%s: Invalid vector access on non position argument.",
-            get_name().c_str());
-
-        Vector<T> result;
-        for (const auto& argument : values) {
-            PANIC_COND(
-                argument.type() != typeid(T), "%s: Invalid argument type access.",
-                get_name().c_str());
-            result.push_back(std::any_cast<T>(argument));
-        }
-        return result;
+        PANIC_COND(type != typeid(T), "Invalid type access.");
+        auto impl_t = static_cast<CommandLineArgumentImplT<T>*>(impl.get());
+        return impl_t->get_vector();
     }
 } // namespace GodotObjectCompiler
 

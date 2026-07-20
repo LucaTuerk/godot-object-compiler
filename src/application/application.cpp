@@ -38,6 +38,7 @@
 #include <utility>
 
 #include "application_context.h"
+#include "arguments/argument_lists.h"
 #include "build_info.h"
 #include "compiled_resources/res.gen.h"
 #include "library/core/file_system_utilities.h"
@@ -48,6 +49,7 @@
 #include "library/library_context.h"
 #include "library/parser.h"
 #include "library/type_db.h"
+#include "library_godot/parsers/extension_api_parser.h"
 #include "programs/clear.h"
 #include "programs/help.h"
 #include "programs/program.h"
@@ -56,7 +58,7 @@ namespace GodotObjectCompiler
 {
     bool Application::was_last_exit_graceful() const
     {
-        auto arguments = context.get_argument_list<CLIArgs::ApplicationArguments>();
+        auto arguments = context.get_argument_list<ApplicationArguments>();
 
         const String lock_path =
             path_concat(arguments->goc_path->get<Path>(), ".goc_graceful_lock");
@@ -77,7 +79,7 @@ namespace GodotObjectCompiler
             return p_return_code;
         }
 
-        auto arguments = context.get_argument_list<CLIArgs::ApplicationArguments>();
+        auto arguments = context.get_argument_list<ApplicationArguments>();
         if (const String lock_path =
                 path_concat(arguments->goc_path->get<Path>(), ".goc_graceful_lock");
             file_exists(lock_path) && remove_file(lock_path)) {
@@ -94,7 +96,7 @@ namespace GodotObjectCompiler
 
     bool Application::init_local_resources() const
     {
-        auto arguments = context.get_argument_list<CLIArgs::ApplicationArguments>();
+        auto arguments = context.get_argument_list<ApplicationArguments>();
 
         if (!Resources::instance()->copy_resources_to_folder(
                 {
@@ -118,6 +120,11 @@ namespace GodotObjectCompiler
         return cleanup();
     }
 
+    ApplicationContext& Application::get_context()
+    {
+        return context;
+    }
+
     Application::Application()
     {
         PANIC_COND(
@@ -135,7 +142,19 @@ namespace GodotObjectCompiler
     int Application::setup_context(Vector<String> p_arguments)
     {
         Resources::instance()->load_pack(&GOC_Resources::Pack);
-        CLI_PARS_ERR_V(context.register_argument_lists<CLIArgs::ApplicationArguments>(), 1);
+
+        CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
+        const auto application_arguments = context.get_argument_list<ApplicationArguments>();
+
+        Permissions::instance()->add_write_path(application_arguments->goc_path->get<Path>());
+        LibraryContext::instance()->set_error_level(
+            application_arguments->log_level->get<ErrorLevel>(),
+            application_arguments->log_detail->get<ErrorDetail>());
+        LibraryContext::instance()->set_default_parser(
+            application_arguments->source_parser->get<String>(),
+            IParser::Capabilities::SOURCE_PARSER);
+        LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(
+            IParser::Capabilities::JSON_CONFIG_PARSER);
 
         context.arguments = std::move(p_arguments);
 
@@ -151,14 +170,10 @@ namespace GodotObjectCompiler
         }
 
         context.arguments = program_arguments;
-        const auto arguments = context.get_argument_list<CLIArgs::ApplicationArguments>();
 
         if (!context.program->is_readonly()) {
-            CLI_PARS_ERR_V(context.register_argument_lists<CLIArgs::GeneratorArguments>(), 1);
-            const auto generator_arguments =
-                context.get_argument_list<CLIArgs::GeneratorArguments>();
-
-            Permissions::instance()->add_write_path(arguments->goc_path->get<Path>());
+            CLI_PARS_ERR_V(context.register_argument_lists<GeneratorArguments>(), 1);
+            const auto generator_arguments = context.get_argument_list<GeneratorArguments>();
 
             Clear clear;
 
@@ -168,7 +183,7 @@ namespace GodotObjectCompiler
                     clear.run(context) != ProgramError::OK,
                     "Failed to clear the cache directory after an ungraceful exit was "
                     "detected.\nPlease delete the \"%s\" directory to ensure proper operations.",
-                    arguments->goc_path->get<Path>().c_str());
+                    application_arguments->goc_path->get<Path>().c_str());
             }
 
             Vector<Path> combined_include_paths;
@@ -178,7 +193,7 @@ namespace GodotObjectCompiler
             combined_include_paths.insert(
                 combined_include_paths.end(), include_paths.begin(), include_paths.end());
 
-            auto goc_path = arguments->goc_path->get<Path>();
+            auto goc_path = application_arguments->goc_path->get<Path>();
             auto cache_path = generator_arguments->type_db_path->get<Path>();
             auto generated_path = generator_arguments->generated_path->get<Path>();
 
@@ -234,7 +249,7 @@ namespace GodotObjectCompiler
 
     int Application::cleanup()
     {
-        auto arguments = context.get_argument_list<CLIArgs::ApplicationArguments>();
+        auto arguments = context.get_argument_list<ApplicationArguments>();
 
         if (!context.program->is_readonly()) {
             LibraryContext::instance()->save_last_modified_times_file(

@@ -44,9 +44,12 @@ namespace GodotObjectCompiler
     {
       public:
         Ref<CommandLineArgument> input_files = CommandLineArgument::positional(
-            CLIArgs::Path, "Paths to the files to generated and print.");
+            CommandLineArgumentParsers::Path, "Paths to the files to generated and print.");
 
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {input_files};
+        }
     };
 
     class PrintTransformed : public IProgram

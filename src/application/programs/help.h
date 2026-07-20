@@ -44,9 +44,12 @@ namespace GodotObjectCompiler
     {
       public:
         Ref<CommandLineArgument> program_path =
-            CommandLineArgument::positional(CLIArgs::String, "");
+            CommandLineArgument::positional(CommandLineArgumentParsers::String, "");
 
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {program_path};
+        }
     };
 
     class Help : public IProgram

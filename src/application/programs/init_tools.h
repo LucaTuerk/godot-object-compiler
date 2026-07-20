@@ -42,10 +42,13 @@ namespace GodotObjectCompiler
     class InitToolsArguments : public ICommandLineArgumentList
     {
       public:
-        Ref<CommandLineArgument> tools_path =
-            CommandLineArgument::positional(CLIArgs::Path, "The path to the tools directory.");
+        Ref<CommandLineArgument> tools_path = CommandLineArgument::positional(
+            CommandLineArgumentParsers::Path, "The path to the tools directory.");
 
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {tools_path};
+        }
     };
 
     class InitTools : public IProgram

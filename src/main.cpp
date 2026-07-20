@@ -56,17 +56,5 @@ int main(int argc, char* argv[])
     }
 
     Application application;
-
-    const CLIArgs::ApplicationArgs arguments;
-    CLI_PARS_ERR_V(CommandLineArgument::parse(arguments.get_arguments(), args), 1);
-
-    const auto error_level = arguments.log_level->get<ErrorLevel>();
-    const auto error_detail = arguments.log_detail->get<ErrorDetail>();
-    const auto source_parser = arguments.source_parser->get<String>();
-
-    LibraryContext::instance()->set_error_level(error_level, error_detail);
-    LibraryContext::instance()->set_default_parser(source_parser, IParser::SOURCE_PARSER);
-    LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(IParser::JSON_CONFIG_PARSER);
-
     return application.run(args);
 }

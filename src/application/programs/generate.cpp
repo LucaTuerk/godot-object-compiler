@@ -35,6 +35,7 @@
 
 #include "generate.h"
 
+#include "application/arguments/argument_lists.h"
 #include "application/arguments/argument_parsers.h"
 #include "application/arguments/flag_argument.h"
 #include "application/arguments/path_argument.h"
@@ -43,22 +44,15 @@
 
 namespace GodotObjectCompiler
 {
-    Vector<Ref<CommandLineArgument>> GenerateArguments::get_arguments() const
-    {
-        return {flags};
-    }
-
     CommandLineArgumentParseResult
     Generate::register_required_arguments(ApplicationContext& p_context) const
     {
-        return p_context
-            .register_argument_lists<CLIArgs::GDExtensionProjectAruments, GenerateArguments>();
+        return p_context.register_argument_lists<GDExtensionProjectArguments, GenerateArguments>();
     }
 
     Ref<ProgramError> Generate::execute(ApplicationContext& p_context)
     {
-        const auto project_arguments =
-            p_context.get_argument_list<CLIArgs::GDExtensionProjectAruments>();
+        const auto project_arguments = p_context.get_argument_list<GDExtensionProjectArguments>();
         const auto generate_arguments = p_context.get_argument_list<GenerateArguments>();
 
         GenerateTypeDB generate_type_db;

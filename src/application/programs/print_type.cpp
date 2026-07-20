@@ -45,11 +45,6 @@ namespace GodotObjectCompiler
         return p_context.register_argument_lists<PrintTypeArguments>();
     }
 
-    Vector<Ref<CommandLineArgument>> PrintTypeArguments::get_arguments() const
-    {
-        return {input_types};
-    }
-
     Ref<ProgramError> PrintType::execute(ApplicationContext& p_context)
     {
         const auto arguments = p_context.get_argument_list<PrintTypeArguments>();

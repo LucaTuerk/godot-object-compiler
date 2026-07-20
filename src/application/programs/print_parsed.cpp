@@ -43,11 +43,6 @@
 namespace GodotObjectCompiler
 {
 
-    Vector<Ref<CommandLineArgument>> PrintParsedArguments::get_arguments() const
-    {
-        return {input_files};
-    }
-
     CommandLineArgumentParseResult
     PrintParsed::register_required_arguments(ApplicationContext& p_context) const
     {

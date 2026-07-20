@@ -37,7 +37,6 @@
 
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
-#include "library/library_context.h"
 
 namespace GodotObjectCompiler
 {
@@ -86,7 +85,7 @@ namespace GodotObjectCompiler
 
     void CommandLineArgument::parse_arguments(const Vector<String>& p_arguments)
     {
-        parse_arguments_func(this, p_arguments);
+        impl->parse_arguments(p_arguments);
     }
 
     CommandLineArgumentParseResult CommandLineArgument::parse(
@@ -109,42 +108,42 @@ namespace GodotObjectCompiler
 
     bool CommandLineArgument::is_required() const
     {
-        return required_arg;
+        return impl->is_required();
     }
 
     bool CommandLineArgument::is_positional() const
     {
-        return positional_arg;
+        return impl->is_positional();
     }
 
     bool CommandLineArgument::has_value() const
     {
-        return value_available;
+        return impl->value_available;
     }
 
     Size CommandLineArgument::size() const
     {
-        return values.size();
+        return impl->size();
     }
 
     String CommandLineArgument::get_name() const
     {
-        return name;
+        return impl->get_name();
     }
 
     String CommandLineArgument::get_short_name() const
     {
-        return short_name;
+        return impl->get_short_name();
     }
 
     String CommandLineArgument::get_argument_type() const
     {
-        return get_argument_type_func(this);
+        return impl->get_argument_type();
     }
 
     String CommandLineArgument::get_description()
     {
-        return description;
+        return impl->get_description();
     }
 
     bool CommandLineArgument::validate_arguments(const Vector<CommandLineArgument>& p_arguments)
@@ -159,13 +158,53 @@ namespace GodotObjectCompiler
         return success;
     }
 
-    bool CommandLineArgument::has_correct_name(const String& p_argument) const
+    bool CommandLineArgumentImpl::is_required() const
+    {
+        return required_arg;
+    }
+
+    bool CommandLineArgumentImpl::is_positional() const
+    {
+        return positional_arg;
+    }
+
+    bool CommandLineArgumentImpl::has_value() const
+    {
+        return has_value_function(this);
+    }
+
+    Size CommandLineArgumentImpl::size() const
+    {
+        return get_size_function(this);
+    }
+
+    String CommandLineArgumentImpl::get_name() const
+    {
+        return name;
+    }
+
+    String CommandLineArgumentImpl::get_short_name() const
+    {
+        return short_name;
+    }
+
+    String CommandLineArgumentImpl::get_argument_type() const
+    {
+        return get_argument_type_function(this);
+    }
+
+    String CommandLineArgumentImpl::get_description()
+    {
+        return description;
+    }
+
+    bool CommandLineArgumentImpl::has_correct_name(const String& p_argument) const
     {
         return !positional_arg && (string_prefix(p_argument, name_prefix) ||
                                    string_prefix(p_argument, short_name_prefix));
     }
 
-    String CommandLineArgument::get_argument_part(const String& p_argument) const
+    String CommandLineArgumentImpl::get_argument_part(const String& p_argument) const
     {
         if (positional_arg) {
             return p_argument;
@@ -181,4 +220,10 @@ namespace GodotObjectCompiler
 
         PANIC("Invalid access to argument part. No argument name or short name match.");
     }
+
+    void CommandLineArgumentImpl::parse_arguments(const Vector<String>& p_arguments)
+    {
+        return parse_arguments_function(this, p_arguments);
+    }
+
 } // namespace GodotObjectCompiler

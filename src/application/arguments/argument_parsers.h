@@ -45,7 +45,7 @@
 #include "library/parsers/tree-sitter/parser.h"
 #endif
 
-namespace GodotObjectCompiler::CLIArgs
+namespace GodotObjectCompiler::CommandLineArgumentParsers
 {
     static inline Ref<PathCommandLineArgumentParser> Path =
         make_ref<PathCommandLineArgumentParser>();
@@ -84,85 +84,4 @@ namespace GodotObjectCompiler::CLIArgs
 #endif
             }));
 
-    class ApplicationArgs : public ICommandLineArgumentList
-    {
-      public:
-        Ref<CommandLineArgument> log_level = CommandLineArgument::defaulted(
-            LogLevel, "log_level", "L", "The log level to use.", INFO);
-
-        Ref<CommandLineArgument> log_detail = CommandLineArgument::defaulted(
-            LogDetail, "log_detail", "D", "The log detail to use.", FULL);
-
-        Ref<CommandLineArgument> source_parser = CommandLineArgument::optional(
-            CLIArgs::SourceParser, "source_parser", "SP",
-            "The name of the source parser to be used by godot-object-compiler.");
-
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
-        {
-            return {log_level, log_detail, source_parser};
-        }
-    };
-
-    class ApplicationArguments : public ICommandLineArgumentList
-    {
-      public:
-        Ref<CommandLineArgument> goc_path = CommandLineArgument::defaulted(
-            CLIArgs::Path, "goc_path", "P",
-            "The directory that will be used by godot-object-compiler for caching.", ".goc");
-
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
-        {
-            return {goc_path};
-        }
-    };
-
-    class GeneratorArguments : public ICommandLineArgumentList
-    {
-      public:
-        Ref<CommandLineArgument> type_db_path = CommandLineArgument::defaulted(
-            CLIArgs::Path, "type_db_path", "T",
-            "The directory that will be used by godot-object-compiler for TypeDB caching.",
-            ".goc/cache");
-
-        Ref<CommandLineArgument> generated_path = CommandLineArgument::defaulted(
-            CLIArgs::Path, "generated_path", "G",
-            "The directory that will be used by godot-object-compiler for generated files.",
-            ".goc/generated");
-
-        Ref<CommandLineArgument> include_paths = CommandLineArgument::defaulted(
-            CLIArgs::PathList, "include_paths", "I",
-            "The generators include paths, comma seperated. Must include the godot-cpp include and "
-            "gen/include paths.",
-            {});
-
-        Ref<CommandLineArgument> root_path = CommandLineArgument::required(
-            CLIArgs::Path, "root_path", "R", "The projects root path.");
-
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
-        {
-            return {type_db_path, generated_path, include_paths, root_path};
-        }
-    };
-
-    class GDExtensionProjectAruments : public ICommandLineArgumentList
-    {
-      public:
-        Ref<CommandLineArgument> sources = CommandLineArgument::defaulted(
-            CLIArgs::PathList, "sources", "S",
-            "The generators target source file paths, comma seperated.", {});
-
-        Ref<CommandLineArgument> godot_cpp = CommandLineArgument::required(
-            CLIArgs::PathList, "godot_cpp", "GPP",
-            "The path to the godot-cpp repositories root used with your extension.");
-
-        Ref<CommandLineArgument> extension_api = CommandLineArgument::required(
-            CLIArgs::Path, "extension_api", "E",
-            "The path to the extension api json file to be used with your extension.");
-
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
-        {
-            return {sources, godot_cpp, extension_api};
-        }
-    };
-
-} // namespace GodotObjectCompiler::CLIArgs
+} // namespace GodotObjectCompiler::CommandLineArgumentParsers

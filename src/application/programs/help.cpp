@@ -134,11 +134,6 @@ namespace GodotObjectCompiler
         written.insert(p_path);
     }
 
-    Vector<Ref<CommandLineArgument>> HelpArguments::get_arguments() const
-    {
-        return {program_path};
-    }
-
     Ref<ProgramError> Help::execute(ApplicationContext& p_context)
     {
         const auto arguments = p_context.get_argument_list<HelpArguments>();

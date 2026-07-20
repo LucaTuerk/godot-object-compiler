@@ -50,7 +50,10 @@ namespace GodotObjectCompiler
                     {"regenerate_bindings", REGENERATE_BINDINGS}}),
             "generate_flags", "", "");
 
-        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override;
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {flags};
+        }
     };
 
     class Generate : public IProgram
@@ -64,8 +67,6 @@ namespace GodotObjectCompiler
         Ref<ProgramError> execute(ApplicationContext& p_context) override;
 
         static HashSet<String> flags;
-
-        CLIArgs::GDExtensionProjectAruments project_args;
     };
 
 } // namespace GodotObjectCompiler
