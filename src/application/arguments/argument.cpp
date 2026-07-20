@@ -40,9 +40,9 @@
 
 namespace GodotObjectCompiler
 {
-    CommandLineArgumentParseResult::operator bool() const
+    bool CommandLineArgumentParseResult::succeeded() const
     {
-        return missing_required.size() == 0;
+        return missing_required.empty();
     }
 
     CommandLineArgumentParseResult
@@ -57,7 +57,7 @@ namespace GodotObjectCompiler
         return result;
     }
 
-    Vector<Ref<CommandLineArgument>> CommandLineArgumentParseResult::get_missing_arguments()
+    Vector<Ref<CommandLineArgument>> CommandLineArgumentParseResult::get_missing_arguments() const
     {
         return missing_required;
     }
@@ -83,7 +83,7 @@ namespace GodotObjectCompiler
         return writer.get_string();
     }
 
-    void CommandLineArgument::parse_arguments(const Vector<String>& p_arguments)
+    void CommandLineArgument::parse_arguments(const Vector<String>& p_arguments) const
     {
         impl->parse_arguments(p_arguments);
     }
@@ -141,21 +141,9 @@ namespace GodotObjectCompiler
         return impl->get_argument_type();
     }
 
-    String CommandLineArgument::get_description()
+    String CommandLineArgument::get_description() const
     {
         return impl->get_description();
-    }
-
-    bool CommandLineArgument::validate_arguments(const Vector<CommandLineArgument>& p_arguments)
-    {
-        bool success = true;
-        for (const auto& argument : p_arguments) {
-            if (argument.is_required() && !argument.has_value()) {
-                success = false;
-            }
-        }
-
-        return success;
     }
 
     bool CommandLineArgumentImpl::is_required() const
@@ -193,7 +181,7 @@ namespace GodotObjectCompiler
         return get_argument_type_function(this);
     }
 
-    String CommandLineArgumentImpl::get_description()
+    String CommandLineArgumentImpl::get_description() const
     {
         return description;
     }

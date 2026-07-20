@@ -47,19 +47,19 @@
 
 namespace GodotObjectCompiler::CommandLineArgumentParsers
 {
-    static inline Ref<PathCommandLineArgumentParser> Path =
+    static const inline Ref<PathCommandLineArgumentParser> Path =
         make_ref<PathCommandLineArgumentParser>();
 
-    static inline Ref<PathListCommandLineArgumentParser> PathList =
+    static const inline Ref<PathListCommandLineArgumentParser> PathList =
         make_ref<PathListCommandLineArgumentParser>();
 
-    static inline Ref<StringCommandLineArgumentParser> String =
+    static const inline Ref<StringCommandLineArgumentParser> String =
         make_ref<StringCommandLineArgumentParser>();
 
-    static inline Ref<StringListCommandLineArgumentParser> StringList =
+    static const inline Ref<StringListCommandLineArgumentParser> StringList =
         make_ref<StringListCommandLineArgumentParser>();
 
-    static inline Ref<FlagCommandLineArgumentParser<ErrorLevel>> LogLevel =
+    static const inline Ref<FlagCommandLineArgumentParser<ErrorLevel>> LogLevel =
         make_ref<FlagCommandLineArgumentParser<ErrorLevel>>(
             FlagCommandLineArgumentParser<ErrorLevel>::InitList({
                 {"Error", ERROR},
@@ -68,13 +68,13 @@ namespace GodotObjectCompiler::CommandLineArgumentParsers
                 {"Verbose", VERBOSE},
             }));
 
-    static inline Ref<FlagCommandLineArgumentParser<ErrorDetail>> LogDetail =
+    static const inline Ref<FlagCommandLineArgumentParser<ErrorDetail>> LogDetail =
         make_ref<FlagCommandLineArgumentParser<ErrorDetail>>(
             FlagCommandLineArgumentParser<ErrorDetail>::InitList(
                 {{"Condensed", ErrorDetail::CONDENSED}, {"Full", ErrorDetail::FULL}}));
 
-    static inline Ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>> SourceParser =
-        make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>(
+    static const inline Ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>
+        SourceParser = make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>(
             FlagCommandLineArgumentParser<GodotObjectCompiler::String>::InitList({
 #if GOC_LIBCLANG_PARSER_ENABLED
                 {ClangParser::get_type_static(), ClangParser::get_type_static()},

@@ -39,6 +39,32 @@
 
 using namespace GodotObjectCompiler;
 
+GOC_TEST(ArgumentAccessors)
+{
+    Ref<CommandLineArgument> argument =
+        CommandLineArgument::required(CommandLineArgumentParsers::Path, "test1", "t1", "d1");
+    GOC_TEST_ASSERT(argument->is_required(), "");
+    GOC_TEST_ASSERT(argument->get_name() == "test1", "");
+    GOC_TEST_ASSERT(argument->get_short_name() == "t1", "");
+    GOC_TEST_ASSERT(argument->get_description() == "d1", "");
+
+    Ref<CommandLineArgument> argument2 =
+        CommandLineArgument::optional(CommandLineArgumentParsers::Path, "test2", "t2", "d2");
+    GOC_TEST_ASSERT(!argument2->is_required(), "");
+    GOC_TEST_ASSERT(argument2->get_name() == "test2", "");
+    GOC_TEST_ASSERT(argument2->get_short_name() == "t2", "");
+    GOC_TEST_ASSERT(argument2->get_description() == "d2", "");
+
+    Ref<CommandLineArgument> argument3 =
+        CommandLineArgument::positional(CommandLineArgumentParsers::Path, "d3");
+    GOC_TEST_ASSERT(argument3->is_positional(), "");
+    GOC_TEST_ASSERT(argument3->get_name() == "", "");
+    GOC_TEST_ASSERT(argument3->get_short_name() == "", "");
+    GOC_TEST_ASSERT(argument3->get_description() == "d3", "");
+
+    return TEST_RESULT_SUCCESS;
+};
+
 GOC_TEST(PathArgument)
 {
     Ref<PathCommandLineArgumentParser> parser = make_ref<PathCommandLineArgumentParser>();
@@ -145,6 +171,45 @@ GOC_TEST(FlagArgument)
     args = {"--flag=FlagD"};
     argument->parse_arguments(args);
     GOC_TEST_ASSERT(!argument->has_value(), "Invalid flag, argument should not hold value.");
+
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(MissingRequiredArguments)
+{
+    enum Flags {
+        FLAG_A,
+        FLAG_B,
+        FLAG_C,
+    };
+    static const Ref<FlagCommandLineArgumentParser<Flags>> parser =
+        make_ref<FlagCommandLineArgumentParser<Flags>>(std::initializer_list<Pair<String, Flags>>({
+            {"FlagA", FLAG_A},
+            {"FlagB", FLAG_B},
+            {"FlagC", FLAG_C},
+        }));
+
+    class MissingRequiredArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> required_path =
+            CommandLineArgument::required(CommandLineArgumentParsers::Path, "path", "p", "");
+        Ref<CommandLineArgument> required_string =
+            CommandLineArgument::required(CommandLineArgumentParsers::String, "string", "s", "");
+        Ref<CommandLineArgument> required_flag =
+            CommandLineArgument::required(parser, "flag", "f", "");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {required_path, required_string, required_flag};
+        }
+    };
+
+    ApplicationContext context;
+    context.arguments = {};
+    auto result = context.register_argument_lists<MissingRequiredArguments>();
+    GOC_TEST_ASSERT(result.get_missing_arguments().size() == 3, "Invalid missing argument count.");
+    GOC_TEST_ASSERT(result.get_error_message().size() > 0, "No error message supplied.");
 
     return TEST_RESULT_SUCCESS;
 };

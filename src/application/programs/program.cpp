@@ -44,7 +44,7 @@ namespace GodotObjectCompiler
     {
         const auto result = register_required_arguments(p_application_context);
 
-        PROG_ERR_COND(!result, result.get_error_message());
+        PROG_ERR_COND(!result.succeeded(), result.get_error_message());
 
         return execute(p_application_context);
     }

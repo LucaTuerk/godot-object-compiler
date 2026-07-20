@@ -57,11 +57,11 @@ namespace GodotObjectCompiler
     class CommandLineArgumentParseResult
     {
       public:
-        operator bool() const;
+        bool succeeded() const;
 
         CommandLineArgumentParseResult operator+(const CommandLineArgumentParseResult& other) const;
 
-        Vector<Ref<CommandLineArgument>> get_missing_arguments();
+        Vector<Ref<CommandLineArgument>> get_missing_arguments() const;
 
         [[nodiscard]]
         String get_error_message() const;
@@ -98,7 +98,7 @@ namespace GodotObjectCompiler
 
         [[nodiscard]] String get_argument_type() const;
 
-        [[nodiscard]] String get_description();
+        [[nodiscard]] String get_description() const;
 
         [[nodiscard]] bool has_correct_name(const String& p_argument) const;
 
@@ -183,7 +183,7 @@ namespace GodotObjectCompiler
             const Ref<P>& p_parser, const String& p_name, const String& p_short_name,
             const String& p_description);
 
-        void parse_arguments(const Vector<String>& p_arguments);
+        void parse_arguments(const Vector<String>& p_arguments) const;
 
         [[nodiscard]]
         static CommandLineArgumentParseResult parse(
@@ -210,9 +210,7 @@ namespace GodotObjectCompiler
 
         [[nodiscard]] String get_argument_type() const;
 
-        [[nodiscard]] String get_description();
-
-        static bool validate_arguments(const Vector<CommandLineArgument>& p_arguments);
+        [[nodiscard]] String get_description() const;
 
       private:
         TypeIndex type = typeid(void);
@@ -449,7 +447,7 @@ namespace GodotObjectCompiler
 
 #define CLI_PARS_ERR_V(result, value)                                                              \
     do {                                                                                           \
-        if (!result) {                                                                             \
+        if (!result.succeeded()) {                                                                 \
             return value;                                                                          \
         }                                                                                          \
     } while (false)

@@ -79,7 +79,7 @@ namespace GodotObjectCompiler
             std::dynamic_pointer_cast<ICommandLineArgumentList>(p_argument_list);
         const auto result = CommandLineArgument::parse(argument_list->get_arguments(), arguments);
 
-        if (result) {
+        if (result.succeeded()) {
             argument_lists[typeid(T)] = argument_list;
         }
         return result;

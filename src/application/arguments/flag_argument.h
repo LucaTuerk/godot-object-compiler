@@ -45,7 +45,7 @@ namespace GodotObjectCompiler
 
         FlagCommandLineArgumentParser() = delete;
 
-        FlagCommandLineArgumentParser(InitList&& p_values);
+        FlagCommandLineArgumentParser(const InitList& p_values);
 
         Opt<T> parse_argument(const String& p_argument) override;
 
@@ -59,7 +59,7 @@ namespace GodotObjectCompiler
     };
 
     template <typename T>
-    FlagCommandLineArgumentParser<T>::FlagCommandLineArgumentParser(InitList&& p_values)
+    FlagCommandLineArgumentParser<T>::FlagCommandLineArgumentParser(const InitList& p_values)
     {
         for (const auto& [key, value] : p_values) {
             values[key] = value;
