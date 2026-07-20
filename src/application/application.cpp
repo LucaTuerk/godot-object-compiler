@@ -150,11 +150,14 @@ namespace GodotObjectCompiler
         LibraryContext::instance()->set_error_level(
             application_arguments->log_level->get<ErrorLevel>(),
             application_arguments->log_detail->get<ErrorDetail>());
-        LibraryContext::instance()->set_default_parser(
-            application_arguments->source_parser->get<String>(),
-            IParser::Capabilities::SOURCE_PARSER);
         LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(
             IParser::Capabilities::JSON_CONFIG_PARSER);
+
+        if (application_arguments->source_parser->has_value()) {
+            LibraryContext::instance()->set_default_parser(
+                application_arguments->source_parser->get<String>(),
+                IParser::Capabilities::SOURCE_PARSER);
+        }
 
         context.arguments = std::move(p_arguments);
 

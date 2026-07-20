@@ -41,14 +41,6 @@ namespace GodotObjectCompiler
 
     class ApplicationArguments : public ICommandLineArgumentList
     {
-#ifdef GOC_TREE_SITTER_PARSER_ENABLED
-        static inline auto DEFAULT_PARSER = TreeSitterParser::get_type_static();
-#elif
-#ifdef GOC_LIBCLANG_PARSER_ENABLED
-        static inline auto DEFAULT_PARSER = ClangParser::get_type_static();
-#endif
-#endif
-
       public:
         Ref<CommandLineArgument> log_level = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::LogLevel, "log_level", "L", "The log level to use.", INFO);
@@ -57,9 +49,9 @@ namespace GodotObjectCompiler
             CommandLineArgumentParsers::LogDetail, "log_detail", "D", "The log detail to use.",
             FULL);
 
-        Ref<CommandLineArgument> source_parser = CommandLineArgument::defaulted(
+        Ref<CommandLineArgument> source_parser = CommandLineArgument::optional(
             CommandLineArgumentParsers::SourceParser, "source_parser", "SP",
-            "The name of the source parser to be used by godot-object-compiler.", DEFAULT_PARSER);
+            "The name of the source parser to be used by godot-object-compiler.");
 
         Ref<CommandLineArgument> goc_path = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::Path, "goc_path", "P",

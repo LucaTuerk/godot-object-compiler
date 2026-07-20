@@ -92,6 +92,7 @@ namespace GodotObjectCompiler
         result.emplace_back(format("-G=%s", get_generated_path().c_str()));
         result.emplace_back(format("-T=%s", get_type_db_path().c_str()));
         result.emplace_back(format("-E=%s", extension_api.c_str()));
+        result.emplace_back(format("-SP=%s", source_parser.c_str()));
         result.emplace_back(format(
             "-GPP=%s",
             string_vector_combine(get_integration_tests_godot_cpp_include_paths(), ",").c_str()));
@@ -111,6 +112,11 @@ namespace GodotObjectCompiler
     void TestRegistry::set_extension_api(const String& p_extension_api)
     {
         extension_api = p_extension_api;
+    }
+
+    void TestRegistry::set_source_parser(const String& p_source_parser)
+    {
+        source_parser = p_source_parser;
     }
 
     String TestRegistry::get_extension_api()

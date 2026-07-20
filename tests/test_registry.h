@@ -88,6 +88,8 @@ namespace GodotObjectCompiler
 
         void set_extension_api(const String& p_extension_api);
 
+        void set_source_parser(const String& p_source_parser);
+
         String get_extension_api();
 
         const Dictionary<String, TestFunctor>& get_tests();
@@ -95,6 +97,7 @@ namespace GodotObjectCompiler
         const Dictionary<String, TestFunctor>& get_integration_tests();
 
       private:
+        String source_parser;
         String extension_api;
         Vector<String> include_paths;
         Dictionary<String, TestFunctor> tests;

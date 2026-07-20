@@ -36,9 +36,7 @@
 #include "main.h"
 
 #include "application/application.h"
-#include "application/arguments/flag_argument.h"
 #include "application/programs/all.h"
-#include "library/core/config.h"
 #include "library/core/core.h"
 #include "library/library_context.h"
 #include "library_godot/parsers/extension_api_parser.h"
@@ -54,6 +52,17 @@ int main(int argc, char* argv[])
     for (int i = 1; i < argc; i++) {
         args.emplace_back(argv[i]);
     }
+
+#ifdef GOC_TREE_SITTER_PARSER_ENABLED
+    auto DEFAULT_SOURCE_PARSER = TreeSitterParser::get_type_static();
+#elif
+#ifdef GOC_LIBCLANG_PARSER_ENABLED
+    auto DEFAULT_SOURCE_PARSER = ClangParser::get_type_static();
+#endif
+#endif
+
+    LibraryContext::instance()->set_default_parser(
+        DEFAULT_SOURCE_PARSER, IParser::Capabilities::SOURCE_PARSER);
 
     Application application;
     return application.run(args);
