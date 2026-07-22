@@ -323,7 +323,6 @@ namespace GodotObjectCompiler
         transformator.transform(global_namespace)->get_output(&writer);
 
         GenerateBindings generate_example;
-        // TODO: Fix this
         p_context.arguments = {
             format("--root=%s", path_absolute("docs/files").c_str()),
             format("--include_paths=%s", path_absolute("docs/files").c_str()),

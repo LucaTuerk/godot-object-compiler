@@ -43,6 +43,7 @@ namespace GodotObjectCompiler
     {
         PROGRAM(Version, "version")
         NO_PROGRAM_ARGS
+        READONLY_PROGRAM
 
       public:
         Ref<ProgramError> execute(ApplicationContext& p_context) override;
@@ -52,6 +53,7 @@ namespace GodotObjectCompiler
     {
         PROGRAM(BuildNum, "build_num")
         NO_PROGRAM_ARGS
+        READONLY_PROGRAM
 
       public:
         Ref<ProgramError> execute(ApplicationContext& p_context) override;

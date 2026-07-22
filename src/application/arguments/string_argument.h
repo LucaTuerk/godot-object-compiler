@@ -45,6 +45,8 @@ namespace GodotObjectCompiler
       public:
         Opt<String> parse_argument(const String& p_argument) override;
 
+        String value_to_string(const String& p_value) override;
+
         String get_argument_type_string() override
         {
             return "String";
@@ -60,5 +62,12 @@ namespace GodotObjectCompiler
         {
             return "StringList";
         }
+
+        String get_info_string() override
+        {
+            return "A comma separated list of strings.";
+        }
+
+        String value_to_string(const std::vector<std::string>& p_value) override;
     };
 } // namespace GodotObjectCompiler

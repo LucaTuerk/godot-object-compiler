@@ -42,9 +42,24 @@ namespace GodotObjectCompiler
         return p_argument;
     }
 
+    String StringCommandLineArgumentParser::value_to_string(const String& p_value)
+    {
+        return p_value;
+    }
+
     Opt<Vector<String>>
     StringListCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
         return string_split(p_argument, ",");
+    }
+
+    String
+    StringListCommandLineArgumentParser::value_to_string(const std::vector<std::string>& p_value)
+    {
+        StreamWriter writer;
+        writer.write("[");
+        writer.write(string_vector_combine(p_value, ", "));
+        writer.write("]");
+        return writer.get_string();
     }
 } // namespace GodotObjectCompiler

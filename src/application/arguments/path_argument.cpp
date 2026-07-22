@@ -51,6 +51,11 @@ namespace GodotObjectCompiler
         return argument;
     }
 
+    String PathCommandLineArgumentParser::value_to_string(const Path& p_value)
+    {
+        return p_value;
+    }
+
     Opt<Vector<Path>> PathListCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
         const String argument = p_argument;
@@ -66,5 +71,15 @@ namespace GodotObjectCompiler
         }
 
         return results;
+    }
+
+    String
+    PathListCommandLineArgumentParser::value_to_string(const std::vector<std::string>& p_value)
+    {
+        StreamWriter writer;
+        writer.write("[");
+        writer.write(string_vector_combine(p_value, ", "));
+        writer.write("]");
+        return writer.get_string();
     }
 } // namespace GodotObjectCompiler

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* path_argument.h                                                        */
+/* application_context.cpp                                                */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,39 +33,18 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
-#include "argument.h"
+#include "application_context.h"
 
 namespace GodotObjectCompiler
 {
-    class PathCommandLineArgumentParser : public ICommandLineArgumentParser<Path>
+
+    Vector<Ref<CommandLineArgument>> ApplicationContext::get_command_line_arguments() const
     {
-      public:
-        Opt<Path> parse_argument(const String& p_argument) override;
-
-        String value_to_string(const Path& p_value) override;
-
-        String get_argument_type_string() override
-        {
-            return "Path";
-        };
-    };
-
-    class PathListCommandLineArgumentParser : public ICommandLineArgumentParser<Vector<Path>>
-    {
-      public:
-        Opt<Vector<Path>> parse_argument(const String& p_argument) override;
-
-        String value_to_string(const Vector<String>& p_value) override;
-
-        String get_info_string() override
-        {
-            return "A comma separated list of paths.";
+        Vector<Ref<CommandLineArgument>> result;
+        for (const auto& [type, list] : argument_lists) {
+            auto args = list->get_arguments();
+            result.insert(result.end(), args.begin(), args.end());
         }
-
-        String get_argument_type_string() override
-        {
-            return "PathList";
-        }
-    };
+        return result;
+    }
 } // namespace GodotObjectCompiler

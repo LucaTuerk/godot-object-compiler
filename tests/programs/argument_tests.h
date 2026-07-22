@@ -56,8 +56,8 @@ GOC_TEST(ArgumentAccessors)
     GOC_TEST_ASSERT(argument2->get_description() == "d2", "");
 
     Ref<CommandLineArgument> argument3 =
-        CommandLineArgument::positional(CommandLineArgumentParsers::Path, "d3");
-    GOC_TEST_ASSERT(argument3->is_positional(), "");
+        CommandLineArgument::unnamed(CommandLineArgumentParsers::Path, "d3");
+    GOC_TEST_ASSERT(argument3->is_unnamed(), "");
     GOC_TEST_ASSERT(argument3->get_name() == "", "");
     GOC_TEST_ASSERT(argument3->get_short_name() == "", "");
     GOC_TEST_ASSERT(argument3->get_description() == "d3", "");
@@ -84,29 +84,28 @@ GOC_TEST(PathArgument)
         argument->has_value() && argument->get<Path>() == path_absolute("test_path2"),
         "Failed to get path argument");
 
-    Vector<String> positional_paths = {
-        "--some_names=hello", "test_path1", "test_path2", "test_path3"};
-    Ref<CommandLineArgument> positional_arg = CommandLineArgument::positional(parser, "");
-    positional_arg->parse_arguments(positional_paths);
+    Vector<String> unnamed_paths = {"--some_names=hello", "test_path1", "test_path2", "test_path3"};
+    Ref<CommandLineArgument> unnamed_arg = CommandLineArgument::unnamed(parser, "");
+    unnamed_arg->parse_arguments(unnamed_paths);
 
-    GOC_TEST_ASSERT(positional_arg->size() == 3, "Invalid positional argument count.");
+    GOC_TEST_ASSERT(unnamed_arg->size() == 3, "Invalid unnamed argument count.");
     GOC_TEST_ASSERT(
-        positional_arg->get<String>(0) == path_absolute("test_path1"), "Invalid argument.");
+        unnamed_arg->get<String>(0) == path_absolute("test_path1"), "Invalid argument.");
     GOC_TEST_ASSERT(
-        positional_arg->get<String>(1) == path_absolute("test_path2"), "Invalid argument.");
+        unnamed_arg->get<String>(1) == path_absolute("test_path2"), "Invalid argument.");
     GOC_TEST_ASSERT(
-        positional_arg->get<String>(2) == path_absolute("test_path3"), "Invalid argument.");
+        unnamed_arg->get<String>(2) == path_absolute("test_path3"), "Invalid argument.");
 
     Vector<String> another = {
         "--some_names=hello", "another_test_path1", "another_test_path2", "another_test_path3"};
-    positional_arg->parse_arguments(another);
-    GOC_TEST_ASSERT(positional_arg->size() == 3, "Invalid positional argument count.");
+    unnamed_arg->parse_arguments(another);
+    GOC_TEST_ASSERT(unnamed_arg->size() == 3, "Invalid unnamed argument count.");
     GOC_TEST_ASSERT(
-        positional_arg->get<String>(0) == path_absolute("another_test_path1"), "Invalid argument.");
+        unnamed_arg->get<String>(0) == path_absolute("another_test_path1"), "Invalid argument.");
     GOC_TEST_ASSERT(
-        positional_arg->get<String>(1) == path_absolute("another_test_path2"), "Invalid argument.");
+        unnamed_arg->get<String>(1) == path_absolute("another_test_path2"), "Invalid argument.");
     GOC_TEST_ASSERT(
-        positional_arg->get<String>(2) == path_absolute("another_test_path3"), "Invalid argument.");
+        unnamed_arg->get<String>(2) == path_absolute("another_test_path3"), "Invalid argument.");
 
     return TEST_RESULT_SUCCESS;
 };

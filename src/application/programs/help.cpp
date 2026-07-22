@@ -35,6 +35,7 @@
 
 #include "help.h"
 
+#include "application/arguments/argument_lists.h"
 #include "application/build_info.h"
 #include "application/programs/program.h"
 #include "library/core/core.h"
@@ -46,6 +47,43 @@
 
 namespace GodotObjectCompiler
 {
+    void
+    write_named_arguments(IStringWriter* p_writer, Vector<Ref<CommandLineArgument>>& p_arguments)
+    {
+        std::sort(
+            p_arguments.begin(), p_arguments.end(),
+            [](const Ref<CommandLineArgument>& a, const Ref<CommandLineArgument>& b) {
+                return a->get_name() < b->get_name();
+            });
+
+        for (const auto& argument : p_arguments) {
+            if (!argument->is_unnamed()) {
+                StreamWriter desc_writer;
+                if (argument->has_value()) {
+                    desc_writer.write(format("Default: %s", argument->get_as_string().c_str()));
+                }
+
+                if (String info = argument->get_info_string(); !info.empty()) {
+                    desc_writer.write(
+                        format(argument->has_value() ? ", %s\n" : "%s\n", info.c_str()));
+                } else {
+                    desc_writer.write("\n");
+                }
+
+                desc_writer.write(argument->get_description());
+
+                write_columns(
+                    p_writer,
+                    {30,
+                     format(
+                         "--%s=<%s>\n -%s=<%s>\n", argument->get_name().c_str(),
+                         argument->get_argument_type().c_str(), argument->get_short_name().c_str(),
+                         argument->get_argument_type().c_str())},
+                    {70, desc_writer.get_string()});
+                p_writer->write("\n");
+            }
+        }
+    }
 
     void Help::write_header(IStringWriter* p_writer)
     {
@@ -63,10 +101,16 @@ namespace GodotObjectCompiler
             p_writer->write("\n");
         }
 
-        if (Resources::instance()->has_resource("res://help/args.txt")) {
-            p_writer->write(Resources::instance()->load_text_resource("res://help/args.txt"));
-            p_writer->write("\n");
-        }
+        ApplicationContext argument_context;
+        argument_context.register_argument_lists<ApplicationArguments>();
+        argument_context.register_argument_lists<GeneratorArguments>();
+        argument_context.register_argument_lists<GDExtensionProjectArguments>();
+
+        auto arguments = argument_context.get_command_line_arguments();
+
+        write_title(p_writer, "Arguments", 100);
+        p_writer->write("\n");
+        write_named_arguments(p_writer, arguments);
     }
 
     void Help::write_parser_info(IStringWriter* p_writer)
@@ -100,36 +144,89 @@ namespace GodotObjectCompiler
     }
 
     void Help::write_program_info(
-        IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& program)
+        IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& p_program,
+        bool p_detailed)
     {
-        for (auto itr = p_path.begin(); itr != p_path.end() - 1; ++itr) {
-            Vector<String> sub{p_path.begin(), itr + 1};
-            if (written.find(sub) != written.end()) {
-                continue;
-            }
-
-            StreamWriter sub_writer;
-            for (Size i = 0; i < sub.size() - 1; ++i) {
-                sub_writer.write("  ");
-            }
-            sub_writer.write(sub.back());
-            written.insert(sub);
-            p_writer->write("\n");
-            write_columns(p_writer, {30, sub_writer.get_string()}, {70, ""});
-        }
-
         StreamWriter identifier_writer;
-        for (Size i = 0; i < p_path.size() - 1; ++i) {
-            identifier_writer.write("  ");
-        }
-        identifier_writer.write(p_path.back());
 
-        if (program->is_readonly()) {
-            identifier_writer.write(" [!p]");
+        if (p_detailed) {
+            identifier_writer.write(string_vector_combine(p_path, " "));
+        } else {
+            Size i = 0;
+            for (auto itr = p_path.begin(); itr != p_path.end() - 1; ++itr, ++i) {
+                Vector<String> sub{p_path.begin(), itr + 1};
+                if (written.find(sub) != written.end()) {
+                    continue;
+                }
+
+                StreamWriter sub_writer;
+                sub_writer.write(string_indent_lines(sub.back(), ' ', 2 * i));
+                written.insert(sub);
+
+                p_writer->write("\n");
+                write_columns(p_writer, {30, sub_writer.get_string()}, {70, ""});
+            }
+
+            identifier_writer.write(p_path.back());
         }
 
         p_writer->write("\n");
-        write_columns(p_writer, {30, identifier_writer.get_string()}, {70, get_help_text(p_path)});
+        write_columns(
+            p_writer,
+            {30, string_indent_lines(identifier_writer.get_string(), ' ', 2 * p_path.size())},
+            {70, get_help_text(p_path)});
+
+        if (p_detailed) {
+            p_writer->write("\n");
+
+            ApplicationContext program_context;
+            if (!p_program->is_readonly()) {
+                program_context.register_argument_lists<ApplicationArguments>();
+                program_context.register_argument_lists<GeneratorArguments>();
+                program_context.register_argument_lists<GDExtensionProjectArguments>();
+            }
+
+            std::ignore = p_program->register_required_arguments(program_context);
+            auto arguments = program_context.get_command_line_arguments();
+
+            Vector<Ref<CommandLineArgument>> required_arguments;
+            Vector<Ref<CommandLineArgument>> optional_arguments;
+            Vector<Ref<CommandLineArgument>> unnamed_arguments;
+
+            std::copy_if(
+                arguments.begin(), arguments.end(), std::back_inserter(required_arguments),
+                [](const Ref<CommandLineArgument>& argument) { return argument->is_required(); });
+            std::copy_if(
+                arguments.begin(), arguments.end(), std::back_inserter(optional_arguments),
+                [](const Ref<CommandLineArgument>& argument) {
+                    return !argument->is_required() && !argument->is_unnamed();
+                });
+            std::copy_if(
+                arguments.begin(), arguments.end(), std::back_inserter(unnamed_arguments),
+                [](const Ref<CommandLineArgument>& argument) { return argument->is_unnamed(); });
+
+            if (!required_arguments.empty()) {
+                write_title(p_writer, "Required arguments", 100);
+                p_writer->write("\n");
+                write_named_arguments(p_writer, required_arguments);
+            }
+
+            if (!optional_arguments.empty()) {
+                write_title(p_writer, "Optional arguments", 100);
+                p_writer->write("\n");
+                write_named_arguments(p_writer, optional_arguments);
+            }
+
+            if (unnamed_arguments.size() == 1) {
+                write_title(p_writer, "Unnamed Arguments", 100);
+                p_writer->write("\n");
+                const auto& argument = unnamed_arguments[0];
+                write_columns(
+                    p_writer,
+                    {30, format("<%s...> (unnamed)", argument->get_argument_type().c_str())},
+                    {70, argument->get_description()});
+            }
+        }
 
         written.insert(p_path);
     }
@@ -170,28 +267,30 @@ namespace GodotObjectCompiler
         if (p_args.empty()) {
             write_header(p_writer);
             p_writer->write("\n");
-            write_parser_info(p_writer);
-            p_writer->write("\n");
             write_title(p_writer, "PROGRAMS", 100);
         }
 
-        for (const auto& [path, program] : programs_sorted) {
-            if (path.empty()) {
-                continue;
+        if (p_args.empty()) {
+            for (const auto& [path, program] : programs_sorted) {
+                StreamWriter writer;
+                write_program_info(p_writer, path, program, false);
             }
+            p_writer->write("\n");
+            write_parser_info(p_writer);
+        } else {
+            auto itr = std::find_if(
+                programs_sorted.begin(), programs_sorted.end(), [&p_args](const auto& pair) {
+                    const auto& [path, _] = pair;
+                    return path.size() == p_args.size() &&
+                           std::equal(path.begin(), path.end(), p_args.begin());
+                });
 
-            bool skip = false;
-            for (Size i = 0; i < path.size() && i < p_args.size(); i++) {
-                if (path[i] != p_args[i]) {
-                    skip = true;
-                }
+            if (itr != programs_sorted.end()) {
+                const auto& [path, program] = *itr;
+                StreamWriter writer;
+                write_program_info(&writer, path, program, true);
+                p_writer->write(writer.get_string());
             }
-
-            if (skip) {
-                continue;
-            }
-
-            write_program_info(p_writer, path, program);
         }
 
         return true;

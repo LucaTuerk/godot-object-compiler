@@ -138,6 +138,26 @@ namespace GodotObjectCompiler
         return writer.get_string();
     }
 
+    String string_indent_lines(const String& p_content, char p_padding, Size p_size)
+    {
+        StreamWriter writer;
+
+        std::istringstream content_stream(p_content);
+        String line;
+        while (std::getline(content_stream, line)) {
+            if (!line.empty()) {
+                for (Size i = 0; i < p_size; ++i) {
+                    writer.write_generic(p_padding);
+                }
+            }
+
+            writer.write(line);
+            writer.write_generic('\n');
+        }
+
+        return writer.get_string();
+    }
+
     String string_shrink_inner_space(const String& p_content)
     {
         StreamWriter writer;
@@ -385,13 +405,23 @@ namespace GodotObjectCompiler
         if (p_content.empty()) {
             return {""};
         }
-        Size current = 0;
+
         Vector<String> result;
-        while (current < p_content.length()) {
-            result.push_back(p_content.substr(current, length));
-            current += length;
+        Size current = 0;
+        StreamWriter writer;
+        for (char c : p_content) {
+            if (++current >= length && is_whitespace(c)) {
+                result.emplace_back(writer.get_string());
+                writer = StreamWriter();
+                current = 0;
+            } else {
+                writer.write_generic(c);
+            }
         }
 
+        if (writer.current_length() > 0) {
+            result.emplace_back(writer.get_string());
+        }
         return result;
     }
 

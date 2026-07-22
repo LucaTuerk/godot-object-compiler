@@ -53,6 +53,8 @@ namespace GodotObjectCompiler
 
         template <typename T> Ref<T> get_argument_list() const;
 
+        Vector<Ref<CommandLineArgument>> get_command_line_arguments() const;
+
       private:
         template <typename T, typename... Args>
         CommandLineArgumentParseResult register_argument_lists_helper();
@@ -79,9 +81,7 @@ namespace GodotObjectCompiler
             std::dynamic_pointer_cast<ICommandLineArgumentList>(p_argument_list);
         const auto result = CommandLineArgument::parse(argument_list->get_arguments(), arguments);
 
-        if (result.succeeded()) {
-            argument_lists[typeid(T)] = argument_list;
-        }
+        argument_lists[typeid(T)] = argument_list;
         return result;
     }
 

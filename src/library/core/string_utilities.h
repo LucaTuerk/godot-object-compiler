@@ -74,6 +74,8 @@ namespace GodotObjectCompiler
 
     String string_pad_left(const String& p_content, char p_padding, Size p_size);
 
+    String string_indent_lines(const String& p_content, char p_padding, Size p_size);
+
     String string_shrink_inner_space(const String& p_content);
 
     int string_to_int(const String& p_content);

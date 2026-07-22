@@ -54,6 +54,10 @@ namespace GodotObjectCompiler
             return "Flag";
         }
 
+        String value_to_string(const T& p_value) override;
+
+        String get_info_string() override;
+
       private:
         Dictionary<String, T> values;
     };
@@ -77,6 +81,25 @@ namespace GodotObjectCompiler
 
         T& val = itr->second;
         return val;
+    }
+
+    template <typename T> String FlagCommandLineArgumentParser<T>::value_to_string(const T& p_value)
+    {
+        for (const auto& [key, value] : values) {
+            if (value == p_value) {
+                return key;
+            }
+        }
+        return "";
+    }
+
+    template <typename T> String FlagCommandLineArgumentParser<T>::get_info_string()
+    {
+        Vector<String> keys;
+        for (const auto& [key, value] : values) {
+            keys.push_back(key);
+        }
+        return format("Possible Values: %s", string_vector_combine(keys, ", ").c_str());
     }
 
 } // namespace GodotObjectCompiler

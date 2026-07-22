@@ -42,7 +42,7 @@ namespace GodotObjectCompiler
     class InitToolsArguments : public ICommandLineArgumentList
     {
       public:
-        Ref<CommandLineArgument> tools_path = CommandLineArgument::positional(
+        Ref<CommandLineArgument> tools_path = CommandLineArgument::unnamed(
             CommandLineArgumentParsers::Path, "The path to the tools directory.");
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
@@ -54,6 +54,7 @@ namespace GodotObjectCompiler
     class InitTools : public IProgram
     {
         PROGRAM(InitTools, "init/tools")
+        READONLY_PROGRAM
 
       public:
         Ref<ProgramError> execute(ApplicationContext& p_context) override;

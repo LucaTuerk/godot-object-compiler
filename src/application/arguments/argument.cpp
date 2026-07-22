@@ -111,9 +111,9 @@ namespace GodotObjectCompiler
         return impl->is_required();
     }
 
-    bool CommandLineArgument::is_positional() const
+    bool CommandLineArgument::is_unnamed() const
     {
-        return impl->is_positional();
+        return impl->is_unnamed();
     }
 
     bool CommandLineArgument::has_value() const
@@ -146,14 +146,19 @@ namespace GodotObjectCompiler
         return impl->get_description();
     }
 
+    String CommandLineArgument::get_info_string() const
+    {
+        return impl->get_info_string();
+    }
+
     bool CommandLineArgumentImpl::is_required() const
     {
         return required_arg;
     }
 
-    bool CommandLineArgumentImpl::is_positional() const
+    bool CommandLineArgumentImpl::is_unnamed() const
     {
-        return positional_arg;
+        return unnamed_arg;
     }
 
     bool CommandLineArgumentImpl::has_value() const
@@ -186,15 +191,30 @@ namespace GodotObjectCompiler
         return description;
     }
 
+    String CommandLineArgumentImpl::get_as_string() const
+    {
+        return get_as_string_function(this);
+    }
+
+    String CommandLineArgumentImpl::get_info_string() const
+    {
+        return get_info_string_function(this);
+    }
+
+    String CommandLineArgument::get_as_string() const
+    {
+        return impl->get_as_string();
+    }
+
     bool CommandLineArgumentImpl::has_correct_name(const String& p_argument) const
     {
-        return !positional_arg && (string_prefix(p_argument, name_prefix) ||
-                                   string_prefix(p_argument, short_name_prefix));
+        return !unnamed_arg && (string_prefix(p_argument, name_prefix) ||
+                                string_prefix(p_argument, short_name_prefix));
     }
 
     String CommandLineArgumentImpl::get_argument_part(const String& p_argument) const
     {
-        if (positional_arg) {
+        if (unnamed_arg) {
             return p_argument;
         }
 

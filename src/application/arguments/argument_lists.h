@@ -78,9 +78,7 @@ namespace GodotObjectCompiler
 
         Ref<CommandLineArgument> include_paths = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::PathList, "include_paths", "I",
-            "The generators include paths, comma seperated. Must include the godot-cpp include and "
-            "gen/include paths.",
-            {});
+            "The generators include paths.", {});
 
         Ref<CommandLineArgument> root_path = CommandLineArgument::required(
             CommandLineArgumentParsers::Path, "root_path", "R", "The projects root path.");
@@ -96,11 +94,11 @@ namespace GodotObjectCompiler
       public:
         Ref<CommandLineArgument> sources = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::PathList, "sources", "S",
-            "The generators target source file paths, comma seperated.", {});
+            "The generators target source file paths.", {});
 
         Ref<CommandLineArgument> godot_cpp = CommandLineArgument::required(
             CommandLineArgumentParsers::PathList, "godot_cpp", "GPP",
-            "The path to the godot-cpp repositories root used with your extension.");
+            "The used godot-cpp submodules include paths.");
 
         Ref<CommandLineArgument> extension_api = CommandLineArgument::required(
             CommandLineArgumentParsers::Path, "extension_api", "E",

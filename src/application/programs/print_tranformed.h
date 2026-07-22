@@ -43,7 +43,7 @@ namespace GodotObjectCompiler
     class PrintTransformedArguments : public ICommandLineArgumentList
     {
       public:
-        Ref<CommandLineArgument> input_files = CommandLineArgument::positional(
+        Ref<CommandLineArgument> input_files = CommandLineArgument::unnamed(
             CommandLineArgumentParsers::Path, "Paths to the files to generated and print.");
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override

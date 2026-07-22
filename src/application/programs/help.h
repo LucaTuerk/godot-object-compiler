@@ -43,8 +43,8 @@ namespace GodotObjectCompiler
     class HelpArguments : public ICommandLineArgumentList
     {
       public:
-        Ref<CommandLineArgument> program_path =
-            CommandLineArgument::positional(CommandLineArgumentParsers::String, "");
+        Ref<CommandLineArgument> program_path = CommandLineArgument::unnamed(
+            CommandLineArgumentParsers::String, "The full program path to display help info for.");
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {
@@ -55,6 +55,7 @@ namespace GodotObjectCompiler
     class Help : public IProgram
     {
         PROGRAM(Help, "help")
+        READONLY_PROGRAM
 
       public:
         Ref<ProgramError> execute(ApplicationContext& p_context) override;
@@ -72,7 +73,8 @@ namespace GodotObjectCompiler
         static void write_parser_info(IStringWriter* p_writer);
 
         static void write_program_info(
-            IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& program);
+            IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& p_program,
+            bool p_detailed);
 
         static String get_help_text(const ProgramPath& p_path);
 

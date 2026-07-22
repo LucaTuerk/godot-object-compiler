@@ -44,7 +44,7 @@ namespace GodotObjectCompiler
     class PrintTypeArguments : public ICommandLineArgumentList
     {
       public:
-        Ref<CommandLineArgument> input_types = CommandLineArgument::positional(
+        Ref<CommandLineArgument> input_types = CommandLineArgument::unnamed(
             CommandLineArgumentParsers::String, "Qualified names of the types to print.");
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
