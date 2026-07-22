@@ -93,18 +93,22 @@ namespace GodotObjectCompiler
         result.emplace_back(format("-T=%s", get_type_db_path().c_str()));
         result.emplace_back(format("-E=%s", extension_api.c_str()));
         result.emplace_back(format("-SP=%s", source_parser.c_str()));
-        result.emplace_back(format(
-            "-GPP=%s",
-            string_vector_combine(get_integration_tests_godot_cpp_include_paths(), ",").c_str()));
+
+        Vector<String> paths;
+        for (const auto& path : get_integration_tests_godot_cpp_include_paths()) {
+            paths.push_back(path);
+        }
+
+        result.emplace_back(format("-GPP=%s", string_vector_combine(paths, ",").c_str()));
         return result;
     }
 
-    Vector<String> TestRegistry::get_integration_tests_godot_cpp_include_paths()
+    Vector<Path> TestRegistry::get_integration_tests_godot_cpp_include_paths()
     {
         return include_paths;
     }
 
-    void TestRegistry::set_integration_tests_godot_cpp_include_paths(const Vector<String>& p_paths)
+    void TestRegistry::set_integration_tests_godot_cpp_include_paths(const Vector<Path>& p_paths)
     {
         include_paths = p_paths;
     }

@@ -38,7 +38,7 @@
 namespace GodotObjectCompiler
 {
     bool generate_files(
-        const String& p_path, String& r_generated_header, String& r_generated_source,
+        const Path& p_path, String& r_generated_header, String& r_generated_source,
         String& r_register_header, String& r_register_source);
 
     String get_line_that_contains(const String& p_content, const Vector<String>& p_search);

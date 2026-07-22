@@ -62,7 +62,7 @@ namespace GodotObjectCompiler
 
         template <typename S> void write_to_section(const S& section);
 
-        virtual bool write_to_file(const String& p_path) = 0;
+        virtual bool write_to_file(const Path& p_path) = 0;
 
       protected:
         virtual void _write_to_section(const String& p_section) = 0;
@@ -78,7 +78,7 @@ namespace GodotObjectCompiler
 
         template <typename S> void read_from_section(const S& section);
 
-        virtual bool read_from_file(const String& p_path) = 0;
+        virtual bool read_from_file(const Path& p_path) = 0;
 
       protected:
         virtual void _read_from_section(const String& p_section) = 0;
@@ -146,7 +146,7 @@ namespace GodotObjectCompiler
 
         virtual Result<Node> read_from_file(const String& path) = 0;
 
-        template <typename T> Result<T> read_from_file(const String& p_path);
+        template <typename T> Result<T> read_from_file(const Path& p_path);
     };
 
 } // namespace GodotObjectCompiler

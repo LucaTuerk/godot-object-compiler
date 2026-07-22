@@ -564,7 +564,7 @@ namespace GodotObjectCompiler
         return result;
     }
 
-    Vector<String> read_lines(const String& p_path)
+    Vector<String> read_lines(const Path& p_path)
     {
         String absolute = path_absolute(p_path);
         PANIC_COND(

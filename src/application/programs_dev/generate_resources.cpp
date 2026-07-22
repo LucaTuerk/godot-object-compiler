@@ -55,7 +55,7 @@
 namespace GodotObjectCompiler
 {
 
-    String resource_variable_name(const String& p_path)
+    String resource_variable_name(const Path& p_path)
     {
         String result = p_path;
         result = string_replace(result, "/", "_");

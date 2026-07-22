@@ -46,13 +46,13 @@ namespace GodotObjectCompiler
         allowed_write_paths.clear();
     }
 
-    void Permissions::add_write_path(const String& p_path)
+    void Permissions::add_write_path(const Path& p_path)
     {
         const String absolute = path_absolute(p_path);
         allowed_write_paths.insert(absolute);
     }
 
-    bool Permissions::is_allowed_write_path(const String& p_path) const
+    bool Permissions::is_allowed_write_path(const Path& p_path) const
     {
         String absolute = path_absolute(p_path);
         if (!path_is_descendant(path_cwd(), absolute)) {
@@ -66,7 +66,7 @@ namespace GodotObjectCompiler
                    }) != allowed_write_paths.end();
     }
 
-    void Permissions::ensure_is_allowed_write_path(const String& p_path) const
+    void Permissions::ensure_is_allowed_write_path(const Path& p_path) const
     {
         PANIC_COND(
             !is_allowed_write_path(p_path),

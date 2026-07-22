@@ -69,7 +69,7 @@ namespace GodotObjectCompiler
         return json.dump(1);
     }
 
-    bool JsonConfig::write_to_file(const String& p_path)
+    bool JsonConfig::write_to_file(const Path& p_path)
     {
         try {
             PANIC_COND(
@@ -86,7 +86,7 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool JsonConfig::read_from_file(const String& p_path)
+    bool JsonConfig::read_from_file(const Path& p_path)
     {
         if (!file_exists(p_path)) {
             return false;

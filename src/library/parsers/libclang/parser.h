@@ -49,7 +49,7 @@ namespace GodotObjectCompiler
       public:
         Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
 
-        Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target) override;
+        Ref<ParserError> parse_file(const Path& p_path, Ref<Context> r_target) override;
 
         template <typename T> static bool register_handler();
 

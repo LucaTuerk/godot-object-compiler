@@ -220,7 +220,7 @@ namespace GodotObjectCompiler
         // TODO: Allow setting C++ standard as application argument
         Vector<const char*> args = {"-x", "c++", "-std=c++17"};
         Vector<String> include_args;
-        Vector<String> includes = LibraryContext::instance()->get_include_paths();
+        Vector<Path> includes = LibraryContext::instance()->get_include_paths();
 
         for (const auto& include_path : includes) {
             include_args.emplace_back(format("-I%s", include_path.c_str()));
@@ -272,7 +272,8 @@ namespace GodotObjectCompiler
                 CXSourceLocation location = clang_getDiagnosticLocation(diagnostic);
                 clang_getFileLocation(location, &file, &line, nullptr, nullptr);
 
-                if (!path_equals(ClangString(clang_getFileName(file)), temp_file.get_path())) {
+                if (!path_equals(
+                        Path(ClangString(clang_getFileName(file))), temp_file.get_path())) {
                     // Skip errors in included files.
                     continue;
                 }
@@ -305,7 +306,7 @@ namespace GodotObjectCompiler
         return ParserError::OK;
     }
 
-    Ref<ParserError> ClangParser::parse_file(const String& p_path, const Ref<Context> r_target)
+    Ref<ParserError> ClangParser::parse_file(const Path& p_path, const Ref<Context> r_target)
     {
         current_file = path_absolute(p_path);
         return parse(read_file(p_path), r_target);

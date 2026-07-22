@@ -52,11 +52,11 @@ namespace GodotObjectCompiler
 
         void load_pack(ResourcePack* p_pack);
 
-        [[nodiscard]] Vector<String> resources_recursive(const String& p_path) const;
+        [[nodiscard]] Vector<String> resources_recursive(const Path& p_path) const;
 
-        [[nodiscard]] String load_text_resource(const String& p_path) const;
+        [[nodiscard]] String load_text_resource(const Path& p_path) const;
 
-        [[nodiscard]] bool has_resource(const String& p_path) const;
+        [[nodiscard]] bool has_resource(const Path& p_path) const;
 
         [[nodiscard]] bool
         copy_resource_to_file(const String& p_resource_path, const String& p_target_file) const;

@@ -59,7 +59,7 @@ namespace GodotObjectCompiler
         GenerateBindings generate_bindings;
 
         if (generate_arguments->flags->value_equals(REGENERATE_BINDINGS)) {
-            for (const String& input_file : project_arguments->sources->get<Vector<Path>>()) {
+            for (const Path& input_file : project_arguments->sources->get<Vector<Path>>()) {
                 LibraryContext::instance()->force_regenerate(input_file);
             }
         }

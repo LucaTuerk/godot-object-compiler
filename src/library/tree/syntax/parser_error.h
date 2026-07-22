@@ -137,7 +137,7 @@ namespace GodotObjectCompiler
         ERROR(__VA_ARGS__);                                                                        \
     }
 
-    template <typename T> Result<T> INodeReader::read_from_file(const String& p_path)
+    template <typename T> Result<T> INodeReader::read_from_file(const Path& p_path)
     {
         Result<Node> result = read_from_file(p_path);
         if (result.has_error()) {

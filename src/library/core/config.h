@@ -53,9 +53,9 @@ namespace GodotObjectCompiler
 
         String dump();
 
-        bool write_to_file(const String& p_path) override;
+        bool write_to_file(const Path& p_path) override;
 
-        bool read_from_file(const String& p_path) override;
+        bool read_from_file(const Path& p_path) override;
 
       protected:
         void _write_to_section(const String& p_section) override;

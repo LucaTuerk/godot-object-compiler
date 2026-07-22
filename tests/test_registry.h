@@ -82,9 +82,9 @@ namespace GodotObjectCompiler
 
         Vector<String> get_test_application_arguments(const ProgramPath& p_program_path);
 
-        Vector<String> get_integration_tests_godot_cpp_include_paths();
+        Vector<Path> get_integration_tests_godot_cpp_include_paths();
 
-        void set_integration_tests_godot_cpp_include_paths(const Vector<String>& p_paths);
+        void set_integration_tests_godot_cpp_include_paths(const Vector<Path>& p_paths);
 
         void set_extension_api(const String& p_extension_api);
 
@@ -99,7 +99,7 @@ namespace GodotObjectCompiler
       private:
         String source_parser;
         String extension_api;
-        Vector<String> include_paths;
+        Vector<Path> include_paths;
         Dictionary<String, TestFunctor> tests;
         Dictionary<String, TestFunctor> integration_tests;
     };

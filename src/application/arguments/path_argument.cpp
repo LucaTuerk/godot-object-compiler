@@ -60,7 +60,7 @@ namespace GodotObjectCompiler
     {
         const String argument = p_argument;
         Vector<String> paths = string_split(argument, ",");
-        Vector<String> results;
+        Vector<Path> results;
 
         for (const String& path : paths) {
             if (!could_be_path(path)) {
@@ -73,12 +73,17 @@ namespace GodotObjectCompiler
         return results;
     }
 
-    String
-    PathListCommandLineArgumentParser::value_to_string(const std::vector<std::string>& p_value)
+    String PathListCommandLineArgumentParser::value_to_string(const Vector<Path>& p_value)
     {
         StreamWriter writer;
         writer.write("[");
-        writer.write(string_vector_combine(p_value, ", "));
+
+        Vector<String> paths;
+        for (const Path& path : p_value) {
+            paths.push_back(path_absolute(path));
+        }
+
+        writer.write(string_vector_combine(paths, ", "));
         writer.write("]");
         return writer.get_string();
     }

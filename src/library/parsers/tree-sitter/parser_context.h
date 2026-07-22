@@ -67,7 +67,7 @@ namespace GodotObjectCompiler
         ParserContext() = default;
         explicit ParserContext(const String& input);
 
-        static ParserContext from_path(const String& p_path);
+        static ParserContext from_path(const Path& p_path);
 
         Result<TreeSitterNode> create_tree(TSTree* p_tree);
         Ref<TreeSitterNode> create_node(TSNode p_ts_node);

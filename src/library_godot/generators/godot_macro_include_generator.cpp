@@ -122,11 +122,11 @@ namespace GodotObjectCompiler
     }
 
     bool GodotMacroIncludeGenerator::generate_core_include(
-        const Vector<String>& p_godot_cpp_includes, const Ref<Context>& p_write_to)
+        const Vector<Path>& p_godot_cpp_includes, const Ref<Context>& p_write_to)
     {
         p_write_to->add_child(Output::PragmaOnce());
         bool found_any_path = false;
-        for (const String& godot_cpp_include : p_godot_cpp_includes) {
+        for (const Path& godot_cpp_include : p_godot_cpp_includes) {
             String include_path = path_concat(godot_cpp_include, "godot_cpp", "core");
             if (!directory_exits(include_path)) {
                 continue;
@@ -136,7 +136,7 @@ namespace GodotObjectCompiler
             Vector<String> includes = directory_files_recursive(include_path);
             std::transform(
                 includes.cbegin(), includes.cend(), includes.begin(),
-                [godot_cpp_include](const String& p_path) {
+                [godot_cpp_include](const Path& p_path) {
                     return header_path(godot_cpp_include, p_path);
                 });
             std::sort(includes.begin(), includes.end());

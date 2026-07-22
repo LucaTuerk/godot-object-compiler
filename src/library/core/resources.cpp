@@ -46,7 +46,7 @@ namespace GodotObjectCompiler
         _loaded_packs.push_back(p_pack);
     }
 
-    Vector<String> Resources::resources_recursive(const String& p_path) const
+    Vector<String> Resources::resources_recursive(const Path& p_path) const
     {
         Vector<String> res;
         for (const ResourcePack* pack : _loaded_packs) {
@@ -59,7 +59,7 @@ namespace GodotObjectCompiler
         return res;
     }
 
-    String Resources::load_text_resource(const String& p_path) const
+    String Resources::load_text_resource(const Path& p_path) const
     {
         for (ResourcePack* pack : _loaded_packs) {
             if (auto itr = pack->find(p_path); itr != pack->end()) {
@@ -69,7 +69,7 @@ namespace GodotObjectCompiler
         return "";
     }
 
-    bool Resources::has_resource(const String& p_path) const
+    bool Resources::has_resource(const Path& p_path) const
     {
         for (ResourcePack* pack : _loaded_packs) {
             if (auto itr = pack->find(p_path); itr != pack->end()) {

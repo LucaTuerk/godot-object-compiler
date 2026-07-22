@@ -103,7 +103,7 @@ namespace GodotObjectCompiler
 
         LibraryContext::instance()->add_include_paths(project_args->godot_cpp->get<Vector<Path>>());
 
-        if (LibraryContext::instance()->file_modified(project_args->extension_api->get<String>())) {
+        if (LibraryContext::instance()->file_modified(project_args->extension_api->get<Path>())) {
             GodotMacroIncludeGenerator macro_include_generator;
             Ref<Context> macro_include_content = node_new<Context>();
             Ref<Context> core_include_content = node_new<Context>();

@@ -55,11 +55,11 @@ namespace GodotObjectCompiler
         CAPABILITIES(JSON_CONFIG_PARSER);
 
       public:
-        Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_context) override;
+        Ref<ParserError> parse_file(const Path& p_path, Ref<Context> r_context) override;
 
         Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
 
-        bool setup_include_paths(const Vector<String>& p_godot_cpp_include);
+        bool setup_include_paths(const Vector<Path>& p_godot_cpp_include);
 
       private:
         Result<Class, JsonError> parse_class(const Json& p_input);

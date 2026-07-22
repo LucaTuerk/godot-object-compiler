@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
         }
 
         if (run_integration_tests) {
-            Vector<String> include_paths;
+            Vector<Path> include_paths;
             for (int i = 2; i < argc; i++) {
                 if (i == 2) {
                     TestRegistry::instance()->set_extension_api(argv[i]);

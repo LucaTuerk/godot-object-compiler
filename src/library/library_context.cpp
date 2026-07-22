@@ -50,7 +50,7 @@
 namespace GodotObjectCompiler
 {
 
-    void LibraryContext::force_regenerate(const String& p_path)
+    void LibraryContext::force_regenerate(const Path& p_path)
     {
         String absolute = path_absolute(p_path);
         clear_generated_files(p_path);
@@ -97,7 +97,7 @@ namespace GodotObjectCompiler
         return itr == default_parsers.end() ? nullptr : itr->second;
     }
 
-    void LibraryContext::set_temporary_path(const String& p_path)
+    void LibraryContext::set_temporary_path(const Path& p_path)
     {
         temp_path = p_path;
     }
@@ -205,18 +205,18 @@ namespace GodotObjectCompiler
         remove_macros = p_value;
     }
 
-    const Vector<String>& LibraryContext::get_include_paths()
+    const Vector<Path>& LibraryContext::get_include_paths()
     {
         return include_paths;
     }
 
-    void LibraryContext::set_include_paths(const Vector<String>& p_value)
+    void LibraryContext::set_include_paths(const Vector<Path>& p_value)
     {
         include_paths = p_value;
         ensure_unique_include_paths();
     }
 
-    void LibraryContext::add_include_paths(const Vector<String>& p_value)
+    void LibraryContext::add_include_paths(const Vector<Path>& p_value)
     {
         include_paths.insert(include_paths.begin(), p_value.begin(), p_value.end());
         ensure_unique_include_paths();
@@ -251,7 +251,7 @@ namespace GodotObjectCompiler
         generated_from[p_generated_from_path].push_back(p_generated_path);
     }
 
-    bool LibraryContext::load_generated_from_file(const String& p_path)
+    bool LibraryContext::load_generated_from_file(const Path& p_path)
     {
         JsonConfig config;
         if (!config.read_from_file(p_path)) {
@@ -272,7 +272,7 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool LibraryContext::save_generated_from_file(const String& p_path)
+    bool LibraryContext::save_generated_from_file(const Path& p_path)
     {
         JsonConfig config;
 
@@ -313,7 +313,7 @@ namespace GodotObjectCompiler
         out_last_modified_times.clear();
     }
 
-    void LibraryContext::regenerate_file(const String& p_path)
+    void LibraryContext::regenerate_file(const Path& p_path)
     {
         regenerate_files.push_back(p_path);
     }
@@ -349,7 +349,7 @@ namespace GodotObjectCompiler
         regenerate_file_apply();
     }
 
-    bool LibraryContext::clear_generated_files(const String& p_path)
+    bool LibraryContext::clear_generated_files(const Path& p_path)
     {
         const auto itr = generated_from.find(p_path);
 
@@ -369,7 +369,7 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool LibraryContext::load_last_modified_times_file(const String& p_path)
+    bool LibraryContext::load_last_modified_times_file(const Path& p_path)
     {
         JsonConfig config;
         if (!config.read_from_file(p_path)) {
@@ -390,7 +390,7 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool LibraryContext::save_last_modified_times_file(const String& p_path)
+    bool LibraryContext::save_last_modified_times_file(const Path& p_path)
     {
         JsonConfig config;
 
@@ -402,7 +402,7 @@ namespace GodotObjectCompiler
         return config.write_to_file(p_path);
     }
 
-    bool LibraryContext::file_modified(const String& p_path, bool p_update_time)
+    bool LibraryContext::file_modified(const Path& p_path, bool p_update_time)
     {
         const String absolute = path_absolute(p_path);
         const Size last_modified = file_write_time(absolute);
