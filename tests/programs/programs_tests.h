@@ -47,7 +47,7 @@ GOC_INTEGRATION_TEST(Clear)
     GOC_TEST_ASSERT(result == 0, "Failed to run program");
 
     const auto generated_files = directory_files_recursive(TestRegistry::get_generated_path());
-    const auto cache_files = directory_files_recursive(TestRegistry::get_cache_path());
+    const auto cache_files = directory_files_recursive(TestRegistry::get_type_db_path());
 
     for (const String& file : generated_files) {
         fmt_print_err("Generated File \"%s\" was not properly cleaned up.", file.c_str());
@@ -69,6 +69,15 @@ GOC_TEST(Help)
     const int result =
         application.run(TestRegistry::instance()->get_test_application_arguments({"help"}));
     GOC_TEST_ASSERT(result == 0, "Failed to run program");
+
+    for (const auto& [path, _] : Programs::instance()->get_programs()) {
+        Vector<String> args = {"help"};
+        args.insert(args.end(), path.begin(), path.end());
+        const int result =
+            application.run(TestRegistry::instance()->get_test_application_arguments(args));
+        GOC_TEST_ASSERT(result == 0, "Failed to run program");
+    }
+
     return TEST_RESULT_SUCCESS;
 };
 

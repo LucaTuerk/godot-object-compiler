@@ -34,18 +34,33 @@
 /**************************************************************************/
 
 #pragma once
+#include "application/arguments/argument_parsers.h"
 #include "program.h"
 
 namespace GodotObjectCompiler
 {
+    class InitToolsArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> tools_path = CommandLineArgument::unnamed(
+            CommandLineArgumentParsers::Path, "The path to the tools directory.");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {tools_path};
+        }
+    };
 
     class InitTools : public IProgram
     {
-        PROJECTLESS_PROGRAM(InitTools, "init/tools")
+        PROGRAM(InitTools, "init/tools")
+        READONLY_PROGRAM
 
       public:
-        bool validate_arguments(ApplicationContext& p_context) override;
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
     };
 
 } // namespace GodotObjectCompiler

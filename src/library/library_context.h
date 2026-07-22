@@ -112,6 +112,8 @@ namespace GodotObjectCompiler
 
         void set_include_paths(const Vector<String>& p_value);
 
+        void add_include_paths(const Vector<String>& p_value);
+
         void set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail);
 
         void set_usings(const Vector<String>& p_value);
@@ -145,6 +147,8 @@ namespace GodotObjectCompiler
       private:
         LibraryContext() = default;
         void init();
+
+        void ensure_unique_include_paths();
 
         static Hash get_path_hash(const String& p_absolute_path);
 

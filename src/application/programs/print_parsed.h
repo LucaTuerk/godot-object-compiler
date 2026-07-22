@@ -35,18 +35,32 @@
 
 #pragma once
 #if GOC_TREE_SITTER_PARSER_ENABLED
+#include "application/arguments/argument_parsers.h"
 #include "program.h"
 
 namespace GodotObjectCompiler
 {
+    class PrintParsedArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> input_files = CommandLineArgument::unnamed(
+            CommandLineArgumentParsers::Path, "The input files to parse and display.");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {input_files};
+        }
+    };
 
     class PrintParsed : public IProgram
     {
-        PROJECTLESS_PROGRAM(PrintParsed, "print/parsed")
+        PROGRAM(PrintParsed, "print/parsed")
 
       public:
-        bool validate_arguments(ApplicationContext& p_context) override;
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
     };
 
 } // namespace GodotObjectCompiler

@@ -34,6 +34,7 @@
 /**************************************************************************/
 
 #pragma once
+#include "arguments/argument.h"
 #include "library/core/core.h"
 
 namespace GodotObjectCompiler
@@ -44,25 +45,72 @@ namespace GodotObjectCompiler
     class ApplicationContext
     {
       public:
-        String project_name;
+        Vector<String> arguments;
 
-        Opt<String> path_extension_api;
-        Opt<String> paths_root;
-        Opt<Vector<String>> files_input;
-        Opt<Vector<String>> paths_include;
-        Opt<Vector<String>> paths_godot_cpp_include;
-        Opt<String> options_source_parser;
-
-        String paths_goc = ".goc";
-        String paths_cache = ".goc/cache";
-        String paths_generated = ".goc/generated";
-        Vector<String> application_arguments;
-        Vector<String> program_arguments;
         Ref<IProgram> program;
 
-        bool set_from_application_arguments(Vector<String>& p_application_arguments);
+        template <typename... Args> CommandLineArgumentParseResult register_argument_lists();
 
-        bool validate() const;
+        template <typename T> Ref<T> get_argument_list() const;
+
+        Vector<Ref<CommandLineArgument>> get_command_line_arguments() const;
+
+      private:
+        template <typename T, typename... Args>
+        CommandLineArgumentParseResult register_argument_lists_helper();
+
+        template <class... Args, typename = std::enable_if_t<(sizeof...(Args) == 0)>>
+        static CommandLineArgumentParseResult register_argument_lists_helper();
+
+        template <
+            typename T, typename = std::enable_if_t<std::is_base_of_v<ICommandLineArgumentList, T>>>
+        CommandLineArgumentParseResult register_argument_list(const Ref<T>& p_argument_list);
+
+        Dictionary<TypeIndex, Ref<ICommandLineArgumentList>> argument_lists;
     };
 
+    template <typename T, typename>
+    CommandLineArgumentParseResult
+    ApplicationContext::register_argument_list(const Ref<T>& p_argument_list)
+    {
+        if (argument_lists.find(typeid(T)) != argument_lists.end()) {
+            return {};
+        }
+
+        Ref<ICommandLineArgumentList> argument_list =
+            std::dynamic_pointer_cast<ICommandLineArgumentList>(p_argument_list);
+        const auto result = CommandLineArgument::parse(argument_list->get_arguments(), arguments);
+
+        argument_lists[typeid(T)] = argument_list;
+        return result;
+    }
+
+    template <typename... Args, typename>
+    CommandLineArgumentParseResult ApplicationContext::register_argument_lists_helper()
+    {
+        return {};
+    }
+
+    template <typename T, typename... Args>
+    CommandLineArgumentParseResult ApplicationContext::register_argument_lists_helper()
+    {
+        return register_argument_list<T>(make_ref<T>()) + register_argument_lists_helper<Args...>();
+    }
+
+    template <typename... Args>
+    CommandLineArgumentParseResult ApplicationContext::register_argument_lists()
+    {
+        return register_argument_lists_helper<Args...>();
+    }
+
+    template <typename T> Ref<T> ApplicationContext::get_argument_list() const
+    {
+        auto itr = argument_lists.find(typeid(T));
+
+        if (itr == argument_lists.end()) {
+            return nullptr;
+        }
+
+        return std::dynamic_pointer_cast<T>(itr->second);
+    }
 } // namespace GodotObjectCompiler

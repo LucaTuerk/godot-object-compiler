@@ -1,5 +1,8 @@
-Usage: goc [PROGRAM PATH...] [PROGRAM ARGS...] [APPLICATION ARGS...]
+Usage: goc [PROGRAM PATH...] [ARGUMENTS...]
 
-The godot-object-compiler requires a project for most programs, project free
-programs are marked [!p] in the program list.
-The project can be defined via the following application arguments:
+Display the required arguments for the desired program by executing the
+help program with the corresponding program path, f.e:
+
+goc help generate
+
+Here are some common arguments you might need:

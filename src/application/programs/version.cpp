@@ -39,7 +39,7 @@
 namespace GodotObjectCompiler
 {
 
-    Ref<ProgramError> Version::run(ApplicationContext& p_context)
+    Ref<ProgramError> Version::execute(ApplicationContext& p_context)
     {
         UNUSED(p_context);
         fmt_print_ln(
@@ -48,7 +48,7 @@ namespace GodotObjectCompiler
         return ProgramError::OK;
     }
 
-    Ref<ProgramError> BuildNum::run(ApplicationContext& p_context)
+    Ref<ProgramError> BuildNum::execute(ApplicationContext& p_context)
     {
         UNUSED(p_context);
         fmt_print_ln("%s", BuildInfo::commit_hash);

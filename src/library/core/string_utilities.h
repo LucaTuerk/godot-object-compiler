@@ -38,6 +38,7 @@
 
 namespace GodotObjectCompiler
 {
+    class IStringWriter;
 
     String hash_string(Hash p_hash);
 
@@ -73,6 +74,8 @@ namespace GodotObjectCompiler
 
     String string_pad_left(const String& p_content, char p_padding, Size p_size);
 
+    String string_indent_lines(const String& p_content, char p_padding, Size p_size);
+
     String string_shrink_inner_space(const String& p_content);
 
     int string_to_int(const String& p_content);
@@ -96,5 +99,9 @@ namespace GodotObjectCompiler
 
     Vector<String> string_get_enclosed_sections(
         const String& p_content, char p_open, char p_close, char p_seperator);
+
+    using Column = Pair<Size, String>;
+
+    void write_columns(IStringWriter* p_writer, const Column& column1, const Column& column2);
 
 } // namespace GodotObjectCompiler

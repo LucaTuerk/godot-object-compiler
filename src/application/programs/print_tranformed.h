@@ -34,18 +34,33 @@
 /**************************************************************************/
 
 #pragma once
+#include "application/arguments/argument_parsers.h"
 #include "program.h"
 
 namespace GodotObjectCompiler
 {
+
+    class PrintTransformedArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> input_files = CommandLineArgument::unnamed(
+            CommandLineArgumentParsers::Path, "Paths to the files to generated and print.");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {input_files};
+        }
+    };
 
     class PrintTransformed : public IProgram
     {
         PROGRAM(PrintTransformed, "print/transformed")
 
       public:
-        bool validate_arguments(ApplicationContext& p_context) override;
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
     };
 
 } // namespace GodotObjectCompiler

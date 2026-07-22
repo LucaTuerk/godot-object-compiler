@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* main.cpp                                                               */
+/* path_argument.cpp                                                      */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,37 +33,53 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "main.h"
+#include "path_argument.h"
 
-#include "application/application.h"
-#include "application/programs/all.h"
-#include "library/core/core.h"
-#include "library/library_context.h"
-#include "library_godot/parsers/extension_api_parser.h"
-#if DEV_BUILD
-#include "application/programs_dev/all.h"
-#endif
-
-using namespace GodotObjectCompiler;
-
-int main(int argc, char* argv[])
+#include "library/core/file_system_utilities.h"
+#include "library/core/string_utilities.h"
+namespace GodotObjectCompiler
 {
-    Vector<String> args;
-    for (int i = 1; i < argc; i++) {
-        args.emplace_back(argv[i]);
+
+    Opt<Path> PathCommandLineArgumentParser::parse_argument(const String& p_argument)
+    {
+        String argument = path_absolute(p_argument);
+
+        if (!could_be_path(argument)) {
+            return std::nullopt;
+        }
+
+        return argument;
     }
 
-#ifdef GOC_TREE_SITTER_PARSER_ENABLED
-    auto DEFAULT_SOURCE_PARSER = TreeSitterParser::get_type_static();
-#elif
-#ifdef GOC_LIBCLANG_PARSER_ENABLED
-    auto DEFAULT_SOURCE_PARSER = ClangParser::get_type_static();
-#endif
-#endif
+    String PathCommandLineArgumentParser::value_to_string(const Path& p_value)
+    {
+        return p_value;
+    }
 
-    LibraryContext::instance()->set_default_parser(
-        DEFAULT_SOURCE_PARSER, IParser::Capabilities::SOURCE_PARSER);
+    Opt<Vector<Path>> PathListCommandLineArgumentParser::parse_argument(const String& p_argument)
+    {
+        const String argument = p_argument;
+        Vector<String> paths = string_split(argument, ",");
+        Vector<String> results;
 
-    Application application;
-    return application.run(args);
-}
+        for (const String& path : paths) {
+            if (!could_be_path(path)) {
+                return std::nullopt;
+            }
+
+            results.push_back(path_absolute(path));
+        }
+
+        return results;
+    }
+
+    String
+    PathListCommandLineArgumentParser::value_to_string(const std::vector<std::string>& p_value)
+    {
+        StreamWriter writer;
+        writer.write("[");
+        writer.write(string_vector_combine(p_value, ", "));
+        writer.write("]");
+        return writer.get_string();
+    }
+} // namespace GodotObjectCompiler

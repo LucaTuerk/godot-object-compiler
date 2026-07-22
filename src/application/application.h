@@ -35,6 +35,7 @@
 
 #pragma once
 #include "application_context.h"
+#include "arguments/argument_parsers.h"
 #include "library/core/core.h"
 #include "programs/program.h"
 
@@ -53,6 +54,8 @@ namespace GodotObjectCompiler
         ~Application();
 
         int run(const Vector<String>& p_arguments);
+
+        ApplicationContext& get_context();
 
       private:
         int setup_context(Vector<String> p_arguments);

@@ -34,6 +34,8 @@
 /**************************************************************************/
 #include "generate_bindings.h"
 
+#include "application/arguments/argument_lists.h"
+#include "application/arguments/argument_parsers.h"
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
@@ -52,6 +54,13 @@
 
 namespace GodotObjectCompiler
 {
+    CommandLineArgumentParseResult
+    GenerateBindings::register_required_arguments(ApplicationContext& p_context) const
+    {
+        return p_context.register_argument_lists<
+            ApplicationArguments, GeneratorArguments, GDExtensionProjectArguments>();
+    }
+
     String GenerateBindings::file_id(const String& p_file_name)
     {
         constexpr Hasher<String> hasher;
@@ -78,18 +87,12 @@ namespace GodotObjectCompiler
         return stream.get_string();
     }
 
-    Ref<ProgramError> GenerateBindings::run(ApplicationContext& p_context)
+    Ref<ProgramError> GenerateBindings::execute(ApplicationContext& p_context)
     {
-        PROG_ERR_COND(
-            !p_context.paths_root.has_value(), "No project root path specified. Please provide it "
-                                               "using --root_path= or the shorthand -R=");
-        PROG_ERR_COND(
-            !p_context.files_input.has_value(),
-            "No input files specified. Please provide them using --sources= or the shorthand -S=");
-        PROG_ERR_COND(
-            !p_context.path_extension_api.has_value(),
-            "No godot-cpp include paths specified. Please provide it using --extension_api or the "
-            "shorthand -R=");
+        auto application_args = p_context.get_argument_list<ApplicationArguments>();
+        auto generator_args = p_context.get_argument_list<GeneratorArguments>();
+        auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
+
         PROG_ERR_COND(
             !(AssumedGodotTypes::validate_assumptions() &&
               AssumedParameterValues::validate_assumptions()),
@@ -98,22 +101,28 @@ namespace GodotObjectCompiler
 
         OutputTransformator transformator;
 
-        if (LibraryContext::instance()->file_modified(p_context.path_extension_api.value())) {
+        LibraryContext::instance()->add_include_paths(project_args->godot_cpp->get<Vector<Path>>());
+
+        if (LibraryContext::instance()->file_modified(project_args->extension_api->get<String>())) {
             GodotMacroIncludeGenerator macro_include_generator;
             Ref<Context> macro_include_content = node_new<Context>();
             Ref<Context> core_include_content = node_new<Context>();
 
             macro_include_generator.generate(nullptr, macro_include_content);
             macro_include_generator.generate_core_include(
-                p_context.paths_godot_cpp_include.value(), core_include_content);
+                project_args->godot_cpp->get<Vector<Path>>(), core_include_content);
 
             FileWriter marco_writer = FileWriter::generated(
-                path_concat(p_context.paths_generated, "godot_object_compiler/macros.h"), "");
+                path_concat(
+                    generator_args->generated_path->get<Path>(), "godot_object_compiler/macros.h"),
+                "");
             Ref<Output::OutputNode> macro_output = transformator.transform(macro_include_content);
             macro_output->get_output(&marco_writer);
 
             FileWriter core_include_writer = FileWriter::generated(
-                path_concat(p_context.paths_generated, "godot_object_compiler/core_includes.h"),
+                path_concat(
+                    generator_args->generated_path->get<Path>(),
+                    "godot_object_compiler/core_includes.h"),
                 "");
             Ref<Output::OutputNode> core_include_output =
                 transformator.transform(core_include_content);
@@ -177,8 +186,8 @@ namespace GodotObjectCompiler
         HashSet<String> processed;
         HashSet<String> register_includes;
 
-        for (String input_file : *p_context.files_input) {
-            if (!path_is_descendant(*p_context.paths_root, input_file)) {
+        for (String input_file : project_args->sources->get<Vector<Path>>()) {
+            if (!path_is_descendant(generator_args->root_path->get<Path>(), input_file)) {
                 PRINT_INFO(
                     "Input file \"%s\" is not in the root path. Skipping.", input_file.c_str())
                 continue;
@@ -210,10 +219,11 @@ namespace GodotObjectCompiler
             }
 
             processed.insert(input_file);
-            String relative_path = path_relative(input_file, *p_context.paths_root);
+            String relative_path =
+                path_relative(input_file, generator_args->root_path->get<Path>());
 
             Ref<Namespace> global_namespace = nullptr;
-            String cached = cache_path(p_context.paths_goc, input_file);
+            String cached = cache_path(application_args->goc_path->get<Path>(), input_file);
             ConfigNodeReaderWriter reader_writer;
             if (!LibraryContext::instance()->file_modified(input_file) && file_exists(cached)) {
                 if (Result<Node> parsed = reader_writer.read_from_file(cached);
@@ -245,7 +255,8 @@ namespace GodotObjectCompiler
                 reader_writer.write_to_file(global_namespace, cached);
             }
 
-            String in_generated_path = path_concat(p_context.paths_generated, relative_path);
+            String in_generated_path =
+                path_concat(generator_args->generated_path->get<Path>(), relative_path);
             String in_generated_base = path_base(in_generated_path);
             String in_generated_stem = path_stem(in_generated_path);
             String gen_source_path =
@@ -253,7 +264,7 @@ namespace GodotObjectCompiler
             String gen_header_path =
                 path_concat_ext(in_generated_base, in_generated_stem, "generated.h");
             String gen_header_include_path =
-                header_path(p_context.paths_generated, gen_header_path);
+                header_path(generator_args->generated_path->get<Path>(), gen_header_path);
 
             if (!directory_exits(in_generated_base)) {
                 create_dir_recursive(in_generated_base);
@@ -354,7 +365,8 @@ namespace GodotObjectCompiler
 
                 if (result.initialize->get_child_count() > 0 ||
                     result.uninitialize->get_child_count() > 0) {
-                    result.add_register_include(header_path(*p_context.paths_root, input_file));
+                    result.add_register_include(
+                        header_path(generator_args->root_path->get<Path>(), input_file));
                 }
 
                 if (!LibraryContext::instance()->file_modified(input_file)) {
@@ -407,7 +419,7 @@ namespace GodotObjectCompiler
             FileWriter source_writer = FileWriter::generated(gen_source_path, input_file);
             FileWriter header_writer = FileWriter::generated(gen_header_path, input_file);
 
-            auto target_header = header_path(*p_context.paths_root, input_file);
+            auto target_header = header_path(generator_args->root_path->get<Path>(), input_file);
             Output::Lines({Output::PragmaOnce(), Output::Text("#undef GOC_FILE_ID"),
                            Output::Define("GOC_FILE_ID", {}, file_id(target_header)),
                            Output::Include("godot_object_compiler/macros.h"), Output::NewLine()})
@@ -458,9 +470,13 @@ namespace GodotObjectCompiler
             transformator.transform(register_types_source);
 
         FileWriter register_header_writer = FileWriter::generated(
-            path_concat_ext(p_context.paths_generated, "generated_register_types", "h"), "");
+            path_concat_ext(
+                generator_args->generated_path->get<Path>(), "generated_register_types", "h"),
+            "");
         FileWriter register_source_writer = FileWriter::generated(
-            path_concat_ext(p_context.paths_generated, "generated_register_types", "cpp"), "");
+            path_concat_ext(
+                generator_args->generated_path->get<Path>(), "generated_register_types", "cpp"),
+            "");
 
         register_header_output->get_output(&register_header_writer);
         register_source_output->get_output(&register_source_writer);

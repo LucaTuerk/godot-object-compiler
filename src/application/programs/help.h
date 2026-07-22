@@ -34,36 +34,47 @@
 /**************************************************************************/
 
 #pragma once
+#include "application/arguments/argument_parsers.h"
 #include "program.h"
 
 namespace GodotObjectCompiler
 {
 
+    class HelpArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> program_path = CommandLineArgument::unnamed(
+            CommandLineArgumentParsers::String, "The full program path to display help info for.");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {program_path};
+        }
+    };
+
     class Help : public IProgram
     {
-        PROJECTLESS_PROGRAM(Help, "help")
+        PROGRAM(Help, "help")
+        READONLY_PROGRAM
 
       public:
-        bool validate_arguments(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
 
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
 
         static bool get_help(IStringWriter* p_writer, const Vector<String>& p_args);
 
       private:
-        using Column = Pair<Size, String>;
-
         static void write_title(IStringWriter* p_writer, const String& p_title, Size width);
-
-        static void
-        write_help_columns(IStringWriter* p_writer, const Column& column1, const Column& column2);
 
         static void write_header(IStringWriter* p_writer);
 
         static void write_parser_info(IStringWriter* p_writer);
 
         static void write_program_info(
-            IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& program);
+            IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& p_program,
+            bool p_detailed);
 
         static String get_help_text(const ProgramPath& p_path);
 

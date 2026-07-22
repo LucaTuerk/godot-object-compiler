@@ -34,19 +34,37 @@
 /**************************************************************************/
 
 #pragma once
+#include "application/arguments/argument_parsers.h"
 #include "program.h"
 
 namespace GodotObjectCompiler
 {
+    enum GenerateFlags { REGENERATE_BINDINGS };
+
+    class GenerateArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> flags = CommandLineArgument::optional(
+            make_ref<FlagCommandLineArgumentParser<GenerateFlags>>(
+                FlagCommandLineArgumentParser<GenerateFlags>::InitList{
+                    {"regenerate_bindings", REGENERATE_BINDINGS}}),
+            "generate_flags", "", "");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {flags};
+        }
+    };
 
     class Generate : public IProgram
     {
         PROGRAM(Generate, "generate");
 
       public:
-        bool validate_arguments(ApplicationContext& p_context) override;
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
 
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
 
         static HashSet<String> flags;
     };

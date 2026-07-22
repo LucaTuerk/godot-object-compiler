@@ -41,20 +41,22 @@ namespace GodotObjectCompiler
 
     class Version : public IProgram
     {
-        PROJECTLESS_PROGRAM(Version, "version")
+        PROGRAM(Version, "version")
         NO_PROGRAM_ARGS
+        READONLY_PROGRAM
 
       public:
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
     };
 
     class BuildNum : public IProgram
     {
-        PROJECTLESS_PROGRAM(BuildNum, "build_num")
+        PROGRAM(BuildNum, "build_num")
         NO_PROGRAM_ARGS
+        READONLY_PROGRAM
 
       public:
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
     };
 
 } // namespace GodotObjectCompiler

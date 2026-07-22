@@ -81,7 +81,10 @@ int main(int argc, char* argv[])
                 parser->get_type().c_str());
         }
         Size timer_sum = 0;
-        LibraryContext::instance()->set_default_parser(parser->get_type(), IParser::SOURCE_PARSER);
+
+        TestRegistry::instance()->set_source_parser(parser->get_type());
+        LibraryContext::instance()->set_default_parser(
+            parser->get_type(), IParser::Capabilities::SOURCE_PARSER);
 
         PRINT_INFO("Running tests against parser: %s", parser->get_type().c_str());
 
@@ -142,7 +145,8 @@ int main(int argc, char* argv[])
                     const Vector<String> args =
                         TestRegistry::instance()->get_test_application_arguments(
                             {"generate", "type_db"});
-                    PANIC_COND(application.run(args), "Failed to setup type db during test run.");
+                    PANIC_COND(
+                        application.run(args) != 0, "Failed to setup type db during test run.");
                 }
 
                 Ref<IParser> source_parser =

@@ -40,6 +40,20 @@
 namespace GodotObjectCompiler
 {
 
+    Ref<ProgramError> IProgram::run(ApplicationContext& p_application_context)
+    {
+        const auto result = register_required_arguments(p_application_context);
+
+        PROG_ERR_COND(!result.succeeded(), result.get_error_message());
+
+        return execute(p_application_context);
+    }
+
+    bool IProgram::is_readonly() const
+    {
+        return false;
+    }
+
     bool Programs::register_program(const Ref<IProgram>& p_program)
     {
         if (_registered_programs.find(p_program->program_name()) != _registered_programs.end()) {
@@ -55,19 +69,22 @@ namespace GodotObjectCompiler
         const Vector<String>& p_application_arguments, Vector<String>& r_program_arguments)
     {
         Ref<IProgram> found_program;
+        r_program_arguments = {};
+        Size matching_max = 0;
 
         for (const auto& [path, program] : _programs) {
-            Size matching = overlap(path, p_application_arguments);
-            if (Size current_overlap = 0; matching == path.size() && matching > current_overlap) {
+            const Size matching = overlap(path, p_application_arguments);
+            if (const Size current_overlap = 0;
+                matching == path.size() && matching > current_overlap) {
                 found_program = program;
-                r_program_arguments = {};
-
-                for (Size i = matching; i < p_application_arguments.size(); i++) {
-                    if (!string_prefix(p_application_arguments[i], "-")) {
-                        r_program_arguments.push_back(p_application_arguments[i]);
-                    }
-                }
+                matching_max = matching;
             }
+        }
+
+        if (found_program != nullptr) {
+            r_program_arguments.insert(
+                r_program_arguments.end(), p_application_arguments.begin() + matching_max,
+                p_application_arguments.end());
         }
 
         return found_program;

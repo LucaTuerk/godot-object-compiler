@@ -34,19 +34,34 @@
 /**************************************************************************/
 
 #pragma once
+#include "application/arguments/argument_parsers.h"
 #include "library/core/core.h"
 #include "program.h"
 
 namespace GodotObjectCompiler
 {
 
+    class PrintTypeArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> input_types = CommandLineArgument::unnamed(
+            CommandLineArgumentParsers::String, "Qualified names of the types to print.");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {input_types};
+        }
+    };
+
     class PrintType : public IProgram
     {
         PROGRAM(PrintType, "print/type");
 
       public:
-        bool validate_arguments(ApplicationContext& p_context) override;
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
+        [[nodiscard]] CommandLineArgumentParseResult
+        register_required_arguments(ApplicationContext& p_context) const override;
     };
 
 } // namespace GodotObjectCompiler

@@ -46,7 +46,7 @@ namespace GodotObjectCompiler
         NO_PROGRAM_ARGS
 
       public:
-        Ref<ProgramError> run(ApplicationContext& p_context) override;
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
     };
 
 } // namespace GodotObjectCompiler

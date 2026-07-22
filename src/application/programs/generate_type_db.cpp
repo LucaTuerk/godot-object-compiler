@@ -36,6 +36,8 @@
 #include "generate_type_db.h"
 
 #include "application/application_context.h"
+#include "application/arguments/argument_lists.h"
+#include "application/arguments/argument_parsers.h"
 #include "library/core/config.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
@@ -51,9 +53,17 @@
 namespace GodotObjectCompiler
 {
 
+    CommandLineArgumentParseResult
+    GenerateTypeDB::register_required_arguments(ApplicationContext& p_context) const
+    {
+        return p_context.register_argument_lists<GeneratorArguments, GDExtensionProjectArguments>();
+    }
+
     void GenerateTypeDB::generate_from_file(
         const File& p_file, const ApplicationContext& p_context, IParser* p_parser)
     {
+        const auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
+
         auto& [path, include_path] = p_file;
 
         if (!string_suffix(path, ".h") && !string_suffix(path, ".hpp") &&
@@ -61,10 +71,9 @@ namespace GodotObjectCompiler
             return;
         }
 
-        bool is_input_file =
-            p_context.files_input.has_value() &&
-            std::find(p_context.files_input->begin(), p_context.files_input->end(), path) !=
-                p_context.files_input->end();
+        auto sources = project_args->sources->get<Vector<Path>>();
+
+        bool is_input_file = std::find(sources.begin(), sources.end(), path) != sources.end();
 
         if (!is_input_file && !LibraryContext::instance()->file_modified(path)) {
             PRINT_VERBOSE("Skipping \"%s\". Not modified.", path.c_str());
@@ -118,16 +127,12 @@ namespace GodotObjectCompiler
         }
     }
 
-    Ref<ProgramError> GenerateTypeDB::run(ApplicationContext& p_context)
+    Ref<ProgramError> GenerateTypeDB::execute(ApplicationContext& p_context)
     {
-        PROG_ERR_COND(
-            !p_context.path_extension_api.has_value(),
-            "No extension api path specified. Please provide it using --extension_api= or the "
-            "shorthand -E=");
-        PROG_ERR_COND(
-            !p_context.paths_godot_cpp_include.has_value(),
-            "No godot-cpp path specified. Please provide them using --godot_cpp= or the shorthand "
-            "-GPP=");
+        const auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
+        const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
+
+        LibraryContext::instance()->add_include_paths(project_args->godot_cpp->get<Vector<Path>>());
 
         file_count = 0;
         type_count = 0;
@@ -137,20 +142,21 @@ namespace GodotObjectCompiler
         parser->config(IParser::CONFIG_SKIP_ATTRIBUTES);
 
         ExtensionAPIParser extension_api_parser;
-        extension_api_parser.setup_include_paths(p_context.paths_godot_cpp_include.value());
+        extension_api_parser.setup_include_paths(project_args->godot_cpp->get<Vector<Path>>());
 
-        Vector<File> files = {{p_context.path_extension_api.value(), std::nullopt}};
+        Vector<File> files = {{project_args->extension_api->get<Path>(), std::nullopt}};
 
         generate_from_file(
-            {p_context.path_extension_api.value(), std::nullopt}, p_context, &extension_api_parser);
+            {project_args->extension_api->get<Path>(), std::nullopt}, p_context,
+            &extension_api_parser);
 
-        if (p_context.paths_include.has_value()) {
-            for (String include_path : *p_context.paths_include) {
-                include_path = path_absolute(include_path);
-                for (const String& file : directory_files_recursive(include_path)) {
-                    generate_from_file(
-                        {path_absolute(file), include_path}, p_context, parser.get());
-                }
+        auto includes = generator_args->include_paths->get<Vector<Path>>();
+        includes.push_back(generator_args->root_path->get<Path>());
+
+        for (String include_path : includes) {
+            include_path = path_absolute(include_path);
+            for (const String& file : directory_files_recursive(include_path)) {
+                generate_from_file({path_absolute(file), include_path}, p_context, parser.get());
             }
         }
 

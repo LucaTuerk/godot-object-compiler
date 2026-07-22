@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* main.cpp                                                               */
+/* flag_argument.h                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,37 +33,73 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "main.h"
+#pragma once
+#include "argument.h"
 
-#include "application/application.h"
-#include "application/programs/all.h"
-#include "library/core/core.h"
-#include "library/library_context.h"
-#include "library_godot/parsers/extension_api_parser.h"
-#if DEV_BUILD
-#include "application/programs_dev/all.h"
-#endif
-
-using namespace GodotObjectCompiler;
-
-int main(int argc, char* argv[])
+namespace GodotObjectCompiler
 {
-    Vector<String> args;
-    for (int i = 1; i < argc; i++) {
-        args.emplace_back(argv[i]);
+    template <typename T> class FlagCommandLineArgumentParser : public ICommandLineArgumentParser<T>
+    {
+      public:
+        using InitList = std::initializer_list<Pair<String, T>>;
+
+        FlagCommandLineArgumentParser() = delete;
+
+        FlagCommandLineArgumentParser(const InitList& p_values);
+
+        Opt<T> parse_argument(const String& p_argument) override;
+
+        String get_argument_type_string() override
+        {
+            return "Flag";
+        }
+
+        String value_to_string(const T& p_value) override;
+
+        String get_info_string() override;
+
+      private:
+        Dictionary<String, T> values;
+    };
+
+    template <typename T>
+    FlagCommandLineArgumentParser<T>::FlagCommandLineArgumentParser(const InitList& p_values)
+    {
+        for (const auto& [key, value] : p_values) {
+            values[key] = value;
+        }
     }
 
-#ifdef GOC_TREE_SITTER_PARSER_ENABLED
-    auto DEFAULT_SOURCE_PARSER = TreeSitterParser::get_type_static();
-#elif
-#ifdef GOC_LIBCLANG_PARSER_ENABLED
-    auto DEFAULT_SOURCE_PARSER = ClangParser::get_type_static();
-#endif
-#endif
+    template <typename T>
+    Opt<T> FlagCommandLineArgumentParser<T>::parse_argument(const String& p_argument)
+    {
+        auto itr = values.find(p_argument);
 
-    LibraryContext::instance()->set_default_parser(
-        DEFAULT_SOURCE_PARSER, IParser::Capabilities::SOURCE_PARSER);
+        if (itr == values.end()) {
+            return std::nullopt;
+        }
 
-    Application application;
-    return application.run(args);
-}
+        T& val = itr->second;
+        return val;
+    }
+
+    template <typename T> String FlagCommandLineArgumentParser<T>::value_to_string(const T& p_value)
+    {
+        for (const auto& [key, value] : values) {
+            if (value == p_value) {
+                return key;
+            }
+        }
+        return "";
+    }
+
+    template <typename T> String FlagCommandLineArgumentParser<T>::get_info_string()
+    {
+        Vector<String> keys;
+        for (const auto& [key, value] : values) {
+            keys.push_back(key);
+        }
+        return format("Possible Values: %s", string_vector_combine(keys, ", ").c_str());
+    }
+
+} // namespace GodotObjectCompiler

@@ -35,16 +35,21 @@
 
 #include "application.h"
 
+#include <utility>
+
 #include "application_context.h"
+#include "arguments/argument_lists.h"
 #include "build_info.h"
 #include "compiled_resources/res.gen.h"
 #include "library/core/file_system_utilities.h"
+#include "library/core/permissions.h"
 #include "library/core/resources.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/library_context.h"
 #include "library/parser.h"
 #include "library/type_db.h"
+#include "library_godot/parsers/extension_api_parser.h"
 #include "programs/clear.h"
 #include "programs/help.h"
 #include "programs/program.h"
@@ -53,7 +58,10 @@ namespace GodotObjectCompiler
 {
     bool Application::was_last_exit_graceful() const
     {
-        String lock_path = path_concat(context.paths_goc, ".goc_graceful_lock");
+        auto arguments = context.get_argument_list<ApplicationArguments>();
+
+        const String lock_path =
+            path_concat(arguments->goc_path->get<Path>(), ".goc_graceful_lock");
         if (file_exists(lock_path)) {
             return false;
         }
@@ -66,13 +74,15 @@ namespace GodotObjectCompiler
 
     int Application::exit_gracefully(int p_return_code) const
     {
-        if (context.program == nullptr || !context.program->requires_project()) {
+
+        if (context.program == nullptr || context.program->is_readonly()) {
             return p_return_code;
         }
 
-        String lock_path = path_concat(context.paths_goc, ".goc_graceful_lock");
-
-        if (file_exists(lock_path) && remove_file(lock_path)) {
+        auto arguments = context.get_argument_list<ApplicationArguments>();
+        if (const String lock_path =
+                path_concat(arguments->goc_path->get<Path>(), ".goc_graceful_lock");
+            file_exists(lock_path) && remove_file(lock_path)) {
             PRINT_VERBOSE("Graceful exit.");
             return p_return_code;
         }
@@ -81,17 +91,19 @@ namespace GodotObjectCompiler
             "Tried to exit gracefully but the lock file no longer exists. This indicates a "
             "corrupted cache directory.\nPlease delete the \"%s\" directory to ensure proper "
             "operations.",
-            context.paths_goc.c_str());
+            arguments->goc_path->get<Path>().c_str());
     }
 
     bool Application::init_local_resources() const
     {
+        auto arguments = context.get_argument_list<ApplicationArguments>();
+
         if (!Resources::instance()->copy_resources_to_folder(
                 {
                     "res://variant_types",
                     "res://macros",
                 },
-                context.paths_goc)) {
+                arguments->goc_path->get<Path>())) {
             return false;
         }
         return true;
@@ -106,6 +118,11 @@ namespace GodotObjectCompiler
             run_program(context.program) != 0, "Failed to run the %s program.",
             context.program->program_name().c_str());
         return cleanup();
+    }
+
+    ApplicationContext& Application::get_context()
+    {
+        return context;
     }
 
     Application::Application()
@@ -126,36 +143,42 @@ namespace GodotObjectCompiler
     {
         Resources::instance()->load_pack(&GOC_Resources::Pack);
 
-        context.application_arguments = p_arguments;
-        context.program = Programs::instance()->find_program(
-            context.application_arguments, context.program_arguments);
+        CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
+        const auto application_arguments = context.get_argument_list<ApplicationArguments>();
+
+        Permissions::instance()->add_write_path(application_arguments->goc_path->get<Path>());
+        LibraryContext::instance()->set_error_level(
+            application_arguments->log_level->get<ErrorLevel>(),
+            application_arguments->log_detail->get<ErrorDetail>());
+        LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(
+            IParser::Capabilities::JSON_CONFIG_PARSER);
+
+        if (application_arguments->source_parser->has_value()) {
+            LibraryContext::instance()->set_default_parser(
+                application_arguments->source_parser->get<String>(),
+                IParser::Capabilities::SOURCE_PARSER);
+        }
+
+        context.arguments = std::move(p_arguments);
+
+        Vector<String> program_arguments;
+
+        context.program = Programs::instance()->find_program(context.arguments, program_arguments);
 
         if (!context.program) {
             Help help;
             ApplicationContext help_context = context;
-            if (context.application_arguments.empty()) {
-                print_err("Please specify a program to run.");
-                APP_ERR_COND(help.run(help_context) != ProgramError::OK, "Failed to run help");
-            } else {
-                print_err(format(
-                    "Could not find program \"%s\".", context.application_arguments[0].c_str()));
-                help_context.program_arguments =
-                    string_split(context.application_arguments[0], "/");
-                APP_ERR_COND(
-                    help.run(help_context) != ProgramError::OK,
-                    "Failed to get help info for program %s",
-                    context.application_arguments[0].c_str());
-                return 1;
-            }
+            APP_ERR_COND(help.run(help_context) != ProgramError::OK, "Failed to run help");
             return 1;
         }
 
-        if (context.program->requires_project()) {
-            Clear clear;
+        context.arguments = program_arguments;
 
-            APP_ERR_COND(
-                !context.set_from_application_arguments(context.application_arguments),
-                "Invalid application arguments, failed to setup application context.");
+        if (!context.program->is_readonly()) {
+            CLI_PARS_ERR_V(context.register_argument_lists<GeneratorArguments>(), 1);
+            const auto generator_arguments = context.get_argument_list<GeneratorArguments>();
+
+            Clear clear;
 
             if (!was_last_exit_graceful()) {
                 PRINT_INFO("GOC: Last exit was ungraceful. Clearing context and files.");
@@ -163,60 +186,40 @@ namespace GodotObjectCompiler
                     clear.run(context) != ProgramError::OK,
                     "Failed to clear the cache directory after an ungraceful exit was "
                     "detected.\nPlease delete the \"%s\" directory to ensure proper operations.",
-                    context.paths_goc.c_str());
+                    application_arguments->goc_path->get<Path>().c_str());
             }
 
-            APP_ERR_COND(
-                !context.paths_root.has_value(), "No project root path specified. Please provide "
-                                                 "using --root_path= or shorthand -R=");
-            APP_ERR_COND(
-                !context.path_extension_api.has_value(),
-                "No extension api file specified. Please provide using --extension_api= or "
-                "shorthand -E=");
-            APP_ERR_COND(
-                !context.paths_godot_cpp_include.has_value(),
-                "No godot-cpp include paths specified. Please provide using --godot_cpp or "
-                "shorthand -GPP=");
+            Vector<Path> combined_include_paths;
+            auto include_paths = generator_arguments->include_paths->get<Vector<Path>>();
 
-            if (!context.paths_include.has_value()) {
-                context.paths_include = Vector<String>();
-            }
-
-            context.paths_include->push_back(*context.paths_root);
-
-            Vector<String> combined_include_paths;
+            combined_include_paths.push_back(generator_arguments->root_path->get<Path>());
             combined_include_paths.insert(
-                combined_include_paths.end(), context.paths_include->begin(),
-                context.paths_include->end());
-            combined_include_paths.insert(
-                combined_include_paths.end(), context.paths_godot_cpp_include->begin(),
-                context.paths_godot_cpp_include->end());
+                combined_include_paths.end(), include_paths.begin(), include_paths.end());
 
-            LibraryContext::instance()->get_type_db()->set_cache_directory(context.paths_cache);
+            auto goc_path = application_arguments->goc_path->get<Path>();
+            auto cache_path = generator_arguments->type_db_path->get<Path>();
+            auto generated_path = generator_arguments->generated_path->get<Path>();
+
+            LibraryContext::instance()->set_temporary_path(goc_path);
+            LibraryContext::instance()->get_type_db()->set_cache_directory(cache_path);
             LibraryContext::instance()->set_include_paths(combined_include_paths);
-            LibraryContext::instance()->set_temporary_path(context.paths_goc);
 
             APP_ERR_COND(!init_local_resources(), "Failed to initialize local resources.");
 
             LibraryContext::instance()->set_remove_macros(
-                read_lines(path_concat(context.paths_goc, "macros/macro_remove.txt")));
+                read_lines(path_concat(goc_path, "macros/macro_remove.txt")));
 
             LibraryContext::instance()->load_last_modified_times_file(
-                path_concat_ext(context.paths_goc, "last_modified", "gocdb"));
+                path_concat_ext(goc_path, "last_modified", "gocdb"));
 
             LibraryContext::instance()->load_generated_from_file(
-                path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
+                path_concat_ext(goc_path, "generated_from", "gocdb"));
 
             LibraryContext::instance()->clean_generated_files();
 
-            if (context.options_source_parser.has_value()) {
-                LibraryContext::instance()->set_default_parser(
-                    *context.options_source_parser, IParser::SOURCE_PARSER);
-            }
-
             LibraryContext::instance()->add_using("godot");
 
-            auto build_num_file = path_concat(context.paths_goc, "last_goc_build_number.txt");
+            auto build_num_file = path_concat(goc_path, "last_goc_build_number.txt");
             String build_num = BuildInfo::commit_hash;
             if (file_exists(build_num_file)) {
                 if (String last_build_num = read_file(build_num_file);
@@ -226,7 +229,7 @@ namespace GodotObjectCompiler
                         "Failed to clear the cache after a change in goc version was "
                         "detected.\nPlease delete the \"%s\" directory to ensure proper "
                         "operations.",
-                        context.paths_goc.c_str());
+                        goc_path.c_str());
                 }
             }
 
@@ -240,18 +243,6 @@ namespace GodotObjectCompiler
     {
         APP_ERR_COND(p_program == nullptr, "No program was provided.");
         context.program = p_program;
-        if (!context.program->validate_arguments(context)) {
-            fmt_print_err(
-                "Invalid argument(s) for program %s", context.program->program_name().c_str());
-            ApplicationContext help_context = context;
-            help_context.program_arguments = string_split(context.program->program_name(), "/");
-            Help help;
-            APP_ERR_COND(
-                help.run(help_context), "Failed to get help info for program %s",
-                context.program->program_name().c_str());
-            return 1;
-        }
-
         APP_ERR_COND(
             context.program->run(context) != ProgramError::OK,
             "Error occurred while executing program \"%s\"",
@@ -261,11 +252,13 @@ namespace GodotObjectCompiler
 
     int Application::cleanup()
     {
-        if (context.program->requires_project()) {
+        auto arguments = context.get_argument_list<ApplicationArguments>();
+
+        if (!context.program->is_readonly()) {
             LibraryContext::instance()->save_last_modified_times_file(
-                path_concat_ext(context.paths_goc, "last_modified", "gocdb"));
+                path_concat_ext(arguments->goc_path->get<Path>(), "last_modified", "gocdb"));
             LibraryContext::instance()->save_generated_from_file(
-                path_concat_ext(context.paths_goc, "generated_from", "gocdb"));
+                path_concat_ext(arguments->goc_path->get<Path>(), "generated_from", "gocdb"));
         }
 
         const int return_code = exit_gracefully(0);

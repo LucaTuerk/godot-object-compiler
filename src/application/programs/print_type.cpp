@@ -39,20 +39,18 @@
 
 namespace GodotObjectCompiler
 {
-
-    bool PrintType::validate_arguments(ApplicationContext& p_context)
+    CommandLineArgumentParseResult
+    PrintType::register_required_arguments(ApplicationContext& p_context) const
     {
-        return !p_context.program_arguments.empty();
+        return p_context.register_argument_lists<PrintTypeArguments>();
     }
 
-    Ref<ProgramError> PrintType::run(ApplicationContext& p_context)
+    Ref<ProgramError> PrintType::execute(ApplicationContext& p_context)
     {
-        PROG_ERR_COND(
-            p_context.program_arguments.empty(), "No type name provided. Please specify one or "
-                                                 "more types by their fully qualified name.")
+        const auto arguments = p_context.get_argument_list<PrintTypeArguments>();
 
-        for (const String& name : p_context.program_arguments) {
-            const Result<Node, Error> type_result =
+        for (const String& name : arguments->input_types->get_vector<String>()) {
+            const Result<Node> type_result =
                 LibraryContext::instance()->get_type_db()->get_type_data(name);
             RESULT_ERR_PASS_ON(ProgramError, type_result, type_data);
             print_ln(type_data->pretty_print());

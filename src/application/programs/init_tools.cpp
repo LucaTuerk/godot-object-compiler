@@ -43,20 +43,17 @@
 namespace GodotObjectCompiler
 {
 
-    bool InitTools::validate_arguments(ApplicationContext& p_context)
+    CommandLineArgumentParseResult
+    InitTools::register_required_arguments(ApplicationContext& p_context) const
     {
-        return p_context.program_arguments.size() == 1 &&
-               could_be_dir_path(p_context.program_arguments[0]);
+        return p_context.register_argument_lists<InitToolsArguments>();
     }
 
-    Ref<ProgramError> InitTools::run(ApplicationContext& p_context)
+    Ref<ProgramError> InitTools::execute(ApplicationContext& p_context)
     {
-        PROG_ERR_COND(
-            p_context.program_arguments.size() != 1,
-            "Invalid argument count for init tools program. Expected single path argument "
-            "specifying the target directory.");
+        auto arguments = p_context.get_argument_list<InitToolsArguments>();
 
-        const String path = p_context.program_arguments[0];
+        const Path path = arguments->tools_path->get<Path>();
         Permissions::instance()->add_write_path(path);
 
         PROG_ERR_COND(

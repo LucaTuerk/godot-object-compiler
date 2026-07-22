@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* main.cpp                                                               */
+/* argument_parsers.h                                                     */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,38 +32,56 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+#pragma once
+#include "flag_argument.h"
+#include "path_argument.h"
+#include "string_argument.h"
 
-#include "main.h"
-
-#include "application/application.h"
-#include "application/programs/all.h"
-#include "library/core/core.h"
-#include "library/library_context.h"
-#include "library_godot/parsers/extension_api_parser.h"
-#if DEV_BUILD
-#include "application/programs_dev/all.h"
+#if GOC_LIBCLANG_PARSER_ENABLED
+#include "library/parsers/libclang/parser.h"
 #endif
 
-using namespace GodotObjectCompiler;
+#if GOC_TREE_SITTER_PARSER_ENABLED
+#include "library/parsers/tree-sitter/parser.h"
+#endif
 
-int main(int argc, char* argv[])
+namespace GodotObjectCompiler::CommandLineArgumentParsers
 {
-    Vector<String> args;
-    for (int i = 1; i < argc; i++) {
-        args.emplace_back(argv[i]);
-    }
+    static const inline Ref<PathCommandLineArgumentParser> Path =
+        make_ref<PathCommandLineArgumentParser>();
 
-#ifdef GOC_TREE_SITTER_PARSER_ENABLED
-    auto DEFAULT_SOURCE_PARSER = TreeSitterParser::get_type_static();
-#elif
-#ifdef GOC_LIBCLANG_PARSER_ENABLED
-    auto DEFAULT_SOURCE_PARSER = ClangParser::get_type_static();
+    static const inline Ref<PathListCommandLineArgumentParser> PathList =
+        make_ref<PathListCommandLineArgumentParser>();
+
+    static const inline Ref<StringCommandLineArgumentParser> String =
+        make_ref<StringCommandLineArgumentParser>();
+
+    static const inline Ref<StringListCommandLineArgumentParser> StringList =
+        make_ref<StringListCommandLineArgumentParser>();
+
+    static const inline Ref<FlagCommandLineArgumentParser<ErrorLevel>> LogLevel =
+        make_ref<FlagCommandLineArgumentParser<ErrorLevel>>(
+            FlagCommandLineArgumentParser<ErrorLevel>::InitList({
+                {"Error", ERROR},
+                {"Warning", WARNING},
+                {"Info", INFO},
+                {"Verbose", VERBOSE},
+            }));
+
+    static const inline Ref<FlagCommandLineArgumentParser<ErrorDetail>> LogDetail =
+        make_ref<FlagCommandLineArgumentParser<ErrorDetail>>(
+            FlagCommandLineArgumentParser<ErrorDetail>::InitList(
+                {{"Condensed", ErrorDetail::CONDENSED}, {"Full", ErrorDetail::FULL}}));
+
+    static const inline Ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>
+        SourceParser = make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>(
+            FlagCommandLineArgumentParser<GodotObjectCompiler::String>::InitList({
+#if GOC_LIBCLANG_PARSER_ENABLED
+                {ClangParser::get_type_static(), ClangParser::get_type_static()},
 #endif
+#if GOC_TREE_SITTER_PARSER_ENABLED
+                {TreeSitterParser::get_type_static(), TreeSitterParser::get_type_static()},
 #endif
+            }));
 
-    LibraryContext::instance()->set_default_parser(
-        DEFAULT_SOURCE_PARSER, IParser::Capabilities::SOURCE_PARSER);
-
-    Application application;
-    return application.run(args);
-}
+} // namespace GodotObjectCompiler::CommandLineArgumentParsers
