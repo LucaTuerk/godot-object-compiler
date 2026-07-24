@@ -54,7 +54,7 @@ namespace GodotObjectCompiler
 
       private:
         struct File {
-            String path;
+            Path path;
             Opt<String> include_path;
         };
 

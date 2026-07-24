@@ -49,10 +49,10 @@ namespace GodotObjectCompiler
 
         ~TempFile();
 
-        String get_path() const;
+        Path get_path() const;
 
       private:
-        String path;
+        Path path;
     };
 
 } // namespace GodotObjectCompiler

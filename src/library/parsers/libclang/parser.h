@@ -63,7 +63,7 @@ namespace GodotObjectCompiler
 
         bool parse_attributes = false;
 
-        Opt<String> current_file;
+        Opt<Path> current_file;
     };
 
     template <typename T> bool ClangParser::register_handler()

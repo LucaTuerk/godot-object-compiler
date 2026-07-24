@@ -49,26 +49,23 @@ namespace GodotObjectCompiler
         Application application;
         const Vector<String> args = TestRegistry::instance()->get_test_application_arguments(
             {"generate", "--generate_flags=regenerate_bindings",
-             format("--sources=%s", p_path.c_str())});
+             format("--sources=%s", path_absolute(p_path).c_str())});
         if (application.run(args) != 0) {
             print_err("Failed to generated files.");
             return false;
         }
 
-        const String base = path_base(p_path);
-        const String relative =
-            path_relative(p_path, TestRegistry::instance()->get_test_root_dir());
+        const Path base = p_path.parent_path();
+        const Path relative = path_relative(p_path, TestRegistry::instance()->get_test_root_dir());
 
-        const String generated_header_path = path_concat(
-            TestRegistry::instance()->get_generated_path(),
-            string_replace(relative, ".h", ".generated.h"));
-        const String generated_source_path = path_concat(
-            TestRegistry::instance()->get_generated_path(),
-            string_replace(relative, ".h", ".generated.cpp"));
-        const String register_header_path = path_concat(
-            TestRegistry::instance()->get_generated_path(), "generated_register_types.h");
-        const String register_source_path = path_concat(
-            TestRegistry::instance()->get_generated_path(), "generated_register_types.cpp");
+        const Path generated_header_path = TestRegistry::instance()->get_generated_path() /
+                                           string_replace(relative, ".h", ".generated.h");
+        const Path generated_source_path = TestRegistry::instance()->get_generated_path() /
+                                           string_replace(relative, ".h", ".generated.cpp");
+        const Path register_header_path =
+            TestRegistry::instance()->get_generated_path() / "generated_register_types.h";
+        const Path register_source_path =
+            TestRegistry::instance()->get_generated_path() / "generated_register_types.cpp";
 
         if (!file_exists(generated_header_path)) {
             print_err("Failed to generate header.");

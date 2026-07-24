@@ -48,7 +48,7 @@ namespace GodotObjectCompiler
 
     String read_file(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Reading file \"%s\"", absolute.c_str());
         PANIC_COND(
             !file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
@@ -65,11 +65,11 @@ namespace GodotObjectCompiler
 
     void write_file(const Path& p_path, const String& p_content)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Writing file \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
 
-        String base = path_base(p_path);
+        Path base = p_path.parent_path();
         if (!directory_exits(base)) {
             create_dir_recursive(base);
         }
@@ -84,29 +84,43 @@ namespace GodotObjectCompiler
             return false;
         }
 
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         return std::filesystem::exists(absolute);
+    }
+
+    bool directory_exits(const Path& p_path)
+    {
+        const Path absolute = path_absolute(p_path);
+        return std::filesystem::exists(absolute) && std::filesystem::is_directory(absolute);
     }
 
     bool remove_file(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Deleting file \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
         return std::filesystem::remove(absolute.c_str());
     }
 
-    bool remove(const Path& p_path)
+    bool remove_directory(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Deleting \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
         return std::filesystem::remove_all(absolute.c_str()) > 0;
     }
 
+    bool remove_entry(const Path& p_path)
+    {
+        if (is_regular_file(p_path)) {
+            return remove_file(p_path);
+        }
+        return remove_directory(p_path);
+    }
+
     void write_initial_file_content(const Path& p_path, const String& p_initial_content)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         if (file_exists(absolute)) {
             return;
         }
@@ -114,15 +128,9 @@ namespace GodotObjectCompiler
         writer.write(p_initial_content);
     }
 
-    bool directory_exits(const Path& p_path)
-    {
-        const String absolute = path_absolute(p_path);
-        return std::filesystem::exists(absolute) && std::filesystem::is_directory(absolute);
-    }
-
     bool create_dir_recursive(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Creating directories \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
         return std::filesystem::create_directories(absolute);
@@ -130,7 +138,7 @@ namespace GodotObjectCompiler
 
     Size file_write_time(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         if (!file_exists(absolute)) {
             return 0;
         }
@@ -142,35 +150,10 @@ namespace GodotObjectCompiler
         return std::chrono::system_clock::to_time_t(sctp);
     }
 
-    String path_base(const Path& p_path)
+    Path path_relative(const Path& p_path, const Path& p_base)
     {
-        return std::filesystem::path(p_path).parent_path().generic_string();
-    }
-
-    String path_concat(const Path& p_left, const Path& p_right)
-    {
-        if (string_prefix(p_left, "res://")) {
-            return "res://" + path_concat(String(p_left).substr(6), p_right);
-        }
-
-        return (std::filesystem::path(p_left) / std::filesystem::path(p_right)).generic_string();
-    }
-
-    String path_concat_ext(const Path& p_dir, const Path& p_file, const String& p_extension)
-    {
-        if (string_prefix(p_dir, "res://")) {
-            return "res://" + path_concat_ext(String(p_dir).substr(6), p_file, p_extension);
-        }
-
-        return (std::filesystem::path(p_dir) /
-                std::filesystem::path(format("%s.%s", p_file.c_str(), p_extension.c_str())))
-            .generic_string();
-    }
-
-    String path_relative(const Path& p_path, const Path& p_base)
-    {
-        const bool path_is_res = string_prefix(p_path, "res://");
-        const bool base_is_res = string_prefix(p_base, "res://");
+        const bool path_is_res = string_prefix(p_path, "res:/");
+        const bool base_is_res = string_prefix(p_base, "res:/");
         if (path_is_res != base_is_res) {
             PANIC(
                 "Invalid argument. Trying to get relative path but one path is a resource path "
@@ -182,30 +165,20 @@ namespace GodotObjectCompiler
             return path_relative(String(p_path).substr(6), String(p_base).substr(6));
         }
 
-        return std::filesystem::relative(p_path, p_base).generic_string();
+        return std::filesystem::relative(p_path, p_base);
     }
 
-    String path_absolute(const Path& p_path)
+    Path path_absolute(const Path& p_path)
     {
         if (p_path.empty()) {
             return path_cwd();
         }
-        return std::filesystem::absolute(p_path).generic_string();
+        return std::filesystem::absolute(p_path);
     }
 
-    String path_file_name(const Path& p_path)
+    Path path_cwd()
     {
-        return p_path.filename().generic_string();
-    }
-
-    String path_cwd()
-    {
-        return std::filesystem::current_path().generic_string();
-    }
-
-    String path_stem(const Path& p_path)
-    {
-        return std::filesystem::path(p_path).stem().generic_string();
+        return std::filesystem::current_path();
     }
 
     char path_seperator()
@@ -213,73 +186,73 @@ namespace GodotObjectCompiler
         return std::filesystem::path::preferred_separator;
     }
 
-    Vector<String> directory_files(const Path& p_path)
+    Vector<Path> directory_files(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         PANIC_COND(
             !directory_exits(absolute), "Trying to iterate non existing directory \"%s\"",
             absolute.c_str());
 
-        Vector<String> result;
+        Vector<Path> result;
         std::filesystem::directory_iterator iter(absolute);
         for (const auto& entry : iter) {
             if (entry.is_regular_file()) {
-                result.push_back(entry.path().string());
+                result.push_back(entry.path());
             }
         }
 
         return result;
     }
 
-    Vector<String> directory_files_recursive(const Path& p_path)
+    Vector<Path> directory_files_recursive(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
 
         if (!directory_exits(absolute)) {
             PRINT_ERROR("Trying to iterate non existing directory \"%s\"", absolute.c_str());
             return {};
         }
 
-        Vector<String> result;
+        Vector<Path> result;
         std::filesystem::recursive_directory_iterator iter(absolute);
         for (const auto& entry : iter) {
             if (entry.is_regular_file()) {
-                result.push_back(entry.path().string());
+                result.push_back(entry.path());
             }
         }
 
         return result;
     }
 
-    Vector<String> directory_dirs(const Path& p_path)
+    Vector<Path> directory_subdirs(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         PANIC_COND(
             !directory_exits(absolute), "Trying to iterate non existing directory \"%s\"",
             absolute.c_str());
 
-        Vector<String> result;
+        Vector<Path> result;
         std::filesystem::directory_iterator iter(absolute);
         for (const auto& entry : iter) {
             if (entry.is_directory()) {
-                result.push_back(entry.path().string());
+                result.push_back(entry.path());
             }
         }
         return result;
     }
 
-    Vector<String> directory_entries(const Path& p_path)
+    Vector<Path> directory_entries(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         PANIC_COND(
             !directory_exits(absolute), "Trying to iterate non existing directory \"%s\"",
             absolute.c_str());
 
-        Vector<String> result;
+        Vector<Path> result;
         std::filesystem::directory_iterator iter(absolute);
         for (const auto& entry : iter) {
             if (entry.is_regular_file() || entry.is_directory()) {
-                result.push_back(entry.path().string());
+                result.push_back(entry.path());
             }
         }
         return result;
@@ -287,14 +260,9 @@ namespace GodotObjectCompiler
 
     bool path_is_descendant(const Path& p_possible_ancestor, const Path& p_possible_child)
     {
-        String ancestor_absolute = path_absolute(p_possible_ancestor);
-        String child_absolute = path_absolute(p_possible_child);
+        const Path ancestor_absolute = path_absolute(p_possible_ancestor);
+        const Path child_absolute = path_absolute(p_possible_child);
         return string_prefix(child_absolute, ancestor_absolute);
-    }
-
-    bool path_equals(const Path& p_path1, const Path& p_path2)
-    {
-        return p_path1 == p_path2;
     }
 
     bool could_be_path(const Path& p_path)
@@ -316,21 +284,21 @@ namespace GodotObjectCompiler
 
     String header_path(const Path& p_include_path, const Path& p_file_path)
     {
-        const String include_absolute = path_absolute(p_include_path);
-        const String file_absolute = path_absolute(p_file_path);
-        const String relative = path_relative(file_absolute, include_absolute);
+        const Path include_absolute = path_absolute(p_include_path);
+        const Path file_absolute = path_absolute(p_file_path);
+        const Path relative = path_relative(file_absolute, include_absolute);
         return string_replace(relative, "\\", "/");
     }
 
     bool copy_file(const Path& p_source, const Path& p_destination)
     {
-        auto source = path_absolute(p_source);
-        auto destination = path_absolute(p_destination);
+        const auto source = path_absolute(p_source);
+        const auto destination = path_absolute(p_destination);
         PRINT_VERBOSE("Copying file \"%s\" to \"%s\"", source.c_str(), destination.c_str());
         PANIC_COND(source.empty(), "Empty source file path on file copy.");
         PANIC_COND(!file_exists(source), "Trying to copy non-existing file \"%s\"", source.c_str());
         PANIC_COND(destination.empty(), "Empty destination file path on file copy.");
-        String destination_base = path_base(destination);
+        Path destination_base = destination.parent_path();
         PANIC_COND(
             !directory_exits(destination_base) && !create_dir_recursive(destination_base),
             "Target directory \"%s\" does not exist and could not be created on file copy",

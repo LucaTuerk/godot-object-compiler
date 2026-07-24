@@ -122,7 +122,7 @@ namespace GodotObjectCompiler
 
         explicit ParserError(
             ErrorLevel p_level, const String& p_parser_name, const String& p_message,
-            const String& p_file_path, const String& p_file_content, Size p_line, Size p_column);
+            const Path& p_file_path, const String& p_file_content, Size p_line, Size p_column);
 
         static inline const Ref<ParserError> OK = nullptr;
     };

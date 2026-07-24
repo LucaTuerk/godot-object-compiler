@@ -59,13 +59,13 @@ namespace GodotObjectCompiler
         [[nodiscard]] bool has_resource(const Path& p_path) const;
 
         [[nodiscard]] bool
-        copy_resource_to_file(const String& p_resource_path, const String& p_target_file) const;
+        copy_resource_to_file(const Path& p_resource_path, const Path& p_target_file) const;
 
         [[nodiscard]] bool copy_resources_to_folder(
-            const Vector<String>& p_resource_glob_paths, const String& p_target_folder) const;
+            const Vector<String>& p_resource_glob_paths, const Path& p_target_folder) const;
 
       private:
-        Vector<ResourcePack*> _loaded_packs;
+        HashSet<ResourcePack*> _loaded_packs;
     };
 
 } // namespace GodotObjectCompiler

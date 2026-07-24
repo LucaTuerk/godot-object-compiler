@@ -60,10 +60,10 @@ namespace GodotObjectCompiler
             !directory_exits(path) && !create_dir_recursive(path),
             "Target directory does not exists and could not be created.");
 
-        for (const String& res_file : Resources::instance()->resources_recursive("res://tools")) {
+        for (const String& res_file : Resources::instance()->resources_recursive("res:/tools")) {
             const String content = Resources::instance()->load_text_resource(res_file);
-            const String relative = path_relative(res_file, "res://tools");
-            FileWriter writer(path_concat(path, relative));
+            const Path relative = path_relative(res_file, "res:/tools");
+            FileWriter writer(path / relative);
             writer.write(content);
         }
 

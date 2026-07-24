@@ -74,7 +74,7 @@ namespace GodotObjectCompiler
         return ".goc_tests/.goc";
     }
 
-    String TestRegistry::get_generated_path()
+    Path TestRegistry::get_generated_path()
     {
         return ".goc_tests/.goc/generated";
     }

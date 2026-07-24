@@ -42,7 +42,7 @@ namespace GodotObjectCompiler
 
     Opt<Path> PathCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
-        String argument = path_absolute(p_argument);
+        Path argument = path_absolute(p_argument);
 
         if (!could_be_path(argument)) {
             return std::nullopt;

@@ -89,7 +89,7 @@ namespace GodotObjectCompiler
       public:
         static inline const char* INVALID_NAME = "___INVALID___";
 
-        void set_cache_directory(const String& path);
+        void set_cache_directory(const Path& path);
 
         void save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const;
 
@@ -156,16 +156,15 @@ namespace GodotObjectCompiler
             const String& p_qualified_name, const String& p_attribute_name,
             Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace);
 
-        [[nodiscard]] String _get_cache_file_path(
+        [[nodiscard]] Path _get_cache_file_path(
             const String& p_qualified_name, Size p_template_argument_count = INVALID_SIZE) const;
 
-        [[nodiscard]] String _get_attribute_cache_file_path(
+        [[nodiscard]] Path _get_attribute_cache_file_path(
             const String& p_qualified_name, const String& p_attribute_name,
             Size p_template_argument_count = INVALID_SIZE) const;
 
         Dictionary<String, Ref<Node>> _cache;
-        String _cache_directory;
-        String _readonly_cache_directory;
+        Path _cache_directory;
 
         friend LibraryContext;
     };

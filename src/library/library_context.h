@@ -81,8 +81,8 @@ namespace GodotObjectCompiler
 
         template <typename T> Ref<T> get_singleton();
 
-        void register_generated_file(
-            const String& p_generated_path, const String& p_generated_from_path);
+        void
+        register_generated_file(const Path& p_generated_path, const Path& p_generated_from_path);
 
         bool load_generated_from_file(const Path& p_path);
 
@@ -142,7 +142,7 @@ namespace GodotObjectCompiler
 
         void set_temporary_path(const Path& p_path);
 
-        String get_temporary_path() const;
+        Path get_temporary_path() const;
 
       private:
         LibraryContext() = default;
@@ -165,9 +165,9 @@ namespace GodotObjectCompiler
         Vector<String> remove_macros{};
         Vector<Path> include_paths{};
         Vector<String> regenerate_files{};
-        Dictionary<String, Vector<String>> generated_from{};
-        Dictionary<String, Size> last_modified_times{};
-        Dictionary<String, Size> out_last_modified_times{};
+        Dictionary<Path, Vector<String>> generated_from{};
+        Dictionary<Path, Size> last_modified_times{};
+        Dictionary<Path, Size> out_last_modified_times{};
 
         ErrorLevel error_level = ERROR;
         ErrorDetail error_detail = FULL;

@@ -52,7 +52,7 @@ namespace GodotObjectCompiler
 
     void LibraryContext::force_regenerate(const Path& p_path)
     {
-        String absolute = path_absolute(p_path);
+        Path absolute = path_absolute(p_path);
         clear_generated_files(p_path);
         last_modified_times.erase(absolute);
         out_last_modified_times.erase(absolute);
@@ -102,7 +102,7 @@ namespace GodotObjectCompiler
         temp_path = p_path;
     }
 
-    String LibraryContext::get_temporary_path() const
+    Path LibraryContext::get_temporary_path() const
     {
         return temp_path;
     }
@@ -246,7 +246,7 @@ namespace GodotObjectCompiler
     }
 
     void LibraryContext::register_generated_file(
-        const String& p_generated_path, const String& p_generated_from_path)
+        const Path& p_generated_path, const Path& p_generated_from_path)
     {
         generated_from[p_generated_from_path].push_back(p_generated_path);
     }
@@ -277,7 +277,7 @@ namespace GodotObjectCompiler
         JsonConfig config;
 
         for (const auto& [path, generated] : generated_from) {
-            config.write_to_section(path);
+            config.write_to_section(String(path));
             config.write("generated_files", string_vector_combine(generated, ";"));
         }
 
@@ -395,7 +395,7 @@ namespace GodotObjectCompiler
         JsonConfig config;
 
         for (const auto& [path, last_modified] : out_last_modified_times) {
-            config.write_to_section(path);
+            config.write_to_section(String(path));
             config.write<String, Size>("last_modified", last_modified);
         }
 
@@ -404,7 +404,7 @@ namespace GodotObjectCompiler
 
     bool LibraryContext::file_modified(const Path& p_path, bool p_update_time)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         const Size last_modified = file_write_time(absolute);
 
         if (last_modified == 0) {

@@ -566,7 +566,7 @@ namespace GodotObjectCompiler
 
     Vector<String> read_lines(const Path& p_path)
     {
-        String absolute = path_absolute(p_path);
+        Path absolute = path_absolute(p_path);
         PANIC_COND(
             !file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
 

@@ -43,7 +43,7 @@ namespace GodotObjectCompiler
 
     void Resources::load_pack(ResourcePack* p_pack)
     {
-        _loaded_packs.push_back(p_pack);
+        _loaded_packs.insert(p_pack);
     }
 
     Vector<String> Resources::resources_recursive(const Path& p_path) const
@@ -79,11 +79,11 @@ namespace GodotObjectCompiler
         return false;
     }
 
-    bool Resources::copy_resource_to_file(
-        const String& p_resource_path, const String& p_target_file) const
+    bool
+    Resources::copy_resource_to_file(const Path& p_resource_path, const Path& p_target_file) const
     {
         if (!file_exists(p_target_file)) {
-            if (String folder_path = path_base(p_target_file);
+            if (Path folder_path = p_target_file.parent_path();
                 !directory_exits(folder_path) && !create_dir_recursive(folder_path)) {
                 return false;
             }
@@ -94,14 +94,14 @@ namespace GodotObjectCompiler
     }
 
     bool Resources::copy_resources_to_folder(
-        const Vector<String>& p_resource_glob_paths, const String& p_target_folder) const
+        const Vector<String>& p_resource_glob_paths, const Path& p_target_folder) const
     {
         for (const String& copy_resources : p_resource_glob_paths) {
             for (const String& res_path : resources_recursive(copy_resources)) {
-                String relative = path_relative(res_path, copy_resources);
-                auto file_path = path_concat(
-                    path_concat(p_target_folder, string_replace(copy_resources, "res://", "")),
-                    relative);
+                Path relative = path_relative(res_path, copy_resources);
+                Path file_path =
+                    p_target_folder / string_replace(copy_resources, "res:/", "") / relative;
+
                 if (file_exists(file_path)) {
                     continue;
                 }

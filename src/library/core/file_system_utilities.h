@@ -39,13 +39,13 @@
 namespace GodotObjectCompiler
 {
 
-    Vector<String> directory_files(const Path& p_path);
+    Vector<Path> directory_files(const Path& p_path);
 
-    Vector<String> directory_files_recursive(const Path& p_path);
+    Vector<Path> directory_files_recursive(const Path& p_path);
 
-    Vector<String> directory_dirs(const Path& p_path);
+    Vector<Path> directory_subdirs(const Path& p_path);
 
-    Vector<String> directory_entries(const Path& p_path);
+    Vector<Path> directory_entries(const Path& p_path);
 
     String read_file(const Path& p_path);
 
@@ -59,51 +59,29 @@ namespace GodotObjectCompiler
 
     bool file_exists(const Path& p_path);
 
-    bool remove_file(const Path& p_path);
-
     bool copy_file(const Path& p_source, const Path& p_destination);
 
-    bool remove(const Path& p_path);
+    bool remove_file(const Path& p_path);
+
+    bool remove_directory(const Path& p_path);
+
+    bool remove_entry(const Path& p_path);
 
     bool directory_exits(const Path& p_path);
 
     Size file_write_time(const Path& p_path);
 
-    String input(const Path& p_prompt, const Path& p_default_value = "");
+    Path input(const String& p_prompt, const Path& p_default_value = "");
 
-    String path_base(const Path& p_path);
+    Path path_relative(const Path& p_path, const Path& p_base);
 
-    String path_concat(const Path& p_left, const Path& p_right);
+    Path path_absolute(const Path& p_path);
 
-    template <typename T2> String path_concat(const Path& p_left, T2 p_right)
-    {
-        return path_concat(p_left, Path(p_right));
-    }
-
-    template <typename... Args> String path_concat(const Path& p_left, Args... args);
-
-    template <typename... Args> String path_concat(const Path& p_left, Args... args)
-    {
-        return path_concat(p_left, path_concat(args...));
-    }
-
-    String path_concat_ext(const Path& p_dir, const Path& p_file, const String& p_extension);
-
-    String path_relative(const Path& p_path, const Path& p_base);
-
-    String path_absolute(const Path& p_path);
-
-    String path_file_name(const Path& p_path);
-
-    String path_cwd();
-
-    String path_stem(const Path& p_path);
+    Path path_cwd();
 
     char path_seperator();
 
     bool path_is_descendant(const Path& p_possible_ancestor, const Path& p_possible_child);
-
-    bool path_equals(const Path& p_path1, const Path& p_path2);
 
     bool could_be_path(const Path& p_path);
 

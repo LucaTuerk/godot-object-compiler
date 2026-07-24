@@ -85,11 +85,11 @@ namespace GodotObjectCompiler
             return *this;
         }
 
-        explicit FileWriter(const String& path, bool do_not_write_same_content = true);
+        explicit FileWriter(const Path& path, bool do_not_write_same_content = true);
 
         ~FileWriter() override;
 
-        static FileWriter generated(const String& path, const String& p_generated_from);
+        static FileWriter generated(const Path& p_path, const Opt<Path>& p_generated_from_path);
 
         void write(const String& p_value) override;
 
@@ -98,7 +98,7 @@ namespace GodotObjectCompiler
         Size current_length() override;
 
       private:
-        FileWriter(const String& path, const String& initial_content);
+        FileWriter(const Path& path, const String& initial_content);
 
         static String _generated_header(const String& p_file_name);
 

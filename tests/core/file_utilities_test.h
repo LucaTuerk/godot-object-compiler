@@ -42,10 +42,10 @@ using namespace GodotObjectCompiler;
 
 GOC_TEST(FileReadWriteTest)
 {
-    String base = path_absolute(".goc_tests/tmp");
+    Path base = path_absolute(".goc_tests/tmp");
 
     for (Size i = 0; i < 100; ++i) {
-        String filename = path_concat_ext(base, generate_random_string(10), "txt");
+        String filename = base / format("%s.txt", String(generate_random_string(10)).c_str());
         Size size = i * 100;
         String content = generate_random_string(size);
         write_file(filename, content);

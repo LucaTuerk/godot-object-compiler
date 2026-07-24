@@ -79,8 +79,8 @@ namespace GodotObjectCompiler
         const auto arguments = p_context.get_argument_list<GeneratorArguments>();
 
         if (directory_exits(arguments->generated_path->get<Path>())) {
-            for (const String& entry : directory_entries(arguments->generated_path->get<Path>())) {
-                PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
+            for (const Path& entry : directory_entries(arguments->generated_path->get<Path>())) {
+                PROG_ERR_COND(!remove_entry(entry), "Failed to remove \"%s\"", entry.c_str())
             }
         }
         return ProgramError::OK;
@@ -97,8 +97,8 @@ namespace GodotObjectCompiler
         const auto arguments = p_context.get_argument_list<GeneratorArguments>();
 
         if (directory_exits(arguments->type_db_path->get<Path>())) {
-            for (const String& entry : directory_entries(arguments->type_db_path->get<Path>())) {
-                PROG_ERR_COND(!remove(entry), "Failed to remove \"%s\"", entry.c_str())
+            for (const Path& entry : directory_entries(arguments->type_db_path->get<Path>())) {
+                PROG_ERR_COND(!remove_entry(entry), "Failed to remove \"%s\"", entry.c_str())
             }
         }
         return ProgramError::OK;

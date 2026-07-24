@@ -143,7 +143,7 @@ namespace GodotObjectCompiler
 
     ParserError::ParserError(
         ErrorLevel p_level, const String& p_parser_name, const String& user_message,
-        const String& p_file_path, const String& p_file_content, Size p_line, Size p_column)
+        const Path& p_file_path, const String& p_file_content, Size p_line, Size p_column)
     {
         error_level = p_level;
         StreamWriter writer;

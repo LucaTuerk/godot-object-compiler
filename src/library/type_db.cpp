@@ -148,32 +148,31 @@ namespace GodotObjectCompiler
         return {root};
     }
 
-    void TypeDB::set_cache_directory(const String& path)
+    void TypeDB::set_cache_directory(const Path& path)
     {
         _cache_directory = path;
-        _readonly_cache_directory = path_concat(path, ".readonly");
     }
 
-    String TypeDB::_get_cache_file_path(
+    Path TypeDB::_get_cache_file_path(
         const String& p_qualified_name, Size p_template_argument_count) const
     {
-        return path_concat(
-            _cache_directory, mangle_name(p_qualified_name, p_template_argument_count) + ".gocdb");
+        return _cache_directory /
+               format("%s.gocdb", mangle_name(p_qualified_name, p_template_argument_count).c_str());
     }
 
-    String TypeDB::_get_attribute_cache_file_path(
+    Path TypeDB::_get_attribute_cache_file_path(
         const String& p_qualified_name, const String& p_attribute_name,
         const Size p_template_argument_count) const
     {
-        const String base =
-            path_concat(_cache_directory, mangle_name(p_qualified_name, p_template_argument_count));
-        return path_concat(base, format("attr_%s.gocdb", p_attribute_name.c_str()));
+        const Path base =
+            _cache_directory / mangle_name(p_qualified_name, p_template_argument_count);
+        return base / format("attr_%s.gocdb", p_attribute_name.c_str());
     }
 
     void
     TypeDB::save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const
     {
-        Vector<String> paths;
+        Vector<Path> paths;
 
         if (const Ref<Class> _class = p_type->as<Class>();
             _class != nullptr && _class->template_parameter_count() > 0) {
@@ -186,14 +185,14 @@ namespace GodotObjectCompiler
             paths.push_back(_get_cache_file_path(p_type->qualified_name()));
         }
 
-        for (const String& path : paths) {
+        for (const Path& path : paths) {
             if (string_contains(path, INVALID_NAME)) {
                 PRINT_ERROR(
                     "Failed to get cache path for type \"%s\"", p_type->qualified_name().c_str());
                 return;
             }
 
-            if (const auto base = path_base(path);
+            if (const auto base = path.parent_path();
                 !directory_exits(base) && !create_dir_recursive(base)) {
                 return;
             }
@@ -208,7 +207,7 @@ namespace GodotObjectCompiler
         const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute,
         const String& p_generated_from) const
     {
-        Vector<String> paths;
+        Vector<Path> paths;
         if (const Ref<Class> _class = p_type->as<Class>();
             _class != nullptr && _class->template_parameter_count() > 0) {
             for (Size i = 0; i <= _class->optional_template_parameter_count(); ++i) {
@@ -221,7 +220,7 @@ namespace GodotObjectCompiler
                 _get_attribute_cache_file_path(p_type->qualified_name(), p_attribute->get_type()));
         }
 
-        for (const String& path : paths) {
+        for (const Path& path : paths) {
             if (string_contains(path, INVALID_NAME)) {
                 PRINT_ERROR(
                     "Failed to get cache path for attribute \"%s\" on type \"%s\"",
@@ -229,7 +228,7 @@ namespace GodotObjectCompiler
                 return;
             }
 
-            if (const String base = path_base(path);
+            if (const Path base = path.parent_path();
                 !directory_exits(base) && !create_dir_recursive(base)) {
                 return;
             }
@@ -263,7 +262,7 @@ namespace GodotObjectCompiler
                 }
             }
             for (const String& using_ : LibraryContext::instance()->get_usings()) {
-                if (String using_path = _get_cache_file_path(
+                if (Path using_path = _get_cache_file_path(
                         format("%s::%s", using_.c_str(), name.c_str()), p_template_argument_count);
                     file_exists(using_path)) {
                     Result<Node> root_result = reader.read_from_file(using_path);
@@ -306,7 +305,7 @@ namespace GodotObjectCompiler
             }
 
             for (const String& using_ : LibraryContext::instance()->get_usings()) {
-                if (String using_path = _get_attribute_cache_file_path(
+                if (Path using_path = _get_attribute_cache_file_path(
                         format("%s::%s", using_.c_str(), name.c_str()), p_attribute_name);
                     file_exists(using_path)) {
                     const Result<Node> root_result = reader.read_from_file(using_path);

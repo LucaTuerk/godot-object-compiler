@@ -228,11 +228,11 @@ namespace GodotObjectCompiler
         }
 
         TempFile temp_file("h", contents);
-        String file_path;
+        Path file_path;
         if (current_file.has_value()) {
             file_path = *current_file;
             current_file = {};
-            include_args.emplace_back(format("-I%s", path_base(file_path).c_str()));
+            include_args.emplace_back(format("-I%s", file_path.parent_path().c_str()));
             args.push_back(include_args.back().c_str());
         }
 
@@ -272,8 +272,7 @@ namespace GodotObjectCompiler
                 CXSourceLocation location = clang_getDiagnosticLocation(diagnostic);
                 clang_getFileLocation(location, &file, &line, nullptr, nullptr);
 
-                if (!path_equals(
-                        Path(ClangString(clang_getFileName(file))), temp_file.get_path())) {
+                if (Path(ClangString(clang_getFileName(file))) != temp_file.get_path()) {
                     // Skip errors in included files.
                     continue;
                 }

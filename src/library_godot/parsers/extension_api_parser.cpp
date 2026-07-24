@@ -108,7 +108,7 @@ namespace GodotObjectCompiler
 
     String path_to_canonical_name(const Path& p_path)
     {
-        return class_name_to_canonical_name(path_stem(p_path));
+        return class_name_to_canonical_name(p_path.stem().generic_string());
     }
 
     JsonError::JsonError(const ErrorLevel p_level, const Json& p_json, const String& p_message)
@@ -197,7 +197,7 @@ namespace GodotObjectCompiler
                 return false;
             }
 
-            for (const String& file : directory_files_recursive(include_path)) {
+            for (const Path& file : directory_files_recursive(include_path)) {
                 include_paths[path_to_canonical_name(file)] = header_path(include_path, file);
             }
         }
@@ -217,7 +217,7 @@ namespace GodotObjectCompiler
                 include_itr == include_paths.end(), p_input,
                 "Could not find include path for class \"%s\"", name.c_str());
 
-            const String include_path = include_itr->second;
+            const Path include_path = include_itr->second;
 
             Ref<Class> result = B<Class>()[B<Identifier>(name)];
 

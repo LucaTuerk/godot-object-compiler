@@ -72,7 +72,7 @@ namespace GodotObjectCompiler
 
         bool register_integration_test(const String& name, TestFunctor functor);
 
-        static String get_generated_path();
+        static Path get_generated_path();
 
         static String get_test_root_dir();
 

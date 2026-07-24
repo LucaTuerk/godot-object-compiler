@@ -48,13 +48,13 @@ namespace GodotObjectCompiler
 
     void Permissions::add_write_path(const Path& p_path)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         allowed_write_paths.insert(absolute);
     }
 
     bool Permissions::is_allowed_write_path(const Path& p_path) const
     {
-        String absolute = path_absolute(p_path);
+        Path absolute = path_absolute(p_path);
         if (!path_is_descendant(path_cwd(), absolute)) {
             return false;
         }

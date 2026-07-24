@@ -60,8 +60,7 @@ namespace GodotObjectCompiler
     {
         auto arguments = context.get_argument_list<ApplicationArguments>();
 
-        const String lock_path =
-            path_concat(arguments->goc_path->get<Path>(), ".goc_graceful_lock");
+        const Path lock_path = arguments->goc_path->get<Path>() / ".goc_graceful_lock";
         if (file_exists(lock_path)) {
             return false;
         }
@@ -80,8 +79,7 @@ namespace GodotObjectCompiler
         }
 
         auto arguments = context.get_argument_list<ApplicationArguments>();
-        if (const String lock_path =
-                path_concat(arguments->goc_path->get<Path>(), ".goc_graceful_lock");
+        if (const Path lock_path = arguments->goc_path->get<Path>() / ".goc_graceful_lock";
             file_exists(lock_path) && remove_file(lock_path)) {
             PRINT_VERBOSE("Graceful exit.");
             return p_return_code;
@@ -96,12 +94,11 @@ namespace GodotObjectCompiler
 
     bool Application::init_local_resources() const
     {
-        auto arguments = context.get_argument_list<ApplicationArguments>();
-
-        if (!Resources::instance()->copy_resources_to_folder(
+        if (auto arguments = context.get_argument_list<ApplicationArguments>();
+            !Resources::instance()->copy_resources_to_folder(
                 {
-                    "res://variant_types",
-                    "res://macros",
+                    "res:/variant_types",
+                    "res:/macros",
                 },
                 arguments->goc_path->get<Path>())) {
             return false;
@@ -143,6 +140,7 @@ namespace GodotObjectCompiler
     {
         Resources::instance()->load_pack(&GOC_Resources::Pack);
 
+        context.arguments = std::move(p_arguments);
         CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
         const auto application_arguments = context.get_argument_list<ApplicationArguments>();
 
@@ -158,8 +156,6 @@ namespace GodotObjectCompiler
                 application_arguments->source_parser->get<String>(),
                 IParser::Capabilities::SOURCE_PARSER);
         }
-
-        context.arguments = std::move(p_arguments);
 
         Vector<String> program_arguments;
 
@@ -207,19 +203,19 @@ namespace GodotObjectCompiler
             APP_ERR_COND(!init_local_resources(), "Failed to initialize local resources.");
 
             LibraryContext::instance()->set_remove_macros(
-                read_lines(path_concat(goc_path, "macros/macro_remove.txt")));
+                read_lines(goc_path / "macros/macro_remove.txt"));
 
             LibraryContext::instance()->load_last_modified_times_file(
-                path_concat_ext(goc_path, "last_modified", "gocdb"));
+                goc_path / format("%s.gocdb", String("last_modified").c_str()));
 
             LibraryContext::instance()->load_generated_from_file(
-                path_concat_ext(goc_path, "generated_from", "gocdb"));
+                goc_path / format("%s.gocdb", String("generated_from").c_str()));
 
             LibraryContext::instance()->clean_generated_files();
 
             LibraryContext::instance()->add_using("godot");
 
-            auto build_num_file = path_concat(goc_path, "last_goc_build_number.txt");
+            auto build_num_file = goc_path / "last_goc_build_number.txt";
             String build_num = BuildInfo::commit_hash;
             if (file_exists(build_num_file)) {
                 if (String last_build_num = read_file(build_num_file);
@@ -256,9 +252,11 @@ namespace GodotObjectCompiler
 
         if (!context.program->is_readonly()) {
             LibraryContext::instance()->save_last_modified_times_file(
-                path_concat_ext(arguments->goc_path->get<Path>(), "last_modified", "gocdb"));
+                arguments->goc_path->get<Path>() /
+                format("%s.gocdb", String("last_modified").c_str()));
             LibraryContext::instance()->save_generated_from_file(
-                path_concat_ext(arguments->goc_path->get<Path>(), "generated_from", "gocdb"));
+                arguments->goc_path->get<Path>() /
+                format("%s.gocdb", String("generated_from").c_str()));
         }
 
         const int return_code = exit_gracefully(0);
