@@ -185,9 +185,9 @@ namespace GodotObjectCompiler
 
         Ref<ListNode> Return(const String& p_name);
 
-        Ref<SnippetNode> Include(const Path& p_path);
+        Ref<SnippetNode> Include(const String& p_path);
 
-        Ref<SnippetNode> SystemInclude(const Path& p_path);
+        Ref<SnippetNode> SystemInclude(const String& p_path);
 
         Ref<EnclosingNode> DocComment(const Ref<Node>& p_content);
 

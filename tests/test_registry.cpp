@@ -64,12 +64,12 @@ namespace GodotObjectCompiler
         return success;
     }
 
-    String TestRegistry::get_test_root_dir()
+    Path TestRegistry::get_test_root_dir()
     {
         return "tests/files/integration_tests";
     }
 
-    String TestRegistry::get_goc_path()
+    Path TestRegistry::get_goc_path()
     {
         return ".goc_tests/.goc";
     }
@@ -79,7 +79,7 @@ namespace GodotObjectCompiler
         return ".goc_tests/.goc/generated";
     }
 
-    String TestRegistry::get_type_db_path()
+    Path TestRegistry::get_type_db_path()
     {
         return ".goc_tests/.goc/cache";
     }
@@ -113,17 +113,17 @@ namespace GodotObjectCompiler
         include_paths = p_paths;
     }
 
-    void TestRegistry::set_extension_api(const String& p_extension_api)
-    {
-        extension_api = p_extension_api;
-    }
-
     void TestRegistry::set_source_parser(const String& p_source_parser)
     {
         source_parser = p_source_parser;
     }
 
-    String TestRegistry::get_extension_api()
+    void TestRegistry::set_extension_api(const Path& p_extension_api)
+    {
+        extension_api = p_extension_api;
+    }
+
+    Path TestRegistry::get_extension_api()
     {
         return extension_api;
     }

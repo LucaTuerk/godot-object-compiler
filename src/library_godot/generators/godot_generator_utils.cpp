@@ -70,7 +70,7 @@ namespace GodotObjectCompiler
 
         for (const String& value_name : ptype->value_names()) {
             if (Path res_path =
-                    Path("res:/") / "variant_types" / format("%s.txt", String(value_name).c_str());
+                    Path("res:/") / "variant_types" / format("%s.txt", value_name.c_str());
                 Resources::instance()->has_resource(res_path)) {
                 String content = Resources::instance()->load_text_resource(res_path);
                 for (const String& line : string_split(content, "\n")) {

@@ -77,6 +77,10 @@ namespace GodotObjectCompiler
 
     Path path_absolute(const Path& p_path);
 
+    String path_vector_combine(const Vector<Path>& p_paths, const String& p_delimiter);
+
+    Vector<Path> path_vector_split(const String& p_paths, const String& p_delimiter);
+
     Path path_cwd();
 
     char path_seperator();

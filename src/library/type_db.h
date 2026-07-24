@@ -55,9 +55,9 @@ namespace GodotObjectCompiler
     class ConfigNodeReaderWriter : public INodeReader, public INodeWriter
     {
       public:
-        bool write_to_file(Ref<Node> node, const String& path) override;
+        bool write_to_file(Ref<Node> p_node, const Path& p_path) override;
 
-        Result<Node> read_from_file(const String& path) override;
+        Result<Node> read_from_file(const Path& path) override;
     };
 
     template <typename T> struct AssumeType {
@@ -91,11 +91,11 @@ namespace GodotObjectCompiler
 
         void set_cache_directory(const Path& path);
 
-        void save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const;
+        void save_type_data(const Ref<NamedContext>& p_type, const Path& p_generated_from) const;
 
         void save_type_attribute(
             const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute,
-            const String& p_generated_from) const;
+            const Path& p_generated_from) const;
 
         Result<Node> get_type_data(
             const String& qualified_name, Size template_parameter_count = 0,

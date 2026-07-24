@@ -64,14 +64,13 @@ namespace GodotObjectCompiler
     String GenerateBindings::file_id(const String& p_file_name)
     {
         constexpr Hasher<String> hasher;
-        return hash_string(hasher(p_file_name));
+        return hash_string(hasher(String(p_file_name)));
     }
 
     Path GenerateBindings::cache_path(const Path& goc_path, const String& p_file_name)
     {
         const Path input_cache = goc_path / "input_cache";
-        Path cache_path =
-            Path(input_cache) / format("%s.gocdb", String(file_id(p_file_name)).c_str());
+        Path cache_path = Path(input_cache) / format("%s.gocdb", file_id(p_file_name).c_str());
         if (!directory_exits(input_cache)) {
             create_dir_recursive(input_cache);
         }
@@ -120,7 +119,6 @@ namespace GodotObjectCompiler
             macro_output->get_output(&marco_writer);
 
             FileWriter core_include_writer = FileWriter::generated(
-
                 generator_args->generated_path->get<Path>() /
                     "godot_object_compiler/core_includes.h",
                 "");
@@ -195,10 +193,10 @@ namespace GodotObjectCompiler
 
             if (input_file.extension() == ".cpp") {
                 Path h_file = input_file;
-                h_file.replace_extension("h");
+                h_file.replace_extension(".h");
 
                 Path hpp_file = input_file;
-                hpp_file.replace_extension("hpp");
+                hpp_file.replace_extension(".hpp");
 
                 bool h_exists = file_exists(h_file);
                 bool hpp_exists = file_exists(hpp_file);
@@ -226,21 +224,23 @@ namespace GodotObjectCompiler
             Path relative_path = path_relative(input_file, generator_args->root_path->get<Path>());
 
             Ref<Namespace> global_namespace = nullptr;
-            String cached = cache_path(application_args->goc_path->get<Path>(), input_file);
+            Path cached_path = cache_path(application_args->goc_path->get<Path>(), input_file);
+
             ConfigNodeReaderWriter reader_writer;
-            if (!LibraryContext::instance()->file_modified(input_file) && file_exists(cached)) {
-                if (Result<Node> parsed = reader_writer.read_from_file(cached);
+            if (!LibraryContext::instance()->file_modified(input_file) &&
+                file_exists(cached_path)) {
+                if (Result<Node> parsed = reader_writer.read_from_file(cached_path);
                     parsed.has_error()) {
                     parsed.get_error()->set_handled();
-                    remove_file(cached);
+                    remove_file(cached_path);
                     fmt_print_err(
                         "Failed to get cached input file for \"%s\": %s", input_file.c_str(),
                         parsed.get_error()->message.c_str());
                 } else if (!parsed.get_result()->is<Namespace>()) {
-                    remove_file(cached);
+                    remove_file(cached_path);
                     fmt_print_err(
                         "Invalid node read from cached file \"%s\" for input file \"%s\"",
-                        cached.c_str(), input_file.c_str());
+                        cached_path.c_str(), input_file.c_str());
                 } else {
                     global_namespace = parsed.get_result()->as<Namespace>();
                 }
@@ -255,7 +255,7 @@ namespace GodotObjectCompiler
                 PROG_ERR_COND(
                     error != ParserError::OK, "Failed to parse input file \"%s\"",
                     input_file.c_str());
-                reader_writer.write_to_file(global_namespace, cached);
+                reader_writer.write_to_file(global_namespace, cached_path);
             }
 
             Path in_generated_path = generator_args->generated_path->get<Path>() / relative_path;
@@ -263,10 +263,10 @@ namespace GodotObjectCompiler
             String in_generated_stem = in_generated_path.stem().generic_string();
 
             Path gen_source_path =
-                in_generated_base / format("%s.generated.cpp", String(in_generated_stem).c_str());
+                in_generated_base / format("%s.generated.cpp", in_generated_stem.c_str());
             Path gen_header_path =
-                in_generated_base / format("%s.generated.h", String(in_generated_stem).c_str());
-            Path gen_header_include_path =
+                in_generated_base / format("%s.generated.h", in_generated_stem.c_str());
+            String gen_header_include_path =
                 header_path(generator_args->generated_path->get<Path>(), gen_header_path);
 
             if (!directory_exits(in_generated_base)) {
@@ -473,13 +473,9 @@ namespace GodotObjectCompiler
             transformator.transform(register_types_source);
 
         FileWriter register_header_writer = FileWriter::generated(
-            generator_args->generated_path->get<Path>() /
-                format("%s.h", "generated_register_types"),
-            "");
+            generator_args->generated_path->get<Path>() / "generated_register_types.h", "");
         FileWriter register_source_writer = FileWriter::generated(
-            generator_args->generated_path->get<Path>() /
-                format("%s.cpp", "generated_register_types"),
-            "");
+            generator_args->generated_path->get<Path>() / "generated_register_types.cpp", "");
 
         register_header_output->get_output(&register_header_writer);
         register_source_output->get_output(&register_source_writer);

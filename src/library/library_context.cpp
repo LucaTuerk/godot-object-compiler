@@ -35,15 +35,11 @@
 
 #include "library_context.h"
 
-#include <algorithm>
-
 #include "attribute_db.h"
 #include "core/file_system_utilities.h"
-#include "core/string_utilities.h"
 #include "library/core/config.h"
 #include "library/core/core.h"
 #include "library/node_db.h"
-#include "node_db.h"
 #include "parser.h"
 #include "type_db.h"
 
@@ -137,7 +133,7 @@ namespace GodotObjectCompiler
         attribute_db = make_ref<AttributeDB>(AttributeDB::Private());
         type_db = make_ref<TypeDB>(TypeDB::Private());
         usings = {};
-        temp_path = {};
+        temp_path = Path();
         input_files = {};
         remove_macros = {};
         include_paths = {};
@@ -205,7 +201,7 @@ namespace GodotObjectCompiler
         remove_macros = p_value;
     }
 
-    const Vector<Path>& LibraryContext::get_include_paths()
+    const Vector<Path>& LibraryContext::get_include_paths() const
     {
         return include_paths;
     }
@@ -263,22 +259,22 @@ namespace GodotObjectCompiler
         for (const String& key : config.get_sections()) {
             config.read_from_section(key);
             if (config.has_config_value("generated_files")) {
-                Vector<String> generated =
-                    string_split(config.read<String, String>("generated_files"), ";");
-                generated_from.emplace(key, generated);
+                Vector<Path> generated =
+                    path_vector_split(config.read<String, String>("generated_files"), ";");
+                generated_from.try_emplace(key, generated);
             }
         }
 
         return true;
     }
 
-    bool LibraryContext::save_generated_from_file(const Path& p_path)
+    bool LibraryContext::save_generated_from_file(const Path& p_path) const
     {
         JsonConfig config;
 
         for (const auto& [path, generated] : generated_from) {
             config.write_to_section(String(path));
-            config.write("generated_files", string_vector_combine(generated, ";"));
+            config.write("generated_files", path_vector_combine(generated, ";"));
         }
 
         return config.write_to_file(p_path);
@@ -291,12 +287,12 @@ namespace GodotObjectCompiler
 
     void LibraryContext::regenerate_file_apply()
     {
-        for (const String& path : regenerate_files) {
+        for (const Path& path : regenerate_files) {
             last_modified_times.erase(path);
             out_last_modified_times.erase(path);
 
             if (auto itr = generated_from.find(path); itr != generated_from.end()) {
-                for (const String& generated_file : itr->second) {
+                for (const Path& generated_file : itr->second) {
                     if (file_exists(generated_file)) {
                         read_file(path);
                     }
@@ -325,7 +321,7 @@ namespace GodotObjectCompiler
             const auto& [path, generated_files] = *itr;
 
             if (!path.empty() && !file_exists(path)) {
-                for (const String& generated_file : generated_files) {
+                for (const Path& generated_file : generated_files) {
                     PRINT_VERBOSE(
                         "Removing orphan \"%s\", generated from \"%s\"", generated_file.c_str(),
                         path.c_str());
@@ -337,7 +333,7 @@ namespace GodotObjectCompiler
                 continue;
             }
 
-            for (const String& generated_file : generated_files) {
+            for (const Path& generated_file : generated_files) {
                 if (!file_exists(generated_file)) {
                     regenerate_file(path);
                     break;
@@ -357,7 +353,7 @@ namespace GodotObjectCompiler
             return false;
         }
 
-        for (const String& generated : itr->second) {
+        for (const Path& generated : itr->second) {
             if (file_exists(generated)) {
                 PRINT_VERBOSE(
                     "Removing orphan \"%s\", generated from \"%s\"", generated.c_str(),
@@ -382,15 +378,15 @@ namespace GodotObjectCompiler
         for (const String& section : config.get_sections()) {
             config.read_from_section(section);
             if (config.has_config_value("last_modified")) {
-                last_modified_times[section] = config.read<String, Size>("last_modified");
-                out_last_modified_times[section] = config.read<String, Size>("last_modified");
+                last_modified_times[Path(section)] = config.read<String, Size>("last_modified");
+                out_last_modified_times[Path(section)] = config.read<String, Size>("last_modified");
             }
         }
 
         return true;
     }
 
-    bool LibraryContext::save_last_modified_times_file(const Path& p_path)
+    bool LibraryContext::save_last_modified_times_file(const Path& p_path) const
     {
         JsonConfig config;
 

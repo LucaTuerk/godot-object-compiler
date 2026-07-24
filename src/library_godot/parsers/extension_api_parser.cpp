@@ -217,7 +217,7 @@ namespace GodotObjectCompiler
                 include_itr == include_paths.end(), p_input,
                 "Could not find include path for class \"%s\"", name.c_str());
 
-            const Path include_path = include_itr->second;
+            const String include_path = include_itr->second;
 
             Ref<Class> result = B<Class>()[B<Identifier>(name)];
 

@@ -77,7 +77,7 @@ namespace GodotObjectCompiler
 
         for (const String& macro :
              LibraryContext::instance()->get_attribute_db()->get_all_macros()) {
-            Path res_file = Path("res:/") / "doc" / format("%s.txt", String(macro).c_str());
+            Path res_file = Path("res:/") / "doc" / format("%s.txt", macro.c_str());
             if (Resources::instance()->has_resource(res_file)) {
                 Ref<Context> params_docu = Output::Params({});
                 Ref<Context> comment = Output::DocComment(Output::Lines(
@@ -134,17 +134,18 @@ namespace GodotObjectCompiler
             found_any_path = true;
 
             Vector<Path> includes = directory_files_recursive(include_path);
+            Vector<String> header_paths;
             std::transform(
-                includes.cbegin(), includes.cend(), includes.begin(),
+                includes.cbegin(), includes.cend(), header_paths.begin(),
                 [godot_cpp_include](const Path& p_path) {
                     return header_path(godot_cpp_include, p_path);
                 });
-            std::sort(includes.begin(), includes.end());
-            for (const Path& include : includes) {
-                if (include.extension() == ".compat.inc") {
+            std::sort(header_paths.begin(), header_paths.end());
+            for (const String& header : header_paths) {
+                if (string_suffix(header, ".compat.inc")) {
                     continue;
                 }
-                p_write_to->add_child(Output::Include(include));
+                p_write_to->add_child(Output::Include(header));
             }
         }
         return found_any_path;
@@ -191,7 +192,7 @@ namespace GodotObjectCompiler
         Size index = 0;
         const Vector<IAttributeParameterType::Argument> arguments = p_type->get_arguments();
         for (const String& value_name : p_type->get_value_names()) {
-            auto value_res_path = doc_res_dir / format("%s.txt", String(value_name).c_str());
+            Path value_res_path = doc_res_dir / format("%s.txt", value_name.c_str());
 
             if (Resources::instance()->has_resource(value_res_path)) {
                 String content = Resources::instance()->load_text_resource(value_res_path);

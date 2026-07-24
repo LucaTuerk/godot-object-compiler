@@ -45,7 +45,7 @@ GOC_TEST(FileReadWriteTest)
     Path base = path_absolute(".goc_tests/tmp");
 
     for (Size i = 0; i < 100; ++i) {
-        String filename = base / format("%s.txt", String(generate_random_string(10)).c_str());
+        Path filename = base / format("%s.txt", generate_random_string(10).c_str());
         Size size = i * 100;
         String content = generate_random_string(size);
         write_file(filename, content);
@@ -67,9 +67,9 @@ GOC_TEST(FileReadWriteTest)
 
 GOC_TEST(EnsurePermission)
 {
-    Vector<String> paths = {".goc_tests", "/home", "/bin"};
+    Vector<Path> paths = {".goc_tests", "/home", "/bin"};
 
-    for (const String& path : paths) {
+    for (const Path& path : paths) {
         bool expect_fail = !Permissions::instance()->is_allowed_write_path(path);
         bool failed = false;
         try {

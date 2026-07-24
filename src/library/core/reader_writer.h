@@ -136,7 +136,7 @@ namespace GodotObjectCompiler
       public:
         virtual ~INodeWriter() = default;
 
-        virtual bool write_to_file(Ref<Node> node, const String& path) = 0;
+        virtual bool write_to_file(Ref<Node> p_node, const Path& p_path) = 0;
     };
 
     class INodeReader
@@ -144,7 +144,7 @@ namespace GodotObjectCompiler
       public:
         virtual ~INodeReader() = default;
 
-        virtual Result<Node> read_from_file(const String& path) = 0;
+        virtual Result<Node> read_from_file(const Path& path) = 0;
 
         template <typename T> Result<T> read_from_file(const Path& p_path);
     };

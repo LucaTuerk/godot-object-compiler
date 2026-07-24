@@ -53,7 +53,7 @@ namespace GodotObjectCompiler
     struct ParserContext {
         using NodeID = const void*;
 
-        String file_path;
+        Path file_path;
         String original_buffer;
         String buffer;
         Ref<Context> current_target;

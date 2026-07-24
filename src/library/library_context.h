@@ -86,7 +86,7 @@ namespace GodotObjectCompiler
 
         bool load_generated_from_file(const Path& p_path);
 
-        bool save_generated_from_file(const Path& p_path);
+        bool save_generated_from_file(const Path& p_path) const;
 
         void clear_generated_from();
 
@@ -96,7 +96,7 @@ namespace GodotObjectCompiler
 
         bool load_last_modified_times_file(const Path& p_path);
 
-        bool save_last_modified_times_file(const Path& p_path);
+        bool save_last_modified_times_file(const Path& p_path) const;
 
         void clear_last_modified_times();
 
@@ -108,7 +108,7 @@ namespace GodotObjectCompiler
 
         void set_remove_macros(const Vector<String>& p_value);
 
-        const Vector<Path>& get_include_paths();
+        const Vector<Path>& get_include_paths() const;
 
         void set_include_paths(const Vector<Path>& p_value);
 
@@ -159,13 +159,13 @@ namespace GodotObjectCompiler
         Dictionary<int, Ref<IParser>> default_parsers;
         Dictionary<TypeIndex, AnyType> generic_singletons;
 
-        String temp_path{};
+        Path temp_path{};
         Vector<String> usings{};
-        Vector<String> input_files{};
+        Vector<Path> input_files{};
         Vector<String> remove_macros{};
         Vector<Path> include_paths{};
-        Vector<String> regenerate_files{};
-        Dictionary<Path, Vector<String>> generated_from{};
+        Vector<Path> regenerate_files{};
+        Dictionary<Path, Vector<Path>> generated_from{};
         Dictionary<Path, Size> last_modified_times{};
         Dictionary<Path, Size> out_last_modified_times{};
 

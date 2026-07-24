@@ -162,7 +162,7 @@ namespace GodotObjectCompiler
         }
 
         if (path_is_res && base_is_res) {
-            return path_relative(String(p_path).substr(6), String(p_base).substr(6));
+            return path_relative(Path(String(p_path).substr(6)), Path(String(p_base).substr(6)));
         }
 
         return std::filesystem::relative(p_path, p_base);
@@ -174,6 +174,29 @@ namespace GodotObjectCompiler
             return path_cwd();
         }
         return std::filesystem::absolute(p_path);
+    }
+
+    String path_vector_combine(const Vector<Path>& p_paths, const String& p_delimiter)
+    {
+        StreamWriter writer;
+        for (Size i = 0; i < p_paths.size(); i++) {
+            if (i != 0) {
+                writer.write(p_delimiter);
+            }
+            writer.write(p_paths.at(i));
+        }
+        return writer.get_string();
+    }
+
+    Vector<Path> path_vector_split(const String& p_paths, const String& p_delimiter)
+    {
+        Vector<String> split = string_split(p_paths, p_delimiter);
+        Vector<Path> result;
+
+        for (const String& path : split) {
+            result.emplace_back(path);
+        }
+        return result;
     }
 
     Path path_cwd()
@@ -287,7 +310,7 @@ namespace GodotObjectCompiler
         const Path include_absolute = path_absolute(p_include_path);
         const Path file_absolute = path_absolute(p_file_path);
         const Path relative = path_relative(file_absolute, include_absolute);
-        return string_replace(relative, "\\", "/");
+        return string_replace(String(relative), "\\", "/");
     }
 
     bool copy_file(const Path& p_source, const Path& p_destination)

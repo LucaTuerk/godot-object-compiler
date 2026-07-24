@@ -63,7 +63,7 @@ namespace GodotObjectCompiler
 
       private:
         bool parse_attributes = true;
-        String input_path;
+        Path input_path;
         static inline HashSet<String> _registered_handlers;
         static inline Vector<Ref<ITreeSitterNodeHandler>> _handlers;
     };

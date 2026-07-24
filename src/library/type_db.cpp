@@ -69,14 +69,14 @@ namespace GodotObjectCompiler
         }
     }
 
-    bool ConfigNodeReaderWriter::write_to_file(const Ref<Node> node, const String& path)
+    bool ConfigNodeReaderWriter::write_to_file(const Ref<Node> p_node, const Path& p_path)
     {
         JsonConfig config;
-        dump_node(&config, node, true);
-        return config.write_to_file(path);
+        dump_node(&config, p_node, true);
+        return config.write_to_file(p_path);
     }
 
-    Result<Node> ConfigNodeReaderWriter::read_from_file(const String& path)
+    Result<Node> ConfigNodeReaderWriter::read_from_file(const Path& path)
     {
         JsonConfig config;
         Dictionary<UID, Ref<Node>> local;
@@ -169,8 +169,7 @@ namespace GodotObjectCompiler
         return base / format("attr_%s.gocdb", p_attribute_name.c_str());
     }
 
-    void
-    TypeDB::save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const
+    void TypeDB::save_type_data(const Ref<NamedContext>& p_type, const Path& p_generated_from) const
     {
         Vector<Path> paths;
 
@@ -205,7 +204,7 @@ namespace GodotObjectCompiler
 
     void TypeDB::save_type_attribute(
         const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute,
-        const String& p_generated_from) const
+        const Path& p_generated_from) const
     {
         Vector<Path> paths;
         if (const Ref<Class> _class = p_type->as<Class>();
@@ -246,7 +245,7 @@ namespace GodotObjectCompiler
         Reader reader;
 
         for (const String& name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
-            const String& cache_file_path = _get_cache_file_path(name, p_template_argument_count);
+            Path cache_file_path = _get_cache_file_path(name, p_template_argument_count);
 
             if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {
                 return itr->second->clone();
@@ -288,7 +287,7 @@ namespace GodotObjectCompiler
         Reader reader;
 
         for (const String& name : resolve_possible_namespaces(p_qualified_name, p_from_namespace)) {
-            const String& cache_file_path =
+            Path cache_file_path =
                 _get_attribute_cache_file_path(name, p_attribute_name, p_template_parameter_count);
 
             if (auto itr = _cache.find(cache_file_path); itr != _cache.end()) {

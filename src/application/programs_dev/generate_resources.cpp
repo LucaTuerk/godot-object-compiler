@@ -165,7 +165,7 @@ namespace GodotObjectCompiler
         Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
         for (const auto& [path, program] : programs) {
             String file_stem = string_vector_combine(path, "_");
-            Path file_path = Path("resources/help") / format("%s.txt", String(file_stem).c_str());
+            Path file_path = Path("resources/help") / format("%s.txt", file_stem.c_str());
             if (!file_exists(file_path)) {
                 FileWriter writer(file_path);
                 writer.write("No description available");
@@ -181,8 +181,8 @@ namespace GodotObjectCompiler
             Path desc_path = doc_path / "descriptions";
             create_dir_recursive(desc_path);
 
-            Path doc_file_path = doc_path / format("%s.rst", String(file_stem).c_str());
-            Path desc_file_path = desc_path / format("%s.rst", String(file_stem).c_str());
+            Path doc_file_path = doc_path / format("%s.rst", file_stem.c_str());
+            Path desc_file_path = desc_path / format("%s.rst", file_stem.c_str());
 
             StreamWriter documentation_writer;
             documentation_writer.write(rst_header(string_vector_combine(path, " "), '='));
@@ -214,15 +214,14 @@ namespace GodotObjectCompiler
         // Generate macro help docs
         for (const String& macro :
              LibraryContext::instance()->get_attribute_db()->get_all_macros()) {
-            Path internal_doc_path =
-                Path("resources/doc") / format("%s.txt", String(macro).c_str());
+            Path internal_doc_path = Path("resources/doc") / format("%s.txt", macro.c_str());
             write_initial_file_content(internal_doc_path, "No documentation available");
 
-            Path doc_path = Path("docs/macros/") / format("%s.rst", String(macro).c_str());
+            Path doc_path = Path("docs/macros/") / format("%s.rst", macro.c_str());
             write_initial_file_content(doc_path, "No documentation available");
 
             Path doc_desc_path =
-                Path("docs/macros/descriptions/") / format("%s.rst", String(macro).c_str());
+                Path("docs/macros/descriptions/") / format("%s.rst", macro.c_str());
             create_dir_recursive(doc_desc_path.parent_path());
             write_file(doc_desc_path, read_file(internal_doc_path));
 
@@ -238,22 +237,20 @@ namespace GodotObjectCompiler
 
                 Path param_res_doc_dir = Path("resources/doc") / param->get_return_type();
                 Path param_res_doc_path =
-                    Path("resources/doc") /
-                    format("%s.txt", String(param->get_return_type()).c_str());
+                    Path("resources/doc") / format("%s.txt", param->get_return_type().c_str());
 
                 create_dir_recursive(param_res_doc_dir);
                 write_initial_file_content(param_res_doc_path, "No documentation available");
 
                 for (const auto& value_name : param->get_value_names()) {
-                    auto value_doc_path =
-                        param_res_doc_dir / format("%s.txt", String(value_name).c_str());
+                    auto value_doc_path = param_res_doc_dir / format("%s.txt", value_name.c_str());
                     write_initial_file_content(value_doc_path, "No documentation available");
 
                     table.push_back({value_name, read_file(value_doc_path)});
                 }
 
-                Path param_doc_path = Path("docs/macros/parameters/") /
-                                      format("%s.rst", String(param->get_return_type()).c_str());
+                Path param_doc_path = Path("docs") / "macros" / "parameters/" /
+                                      format("%s.rst", param->get_return_type().c_str());
                 create_dir_recursive(param_doc_path.parent_path());
 
                 StreamWriter writer;
@@ -269,8 +266,7 @@ namespace GodotObjectCompiler
         }
 
         for (const auto& parser : LibraryContext::instance()->get_parsers()) {
-            Path path =
-                Path("resources/help") / format("%s.txt", String(parser->get_type()).c_str());
+            Path path = Path("resources/help") / format("%s.txt", parser->get_type().c_str());
             write_initial_file_content(path, "");
         }
 

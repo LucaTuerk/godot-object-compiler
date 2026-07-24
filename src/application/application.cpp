@@ -97,8 +97,8 @@ namespace GodotObjectCompiler
         if (auto arguments = context.get_argument_list<ApplicationArguments>();
             !Resources::instance()->copy_resources_to_folder(
                 {
-                    "res:/variant_types",
-                    "res:/macros",
+                    Path("res:/") / "variant_types",
+                    Path("res:/") / "macros",
                 },
                 arguments->goc_path->get<Path>())) {
             return false;
@@ -203,13 +203,12 @@ namespace GodotObjectCompiler
             APP_ERR_COND(!init_local_resources(), "Failed to initialize local resources.");
 
             LibraryContext::instance()->set_remove_macros(
-                read_lines(goc_path / "macros/macro_remove.txt"));
+                read_lines(goc_path / "macros" / "macro_remove.txt"));
 
             LibraryContext::instance()->load_last_modified_times_file(
-                goc_path / format("%s.gocdb", String("last_modified").c_str()));
+                goc_path / "last_modified.gocdb");
 
-            LibraryContext::instance()->load_generated_from_file(
-                goc_path / format("%s.gocdb", String("generated_from").c_str()));
+            LibraryContext::instance()->load_generated_from_file(goc_path / "generated_from.gocdb");
 
             LibraryContext::instance()->clean_generated_files();
 
@@ -252,11 +251,9 @@ namespace GodotObjectCompiler
 
         if (!context.program->is_readonly()) {
             LibraryContext::instance()->save_last_modified_times_file(
-                arguments->goc_path->get<Path>() /
-                format("%s.gocdb", String("last_modified").c_str()));
+                arguments->goc_path->get<Path>() / "last_modified.gocdb");
             LibraryContext::instance()->save_generated_from_file(
-                arguments->goc_path->get<Path>() /
-                format("%s.gocdb", String("generated_from").c_str()));
+                arguments->goc_path->get<Path>() / "generated_from.gocdb");
         }
 
         const int return_code = exit_gracefully(0);

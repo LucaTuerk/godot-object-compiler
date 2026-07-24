@@ -124,7 +124,7 @@ namespace GodotObjectCompiler
             bool is_default =
                 LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER) == parser;
 
-            Path help_path = format("res:/help/%s.txt", parser->get_type().c_str());
+            Path help_path = Path("res:/") / "help" / format("%s.txt", parser->get_type().c_str());
 
             String help_text = "No description available";
             if (Resources::instance()->has_resource(help_path)) {
@@ -326,7 +326,7 @@ namespace GodotObjectCompiler
             return "";
         }
         String file_stem = string_vector_combine(p_path, "_");
-        Path res_path = Path("res:/") / "help" / format("%s.txt", String(file_stem).c_str());
+        Path res_path = Path("res:/") / "help" / format("%s.txt", file_stem.c_str());
         if (!Resources::instance()->has_resource(res_path)) {
             return "-";
         }

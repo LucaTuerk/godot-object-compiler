@@ -46,13 +46,13 @@ namespace GodotObjectCompiler
         _loaded_packs.insert(p_pack);
     }
 
-    Vector<String> Resources::resources_recursive(const Path& p_path) const
+    Vector<Path> Resources::resources_recursive(const Path& p_path) const
     {
-        Vector<String> res;
+        Vector<Path> res;
         for (const ResourcePack* pack : _loaded_packs) {
             for (const auto& [res_path, _] : *pack) {
                 if (string_prefix(res_path, p_path)) {
-                    res.push_back(res_path);
+                    res.emplace_back(res_path);
                 }
             }
         }
@@ -94,10 +94,10 @@ namespace GodotObjectCompiler
     }
 
     bool Resources::copy_resources_to_folder(
-        const Vector<String>& p_resource_glob_paths, const Path& p_target_folder) const
+        const Vector<Path>& p_resource_glob_paths, const Path& p_target_folder) const
     {
-        for (const String& copy_resources : p_resource_glob_paths) {
-            for (const String& res_path : resources_recursive(copy_resources)) {
+        for (const Path& copy_resources : p_resource_glob_paths) {
+            for (const Path& res_path : resources_recursive(copy_resources)) {
                 Path relative = path_relative(res_path, copy_resources);
                 Path file_path =
                     p_target_folder / string_replace(copy_resources, "res:/", "") / relative;

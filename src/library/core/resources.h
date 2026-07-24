@@ -52,7 +52,7 @@ namespace GodotObjectCompiler
 
         void load_pack(ResourcePack* p_pack);
 
-        [[nodiscard]] Vector<String> resources_recursive(const Path& p_path) const;
+        [[nodiscard]] Vector<Path> resources_recursive(const Path& p_path) const;
 
         [[nodiscard]] String load_text_resource(const Path& p_path) const;
 
@@ -62,7 +62,7 @@ namespace GodotObjectCompiler
         copy_resource_to_file(const Path& p_resource_path, const Path& p_target_file) const;
 
         [[nodiscard]] bool copy_resources_to_folder(
-            const Vector<String>& p_resource_glob_paths, const Path& p_target_folder) const;
+            const Vector<Path>& p_resource_glob_paths, const Path& p_target_folder) const;
 
       private:
         HashSet<ResourcePack*> _loaded_packs;

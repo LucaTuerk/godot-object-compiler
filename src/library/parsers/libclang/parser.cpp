@@ -158,7 +158,7 @@ namespace GodotObjectCompiler
                 if (begin == end) {
                     continue;
                 }
-                auto include_path = line.substr(begin, end - begin);
+                String include_path = line.substr(begin, end - begin);
                 results.push_back(node_new<Include>(include_path, is_system_include));
             }
         }

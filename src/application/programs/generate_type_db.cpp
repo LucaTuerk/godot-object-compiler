@@ -120,7 +120,7 @@ namespace GodotObjectCompiler
                 type_count++;
 
                 if (include_path.has_value()) {
-                    node->header = header_path(include_path.value(), path);
+                    node->header = header_path(Path(include_path.value()), path);
                 }
                 LibraryContext::instance()->get_type_db()->save_type_data(node, path);
             }
