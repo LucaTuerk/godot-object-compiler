@@ -49,7 +49,7 @@ namespace GodotObjectCompiler
         static std::uniform_int_distribution<uint64_t> dis;
 
         path = LibraryContext::instance()->get_temporary_path() /
-               format("temp_%d.%s", dis(gen) % 1000, p_extension.c_str());
+               Path(format("temp_%d.%s", dis(gen) % 1000, p_extension.c_str()));
 
         FileWriter writer(path);
         writer.write(p_content);

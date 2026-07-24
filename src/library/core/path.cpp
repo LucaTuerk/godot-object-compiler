@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* permissions.cpp                                                        */
+/* path.cpp                                                               */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,45 +33,131 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "permissions.h"
-
-#include "file_system_utilities.h"
-#include "string_utilities.h"
+#include "path.h"
 
 namespace GodotObjectCompiler
 {
-
-    void Permissions::clear()
+    Path::Path(const char* p_path)
     {
-        allowed_write_paths.clear();
+        data = std::filesystem::u8path(p_path);
     }
 
-    void Permissions::add_write_path(const Path& p_path)
+    Path::Path(const String& p_path)
     {
-        const Path absolute = path_absolute(p_path);
-        allowed_write_paths.insert(absolute);
+        data = std::filesystem::u8path(p_path);
     }
 
-    bool Permissions::is_allowed_write_path(const Path& p_path) const
+    Path::Path(const std::filesystem::path& p_path)
     {
-        Path absolute = path_absolute(p_path);
-        if (!path_is_descendant(path_cwd(), absolute)) {
-            return false;
-        }
-
-        return std::find_if(
-                   allowed_write_paths.begin(), allowed_write_paths.end(),
-                   [absolute](const Path& allowed) {
-                       return string_prefix(absolute.string(), allowed.string());
-                   }) != allowed_write_paths.end();
+        data = p_path;
     }
 
-    void Permissions::ensure_is_allowed_write_path(const Path& p_path) const
+    Path::Path(const Path& other) : data(other.data)
     {
-        PANIC_COND(
-            !is_allowed_write_path(p_path),
-            "Trying to write to \"%s\" but it is not an allowed write path!",
-            path_absolute(p_path).c_str());
     }
 
+    Path::Path(Path&& other) noexcept : data(std::move(other.data))
+    {
+    }
+
+    Path& Path::operator=(const Path& other)
+    {
+        if (this == &other)
+            return *this;
+        data = other.data;
+        return *this;
+    }
+
+    Path& Path::operator=(Path&& other) noexcept
+    {
+        if (this == &other)
+            return *this;
+        data = std::move(other.data);
+        return *this;
+    }
+
+    const std::filesystem::path& Path::path() const
+    {
+        return data;
+    }
+
+    String Path::string() const
+    {
+        return data.u8string();
+    }
+
+    const char* Path::c_str() const
+    {
+        string_data = string();
+        return string_data.c_str();
+    }
+
+    Path Path::parent_path() const
+    {
+        return Path(data.parent_path());
+    }
+
+    Path Path::filename() const
+    {
+        return Path(data.filename());
+    }
+
+    Path Path::stem() const
+    {
+        return Path(data.stem());
+    }
+
+    String Path::extension() const
+    {
+        return data.extension().string();
+    }
+
+    bool Path::empty() const
+    {
+        return data.empty();
+    }
+
+    void Path::replace_extension(const String& p_extension)
+    {
+        data.replace_extension(p_extension);
+    }
+
+    bool Path::operator<(const Path& p_other) const
+    {
+        return data < p_other.data;
+    }
+
+    bool Path::operator>(const Path& p_other) const
+    {
+        return data > p_other.data;
+    }
+
+    bool Path::operator==(const Path& p_other) const
+    {
+        return data == p_other.data;
+    }
+
+    bool Path::operator!=(const Path& p_other) const
+    {
+        return data != p_other.data;
+    }
+
+    Path operator/(const Path& p_left, const Path& p_right)
+    {
+        return Path(p_left.data / p_right.data);
+    }
+
+    std::ostream& operator<<(std::ostream& out, const Path& c)
+    {
+        out << c.string();
+        return out;
+    }
+
+    std::istream& operator>>(std::istream& in, Path& c)
+    {
+        String string_data;
+        in >> string_data;
+        c.data = std::filesystem::u8path(string_data);
+        return in;
+    }
 } // namespace GodotObjectCompiler

@@ -97,8 +97,8 @@ namespace GodotObjectCompiler
         if (auto arguments = context.get_argument_list<ApplicationArguments>();
             !Resources::instance()->copy_resources_to_folder(
                 {
-                    Path("res:/") / "variant_types",
-                    Path("res:/") / "macros",
+                    Path("res:") / "variant_types",
+                    Path("res:") / "macros",
                 },
                 arguments->goc_path->get<Path>())) {
             return false;

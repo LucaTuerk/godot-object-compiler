@@ -58,10 +58,12 @@ namespace GodotObjectCompiler
         const Path base = p_path.parent_path();
         const Path relative = path_relative(p_path, TestRegistry::instance()->get_test_root_dir());
 
-        const Path generated_header_path = TestRegistry::instance()->get_generated_path() /
-                                           string_replace(relative, ".h", ".generated.h");
-        const Path generated_source_path = TestRegistry::instance()->get_generated_path() /
-                                           string_replace(relative, ".h", ".generated.cpp");
+        const Path generated_header_path =
+            TestRegistry::instance()->get_generated_path() /
+            Path(string_replace(relative.string(), ".h", ".generated.h"));
+        const Path generated_source_path =
+            TestRegistry::instance()->get_generated_path() /
+            Path(string_replace(relative.string(), ".h", ".generated.cpp"));
         const Path register_header_path =
             TestRegistry::instance()->get_generated_path() / "generated_register_types.h";
         const Path register_source_path =

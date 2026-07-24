@@ -53,7 +53,7 @@ namespace GodotObjectCompiler
         PANIC_COND(
             !file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
         std::ifstream ifs;
-        ifs.open(absolute);
+        ifs.open(absolute.path());
         PANIC_COND(
             !ifs.is_open() || ifs.bad() || ifs.fail(), "Failed to open file \"%s\"",
             absolute.c_str());
@@ -85,13 +85,14 @@ namespace GodotObjectCompiler
         }
 
         const Path absolute = path_absolute(p_path);
-        return std::filesystem::exists(absolute);
+        return std::filesystem::exists(absolute.path());
     }
 
     bool directory_exits(const Path& p_path)
     {
         const Path absolute = path_absolute(p_path);
-        return std::filesystem::exists(absolute) && std::filesystem::is_directory(absolute);
+        return std::filesystem::exists(absolute.path()) &&
+               std::filesystem::is_directory(absolute.path());
     }
 
     bool remove_file(const Path& p_path)
@@ -112,7 +113,7 @@ namespace GodotObjectCompiler
 
     bool remove_entry(const Path& p_path)
     {
-        if (is_regular_file(p_path)) {
+        if (is_regular_file(p_path.path())) {
             return remove_file(p_path);
         }
         return remove_directory(p_path);
@@ -133,7 +134,7 @@ namespace GodotObjectCompiler
         const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Creating directories \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
-        return std::filesystem::create_directories(absolute);
+        return std::filesystem::create_directories(absolute.path());
     }
 
     Size file_write_time(const Path& p_path)
@@ -143,7 +144,7 @@ namespace GodotObjectCompiler
             return 0;
         }
 
-        auto file_time = std::filesystem::last_write_time(absolute);
+        auto file_time = std::filesystem::last_write_time(absolute.path());
         auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
             file_time - std::filesystem::file_time_type::clock::now() +
             std::chrono::system_clock::now());
@@ -152,8 +153,8 @@ namespace GodotObjectCompiler
 
     Path path_relative(const Path& p_path, const Path& p_base)
     {
-        const bool path_is_res = string_prefix(p_path, "res:/");
-        const bool base_is_res = string_prefix(p_base, "res:/");
+        const bool path_is_res = string_prefix(p_path.string(), "res:");
+        const bool base_is_res = string_prefix(p_base.string(), "res:");
         if (path_is_res != base_is_res) {
             PANIC(
                 "Invalid argument. Trying to get relative path but one path is a resource path "
@@ -162,10 +163,14 @@ namespace GodotObjectCompiler
         }
 
         if (path_is_res && base_is_res) {
-            return path_relative(Path(String(p_path).substr(6)), Path(String(p_base).substr(6)));
+            return path_relative(
+                Path(p_path.string().substr(
+                    std::min(p_path.string().size(), static_cast<size_t>(5)))),
+                Path(p_base.string().substr(
+                    std::min(p_base.string().size(), static_cast<size_t>(5)))));
         }
 
-        return std::filesystem::relative(p_path, p_base);
+        return Path(std::filesystem::relative(p_path.path(), p_base.path()));
     }
 
     Path path_absolute(const Path& p_path)
@@ -173,7 +178,7 @@ namespace GodotObjectCompiler
         if (p_path.empty()) {
             return path_cwd();
         }
-        return std::filesystem::absolute(p_path);
+        return Path(std::filesystem::absolute(p_path.path()));
     }
 
     String path_vector_combine(const Vector<Path>& p_paths, const String& p_delimiter)
@@ -183,7 +188,7 @@ namespace GodotObjectCompiler
             if (i != 0) {
                 writer.write(p_delimiter);
             }
-            writer.write(p_paths.at(i));
+            writer.write(p_paths.at(i).string());
         }
         return writer.get_string();
     }
@@ -201,7 +206,7 @@ namespace GodotObjectCompiler
 
     Path path_cwd()
     {
-        return std::filesystem::current_path();
+        return Path(std::filesystem::current_path());
     }
 
     char path_seperator()
@@ -217,10 +222,10 @@ namespace GodotObjectCompiler
             absolute.c_str());
 
         Vector<Path> result;
-        std::filesystem::directory_iterator iter(absolute);
+        std::filesystem::directory_iterator iter(absolute.path());
         for (const auto& entry : iter) {
             if (entry.is_regular_file()) {
-                result.push_back(entry.path());
+                result.push_back(Path(entry.path()));
             }
         }
 
@@ -237,10 +242,10 @@ namespace GodotObjectCompiler
         }
 
         Vector<Path> result;
-        std::filesystem::recursive_directory_iterator iter(absolute);
+        std::filesystem::recursive_directory_iterator iter(absolute.path());
         for (const auto& entry : iter) {
             if (entry.is_regular_file()) {
-                result.push_back(entry.path());
+                result.push_back(Path(entry.path()));
             }
         }
 
@@ -255,10 +260,10 @@ namespace GodotObjectCompiler
             absolute.c_str());
 
         Vector<Path> result;
-        std::filesystem::directory_iterator iter(absolute);
+        std::filesystem::directory_iterator iter(absolute.path());
         for (const auto& entry : iter) {
             if (entry.is_directory()) {
-                result.push_back(entry.path());
+                result.push_back(Path(entry.path()));
             }
         }
         return result;
@@ -272,10 +277,10 @@ namespace GodotObjectCompiler
             absolute.c_str());
 
         Vector<Path> result;
-        std::filesystem::directory_iterator iter(absolute);
+        std::filesystem::directory_iterator iter(absolute.path());
         for (const auto& entry : iter) {
             if (entry.is_regular_file() || entry.is_directory()) {
-                result.push_back(entry.path());
+                result.push_back(Path(entry.path()));
             }
         }
         return result;
@@ -285,7 +290,7 @@ namespace GodotObjectCompiler
     {
         const Path ancestor_absolute = path_absolute(p_possible_ancestor);
         const Path child_absolute = path_absolute(p_possible_child);
-        return string_prefix(child_absolute, ancestor_absolute);
+        return string_prefix(child_absolute.string(), ancestor_absolute.string());
     }
 
     bool could_be_path(const Path& p_path)
@@ -310,7 +315,7 @@ namespace GodotObjectCompiler
         const Path include_absolute = path_absolute(p_include_path);
         const Path file_absolute = path_absolute(p_file_path);
         const Path relative = path_relative(file_absolute, include_absolute);
-        return string_replace(String(relative), "\\", "/");
+        return string_replace(relative.string(), "\\", "/");
     }
 
     bool copy_file(const Path& p_source, const Path& p_destination)
@@ -329,7 +334,7 @@ namespace GodotObjectCompiler
 
         Permissions::instance()->ensure_is_allowed_write_path(destination);
         return std::filesystem::copy_file(
-            source, destination, std::filesystem::copy_options::update_existing);
+            source.path(), destination.path(), std::filesystem::copy_options::update_existing);
     }
 
 } // namespace GodotObjectCompiler

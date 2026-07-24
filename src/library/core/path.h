@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* permissions.cpp                                                        */
+/* path.h                                                                 */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,45 +33,64 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "permissions.h"
-
-#include "file_system_utilities.h"
-#include "string_utilities.h"
+#pragma once
+#include "core.h"
 
 namespace GodotObjectCompiler
 {
-
-    void Permissions::clear()
+    class Path
     {
-        allowed_write_paths.clear();
-    }
+      public:
+        Path() = default;
 
-    void Permissions::add_write_path(const Path& p_path)
-    {
-        const Path absolute = path_absolute(p_path);
-        allowed_write_paths.insert(absolute);
-    }
+        Path(const char* p_path);
 
-    bool Permissions::is_allowed_write_path(const Path& p_path) const
-    {
-        Path absolute = path_absolute(p_path);
-        if (!path_is_descendant(path_cwd(), absolute)) {
-            return false;
-        }
+        explicit Path(const String& p_path);
 
-        return std::find_if(
-                   allowed_write_paths.begin(), allowed_write_paths.end(),
-                   [absolute](const Path& allowed) {
-                       return string_prefix(absolute.string(), allowed.string());
-                   }) != allowed_write_paths.end();
-    }
+        explicit Path(const std::filesystem::path& p_path);
 
-    void Permissions::ensure_is_allowed_write_path(const Path& p_path) const
-    {
-        PANIC_COND(
-            !is_allowed_write_path(p_path),
-            "Trying to write to \"%s\" but it is not an allowed write path!",
-            path_absolute(p_path).c_str());
-    }
+        Path(const Path& other);
 
+        Path(Path&& other) noexcept;
+
+        Path& operator=(const Path& other);
+
+        Path& operator=(Path&& other) noexcept;
+
+        const std::filesystem::path& path() const;
+
+        String string() const;
+
+        const char* c_str() const;
+
+        Path parent_path() const;
+
+        Path filename() const;
+
+        Path stem() const;
+
+        String extension() const;
+
+        bool empty() const;
+
+        void replace_extension(const String& p_extension);
+
+        friend Path operator/(const Path& p_left, const Path& p_right);
+
+        friend std::ostream& operator<<(std::ostream& out, const Path& c);
+
+        friend std::istream& operator>>(std::istream& in, Path& c);
+
+        bool operator<(const Path& p_other) const;
+
+        bool operator>(const Path& p_other) const;
+
+        bool operator==(const Path& p_other) const;
+
+        bool operator!=(const Path& p_other) const;
+
+      private:
+        mutable String string_data;
+        std::filesystem::path data;
+    };
 } // namespace GodotObjectCompiler

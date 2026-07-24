@@ -163,7 +163,7 @@ namespace GodotObjectCompiler
             const String& p_qualified_name, const String& p_attribute_name,
             Size p_template_argument_count = INVALID_SIZE) const;
 
-        Dictionary<String, Ref<Node>> _cache;
+        Dictionary<Path, Ref<Node>> _cache;
         Path _cache_directory;
 
         friend LibraryContext;

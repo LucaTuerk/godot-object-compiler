@@ -35,6 +35,7 @@
 
 #include "test_registry.h"
 
+#include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler
@@ -94,12 +95,12 @@ namespace GodotObjectCompiler
         result.emplace_back(format("-E=%s", extension_api.c_str()));
         result.emplace_back(format("-SP=%s", source_parser.c_str()));
 
-        Vector<String> paths;
+        Vector<Path> paths;
         for (const auto& path : get_integration_tests_godot_cpp_include_paths()) {
             paths.push_back(path);
         }
 
-        result.emplace_back(format("-GPP=%s", string_vector_combine(paths, ",").c_str()));
+        result.emplace_back(format("-GPP=%s", path_vector_combine(paths, ",").c_str()));
         return result;
     }
 

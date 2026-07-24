@@ -108,7 +108,7 @@ namespace GodotObjectCompiler
 
     String path_to_canonical_name(const Path& p_path)
     {
-        return class_name_to_canonical_name(p_path.stem().generic_string());
+        return class_name_to_canonical_name(p_path.stem().string());
     }
 
     JsonError::JsonError(const ErrorLevel p_level, const Json& p_json, const String& p_message)
@@ -122,7 +122,7 @@ namespace GodotObjectCompiler
     {
         PARS_ERR_COND(!r_target, "ExtensionAPIParser: Invalid null target context.");
 
-        std::ifstream file(p_path);
+        std::ifstream file(p_path.path());
         Json json;
         try {
             json = Json::parse(file);

@@ -151,7 +151,7 @@ namespace GodotObjectCompiler
         writer.write(" ");
         writer.write(p_parser_name);
         writer.write(": ");
-        writer.write(p_file_path);
+        writer.write(p_file_path.string());
         writer.write(":");
         writer.write_generic(p_line);
         writer.write(":");

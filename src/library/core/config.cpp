@@ -75,7 +75,7 @@ namespace GodotObjectCompiler
             PANIC_COND(
                 !Permissions::instance()->is_allowed_write_path(p_path),
                 "JsonConfig: \"%s\" is not an allowed write path.");
-            std::ofstream file(p_path);
+            std::ofstream file(p_path.path());
             file << json.dump(1);
         } catch (std::exception& e) {
             PRINT_ERROR(
@@ -93,7 +93,7 @@ namespace GodotObjectCompiler
         }
 
         try {
-            std::ifstream file(p_path);
+            std::ifstream file(p_path.path());
             json = Json::parse(file);
         } catch (std::exception& e) {
             PRINT_ERROR(

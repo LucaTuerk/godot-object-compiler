@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 #include "core.h"
+#include "path.h"
 
 namespace GodotObjectCompiler
 {
@@ -56,7 +57,7 @@ namespace GodotObjectCompiler
         void ensure_is_allowed_write_path(const Path& p_path) const;
 
       private:
-        HashSet<String> allowed_write_paths;
+        HashSet<Path> allowed_write_paths;
     };
 
 } // namespace GodotObjectCompiler

@@ -51,7 +51,7 @@ namespace GodotObjectCompiler
         Vector<Path> res;
         for (const ResourcePack* pack : _loaded_packs) {
             for (const auto& [res_path, _] : *pack) {
-                if (string_prefix(res_path, p_path)) {
+                if (string_prefix(res_path, p_path.string())) {
                     res.emplace_back(res_path);
                 }
             }
@@ -62,7 +62,7 @@ namespace GodotObjectCompiler
     String Resources::load_text_resource(const Path& p_path) const
     {
         for (ResourcePack* pack : _loaded_packs) {
-            if (auto itr = pack->find(p_path); itr != pack->end()) {
+            if (auto itr = pack->find(p_path.string()); itr != pack->end()) {
                 return itr->second;
             }
         }
@@ -72,7 +72,7 @@ namespace GodotObjectCompiler
     bool Resources::has_resource(const Path& p_path) const
     {
         for (ResourcePack* pack : _loaded_packs) {
-            if (auto itr = pack->find(p_path); itr != pack->end()) {
+            if (auto itr = pack->find(p_path.string()); itr != pack->end()) {
                 return true;
             }
         }
@@ -97,10 +97,10 @@ namespace GodotObjectCompiler
         const Vector<Path>& p_resource_glob_paths, const Path& p_target_folder) const
     {
         for (const Path& copy_resources : p_resource_glob_paths) {
+            Path res_relative = path_relative(copy_resources, Path("res:"));
             for (const Path& res_path : resources_recursive(copy_resources)) {
                 Path relative = path_relative(res_path, copy_resources);
-                Path file_path =
-                    p_target_folder / string_replace(copy_resources, "res:/", "") / relative;
+                Path file_path = p_target_folder / res_relative / relative;
 
                 if (file_exists(file_path)) {
                     continue;

@@ -77,7 +77,7 @@ namespace GodotObjectCompiler
 
         for (const String& macro :
              LibraryContext::instance()->get_attribute_db()->get_all_macros()) {
-            Path res_file = Path("res:/") / "doc" / format("%s.txt", macro.c_str());
+            Path res_file = Path("res:") / "doc" / Path(format("%s.txt", macro.c_str()));
             if (Resources::instance()->has_resource(res_file)) {
                 Ref<Context> params_docu = Output::Params({});
                 Ref<Context> comment = Output::DocComment(Output::Lines(
@@ -160,8 +160,8 @@ namespace GodotObjectCompiler
 
         const String type_name = p_type->get_return_type();
 
-        const Path doc_res_path = Path("res:/") / "doc" / format("%s.txt", type_name.c_str());
-        const Path doc_res_dir = Path("res:/") / "doc" / type_name;
+        const Path doc_res_path = Path("res:") / "doc" / Path(format("%s.txt", type_name.c_str()));
+        const Path doc_res_dir = Path("res:") / "doc" / Path(type_name);
 
         const Ref<Context> value_names_documentation = Output::Params({});
         const Ref<Context> type_documentation = Output::Lines({});
@@ -192,7 +192,7 @@ namespace GodotObjectCompiler
         Size index = 0;
         const Vector<IAttributeParameterType::Argument> arguments = p_type->get_arguments();
         for (const String& value_name : p_type->get_value_names()) {
-            Path value_res_path = doc_res_dir / format("%s.txt", value_name.c_str());
+            Path value_res_path = doc_res_dir / Path(format("%s.txt", value_name.c_str()));
 
             if (Resources::instance()->has_resource(value_res_path)) {
                 String content = Resources::instance()->load_text_resource(value_res_path);

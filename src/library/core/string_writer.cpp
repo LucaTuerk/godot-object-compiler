@@ -66,7 +66,7 @@ namespace GodotObjectCompiler
     {
         Permissions::instance()->ensure_is_allowed_write_path(p_path);
         if (!p_do_not_write_same_content) {
-            _file = std::fstream(p_path, std::ios::out);
+            _file = std::fstream(p_path.path(), std::ios::out);
         }
     }
 
@@ -96,7 +96,7 @@ namespace GodotObjectCompiler
                 p_path, p_generated_from_path.value());
         }
 
-        writer.write(_generated_header(p_path.filename().generic_string()));
+        writer.write(_generated_header(p_path.filename().string()));
         writer.write("// NOLINTBEGIN\n// clang-format off\n");
         return FileWriter(p_path, writer.get_string());
     }
@@ -128,7 +128,7 @@ namespace GodotObjectCompiler
 
     String FileWriter::_generated_header(const String& p_file_name)
     {
-        Path resource_path = "res:/generator/generated_header.txt";
+        Path resource_path = Path("res:") / "generator" / "generated_header.txt";
         if (!Resources::instance()->has_resource(resource_path)) {
             return "";
         }

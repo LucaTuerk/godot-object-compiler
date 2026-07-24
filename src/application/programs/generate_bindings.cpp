@@ -61,16 +61,16 @@ namespace GodotObjectCompiler
             ApplicationArguments, GeneratorArguments, GDExtensionProjectArguments>();
     }
 
-    String GenerateBindings::file_id(const String& p_file_name)
+    String GenerateBindings::file_id(const Path& p_file_name)
     {
         constexpr Hasher<String> hasher;
-        return hash_string(hasher(String(p_file_name)));
+        return hash_string(hasher(p_file_name.string()));
     }
 
-    Path GenerateBindings::cache_path(const Path& goc_path, const String& p_file_name)
+    Path GenerateBindings::cache_path(const Path& p_goc_path, const Path& p_path)
     {
-        const Path input_cache = goc_path / "input_cache";
-        Path cache_path = Path(input_cache) / format("%s.gocdb", file_id(p_file_name).c_str());
+        const Path input_cache = p_goc_path / "input_cache";
+        Path cache_path = Path(input_cache) / Path(format("%s.gocdb", file_id(p_path).c_str()));
         if (!directory_exits(input_cache)) {
             create_dir_recursive(input_cache);
         }
@@ -83,7 +83,7 @@ namespace GodotObjectCompiler
         stream.write("GOC_GENERATED_");
         stream.write_generic(p_line);
         stream.write("_");
-        stream.write(file_id(p_header));
+        stream.write(file_id(Path(p_header)));
         return stream.get_string();
     }
 
@@ -260,12 +260,12 @@ namespace GodotObjectCompiler
 
             Path in_generated_path = generator_args->generated_path->get<Path>() / relative_path;
             Path in_generated_base = in_generated_path.parent_path();
-            String in_generated_stem = in_generated_path.stem().generic_string();
+            String in_generated_stem = in_generated_path.stem().string();
 
             Path gen_source_path =
-                in_generated_base / format("%s.generated.cpp", in_generated_stem.c_str());
+                in_generated_base / Path(format("%s.generated.cpp", in_generated_stem.c_str()));
             Path gen_header_path =
-                in_generated_base / format("%s.generated.h", in_generated_stem.c_str());
+                in_generated_base / Path(format("%s.generated.h", in_generated_stem.c_str()));
             String gen_header_include_path =
                 header_path(generator_args->generated_path->get<Path>(), gen_header_path);
 
@@ -424,7 +424,7 @@ namespace GodotObjectCompiler
 
             auto target_header = header_path(generator_args->root_path->get<Path>(), input_file);
             Output::Lines({Output::PragmaOnce(), Output::Text("#undef GOC_FILE_ID"),
-                           Output::Define("GOC_FILE_ID", {}, file_id(target_header)),
+                           Output::Define("GOC_FILE_ID", {}, file_id(Path(target_header))),
                            Output::Include("godot_object_compiler/macros.h"), Output::NewLine()})
                 ->get_output(&header_writer);
 

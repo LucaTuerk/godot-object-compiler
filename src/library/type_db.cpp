@@ -157,7 +157,8 @@ namespace GodotObjectCompiler
         const String& p_qualified_name, Size p_template_argument_count) const
     {
         return _cache_directory /
-               format("%s.gocdb", mangle_name(p_qualified_name, p_template_argument_count).c_str());
+               Path(format(
+                   "%s.gocdb", mangle_name(p_qualified_name, p_template_argument_count).c_str()));
     }
 
     Path TypeDB::_get_attribute_cache_file_path(
@@ -165,8 +166,8 @@ namespace GodotObjectCompiler
         const Size p_template_argument_count) const
     {
         const Path base =
-            _cache_directory / mangle_name(p_qualified_name, p_template_argument_count);
-        return base / format("attr_%s.gocdb", p_attribute_name.c_str());
+            _cache_directory / Path(mangle_name(p_qualified_name, p_template_argument_count));
+        return base / Path(format("attr_%s.gocdb", p_attribute_name.c_str()));
     }
 
     void TypeDB::save_type_data(const Ref<NamedContext>& p_type, const Path& p_generated_from) const
@@ -185,7 +186,7 @@ namespace GodotObjectCompiler
         }
 
         for (const Path& path : paths) {
-            if (string_contains(path, INVALID_NAME)) {
+            if (string_contains(path.string(), INVALID_NAME)) {
                 PRINT_ERROR(
                     "Failed to get cache path for type \"%s\"", p_type->qualified_name().c_str());
                 return;
@@ -220,7 +221,7 @@ namespace GodotObjectCompiler
         }
 
         for (const Path& path : paths) {
-            if (string_contains(path, INVALID_NAME)) {
+            if (string_contains(path.string(), INVALID_NAME)) {
                 PRINT_ERROR(
                     "Failed to get cache path for attribute \"%s\" on type \"%s\"",
                     p_attribute->get_type().c_str(), p_attribute->qualified_name().c_str());

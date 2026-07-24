@@ -53,7 +53,7 @@ namespace GodotObjectCompiler
 
     String PathCommandLineArgumentParser::value_to_string(const Path& p_value)
     {
-        return p_value;
+        return p_value.string();
     }
 
     Opt<Vector<Path>> PathListCommandLineArgumentParser::parse_argument(const String& p_argument)
@@ -80,7 +80,7 @@ namespace GodotObjectCompiler
 
         Vector<String> paths;
         for (const Path& path : p_value) {
-            paths.push_back(path_absolute(path));
+            paths.push_back(path_absolute(path).string());
         }
 
         writer.write(string_vector_combine(paths, ", "));

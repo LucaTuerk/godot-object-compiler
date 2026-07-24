@@ -35,6 +35,7 @@
 
 #pragma once
 #include "core/core.h"
+#include "core/path.h"
 
 namespace GodotObjectCompiler
 {
@@ -159,7 +160,7 @@ namespace GodotObjectCompiler
         Dictionary<int, Ref<IParser>> default_parsers;
         Dictionary<TypeIndex, AnyType> generic_singletons;
 
-        Path temp_path{};
+        Path temp_path;
         Vector<String> usings{};
         Vector<Path> input_files{};
         Vector<String> remove_macros{};

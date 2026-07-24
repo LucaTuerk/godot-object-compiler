@@ -45,7 +45,7 @@ GOC_TEST(FileReadWriteTest)
     Path base = path_absolute(".goc_tests/tmp");
 
     for (Size i = 0; i < 100; ++i) {
-        Path filename = base / format("%s.txt", generate_random_string(10).c_str());
+        Path filename = base / Path(format("%s.txt", generate_random_string(10).c_str()));
         Size size = i * 100;
         String content = generate_random_string(size);
         write_file(filename, content);

@@ -41,8 +41,6 @@ namespace GodotObjectCompiler
 
     using String = std::string;
 
-    using Path = std::filesystem::path;
-
     template <typename T> using Limits = std::numeric_limits<T>;
 
     template <typename T> using Vector = std::vector<T>;

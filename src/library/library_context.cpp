@@ -261,7 +261,7 @@ namespace GodotObjectCompiler
             if (config.has_config_value("generated_files")) {
                 Vector<Path> generated =
                     path_vector_split(config.read<String, String>("generated_files"), ";");
-                generated_from.try_emplace(key, generated);
+                generated_from.try_emplace(Path(key), generated);
             }
         }
 
@@ -273,7 +273,7 @@ namespace GodotObjectCompiler
         JsonConfig config;
 
         for (const auto& [path, generated] : generated_from) {
-            config.write_to_section(String(path));
+            config.write_to_section(path.string());
             config.write("generated_files", path_vector_combine(generated, ";"));
         }
 
@@ -391,7 +391,7 @@ namespace GodotObjectCompiler
         JsonConfig config;
 
         for (const auto& [path, last_modified] : out_last_modified_times) {
-            config.write_to_section(String(path));
+            config.write_to_section(path.string());
             config.write<String, Size>("last_modified", last_modified);
         }
 

@@ -35,6 +35,7 @@
 
 #pragma once
 #include "core.h"
+#include "path.h"
 
 namespace GodotObjectCompiler
 {

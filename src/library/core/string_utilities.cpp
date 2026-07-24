@@ -571,7 +571,7 @@ namespace GodotObjectCompiler
             !file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
 
         Vector<String> result;
-        std::ifstream ifs{p_path};
+        std::ifstream ifs{p_path.path()};
 
         for (std::string line; std::getline(ifs, line);) {
             result.emplace_back(line);
