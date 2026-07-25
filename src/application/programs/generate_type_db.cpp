@@ -156,6 +156,10 @@ namespace GodotObjectCompiler
         for (const Path& path : includes) {
             Path include_path = path_absolute(path);
             for (const Path& file : directory_files_recursive(include_path)) {
+                if (file.extension() == ".json") {
+                    continue;
+                }
+
                 generate_from_file(
                     {path_absolute(file), include_path.string()}, p_context, parser.get());
             }

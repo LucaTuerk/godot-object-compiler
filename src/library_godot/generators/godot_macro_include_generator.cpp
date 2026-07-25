@@ -134,7 +134,7 @@ namespace GodotObjectCompiler
             found_any_path = true;
 
             Vector<Path> includes = directory_files_recursive(include_path);
-            Vector<String> header_paths;
+            Vector<String> header_paths(includes.size());
             std::transform(
                 includes.cbegin(), includes.cend(), header_paths.begin(),
                 [godot_cpp_include](const Path& p_path) {
