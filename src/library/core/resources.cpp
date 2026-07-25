@@ -40,6 +40,14 @@
 
 namespace GodotObjectCompiler
 {
+    String resource_id(const Path& p_path)
+    {
+#ifdef _WIN32
+        return string_replace(p_path.string(), "\\", "/");
+#else
+        return p_path.string();
+#endif
+    }
 
     void Resources::load_pack(ResourcePack* p_pack)
     {
@@ -51,7 +59,7 @@ namespace GodotObjectCompiler
         Vector<Path> res;
         for (const ResourcePack* pack : _loaded_packs) {
             for (const auto& [res_path, _] : *pack) {
-                if (string_prefix(res_path, p_path.string())) {
+                if (string_prefix(res_path, resource_id(p_path))) {
                     res.emplace_back(res_path);
                 }
             }
@@ -62,7 +70,7 @@ namespace GodotObjectCompiler
     String Resources::load_text_resource(const Path& p_path) const
     {
         for (ResourcePack* pack : _loaded_packs) {
-            if (auto itr = pack->find(p_path.string()); itr != pack->end()) {
+            if (auto itr = pack->find(resource_id(p_path)); itr != pack->end()) {
                 return itr->second;
             }
         }
@@ -72,7 +80,7 @@ namespace GodotObjectCompiler
     bool Resources::has_resource(const Path& p_path) const
     {
         for (ResourcePack* pack : _loaded_packs) {
-            if (auto itr = pack->find(p_path.string()); itr != pack->end()) {
+            if (auto itr = pack->find(resource_id(p_path)); itr != pack->end()) {
                 return true;
             }
         }
