@@ -74,7 +74,7 @@ jobs:
           gh release upload ${{github.ref_name}} goc_${{github.ref_name}}-win64.zip --clobber
           gh release upload ${{github.ref_name}} goc_${{github.ref_name}}-macos.universal.zip --clobber
 
-      - uses: Ayowel/butler-to-itch@v1
+      - uses: Ayowel/butler-to-itch@v2
         with:
           butler_key: ${{ secrets.BUTLER_API_KEY }}
           itch_user: lucatuerk
