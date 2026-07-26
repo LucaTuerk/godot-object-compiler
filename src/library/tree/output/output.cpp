@@ -288,12 +288,12 @@ namespace GodotObjectCompiler
 
         Ref<SnippetNode> Include(const String& p_path)
         {
-            return node_new<SnippetNode>("#include \"" + p_path + "\"");
+            return node_new<SnippetNode>("#include \"" + String(p_path) + "\"");
         }
 
         Ref<SnippetNode> SystemInclude(const String& p_path)
         {
-            return node_new<SnippetNode>("#include <" + p_path + ">");
+            return node_new<SnippetNode>("#include <" + String(p_path) + ">");
         }
 
         Ref<EnclosingNode> DocComment(const Ref<Node>& p_content)

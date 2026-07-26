@@ -42,8 +42,8 @@ using namespace GodotObjectCompiler;
 
 GOC_INTEGRATION_TEST(GenerateClasses)
 {
-    for (const String& path : directory_files("tests/files/integration_tests/godot_class")) {
-        if (string_contains(path, "invalid")) {
+    for (const Path& path : directory_files("tests/files/integration_tests/godot_class")) {
+        if (string_contains(path.string(), "invalid")) {
             GOC_INTEGRATION_TEST_GEN_INVALID_FILE(path.c_str());
         } else {
             GOC_INTEGRATION_TEST_GEN_FILE(path.c_str());

@@ -55,9 +55,9 @@
 namespace GodotObjectCompiler
 {
 
-    String resource_variable_name(const String& p_path)
+    String resource_variable_name(const Path& p_path)
     {
-        String result = p_path;
+        String result = p_path.string();
         result = string_replace(result, "/", "_");
         result = string_replace(result, ".", "_");
         result = string_replace(result, "\\", "_");
@@ -165,7 +165,7 @@ namespace GodotObjectCompiler
         Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
         for (const auto& [path, program] : programs) {
             String file_stem = string_vector_combine(path, "_");
-            String file_path = path_concat_ext("resources/help", file_stem, "txt");
+            Path file_path = Path("resources/help") / Path(format("%s.txt", file_stem.c_str()));
             if (!file_exists(file_path)) {
                 FileWriter writer(file_path);
                 writer.write("No description available");
@@ -177,12 +177,12 @@ namespace GodotObjectCompiler
                 continue;
             }
 
-            String doc_path = path_concat("docs", "cli");
-            String desc_path = path_concat(doc_path, "descriptions");
+            Path doc_path = Path("docs") / "cli";
+            Path desc_path = doc_path / "descriptions";
             create_dir_recursive(desc_path);
 
-            String doc_file_path = path_concat_ext(doc_path, file_stem, "rst");
-            String desc_file_path = path_concat_ext(desc_path, file_stem, "rst");
+            Path doc_file_path = doc_path / Path(format("%s.rst", file_stem.c_str()));
+            Path desc_file_path = desc_path / Path(format("%s.rst", file_stem.c_str()));
 
             StreamWriter documentation_writer;
             documentation_writer.write(rst_header(string_vector_combine(path, " "), '='));
@@ -214,14 +214,15 @@ namespace GodotObjectCompiler
         // Generate macro help docs
         for (const String& macro :
              LibraryContext::instance()->get_attribute_db()->get_all_macros()) {
-            String internal_doc_path = path_concat_ext("resources/doc", macro, "txt");
+            Path internal_doc_path = Path("resources/doc") / Path(format("%s.txt", macro.c_str()));
             write_initial_file_content(internal_doc_path, "No documentation available");
 
-            String doc_path = path_concat_ext("docs/macros/", macro, "rst");
+            Path doc_path = Path("docs/macros/") / Path(format("%s.rst", macro.c_str()));
             write_initial_file_content(doc_path, "No documentation available");
 
-            String doc_desc_path = path_concat_ext("docs/macros/descriptions/", macro, "rst");
-            create_dir_recursive(path_base(doc_desc_path));
+            Path doc_desc_path =
+                Path("docs/macros/descriptions/") / Path(format("%s.rst", macro.c_str()));
+            create_dir_recursive(doc_desc_path.parent_path());
             write_file(doc_desc_path, read_file(internal_doc_path));
 
             Vector<Ref<IAttributeParameterType>> params =
@@ -234,23 +235,24 @@ namespace GodotObjectCompiler
                 Table table;
                 table.push_back({"Value", "Description"});
 
-                auto param_res_doc_dir = path_concat("resources/doc", param->get_return_type());
-                auto param_res_doc_path =
-                    path_concat_ext("resources/doc", param->get_return_type(), "txt");
+                Path param_res_doc_dir = Path("resources/doc") / Path(param->get_return_type());
+                Path param_res_doc_path = Path("resources/doc") /
+                                          Path(format("%s.txt", param->get_return_type().c_str()));
 
                 create_dir_recursive(param_res_doc_dir);
                 write_initial_file_content(param_res_doc_path, "No documentation available");
 
                 for (const auto& value_name : param->get_value_names()) {
-                    auto value_doc_path = path_concat_ext(param_res_doc_dir, value_name, "txt");
+                    auto value_doc_path =
+                        param_res_doc_dir / Path(format("%s.txt", value_name.c_str()));
                     write_initial_file_content(value_doc_path, "No documentation available");
 
                     table.push_back({value_name, read_file(value_doc_path)});
                 }
 
-                String param_doc_path =
-                    path_concat_ext("docs/macros/parameters/", param->get_return_type(), "rst");
-                create_dir_recursive(path_base(param_doc_path));
+                Path param_doc_path = Path("docs") / "macros" / "parameters/" /
+                                      Path(format("%s.rst", param->get_return_type().c_str()));
+                create_dir_recursive(param_doc_path.parent_path());
 
                 StreamWriter writer;
                 writer.write(rst_header(param->get_return_type(), '^'));
@@ -265,7 +267,7 @@ namespace GodotObjectCompiler
         }
 
         for (const auto& parser : LibraryContext::instance()->get_parsers()) {
-            String path = path_concat_ext("resources/help", parser->get_type(), "txt");
+            Path path = Path("resources/help") / Path(format("%s.txt", parser->get_type().c_str()));
             write_initial_file_content(path, "");
         }
 
@@ -278,9 +280,9 @@ namespace GodotObjectCompiler
         auto files = directory_files_recursive("resources");
         std::sort(files.begin(), files.end());
         // Compile Resources
-        for (const String& file : files) {
+        for (const Path& file : files) {
             String content = read_file(file);
-            String relative = path_relative(file, path_cwd());
+            Path relative = path_relative(file, path_cwd());
 
             Ref<Output::ListNode> values;
             body->add_children(
@@ -306,9 +308,9 @@ namespace GodotObjectCompiler
                  B<Body>()[R<Output::ListNode>(&values, ",\n", false, false)],
                  Output::Semicolon()});
 
-            for (const String& file : files) {
-                String relative = path_relative(file, path_cwd());
-                String res_path = "res://" + path_relative(relative, "resources");
+            for (const Path& file : files) {
+                Path relative = path_relative(file, path_cwd());
+                Path res_path = "res:" / path_relative(relative, "resources");
                 values->add_child(Output::FmtText(
                     "{\"%s\", &%s[0]}", res_path.c_str(),
                     resource_variable_name(relative).c_str()));

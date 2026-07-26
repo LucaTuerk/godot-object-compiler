@@ -564,14 +564,14 @@ namespace GodotObjectCompiler
         return result;
     }
 
-    Vector<String> read_lines(const String& p_path)
+    Vector<String> read_lines(const Path& p_path)
     {
-        String absolute = path_absolute(p_path);
+        Path absolute = path_absolute(p_path);
         PANIC_COND(
             !file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
 
         Vector<String> result;
-        std::ifstream ifs{p_path};
+        std::ifstream ifs{p_path.path()};
 
         for (std::string line; std::getline(ifs, line);) {
             result.emplace_back(line);

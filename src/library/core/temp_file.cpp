@@ -48,9 +48,8 @@ namespace GodotObjectCompiler
         static std::mt19937_64 gen(rd());
         static std::uniform_int_distribution<uint64_t> dis;
 
-        path = path_concat_ext(
-            LibraryContext::instance()->get_temporary_path(), format("temp_%d", dis(gen) % 1000),
-            p_extension);
+        path = LibraryContext::instance()->get_temporary_path() /
+               Path(format("temp_%d.%s", dis(gen) % 1000, p_extension.c_str()));
 
         FileWriter writer(path);
         writer.write(p_content);
@@ -58,10 +57,10 @@ namespace GodotObjectCompiler
 
     TempFile::~TempFile()
     {
-        remove(path);
+        remove_file(path);
     }
 
-    String TempFile::get_path() const
+    Path TempFile::get_path() const
     {
         return path;
     }

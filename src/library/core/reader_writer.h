@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 #include "core.h"
+#include "path.h"
 #include "result.h"
 
 namespace GodotObjectCompiler
@@ -62,7 +63,7 @@ namespace GodotObjectCompiler
 
         template <typename S> void write_to_section(const S& section);
 
-        virtual bool write_to_file(const String& p_path) = 0;
+        virtual bool write_to_file(const Path& p_path) = 0;
 
       protected:
         virtual void _write_to_section(const String& p_section) = 0;
@@ -78,7 +79,7 @@ namespace GodotObjectCompiler
 
         template <typename S> void read_from_section(const S& section);
 
-        virtual bool read_from_file(const String& p_path) = 0;
+        virtual bool read_from_file(const Path& p_path) = 0;
 
       protected:
         virtual void _read_from_section(const String& p_section) = 0;
@@ -136,7 +137,7 @@ namespace GodotObjectCompiler
       public:
         virtual ~INodeWriter() = default;
 
-        virtual bool write_to_file(Ref<Node> node, const String& path) = 0;
+        virtual bool write_to_file(Ref<Node> p_node, const Path& p_path) = 0;
     };
 
     class INodeReader
@@ -144,9 +145,9 @@ namespace GodotObjectCompiler
       public:
         virtual ~INodeReader() = default;
 
-        virtual Result<Node> read_from_file(const String& path) = 0;
+        virtual Result<Node> read_from_file(const Path& path) = 0;
 
-        template <typename T> Result<T> read_from_file(const String& p_path);
+        template <typename T> Result<T> read_from_file(const Path& p_path);
     };
 
 } // namespace GodotObjectCompiler

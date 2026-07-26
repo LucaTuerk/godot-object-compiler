@@ -59,8 +59,8 @@ namespace GodotObjectCompiler
         FileWriter(const FileWriter& other) = delete;
 
         FileWriter(FileWriter&& other) noexcept
-            : IStringWriter(std::move(other)), _path(std::move(other._path)),
-              _do_not_write_same_content(other._do_not_write_same_content),
+            : IStringWriter(std::move(other)), path(std::move(other.path)),
+              do_not_write_same_content(other.do_not_write_same_content),
               _generated(other._generated), _moved(false), _stream(std::move(other._stream)),
               _file(std::move(other._file))
         {
@@ -76,8 +76,8 @@ namespace GodotObjectCompiler
             }
             IStringWriter::operator=(std::move(other));
             other._moved = true;
-            _path = std::move(other._path);
-            _do_not_write_same_content = other._do_not_write_same_content;
+            path = std::move(other.path);
+            do_not_write_same_content = other.do_not_write_same_content;
             _generated = other._generated;
             _moved = false;
             _stream = std::move(other._stream);
@@ -85,11 +85,11 @@ namespace GodotObjectCompiler
             return *this;
         }
 
-        explicit FileWriter(const String& path, bool do_not_write_same_content = true);
+        explicit FileWriter(const Path& p_path, bool p_do_not_write_same_content = true);
 
         ~FileWriter() override;
 
-        static FileWriter generated(const String& path, const String& p_generated_from);
+        static FileWriter generated(const Path& p_path, const Opt<Path>& p_generated_from_path);
 
         void write(const String& p_value) override;
 
@@ -98,12 +98,12 @@ namespace GodotObjectCompiler
         Size current_length() override;
 
       private:
-        FileWriter(const String& path, const String& initial_content);
+        FileWriter(const Path& p_path, const String& p_initial_content);
 
         static String _generated_header(const String& p_file_name);
 
-        String _path;
-        bool _do_not_write_same_content = true;
+        Path path;
+        bool do_not_write_same_content = true;
         bool _generated = false;
         bool _moved = false;
         StreamWriter _stream;

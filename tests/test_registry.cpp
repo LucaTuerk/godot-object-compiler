@@ -35,6 +35,7 @@
 
 #include "test_registry.h"
 
+#include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler
@@ -64,22 +65,22 @@ namespace GodotObjectCompiler
         return success;
     }
 
-    String TestRegistry::get_test_root_dir()
+    Path TestRegistry::get_test_root_dir()
     {
         return "tests/files/integration_tests";
     }
 
-    String TestRegistry::get_goc_path()
+    Path TestRegistry::get_goc_path()
     {
         return ".goc_tests/.goc";
     }
 
-    String TestRegistry::get_generated_path()
+    Path TestRegistry::get_generated_path()
     {
         return ".goc_tests/.goc/generated";
     }
 
-    String TestRegistry::get_type_db_path()
+    Path TestRegistry::get_type_db_path()
     {
         return ".goc_tests/.goc/cache";
     }
@@ -93,25 +94,24 @@ namespace GodotObjectCompiler
         result.emplace_back(format("-T=%s", get_type_db_path().c_str()));
         result.emplace_back(format("-E=%s", extension_api.c_str()));
         result.emplace_back(format("-SP=%s", source_parser.c_str()));
-        result.emplace_back(format(
-            "-GPP=%s",
-            string_vector_combine(get_integration_tests_godot_cpp_include_paths(), ",").c_str()));
+
+        Vector<Path> paths;
+        for (const auto& path : get_integration_tests_godot_cpp_include_paths()) {
+            paths.push_back(path);
+        }
+
+        result.emplace_back(format("-GPP=%s", path_vector_combine(paths, ",").c_str()));
         return result;
     }
 
-    Vector<String> TestRegistry::get_integration_tests_godot_cpp_include_paths()
+    Vector<Path> TestRegistry::get_integration_tests_godot_cpp_include_paths()
     {
         return include_paths;
     }
 
-    void TestRegistry::set_integration_tests_godot_cpp_include_paths(const Vector<String>& p_paths)
+    void TestRegistry::set_integration_tests_godot_cpp_include_paths(const Vector<Path>& p_paths)
     {
         include_paths = p_paths;
-    }
-
-    void TestRegistry::set_extension_api(const String& p_extension_api)
-    {
-        extension_api = p_extension_api;
     }
 
     void TestRegistry::set_source_parser(const String& p_source_parser)
@@ -119,7 +119,12 @@ namespace GodotObjectCompiler
         source_parser = p_source_parser;
     }
 
-    String TestRegistry::get_extension_api()
+    void TestRegistry::set_extension_api(const Path& p_extension_api)
+    {
+        extension_api = p_extension_api;
+    }
+
+    Path TestRegistry::get_extension_api()
     {
         return extension_api;
     }

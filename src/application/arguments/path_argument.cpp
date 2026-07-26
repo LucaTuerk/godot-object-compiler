@@ -42,7 +42,7 @@ namespace GodotObjectCompiler
 
     Opt<Path> PathCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
-        String argument = path_absolute(p_argument);
+        Path argument = path_absolute(Path(p_argument));
 
         if (!could_be_path(argument)) {
             return std::nullopt;
@@ -53,32 +53,37 @@ namespace GodotObjectCompiler
 
     String PathCommandLineArgumentParser::value_to_string(const Path& p_value)
     {
-        return p_value;
+        return p_value.string();
     }
 
     Opt<Vector<Path>> PathListCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
         const String argument = p_argument;
         Vector<String> paths = string_split(argument, ",");
-        Vector<String> results;
+        Vector<Path> results;
 
         for (const String& path : paths) {
-            if (!could_be_path(path)) {
+            if (!could_be_path(Path(path))) {
                 return std::nullopt;
             }
 
-            results.push_back(path_absolute(path));
+            results.push_back(path_absolute(Path(path)));
         }
 
         return results;
     }
 
-    String
-    PathListCommandLineArgumentParser::value_to_string(const std::vector<std::string>& p_value)
+    String PathListCommandLineArgumentParser::value_to_string(const Vector<Path>& p_value)
     {
         StreamWriter writer;
         writer.write("[");
-        writer.write(string_vector_combine(p_value, ", "));
+
+        Vector<String> paths;
+        for (const Path& path : p_value) {
+            paths.push_back(path_absolute(path).string());
+        }
+
+        writer.write(string_vector_combine(paths, ", "));
         writer.write("]");
         return writer.get_string();
     }

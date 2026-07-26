@@ -35,24 +35,20 @@
 
 #include "library_context.h"
 
-#include <algorithm>
-
 #include "attribute_db.h"
 #include "core/file_system_utilities.h"
-#include "core/string_utilities.h"
 #include "library/core/config.h"
 #include "library/core/core.h"
 #include "library/node_db.h"
-#include "node_db.h"
 #include "parser.h"
 #include "type_db.h"
 
 namespace GodotObjectCompiler
 {
 
-    void LibraryContext::force_regenerate(const String& p_path)
+    void LibraryContext::force_regenerate(const Path& p_path)
     {
-        String absolute = path_absolute(p_path);
+        Path absolute = path_absolute(p_path);
         clear_generated_files(p_path);
         last_modified_times.erase(absolute);
         out_last_modified_times.erase(absolute);
@@ -97,12 +93,12 @@ namespace GodotObjectCompiler
         return itr == default_parsers.end() ? nullptr : itr->second;
     }
 
-    void LibraryContext::set_temporary_path(const String& p_path)
+    void LibraryContext::set_temporary_path(const Path& p_path)
     {
         temp_path = p_path;
     }
 
-    String LibraryContext::get_temporary_path() const
+    Path LibraryContext::get_temporary_path() const
     {
         return temp_path;
     }
@@ -137,7 +133,7 @@ namespace GodotObjectCompiler
         attribute_db = make_ref<AttributeDB>(AttributeDB::Private());
         type_db = make_ref<TypeDB>(TypeDB::Private());
         usings = {};
-        temp_path = {};
+        temp_path = Path();
         input_files = {};
         remove_macros = {};
         include_paths = {};
@@ -205,18 +201,18 @@ namespace GodotObjectCompiler
         remove_macros = p_value;
     }
 
-    const Vector<String>& LibraryContext::get_include_paths()
+    const Vector<Path>& LibraryContext::get_include_paths() const
     {
         return include_paths;
     }
 
-    void LibraryContext::set_include_paths(const Vector<String>& p_value)
+    void LibraryContext::set_include_paths(const Vector<Path>& p_value)
     {
         include_paths = p_value;
         ensure_unique_include_paths();
     }
 
-    void LibraryContext::add_include_paths(const Vector<String>& p_value)
+    void LibraryContext::add_include_paths(const Vector<Path>& p_value)
     {
         include_paths.insert(include_paths.begin(), p_value.begin(), p_value.end());
         ensure_unique_include_paths();
@@ -246,12 +242,12 @@ namespace GodotObjectCompiler
     }
 
     void LibraryContext::register_generated_file(
-        const String& p_generated_path, const String& p_generated_from_path)
+        const Path& p_generated_path, const Path& p_generated_from_path)
     {
         generated_from[p_generated_from_path].push_back(p_generated_path);
     }
 
-    bool LibraryContext::load_generated_from_file(const String& p_path)
+    bool LibraryContext::load_generated_from_file(const Path& p_path)
     {
         JsonConfig config;
         if (!config.read_from_file(p_path)) {
@@ -263,22 +259,22 @@ namespace GodotObjectCompiler
         for (const String& key : config.get_sections()) {
             config.read_from_section(key);
             if (config.has_config_value("generated_files")) {
-                Vector<String> generated =
-                    string_split(config.read<String, String>("generated_files"), ";");
-                generated_from.emplace(key, generated);
+                Vector<Path> generated =
+                    path_vector_split(config.read<String, String>("generated_files"), ";");
+                generated_from.try_emplace(Path(key), generated);
             }
         }
 
         return true;
     }
 
-    bool LibraryContext::save_generated_from_file(const String& p_path)
+    bool LibraryContext::save_generated_from_file(const Path& p_path) const
     {
         JsonConfig config;
 
         for (const auto& [path, generated] : generated_from) {
-            config.write_to_section(path);
-            config.write("generated_files", string_vector_combine(generated, ";"));
+            config.write_to_section(path.string());
+            config.write("generated_files", path_vector_combine(generated, ";"));
         }
 
         return config.write_to_file(p_path);
@@ -291,12 +287,12 @@ namespace GodotObjectCompiler
 
     void LibraryContext::regenerate_file_apply()
     {
-        for (const String& path : regenerate_files) {
+        for (const Path& path : regenerate_files) {
             last_modified_times.erase(path);
             out_last_modified_times.erase(path);
 
             if (auto itr = generated_from.find(path); itr != generated_from.end()) {
-                for (const String& generated_file : itr->second) {
+                for (const Path& generated_file : itr->second) {
                     if (file_exists(generated_file)) {
                         read_file(path);
                     }
@@ -313,7 +309,7 @@ namespace GodotObjectCompiler
         out_last_modified_times.clear();
     }
 
-    void LibraryContext::regenerate_file(const String& p_path)
+    void LibraryContext::regenerate_file(const Path& p_path)
     {
         regenerate_files.push_back(p_path);
     }
@@ -325,7 +321,7 @@ namespace GodotObjectCompiler
             const auto& [path, generated_files] = *itr;
 
             if (!path.empty() && !file_exists(path)) {
-                for (const String& generated_file : generated_files) {
+                for (const Path& generated_file : generated_files) {
                     PRINT_VERBOSE(
                         "Removing orphan \"%s\", generated from \"%s\"", generated_file.c_str(),
                         path.c_str());
@@ -337,7 +333,7 @@ namespace GodotObjectCompiler
                 continue;
             }
 
-            for (const String& generated_file : generated_files) {
+            for (const Path& generated_file : generated_files) {
                 if (!file_exists(generated_file)) {
                     regenerate_file(path);
                     break;
@@ -349,7 +345,7 @@ namespace GodotObjectCompiler
         regenerate_file_apply();
     }
 
-    bool LibraryContext::clear_generated_files(const String& p_path)
+    bool LibraryContext::clear_generated_files(const Path& p_path)
     {
         const auto itr = generated_from.find(p_path);
 
@@ -357,7 +353,7 @@ namespace GodotObjectCompiler
             return false;
         }
 
-        for (const String& generated : itr->second) {
+        for (const Path& generated : itr->second) {
             if (file_exists(generated)) {
                 PRINT_VERBOSE(
                     "Removing orphan \"%s\", generated from \"%s\"", generated.c_str(),
@@ -369,7 +365,7 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool LibraryContext::load_last_modified_times_file(const String& p_path)
+    bool LibraryContext::load_last_modified_times_file(const Path& p_path)
     {
         JsonConfig config;
         if (!config.read_from_file(p_path)) {
@@ -382,29 +378,29 @@ namespace GodotObjectCompiler
         for (const String& section : config.get_sections()) {
             config.read_from_section(section);
             if (config.has_config_value("last_modified")) {
-                last_modified_times[section] = config.read<String, Size>("last_modified");
-                out_last_modified_times[section] = config.read<String, Size>("last_modified");
+                last_modified_times[Path(section)] = config.read<String, Size>("last_modified");
+                out_last_modified_times[Path(section)] = config.read<String, Size>("last_modified");
             }
         }
 
         return true;
     }
 
-    bool LibraryContext::save_last_modified_times_file(const String& p_path)
+    bool LibraryContext::save_last_modified_times_file(const Path& p_path) const
     {
         JsonConfig config;
 
         for (const auto& [path, last_modified] : out_last_modified_times) {
-            config.write_to_section(path);
+            config.write_to_section(path.string());
             config.write<String, Size>("last_modified", last_modified);
         }
 
         return config.write_to_file(p_path);
     }
 
-    bool LibraryContext::file_modified(const String& p_path, bool p_update_time)
+    bool LibraryContext::file_modified(const Path& p_path, bool p_update_time)
     {
-        const String absolute = path_absolute(p_path);
+        const Path absolute = path_absolute(p_path);
         const Size last_modified = file_write_time(absolute);
 
         if (last_modified == 0) {
@@ -413,7 +409,7 @@ namespace GodotObjectCompiler
 
         bool modified = false;
 
-        if (auto itr = last_modified_times.find(absolute); itr == last_modified_times.end()) {
+        if (const auto itr = last_modified_times.find(absolute); itr == last_modified_times.end()) {
             modified = true;
         } else {
             modified = itr->second != last_modified;
@@ -422,6 +418,7 @@ namespace GodotObjectCompiler
         if (p_update_time) {
             out_last_modified_times[absolute] = last_modified;
         }
+
         return modified;
     }
 

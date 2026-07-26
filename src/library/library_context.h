@@ -35,6 +35,7 @@
 
 #pragma once
 #include "core/core.h"
+#include "core/path.h"
 
 namespace GodotObjectCompiler
 {
@@ -81,38 +82,38 @@ namespace GodotObjectCompiler
 
         template <typename T> Ref<T> get_singleton();
 
-        void register_generated_file(
-            const String& p_generated_path, const String& p_generated_from_path);
+        void
+        register_generated_file(const Path& p_generated_path, const Path& p_generated_from_path);
 
-        bool load_generated_from_file(const String& p_path);
+        bool load_generated_from_file(const Path& p_path);
 
-        bool save_generated_from_file(const String& p_path);
+        bool save_generated_from_file(const Path& p_path) const;
 
         void clear_generated_from();
 
         void regenerate_file_apply();
 
-        void regenerate_file(const String& p_path);
+        void regenerate_file(const Path& p_path);
 
-        bool load_last_modified_times_file(const String& p_path);
+        bool load_last_modified_times_file(const Path& p_path);
 
-        bool save_last_modified_times_file(const String& p_path);
+        bool save_last_modified_times_file(const Path& p_path) const;
 
         void clear_last_modified_times();
 
-        bool file_modified(const String& p_path, bool p_update_time = true);
+        bool file_modified(const Path& p_path, bool p_update_time = true);
 
         void clean_generated_files();
 
-        bool clear_generated_files(const String& p_path);
+        bool clear_generated_files(const Path& p_path);
 
         void set_remove_macros(const Vector<String>& p_value);
 
-        const Vector<String>& get_include_paths();
+        const Vector<Path>& get_include_paths() const;
 
-        void set_include_paths(const Vector<String>& p_value);
+        void set_include_paths(const Vector<Path>& p_value);
 
-        void add_include_paths(const Vector<String>& p_value);
+        void add_include_paths(const Vector<Path>& p_value);
 
         void set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail);
 
@@ -128,7 +129,7 @@ namespace GodotObjectCompiler
 
         void print(ErrorLevel p_level, const String& p_message) const;
 
-        void force_regenerate(const String& p_path);
+        void force_regenerate(const Path& p_path);
 
         template <typename T> void register_source_parser();
 
@@ -140,9 +141,9 @@ namespace GodotObjectCompiler
 
         Ref<IParser> get_default_parser(int p_capabilities, bool p_get_most_capable = true);
 
-        void set_temporary_path(const String& p_path);
+        void set_temporary_path(const Path& p_path);
 
-        String get_temporary_path() const;
+        Path get_temporary_path() const;
 
       private:
         LibraryContext() = default;
@@ -159,15 +160,15 @@ namespace GodotObjectCompiler
         Dictionary<int, Ref<IParser>> default_parsers;
         Dictionary<TypeIndex, AnyType> generic_singletons;
 
-        String temp_path{};
+        Path temp_path;
         Vector<String> usings{};
-        Vector<String> input_files{};
+        Vector<Path> input_files{};
         Vector<String> remove_macros{};
-        Vector<String> include_paths{};
-        Vector<String> regenerate_files{};
-        Dictionary<String, Vector<String>> generated_from{};
-        Dictionary<String, Size> last_modified_times{};
-        Dictionary<String, Size> out_last_modified_times{};
+        Vector<Path> include_paths{};
+        Vector<Path> regenerate_files{};
+        Dictionary<Path, Vector<Path>> generated_from{};
+        Dictionary<Path, Size> last_modified_times{};
+        Dictionary<Path, Size> out_last_modified_times{};
 
         ErrorLevel error_level = ERROR;
         ErrorDetail error_detail = FULL;

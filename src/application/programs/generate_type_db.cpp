@@ -66,8 +66,8 @@ namespace GodotObjectCompiler
 
         auto& [path, include_path] = p_file;
 
-        if (!string_suffix(path, ".h") && !string_suffix(path, ".hpp") &&
-            !string_suffix(path, ".gen.inc") && !string_suffix(path, ".json")) {
+        if (path.extension() != ".h" && path.extension() != ".hpp" &&
+            path.extension() != ".gen.inc" && path.extension() != ".json") {
             return;
         }
 
@@ -120,7 +120,7 @@ namespace GodotObjectCompiler
                 type_count++;
 
                 if (include_path.has_value()) {
-                    node->header = header_path(include_path.value(), path);
+                    node->header = header_path(Path(include_path.value()), path);
                 }
                 LibraryContext::instance()->get_type_db()->save_type_data(node, path);
             }
@@ -153,10 +153,15 @@ namespace GodotObjectCompiler
         auto includes = generator_args->include_paths->get<Vector<Path>>();
         includes.push_back(generator_args->root_path->get<Path>());
 
-        for (String include_path : includes) {
-            include_path = path_absolute(include_path);
-            for (const String& file : directory_files_recursive(include_path)) {
-                generate_from_file({path_absolute(file), include_path}, p_context, parser.get());
+        for (const Path& path : includes) {
+            Path include_path = path_absolute(path);
+            for (const Path& file : directory_files_recursive(include_path)) {
+                if (file.extension() == ".json") {
+                    continue;
+                }
+
+                generate_from_file(
+                    {path_absolute(file), include_path.string()}, p_context, parser.get());
             }
         }
 

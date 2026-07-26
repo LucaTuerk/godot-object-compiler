@@ -70,7 +70,7 @@ GOC_TEST(PathArgument)
     Ref<PathCommandLineArgumentParser> parser = make_ref<PathCommandLineArgumentParser>();
     Ref<CommandLineArgument> argument = CommandLineArgument::required(parser, "path", "P", "");
 
-    Vector<Path> args = {"--path=test_path"};
+    Vector<String> args = {"--path=test_path"};
     argument->parse_arguments(args);
 
     GOC_TEST_ASSERT(
@@ -89,23 +89,20 @@ GOC_TEST(PathArgument)
     unnamed_arg->parse_arguments(unnamed_paths);
 
     GOC_TEST_ASSERT(unnamed_arg->size() == 3, "Invalid unnamed argument count.");
-    GOC_TEST_ASSERT(
-        unnamed_arg->get<String>(0) == path_absolute("test_path1"), "Invalid argument.");
-    GOC_TEST_ASSERT(
-        unnamed_arg->get<String>(1) == path_absolute("test_path2"), "Invalid argument.");
-    GOC_TEST_ASSERT(
-        unnamed_arg->get<String>(2) == path_absolute("test_path3"), "Invalid argument.");
+    GOC_TEST_ASSERT(unnamed_arg->get<Path>(0) == path_absolute("test_path1"), "Invalid argument.");
+    GOC_TEST_ASSERT(unnamed_arg->get<Path>(1) == path_absolute("test_path2"), "Invalid argument.");
+    GOC_TEST_ASSERT(unnamed_arg->get<Path>(2) == path_absolute("test_path3"), "Invalid argument.");
 
     Vector<String> another = {
         "--some_names=hello", "another_test_path1", "another_test_path2", "another_test_path3"};
     unnamed_arg->parse_arguments(another);
     GOC_TEST_ASSERT(unnamed_arg->size() == 3, "Invalid unnamed argument count.");
     GOC_TEST_ASSERT(
-        unnamed_arg->get<String>(0) == path_absolute("another_test_path1"), "Invalid argument.");
+        unnamed_arg->get<Path>(0) == path_absolute("another_test_path1"), "Invalid argument.");
     GOC_TEST_ASSERT(
-        unnamed_arg->get<String>(1) == path_absolute("another_test_path2"), "Invalid argument.");
+        unnamed_arg->get<Path>(1) == path_absolute("another_test_path2"), "Invalid argument.");
     GOC_TEST_ASSERT(
-        unnamed_arg->get<String>(2) == path_absolute("another_test_path3"), "Invalid argument.");
+        unnamed_arg->get<Path>(2) == path_absolute("another_test_path3"), "Invalid argument.");
 
     return TEST_RESULT_SUCCESS;
 };
@@ -115,7 +112,7 @@ GOC_TEST(PathListArgument)
     Ref<PathListCommandLineArgumentParser> parser = make_ref<PathListCommandLineArgumentParser>();
     Ref<CommandLineArgument> argument = CommandLineArgument::required(parser, "paths", "P", "");
 
-    Vector<Path> args = {"--paths=test_path,test_path2,test_path3"};
+    Vector<String> args = {"--paths=test_path,test_path2,test_path3"};
     argument->parse_arguments(args);
 
     GOC_TEST_ASSERT(argument->has_value(), "Failed to get path argument");
@@ -152,7 +149,7 @@ GOC_TEST(FlagArgument)
         }));
     Ref<CommandLineArgument> argument = CommandLineArgument::required(parser, "flag", "F", "");
 
-    Vector<Path> args = {"--flag=FlagA"};
+    Vector<String> args = {"--flag=FlagA"};
     argument->parse_arguments(args);
     GOC_TEST_ASSERT(
         argument->has_value() && argument->get<Flags>() == FLAG_A, "Failed to get flag argument");

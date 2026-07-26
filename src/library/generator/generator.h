@@ -52,10 +52,10 @@ namespace GodotObjectCompiler
 
     struct ClassGeneratorResult {
         ClassGeneratorResult(
-            String p_file_path, Ref<Class> p_target_class, HashSet<String>& p_header_includes,
+            Path p_file_path, Ref<Class> p_target_class, HashSet<String>& p_header_includes,
             HashSet<String>& p_source_includes, HashSet<String>& p_register_includes);
 
-        String file_path;
+        Path file_path;
         String header_path;
         String generated_header_include_path;
         Ref<Class> target_class;
@@ -127,7 +127,7 @@ namespace GodotObjectCompiler
     }
 
     inline ClassGeneratorResult::ClassGeneratorResult(
-        String p_file_path, Ref<Class> p_target_class, HashSet<String>& p_header_includes,
+        Path p_file_path, Ref<Class> p_target_class, HashSet<String>& p_header_includes,
         HashSet<String>& p_source_includes, HashSet<String>& p_register_includes)
         : header_includes(p_header_includes), source_includes(p_source_includes),
           register_includes(p_register_includes)

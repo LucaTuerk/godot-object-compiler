@@ -56,7 +56,7 @@ namespace GodotObjectCompiler
       public:
         Opt<Vector<Path>> parse_argument(const String& p_argument) override;
 
-        String value_to_string(const Vector<String>& p_value) override;
+        String value_to_string(const Vector<Path>& p_value) override;
 
         String get_info_string() override
         {

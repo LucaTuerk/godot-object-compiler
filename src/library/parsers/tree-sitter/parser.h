@@ -53,7 +53,7 @@ namespace GodotObjectCompiler
       public:
         ~TreeSitterParser() override = default;
 
-        Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target) override;
+        Ref<ParserError> parse_file(const Path& p_path, Ref<Context> r_target) override;
 
         Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
 
@@ -63,7 +63,7 @@ namespace GodotObjectCompiler
 
       private:
         bool parse_attributes = true;
-        String input_path;
+        Path input_path;
         static inline HashSet<String> _registered_handlers;
         static inline Vector<Ref<ITreeSitterNodeHandler>> _handlers;
     };

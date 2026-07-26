@@ -69,13 +69,13 @@ namespace GodotObjectCompiler
         return json.dump(1);
     }
 
-    bool JsonConfig::write_to_file(const String& p_path)
+    bool JsonConfig::write_to_file(const Path& p_path)
     {
         try {
             PANIC_COND(
                 !Permissions::instance()->is_allowed_write_path(p_path),
                 "JsonConfig: \"%s\" is not an allowed write path.");
-            std::ofstream file(p_path);
+            std::ofstream file(p_path.path());
             file << json.dump(1);
         } catch (std::exception& e) {
             PRINT_ERROR(
@@ -86,14 +86,14 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool JsonConfig::read_from_file(const String& p_path)
+    bool JsonConfig::read_from_file(const Path& p_path)
     {
         if (!file_exists(p_path)) {
             return false;
         }
 
         try {
-            std::ifstream file(p_path);
+            std::ifstream file(p_path.path());
             json = Json::parse(file);
         } catch (std::exception& e) {
             PRINT_ERROR(

@@ -106,9 +106,9 @@ namespace GodotObjectCompiler
         return writer.get_string();
     }
 
-    String path_to_canonical_name(const String& p_path)
+    String path_to_canonical_name(const Path& p_path)
     {
-        return class_name_to_canonical_name(path_stem(p_path));
+        return class_name_to_canonical_name(p_path.stem().string());
     }
 
     JsonError::JsonError(const ErrorLevel p_level, const Json& p_json, const String& p_message)
@@ -118,11 +118,11 @@ namespace GodotObjectCompiler
         message = format("JsonError: %s", p_message.c_str());
     }
 
-    Ref<ParserError> ExtensionAPIParser::parse_file(const String& p_path, Ref<Context> r_target)
+    Ref<ParserError> ExtensionAPIParser::parse_file(const Path& p_path, Ref<Context> r_target)
     {
         PARS_ERR_COND(!r_target, "ExtensionAPIParser: Invalid null target context.");
 
-        std::ifstream file(p_path);
+        std::ifstream file(p_path.path());
         Json json;
         try {
             json = Json::parse(file);
@@ -187,17 +187,17 @@ namespace GodotObjectCompiler
         return parse_file(temp_file.get_path(), r_target);
     }
 
-    bool ExtensionAPIParser::setup_include_paths(const Vector<String>& p_godot_cpp_include)
+    bool ExtensionAPIParser::setup_include_paths(const Vector<Path>& p_godot_cpp_include)
     {
         include_paths.clear();
 
-        for (const String& include_path : p_godot_cpp_include) {
+        for (const Path& include_path : p_godot_cpp_include) {
             if (!directory_exits(include_path)) {
                 fmt_print_err("Include directory \"%s\" does not exist.", include_path.c_str());
                 return false;
             }
 
-            for (const String& file : directory_files_recursive(include_path)) {
+            for (const Path& file : directory_files_recursive(include_path)) {
                 include_paths[path_to_canonical_name(file)] = header_path(include_path, file);
             }
         }

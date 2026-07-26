@@ -69,7 +69,7 @@ namespace GodotObjectCompiler
         ts_parser_delete(parser);
     }
 
-    ParserContext ParserContext::from_path(const String& p_path)
+    ParserContext ParserContext::from_path(const Path& p_path)
     {
         ParserContext result{read_file(p_path)};
         result.file_path = p_path;

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* godot_macro_include_generator.h                                        */
+/* path.h                                                                 */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,31 +32,78 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
-#include "library/generator/generator.h"
+#include "core.h"
 
 namespace GodotObjectCompiler
 {
-
-    class GodotMacroIncludeGenerator : public IGenerator
+    class Path
     {
-        GENERATOR(GodotMacroIncludeGenerator);
-
       public:
-        Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) override;
-        bool generate_core_include(
-            const Vector<Path>& p_godot_cpp_includes, const Ref<Context>& p_write_to);
+        Path() = default;
+
+        Path(const char* p_path);
+
+        explicit Path(const String& p_path);
+
+        explicit Path(const std::filesystem::path& p_path);
+
+        Path(const Path& other);
+
+        Path(Path&& other) noexcept;
+
+        Path& operator=(const Path& other);
+
+        Path& operator=(Path&& other) noexcept;
+
+        const std::filesystem::path& path() const;
+
+        String string() const;
+
+        const char* c_str() const;
+
+        Path parent_path() const;
+
+        Path filename() const;
+
+        Path stem() const;
+
+        String extension() const;
+
+        bool empty() const;
+
+        void replace_extension(const String& p_extension);
+
+        friend Path operator/(const Path& p_left, const Path& p_right)
+        {
+            return Path(p_left.data / p_right.data);
+        }
+
+        friend std::ostream& operator<<(std::ostream& out, const Path& c)
+        {
+            out << c.string();
+            return out;
+        }
+
+        friend std::istream& operator>>(std::istream& in, Path& c)
+        {
+            String str_data;
+            in >> str_data;
+            c.data = std::filesystem::u8path(str_data);
+            return in;
+        }
+
+        bool operator<(const Path& p_other) const;
+
+        bool operator>(const Path& p_other) const;
+
+        bool operator==(const Path& p_other) const;
+
+        bool operator!=(const Path& p_other) const;
 
       private:
-        static bool generate_macros(const Ref<Context>& p_write_to);
-
-        static bool generate_attribute_parameter_type(
-            const Ref<IAttributeParameterType>& p_type, const Ref<Context>& p_write_to);
-
-        static bool generate_prototype_methods(
-            const Ref<Context>& p_write_to, const String& p_macro,
-            const Vector<Ref<IAttributeParameterType>>& p_params);
+        mutable String string_data;
+        std::filesystem::path data;
     };
-
 } // namespace GodotObjectCompiler

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* godot_macro_include_generator.h                                        */
+/* common_tests.h                                                         */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,30 +33,24 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
-#include "library/generator/attribute_parameter_type.h"
-#include "library/generator/generator.h"
+#include "library/parsers/common.h"
+#include "test_registry.h"
 
-namespace GodotObjectCompiler
+using namespace GodotObjectCompiler;
+
+GOC_TEST(RemoveMacros)
 {
+    StreamWriter test;
+    Vector<String> macros;
+    for (char c = 'a'; c < 'z'; ++c) {
+        String macro;
+        macro += c;
+        macros.emplace_back(macro);
+        test.write_generic(c);
+    }
 
-    class GodotMacroIncludeGenerator : public IGenerator
-    {
-        GENERATOR(GodotMacroIncludeGenerator);
-
-      public:
-        Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) override;
-        bool generate_core_include(
-            const Vector<Path>& p_godot_cpp_includes, const Ref<Context>& p_write_to);
-
-      private:
-        static bool generate_macros(const Ref<Context>& p_write_to);
-
-        static bool generate_attribute_parameter_type(
-            const Ref<IAttributeParameterType>& p_type, const Ref<Context>& p_write_to);
-
-        static bool generate_prototype_methods(
-            const Ref<Context>& p_write_to, const String& p_macro,
-            const Vector<Ref<IAttributeParameterType>>& p_params);
-    };
-
-} // namespace GodotObjectCompiler
+    LibraryContext::instance()->set_remove_macros(macros);
+    auto res = ParserUtilities::remove_macros(test.get_string());
+    GOC_TEST_EQ(res.size(), 1, "Some macros were not removed");
+    return TEST_RESULT_SUCCESS;
+};

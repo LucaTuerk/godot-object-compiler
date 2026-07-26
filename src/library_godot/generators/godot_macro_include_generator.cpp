@@ -77,7 +77,7 @@ namespace GodotObjectCompiler
 
         for (const String& macro :
              LibraryContext::instance()->get_attribute_db()->get_all_macros()) {
-            String res_file = "res://" + path_concat_ext("doc", macro, "txt");
+            Path res_file = Path("res:") / "doc" / Path(format("%s.txt", macro.c_str()));
             if (Resources::instance()->has_resource(res_file)) {
                 Ref<Context> params_docu = Output::Params({});
                 Ref<Context> comment = Output::DocComment(Output::Lines(
@@ -122,29 +122,30 @@ namespace GodotObjectCompiler
     }
 
     bool GodotMacroIncludeGenerator::generate_core_include(
-        const Vector<String>& p_godot_cpp_includes, const Ref<Context>& p_write_to)
+        const Vector<Path>& p_godot_cpp_includes, const Ref<Context>& p_write_to)
     {
         p_write_to->add_child(Output::PragmaOnce());
         bool found_any_path = false;
-        for (const String& godot_cpp_include : p_godot_cpp_includes) {
-            String include_path = path_concat(godot_cpp_include, "godot_cpp", "core");
+        for (const Path& godot_cpp_include : p_godot_cpp_includes) {
+            Path include_path = godot_cpp_include / "godot_cpp" / "core";
             if (!directory_exits(include_path)) {
                 continue;
             }
             found_any_path = true;
 
-            Vector<String> includes = directory_files_recursive(include_path);
+            Vector<Path> includes = directory_files_recursive(include_path);
+            Vector<String> header_paths(includes.size());
             std::transform(
-                includes.cbegin(), includes.cend(), includes.begin(),
-                [godot_cpp_include](const String& p_path) {
+                includes.cbegin(), includes.cend(), header_paths.begin(),
+                [&godot_cpp_include](const Path& p_path) {
                     return header_path(godot_cpp_include, p_path);
                 });
-            std::sort(includes.begin(), includes.end());
-            for (const String& include : includes) {
-                if (string_suffix(include, ".compat.inc")) {
+            std::sort(header_paths.begin(), header_paths.end());
+            for (const String& header : header_paths) {
+                if (string_suffix(header, ".compat.inc")) {
                     continue;
                 }
-                p_write_to->add_child(Output::Include(include));
+                p_write_to->add_child(Output::Include(header));
             }
         }
         return found_any_path;
@@ -159,8 +160,8 @@ namespace GodotObjectCompiler
 
         const String type_name = p_type->get_return_type();
 
-        const String doc_res_path = "res://" + path_concat("doc", type_name + ".txt");
-        const String doc_res_dir = "res://" + path_concat("doc", type_name);
+        const Path doc_res_path = Path("res:") / "doc" / Path(format("%s.txt", type_name.c_str()));
+        const Path doc_res_dir = Path("res:") / "doc" / Path(type_name);
 
         const Ref<Context> value_names_documentation = Output::Params({});
         const Ref<Context> type_documentation = Output::Lines({});
@@ -191,7 +192,7 @@ namespace GodotObjectCompiler
         Size index = 0;
         const Vector<IAttributeParameterType::Argument> arguments = p_type->get_arguments();
         for (const String& value_name : p_type->get_value_names()) {
-            auto value_res_path = path_concat_ext(doc_res_dir, value_name, "txt");
+            Path value_res_path = doc_res_dir / Path(format("%s.txt", value_name.c_str()));
 
             if (Resources::instance()->has_resource(value_res_path)) {
                 String content = Resources::instance()->load_text_resource(value_res_path);

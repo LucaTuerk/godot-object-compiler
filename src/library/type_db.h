@@ -55,9 +55,9 @@ namespace GodotObjectCompiler
     class ConfigNodeReaderWriter : public INodeReader, public INodeWriter
     {
       public:
-        bool write_to_file(Ref<Node> node, const String& path) override;
+        bool write_to_file(Ref<Node> p_node, const Path& p_path) override;
 
-        Result<Node> read_from_file(const String& path) override;
+        Result<Node> read_from_file(const Path& path) override;
     };
 
     template <typename T> struct AssumeType {
@@ -89,13 +89,13 @@ namespace GodotObjectCompiler
       public:
         static inline const char* INVALID_NAME = "___INVALID___";
 
-        void set_cache_directory(const String& path);
+        void set_cache_directory(const Path& path);
 
-        void save_type_data(const Ref<NamedContext>& p_type, const String& p_generated_from) const;
+        void save_type_data(const Ref<NamedContext>& p_type, const Path& p_generated_from) const;
 
         void save_type_attribute(
             const Ref<NamedContext>& p_type, const Ref<Attribute>& p_attribute,
-            const String& p_generated_from) const;
+            const Path& p_generated_from) const;
 
         Result<Node> get_type_data(
             const String& qualified_name, Size template_parameter_count = 0,
@@ -156,16 +156,15 @@ namespace GodotObjectCompiler
             const String& p_qualified_name, const String& p_attribute_name,
             Size p_template_parameter_count, const Ref<Namespace>& p_from_namespace);
 
-        [[nodiscard]] String _get_cache_file_path(
+        [[nodiscard]] Path _get_cache_file_path(
             const String& p_qualified_name, Size p_template_argument_count = INVALID_SIZE) const;
 
-        [[nodiscard]] String _get_attribute_cache_file_path(
+        [[nodiscard]] Path _get_attribute_cache_file_path(
             const String& p_qualified_name, const String& p_attribute_name,
             Size p_template_argument_count = INVALID_SIZE) const;
 
-        Dictionary<String, Ref<Node>> _cache;
-        String _cache_directory;
-        String _readonly_cache_directory;
+        Dictionary<Path, Ref<Node>> _cache;
+        Path _cache_directory;
 
         friend LibraryContext;
     };

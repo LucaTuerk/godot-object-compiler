@@ -35,6 +35,7 @@
 
 #pragma once
 #include "core.h"
+#include "path.h"
 
 namespace GodotObjectCompiler
 {
@@ -49,10 +50,10 @@ namespace GodotObjectCompiler
 
         ~TempFile();
 
-        String get_path() const;
+        Path get_path() const;
 
       private:
-        String path;
+        Path path;
     };
 
 } // namespace GodotObjectCompiler

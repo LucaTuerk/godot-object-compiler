@@ -47,9 +47,9 @@ namespace GodotObjectCompiler
         [[nodiscard]] CommandLineArgumentParseResult
         register_required_arguments(ApplicationContext& p_context) const override;
 
-        static String file_id(const String& p_file_name);
+        static String file_id(const Path& p_file_name);
 
-        static String cache_path(const String& goc_path, const String& p_file_name);
+        static Path cache_path(const Path& p_goc_path, const Path& p_path);
 
         static String generated_macro_name(const String& p_header, Size p_line);
 

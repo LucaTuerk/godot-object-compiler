@@ -49,10 +49,10 @@ GOC_INTEGRATION_TEST(Clear)
     const auto generated_files = directory_files_recursive(TestRegistry::get_generated_path());
     const auto cache_files = directory_files_recursive(TestRegistry::get_type_db_path());
 
-    for (const String& file : generated_files) {
+    for (const Path& file : generated_files) {
         fmt_print_err("Generated File \"%s\" was not properly cleaned up.", file.c_str());
     }
-    for (const String& file : cache_files) {
+    for (const Path& file : cache_files) {
         fmt_print_err("TypeDB File \"%s\" was not properly cleaned up.", file.c_str());
     }
 

@@ -61,13 +61,12 @@ namespace GodotObjectCompiler
         return _current_length;
     }
 
-    FileWriter::FileWriter(const String& path, bool do_not_write_same_content)
+    FileWriter::FileWriter(const Path& p_path, bool p_do_not_write_same_content)
+        : path(p_path), do_not_write_same_content(p_do_not_write_same_content)
     {
-        Permissions::instance()->ensure_is_allowed_write_path(path);
-        this->_path = path;
-        this->_do_not_write_same_content = do_not_write_same_content;
-        if (!do_not_write_same_content) {
-            _file = std::fstream(path, std::ios::out);
+        Permissions::instance()->ensure_is_allowed_write_path(p_path);
+        if (!p_do_not_write_same_content) {
+            _file = std::fstream(p_path.path(), std::ios::out);
         }
     }
 
@@ -81,29 +80,30 @@ namespace GodotObjectCompiler
             _stream.write("\n// clang-format on\n// NOLINTEND\n");
         }
 
-        if (_do_not_write_same_content &&
-            (!file_exists(_path) || read_file(_path) != _stream.get_string())) {
-            PRINT_VERBOSE("Writing file \"%s\"", _path.c_str());
-            write_file(_path, _stream.get_string());
+        if (do_not_write_same_content &&
+            (!file_exists(path) || read_file(path) != _stream.get_string())) {
+            PRINT_VERBOSE("Writing file \"%s\"", path.c_str());
+            write_file(path, _stream.get_string());
         }
     }
 
-    FileWriter FileWriter::generated(const String& path, const String& p_generated_from)
+    FileWriter FileWriter::generated(const Path& p_path, const Opt<Path>& p_generated_from_path)
     {
         StreamWriter writer;
 
-        if (!p_generated_from.empty()) {
-            LibraryContext::instance()->register_generated_file(path, p_generated_from);
+        if (p_generated_from_path.has_value()) {
+            LibraryContext::instance()->register_generated_file(
+                p_path, p_generated_from_path.value());
         }
 
-        writer.write(_generated_header(path_file_name(path)));
+        writer.write(_generated_header(p_path.filename().string()));
         writer.write("// NOLINTBEGIN\n// clang-format off\n");
-        return FileWriter(path, writer.get_string());
+        return FileWriter(p_path, writer.get_string());
     }
 
     void FileWriter::write(const String& p_value)
     {
-        if (!_do_not_write_same_content) {
+        if (!do_not_write_same_content) {
             _file << p_value;
         }
         _stream.write(p_value);
@@ -119,16 +119,16 @@ namespace GodotObjectCompiler
         return _stream.current_length();
     }
 
-    FileWriter::FileWriter(const String& path, const String& initial_content)
-        : FileWriter(path, true)
+    FileWriter::FileWriter(const Path& p_path, const String& p_initial_content)
+        : FileWriter(p_path, true)
     {
         _generated = true;
-        _stream.write(initial_content);
+        _stream.write(p_initial_content);
     }
 
     String FileWriter::_generated_header(const String& p_file_name)
     {
-        auto resource_path = "res://generator/generated_header.txt";
+        Path resource_path = Path("res:") / "generator" / "generated_header.txt";
         if (!Resources::instance()->has_resource(resource_path)) {
             return "";
         }

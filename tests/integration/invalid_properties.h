@@ -42,7 +42,7 @@ using namespace GodotObjectCompiler;
 
 GOC_INTEGRATION_TEST(InvalidPropertiesGracefulExit)
 {
-    for (const String& file : directory_files("tests/files/integration_tests/invalid_properties")) {
+    for (const Path& file : directory_files("tests/files/integration_tests/invalid_properties")) {
         GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file.c_str());
     }
     return TEST_RESULT_SUCCESS;

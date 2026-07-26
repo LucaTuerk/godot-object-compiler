@@ -54,7 +54,7 @@ namespace GodotObjectCompiler
         Size added_characters;
         Size first_character_added;
         Size first_line_added;
-        String file_path;
+        Path file_path;
         String original_content;
 
         Size line_temp_to_original(Size temp_line) const;

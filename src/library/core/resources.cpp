@@ -40,50 +40,58 @@
 
 namespace GodotObjectCompiler
 {
+    String resource_id(const Path& p_path)
+    {
+#ifdef _WIN32
+        return string_replace(p_path.string(), "\\", "/");
+#else
+        return p_path.string();
+#endif
+    }
 
     void Resources::load_pack(ResourcePack* p_pack)
     {
-        _loaded_packs.push_back(p_pack);
+        _loaded_packs.insert(p_pack);
     }
 
-    Vector<String> Resources::resources_recursive(const String& p_path) const
+    Vector<Path> Resources::resources_recursive(const Path& p_path) const
     {
-        Vector<String> res;
+        Vector<Path> res;
         for (const ResourcePack* pack : _loaded_packs) {
             for (const auto& [res_path, _] : *pack) {
-                if (string_prefix(res_path, p_path)) {
-                    res.push_back(res_path);
+                if (string_prefix(res_path, resource_id(p_path))) {
+                    res.emplace_back(res_path);
                 }
             }
         }
         return res;
     }
 
-    String Resources::load_text_resource(const String& p_path) const
+    String Resources::load_text_resource(const Path& p_path) const
     {
         for (ResourcePack* pack : _loaded_packs) {
-            if (auto itr = pack->find(p_path); itr != pack->end()) {
+            if (auto itr = pack->find(resource_id(p_path)); itr != pack->end()) {
                 return itr->second;
             }
         }
         return "";
     }
 
-    bool Resources::has_resource(const String& p_path) const
+    bool Resources::has_resource(const Path& p_path) const
     {
         for (ResourcePack* pack : _loaded_packs) {
-            if (auto itr = pack->find(p_path); itr != pack->end()) {
+            if (auto itr = pack->find(resource_id(p_path)); itr != pack->end()) {
                 return true;
             }
         }
         return false;
     }
 
-    bool Resources::copy_resource_to_file(
-        const String& p_resource_path, const String& p_target_file) const
+    bool
+    Resources::copy_resource_to_file(const Path& p_resource_path, const Path& p_target_file) const
     {
         if (!file_exists(p_target_file)) {
-            if (String folder_path = path_base(p_target_file);
+            if (Path folder_path = p_target_file.parent_path();
                 !directory_exits(folder_path) && !create_dir_recursive(folder_path)) {
                 return false;
             }
@@ -94,14 +102,14 @@ namespace GodotObjectCompiler
     }
 
     bool Resources::copy_resources_to_folder(
-        const Vector<String>& p_resource_glob_paths, const String& p_target_folder) const
+        const Vector<Path>& p_resource_glob_paths, const Path& p_target_folder) const
     {
-        for (const String& copy_resources : p_resource_glob_paths) {
-            for (const String& res_path : resources_recursive(copy_resources)) {
-                String relative = path_relative(res_path, copy_resources);
-                auto file_path = path_concat(
-                    path_concat(p_target_folder, string_replace(copy_resources, "res://", "")),
-                    relative);
+        for (const Path& copy_resources : p_resource_glob_paths) {
+            Path res_relative = path_relative(copy_resources, Path("res:"));
+            for (const Path& res_path : resources_recursive(copy_resources)) {
+                Path relative = path_relative(res_path, copy_resources);
+                Path file_path = p_target_folder / res_relative / relative;
+
                 if (file_exists(file_path)) {
                     continue;
                 }

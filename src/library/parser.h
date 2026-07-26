@@ -53,7 +53,7 @@ namespace GodotObjectCompiler
 
         virtual String get_type() = 0;
 
-        virtual Ref<ParserError> parse_file(const String& p_path, Ref<Context> r_target) = 0;
+        virtual Ref<ParserError> parse_file(const Path& p_path, Ref<Context> r_target) = 0;
 
         virtual Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) = 0;
 
