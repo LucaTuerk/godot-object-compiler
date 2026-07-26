@@ -137,7 +137,7 @@ namespace GodotObjectCompiler
             Vector<String> header_paths(includes.size());
             std::transform(
                 includes.cbegin(), includes.cend(), header_paths.begin(),
-                [godot_cpp_include](const Path& p_path) {
+                [&godot_cpp_include](const Path& p_path) {
                     return header_path(godot_cpp_include, p_path);
                 });
             std::sort(header_paths.begin(), header_paths.end());

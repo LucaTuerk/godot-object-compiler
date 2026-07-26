@@ -37,19 +37,16 @@
 
 namespace GodotObjectCompiler
 {
-    Path::Path(const char* p_path)
+    Path::Path(const char* p_path) : data(std::filesystem::u8path(p_path))
     {
-        data = std::filesystem::u8path(p_path);
     }
 
-    Path::Path(const String& p_path)
+    Path::Path(const String& p_path) : data(std::filesystem::u8path(p_path))
     {
-        data = std::filesystem::u8path(p_path);
     }
 
-    Path::Path(const std::filesystem::path& p_path)
+    Path::Path(const std::filesystem::path& p_path) : data(p_path)
     {
-        data = p_path;
     }
 
     Path::Path(const Path& other) : data(other.data)
@@ -142,22 +139,4 @@ namespace GodotObjectCompiler
         return data != p_other.data;
     }
 
-    Path operator/(const Path& p_left, const Path& p_right)
-    {
-        return Path(p_left.data / p_right.data);
-    }
-
-    std::ostream& operator<<(std::ostream& out, const Path& c)
-    {
-        out << c.string();
-        return out;
-    }
-
-    std::istream& operator>>(std::istream& in, Path& c)
-    {
-        String string_data;
-        in >> string_data;
-        c.data = std::filesystem::u8path(string_data);
-        return in;
-    }
 } // namespace GodotObjectCompiler

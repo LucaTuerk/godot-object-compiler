@@ -225,7 +225,7 @@ namespace GodotObjectCompiler
         std::filesystem::directory_iterator iter(absolute.path());
         for (const auto& entry : iter) {
             if (entry.is_regular_file()) {
-                result.push_back(Path(entry.path()));
+                result.emplace_back(entry.path());
             }
         }
 
@@ -245,7 +245,7 @@ namespace GodotObjectCompiler
         std::filesystem::recursive_directory_iterator iter(absolute.path());
         for (const auto& entry : iter) {
             if (entry.is_regular_file()) {
-                result.push_back(Path(entry.path()));
+                result.emplace_back(entry.path());
             }
         }
 
@@ -263,7 +263,7 @@ namespace GodotObjectCompiler
         std::filesystem::directory_iterator iter(absolute.path());
         for (const auto& entry : iter) {
             if (entry.is_directory()) {
-                result.push_back(Path(entry.path()));
+                result.emplace_back(entry.path());
             }
         }
         return result;
@@ -280,7 +280,7 @@ namespace GodotObjectCompiler
         std::filesystem::directory_iterator iter(absolute.path());
         for (const auto& entry : iter) {
             if (entry.is_regular_file() || entry.is_directory()) {
-                result.push_back(Path(entry.path()));
+                result.emplace_back(entry.path());
             }
         }
         return result;

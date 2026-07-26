@@ -75,11 +75,24 @@ namespace GodotObjectCompiler
 
         void replace_extension(const String& p_extension);
 
-        friend Path operator/(const Path& p_left, const Path& p_right);
+        friend Path operator/(const Path& p_left, const Path& p_right)
+        {
+            return Path(p_left.data / p_right.data);
+        }
 
-        friend std::ostream& operator<<(std::ostream& out, const Path& c);
+        friend std::ostream& operator<<(std::ostream& out, const Path& c)
+        {
+            out << c.string();
+            return out;
+        }
 
-        friend std::istream& operator>>(std::istream& in, Path& c);
+        friend std::istream& operator>>(std::istream& in, Path& c)
+        {
+            String str_data;
+            in >> str_data;
+            c.data = std::filesystem::u8path(str_data);
+            return in;
+        }
 
         bool operator<(const Path& p_other) const;
 
