@@ -409,7 +409,7 @@ namespace GodotObjectCompiler
 
         bool modified = false;
 
-        if (auto itr = last_modified_times.find(absolute); itr == last_modified_times.end()) {
+        if (const auto itr = last_modified_times.find(absolute); itr == last_modified_times.end()) {
             modified = true;
         } else {
             modified = itr->second != last_modified;
@@ -418,6 +418,7 @@ namespace GodotObjectCompiler
         if (p_update_time) {
             out_last_modified_times[absolute] = last_modified;
         }
+
         return modified;
     }
 

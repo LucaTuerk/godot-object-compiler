@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* file_system_utilities.h                                                */
+/* common_tests.h                                                         */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,64 +32,25 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
 #pragma once
-#include "core.h"
-#include "path.h"
+#include "library/parsers/common.h"
+#include "test_registry.h"
 
-namespace GodotObjectCompiler
+using namespace GodotObjectCompiler;
+
+GOC_TEST(RemoveMacros)
 {
+    StreamWriter test;
+    Vector<String> macros;
+    for (char c = 'a'; c < 'z'; ++c) {
+        String macro;
+        macro += c;
+        macros.emplace_back(macro);
+        test.write_generic(c);
+    }
 
-    Vector<Path> directory_files(const Path& p_path);
-
-    Vector<Path> directory_files_recursive(const Path& p_path);
-
-    Vector<Path> directory_entries(const Path& p_path);
-
-    String read_file(const Path& p_path);
-
-    Vector<String> read_lines(const Path& p_path);
-
-    void write_file(const Path& p_path, const String& p_content);
-
-    void write_initial_file_content(const Path& p_path, const String& p_initial_content);
-
-    bool create_dir_recursive(const Path& p_path);
-
-    bool file_exists(const Path& p_path);
-
-    bool remove_file(const Path& p_path);
-
-    bool remove_directory(const Path& p_path);
-
-    bool remove_entry(const Path& p_path);
-
-    bool directory_exits(const Path& p_path);
-
-    Size file_write_time(const Path& p_path);
-
-    Path input(const String& p_prompt, const Path& p_default_value = "");
-
-    Path path_relative(const Path& p_path, const Path& p_base);
-
-    Path path_absolute(const Path& p_path);
-
-    String path_vector_combine(const Vector<Path>& p_paths, const String& p_delimiter);
-
-    Vector<Path> path_vector_split(const String& p_paths, const String& p_delimiter);
-
-    Path path_cwd();
-
-    char path_seperator();
-
-    bool path_is_descendant(const Path& p_possible_ancestor, const Path& p_possible_child);
-
-    bool could_be_path(const Path& p_path);
-
-    bool could_be_dir_path(const Path& p_path);
-
-    bool could_be_file_path(const Path& p_path);
-
-    String header_path(const Path& p_include_path, const Path& p_file_path);
-
-} // namespace GodotObjectCompiler
+    LibraryContext::instance()->set_remove_macros(macros);
+    auto res = ParserUtilities::remove_macros(test.get_string());
+    GOC_TEST_EQ(res.size(), 1, "Some macros were not removed");
+    return TEST_RESULT_SUCCESS;
+};

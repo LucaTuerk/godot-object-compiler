@@ -252,23 +252,6 @@ namespace GodotObjectCompiler
         return result;
     }
 
-    Vector<Path> directory_subdirs(const Path& p_path)
-    {
-        const Path absolute = path_absolute(p_path);
-        PANIC_COND(
-            !directory_exits(absolute), "Trying to iterate non existing directory \"%s\"",
-            absolute.c_str());
-
-        Vector<Path> result;
-        std::filesystem::directory_iterator iter(absolute.path());
-        for (const auto& entry : iter) {
-            if (entry.is_directory()) {
-                result.emplace_back(entry.path());
-            }
-        }
-        return result;
-    }
-
     Vector<Path> directory_entries(const Path& p_path)
     {
         const Path absolute = path_absolute(p_path);
@@ -316,25 +299,6 @@ namespace GodotObjectCompiler
         const Path file_absolute = path_absolute(p_file_path);
         const Path relative = path_relative(file_absolute, include_absolute);
         return string_replace(relative.string(), "\\", "/");
-    }
-
-    bool copy_file(const Path& p_source, const Path& p_destination)
-    {
-        const auto source = path_absolute(p_source);
-        const auto destination = path_absolute(p_destination);
-        PRINT_VERBOSE("Copying file \"%s\" to \"%s\"", source.c_str(), destination.c_str());
-        PANIC_COND(source.empty(), "Empty source file path on file copy.");
-        PANIC_COND(!file_exists(source), "Trying to copy non-existing file \"%s\"", source.c_str());
-        PANIC_COND(destination.empty(), "Empty destination file path on file copy.");
-        Path destination_base = destination.parent_path();
-        PANIC_COND(
-            !directory_exits(destination_base) && !create_dir_recursive(destination_base),
-            "Target directory \"%s\" does not exist and could not be created on file copy",
-            destination_base.c_str());
-
-        Permissions::instance()->ensure_is_allowed_write_path(destination);
-        return std::filesystem::copy_file(
-            source.path(), destination.path(), std::filesystem::copy_options::update_existing);
     }
 
 } // namespace GodotObjectCompiler
