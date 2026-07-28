@@ -70,6 +70,8 @@ namespace GodotObjectCompiler
 
         void read_from(IStructuredReader* p_reader) override;
         void write_to(IStructuredWriter* p_writer) override;
+        bool copy_to(const Ref<Node>& p_other) const override;
+
         String to_string() const override;
     };
 
