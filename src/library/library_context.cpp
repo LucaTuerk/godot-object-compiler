@@ -79,14 +79,25 @@ namespace GodotObjectCompiler
     {
         if (p_get_most_capable) {
             int max = 0;
-            Ref<IParser> default_parser = nullptr;
+            Ref<IParser> result = nullptr;
             for (const auto& [capabilities, parser] : default_parsers) {
                 if ((capabilities & p_capabilities) == p_capabilities && capabilities > max) {
                     max = capabilities;
-                    default_parser = parser;
+                    result = parser;
                 }
             }
-            return default_parser;
+
+            if (result == nullptr) {
+                for (const auto& parser : parsers) {
+                    auto capabilities = parser->get_capabilities();
+                    if ((capabilities & p_capabilities) == p_capabilities && capabilities > max) {
+                        max = capabilities;
+                        result = parser;
+                    }
+                }
+            }
+
+            return result;
         }
 
         auto itr = default_parsers.find(p_capabilities);

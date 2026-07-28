@@ -204,8 +204,7 @@ namespace GodotObjectCompiler
         for (const auto& macro : macros) {
             added_section_writer.write(format("#undef %s\n", macro.c_str()));
             added_section_writer.write(format(
-                "#define %s(...) const char* MERGE(__GOC_MACRO__%s__, __LINE__) = "
-                "#__VA_ARGS__;\n",
+                "#define %s(...) const char* MERGE(__GOC_MACRO__%s__, __LINE__) = #__VA_ARGS__;\n",
                 macro.c_str(), macro.c_str()));
         }
 
@@ -272,7 +271,8 @@ namespace GodotObjectCompiler
                 CXSourceLocation location = clang_getDiagnosticLocation(diagnostic);
                 clang_getFileLocation(location, &file, &line, nullptr, nullptr);
 
-                if (Path(ClangString(clang_getFileName(file))) != temp_file.get_path()) {
+                if (file == nullptr ||
+                    Path(ClangString(clang_getFileName(file))) != temp_file.get_path()) {
                     // Skip errors in included files.
                     continue;
                 }
@@ -308,6 +308,9 @@ namespace GodotObjectCompiler
     Ref<ParserError> ClangParser::parse_file(const Path& p_path, const Ref<Context> r_target)
     {
         current_file = path_absolute(p_path);
+        PARS_ERR_COND(
+            !std::filesystem::is_regular_file(current_file->path()),
+            "Target \"%s\" is not a regular file", current_file->c_str());
         return parse(read_file(p_path), r_target);
     }
 

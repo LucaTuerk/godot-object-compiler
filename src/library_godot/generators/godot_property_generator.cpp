@@ -118,8 +118,7 @@ namespace GodotObjectCompiler
     {
         GEN_ERR_COND(
             custom_bind.property_name.empty(), p_attribute,
-            "Custom bound properties must provide a property name, provided using a string literal "
-            "argument in the property macro. (GODOT_PROPERTY(\"property_name\", ...)");
+            "Custom bound properties must provide a property name, provided using a string literal argument in the property macro. (GODOT_PROPERTY(\"property_name\", ...)");
         GEN_ERR_COND(
             !custom_bind.getter, p_attribute,
             "Could not find getter function \"%s\" for custom bound property.",

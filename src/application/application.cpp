@@ -66,8 +66,7 @@ namespace GodotObjectCompiler
         }
         write_initial_file_content(
             lock_path,
-            "This file is used by the godot object compiler to check if the last program exit was "
-            "graceful.\nRemoving this file may lead to unexpected behaviour.");
+            "This file is used by the godot object compiler to check if the last program exit was graceful.\nRemoving this file may lead to unexpected behaviour.");
         return true;
     }
 
@@ -86,9 +85,7 @@ namespace GodotObjectCompiler
         }
 
         APP_ERR(
-            "Tried to exit gracefully but the lock file no longer exists. This indicates a "
-            "corrupted cache directory.\nPlease delete the \"%s\" directory to ensure proper "
-            "operations.",
+            "Tried to exit gracefully but the lock file no longer exists. This indicates a corrupted cache directory.\nPlease delete the \"%s\" directory to ensure proper operations.",
             arguments->goc_path->get<Path>().c_str());
     }
 
@@ -140,7 +137,10 @@ namespace GodotObjectCompiler
     {
         Resources::instance()->load_pack(&GOC_Resources::Pack);
 
-        context.arguments = std::move(p_arguments);
+        Vector<String> program_arguments;
+        context.program = Programs::instance()->find_program(p_arguments, program_arguments);
+        context.arguments = program_arguments;
+
         CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
         const auto application_arguments = context.get_argument_list<ApplicationArguments>();
 
@@ -156,10 +156,6 @@ namespace GodotObjectCompiler
                 application_arguments->source_parser->get<String>(),
                 IParser::Capabilities::SOURCE_PARSER);
         }
-
-        Vector<String> program_arguments;
-
-        context.program = Programs::instance()->find_program(context.arguments, program_arguments);
 
         if (!context.program) {
             Help help;
@@ -180,8 +176,7 @@ namespace GodotObjectCompiler
                 PRINT_INFO("GOC: Last exit was ungraceful. Clearing context and files.");
                 APP_ERR_COND(
                     clear.run(context) != ProgramError::OK,
-                    "Failed to clear the cache directory after an ungraceful exit was "
-                    "detected.\nPlease delete the \"%s\" directory to ensure proper operations.",
+                    "Failed to clear the cache directory after an ungraceful exit was detected.\nPlease delete the \"%s\" directory to ensure proper operations.",
                     application_arguments->goc_path->get<Path>().c_str());
             }
 
@@ -196,7 +191,7 @@ namespace GodotObjectCompiler
             auto cache_path = generator_arguments->type_db_path->get<Path>();
             auto generated_path = generator_arguments->generated_path->get<Path>();
 
-            LibraryContext::instance()->set_temporary_path(goc_path);
+            LibraryContext::instance()->set_temporary_path(goc_path / "temp");
             LibraryContext::instance()->get_type_db()->set_cache_directory(cache_path);
             LibraryContext::instance()->set_include_paths(combined_include_paths);
 
@@ -221,9 +216,7 @@ namespace GodotObjectCompiler
                     last_build_num != build_num) {
                     APP_ERR_COND(
                         clear.run(context) != ProgramError::OK,
-                        "Failed to clear the cache after a change in goc version was "
-                        "detected.\nPlease delete the \"%s\" directory to ensure proper "
-                        "operations.",
+                        "Failed to clear the cache after a change in goc version was detected.\nPlease delete the \"%s\" directory to ensure proper operations.",
                         goc_path.c_str());
                 }
             }

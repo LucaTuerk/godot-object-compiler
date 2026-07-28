@@ -38,9 +38,8 @@
 #include "application/application_context.h"
 #include "application/arguments/argument_lists.h"
 #include "application/arguments/argument_parsers.h"
-#include "library/core/config.h"
+#include "generate.h"
 #include "library/core/file_system_utilities.h"
-#include "library/core/string_utilities.h"
 #include "library/library_context.h"
 #include "library/tree/syntax/class.h"
 #include "library/tree/syntax/define.h"
@@ -56,13 +55,13 @@ namespace GodotObjectCompiler
     CommandLineArgumentParseResult
     GenerateTypeDB::register_required_arguments(ApplicationContext& p_context) const
     {
-        return p_context.register_argument_lists<GeneratorArguments, GDExtensionProjectArguments>();
+        return Generate::register_generate_required_argument(p_context);
     }
 
     void GenerateTypeDB::generate_from_file(
         const File& p_file, const ApplicationContext& p_context, IParser* p_parser)
     {
-        const auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
+        const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
 
         auto& [path, include_path] = p_file;
 
@@ -71,9 +70,10 @@ namespace GodotObjectCompiler
             return;
         }
 
-        auto sources = project_args->sources->get<Vector<Path>>();
-
-        bool is_input_file = std::find(sources.begin(), sources.end(), path) != sources.end();
+        bool is_input_file = false;
+        if (generator_args) {
+            is_input_file = path_is_descendant(generator_args->root_path->get<Path>(), path);
+        }
 
         if (!is_input_file && !LibraryContext::instance()->file_modified(path)) {
             PRINT_VERBOSE("Skipping \"%s\". Not modified.", path.c_str());
@@ -85,7 +85,7 @@ namespace GodotObjectCompiler
 
         const Ref<Namespace> global_namespace = node_new<Namespace>();
 
-        if (Ref<ParserError> error = p_parser->parse_file(path, global_namespace);
+        if (const Ref<ParserError> error = p_parser->parse_file(path, global_namespace);
             error != ParserError::OK) {
             return;
         }
@@ -129,8 +129,23 @@ namespace GodotObjectCompiler
 
     Ref<ProgramError> GenerateTypeDB::execute(ApplicationContext& p_context)
     {
+        auto generator_args = p_context.get_argument_list<GeneratorArguments>();
+
+        switch (generator_args->project_type->get<ProjectType>()) {
+        case GD_EXTENSION:
+            return execute_extension(p_context);
+        case MODULE:
+            return execute_module(p_context);
+        default:
+            PANIC("Unhandled enum value.");
+        }
+    }
+
+    Ref<ProgramError> GenerateTypeDB::execute_extension(ApplicationContext& p_context)
+    {
         const auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
         const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
+        const auto program_args = p_context.get_argument_list<GenerateArguments>();
 
         LibraryContext::instance()->add_include_paths(project_args->godot_cpp->get<Vector<Path>>());
 
@@ -162,6 +177,50 @@ namespace GodotObjectCompiler
 
                 generate_from_file(
                     {path_absolute(file), include_path.string()}, p_context, parser.get());
+            }
+        }
+
+        if (file_count > 0) {
+            PRINT_INFO(
+                "Generate TypeDB: Scanned %d file(s) discovering %d type(s).", file_count,
+                type_count);
+        } else {
+            PRINT_VERBOSE("Generate TypeDB: No files scanned.");
+        }
+
+        return ProgramError::OK;
+    }
+
+    Ref<ProgramError> GenerateTypeDB::execute_module(ApplicationContext& p_context)
+    {
+        const auto project_args = p_context.get_argument_list<ModuleProjectArguments>();
+        const auto program_args = p_context.get_argument_list<GenerateArguments>();
+        const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
+        const auto application_args = p_context.get_argument_list<ApplicationArguments>();
+
+        LibraryContext::instance()->add_include_paths({project_args->godot_root->get<Path>()});
+        LibraryContext::instance()->add_include_paths(
+            generator_args->include_paths->get<Vector<Path>>());
+
+        file_count = 0;
+        type_count = 0;
+
+        const Ref<IParser> parser = LibraryContext::instance()->get_default_parser(
+            IParser::SOURCE_PARSER | IParser::SUPPORT_MACRO_EXPANSION);
+        parser->config(IParser::CONFIG_SKIP_ATTRIBUTES);
+
+        auto type_db_includes = project_args->type_db_includes->get<Vector<Path>>();
+
+        for (const Path& path : type_db_includes) {
+            Path include_path = path_absolute(path);
+            for (const Path& file : directory_files_recursive(include_path)) {
+                if (file.extension() != ".h" && file.extension() != ".cpp") {
+                    continue;
+                }
+
+                generate_from_file(
+                    {path_absolute(file), project_args->godot_root->get<Path>().string()},
+                    p_context, parser.get());
             }
         }
 

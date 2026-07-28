@@ -65,8 +65,7 @@ namespace GodotObjectCompiler
     Ref<Node> generate_value_name_assumption(const String& return_type, const String& value_name)
     {
         String format =
-            "inline Assumption<String> VALUE_NAME {\n\"VALUE_NAME\",\n\"Assume that the value "
-            "\\\"VALUE_NAME\\\" exists in the RETURN_TYPE generated type.\"\n};";
+            "inline Assumption<String> VALUE_NAME {\n\"VALUE_NAME\",\n\"Assume that the value \\\"VALUE_NAME\\\" exists in the RETURN_TYPE generated type.\"\n};";
 
         format = string_replace(format, "VALUE_NAME", value_name);
         format = string_replace(format, "RETURN_TYPE", return_type);

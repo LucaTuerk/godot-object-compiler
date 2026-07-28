@@ -157,8 +157,7 @@ namespace GodotObjectCompiler
         const bool base_is_res = string_prefix(p_base.string(), "res:");
         if (path_is_res != base_is_res) {
             PANIC(
-                "Invalid argument. Trying to get relative path but one path is a resource path "
-                "while the other is a regular path. (\"%s\", \"%s\")",
+                "Invalid argument. Trying to get relative path but one path is a resource path while the other is a regular path. (\"%s\", \"%s\")",
                 p_path.c_str(), p_base.c_str());
         }
 

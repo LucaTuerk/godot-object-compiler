@@ -155,8 +155,7 @@ namespace GodotObjectCompiler
         PROG_ERR_COND(
             !(AssumedGodotTypes::validate_assumptions() &&
               AssumedParameterValues::validate_assumptions()),
-            "Failed to validate some assumptions on available Godot types and macros. Supplied "
-            "extension api files or godot-cpp include paths might be invalid.");
+            "Failed to validate some assumptions on available Godot types and macros. Supplied extension api files or godot-cpp include paths might be invalid.");
 
         Permissions::instance()->add_write_path("resources");
         Permissions::instance()->add_write_path("docs");
@@ -165,7 +164,7 @@ namespace GodotObjectCompiler
         Dictionary<ProgramPath, Ref<IProgram>> programs = Programs::instance()->get_programs();
         for (const auto& [path, program] : programs) {
             String file_stem = string_vector_combine(path, "_");
-            Path file_path = Path("resources/help") / Path(format("%s.txt", file_stem.c_str()));
+            Path file_path = Path("resources") / "help" / Path(format("%s.txt", file_stem.c_str()));
             if (!file_exists(file_path)) {
                 FileWriter writer(file_path);
                 writer.write("No description available");
@@ -205,7 +204,7 @@ namespace GodotObjectCompiler
         {
             StreamWriter help_writer;
 
-            if (Help::get_help(&help_writer, {})) {
+            if (Help::get_help(&help_writer, {}, p_context)) {
                 FileWriter writer("docs/cli/help_content.rst");
                 writer.write(help_writer.get_string());
             }
@@ -214,14 +213,15 @@ namespace GodotObjectCompiler
         // Generate macro help docs
         for (const String& macro :
              LibraryContext::instance()->get_attribute_db()->get_all_macros()) {
-            Path internal_doc_path = Path("resources/doc") / Path(format("%s.txt", macro.c_str()));
+            Path internal_doc_path =
+                Path("resources") / "doc" / Path(format("%s.txt", macro.c_str()));
             write_initial_file_content(internal_doc_path, "No documentation available");
 
-            Path doc_path = Path("docs/macros/") / Path(format("%s.rst", macro.c_str()));
+            Path doc_path = Path("docs") / "macros" / Path(format("%s.rst", macro.c_str()));
             write_initial_file_content(doc_path, "No documentation available");
 
             Path doc_desc_path =
-                Path("docs/macros/descriptions/") / Path(format("%s.rst", macro.c_str()));
+                Path("docs") / "macros" / "descriptions" / Path(format("%s.rst", macro.c_str()));
             create_dir_recursive(doc_desc_path.parent_path());
             write_file(doc_desc_path, read_file(internal_doc_path));
 
@@ -235,8 +235,8 @@ namespace GodotObjectCompiler
                 Table table;
                 table.push_back({"Value", "Description"});
 
-                Path param_res_doc_dir = Path("resources/doc") / Path(param->get_return_type());
-                Path param_res_doc_path = Path("resources/doc") /
+                Path param_res_doc_dir = Path("resources") / "doc" / Path(param->get_return_type());
+                Path param_res_doc_path = Path("resources") / "doc" /
                                           Path(format("%s.txt", param->get_return_type().c_str()));
 
                 create_dir_recursive(param_res_doc_dir);
@@ -267,7 +267,8 @@ namespace GodotObjectCompiler
         }
 
         for (const auto& parser : LibraryContext::instance()->get_parsers()) {
-            Path path = Path("resources/help") / Path(format("%s.txt", parser->get_type().c_str()));
+            Path path =
+                Path("resources") / "help" / Path(format("%s.txt", parser->get_type().c_str()));
             write_initial_file_content(path, "");
         }
 

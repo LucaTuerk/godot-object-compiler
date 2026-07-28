@@ -48,6 +48,10 @@ namespace GodotObjectCompiler
             AssumeType<Class>{"ClassDB"},
             "Assume that a class named \"ClassDB\" exists in the TypeDB."};
 
+        inline Assumption Variant{
+            AssumeType<Class>{"Variant"},
+            "Assume that a class named \"Variant\" exists in the TypeDB"};
+
         inline Assumption Object{
             AssumeType<Class>{"Object"},
             "Assume that a class named \"Object\" exists in the TypeDB."};
@@ -72,8 +76,8 @@ namespace GodotObjectCompiler
             "Assume that a class named \"Array\" exists in the TypeDB."};
 
         inline Assumption TypedArray{
-            AssumeType<Class>{"TypedArray", 1}, "Assume that a class named \"TypedArray\" with 1 "
-                                                "template parameter exists in the TypeDB."};
+            AssumeType<Class>{"TypedArray", 1},
+            "Assume that a class named \"TypedArray\" with 1 template parameter exists in the TypeDB."};
 
         inline Assumption Dictionary{
             AssumeType<Class>{"Dictionary"},
@@ -81,8 +85,31 @@ namespace GodotObjectCompiler
 
         inline Assumption TypedDictionary{
             AssumeType<Class>{"TypedDictionary", 2},
-            "Assume that a class named \"TypedDictionary\" with 2 template parameter exists in the "
-            "TypeDB."};
+            "Assume that a class named \"TypedDictionary\" with 2 template parameter exists in the TypeDB."};
+
+        inline Assumption StringName{
+            AssumeType<Class>{"StringName"},
+            "Assume that a class of name \"StringName\" exists in the TypeDB"};
+
+        inline Assumption Callable{
+            AssumeType<Class>{"Callable"},
+            "Assume that a class of name \"Callable\" exists in the TypeDB"};
+
+        inline Assumption List{
+            AssumeType<Class>{"List", 2},
+            "Assume that a class of name \"List\" exists in the TypeDB"};
+
+        inline Assumption PropertyInfo{
+            AssumeType<Class>{"PropertyInfo"},
+            "Assume that a class of name \"PropertyInfo\" exists in the TypeDB"};
+
+        inline Assumption MultiplayerAPI{
+            AssumeType<Class>{"MultiplayerAPI"},
+            "Assume that an class of name \"MultiplayerAPI\" exists in the TypeDB"};
+
+        inline Assumption MultiplayerPeer{
+            AssumeType<Class>{"MultiplayerPeer"},
+            "Assume that an class of name \"MultiplayerPeer\" exists in the TypeDB"};
 
         inline Assumption ModuleInitializationLevel{
             AssumeType<Enum>{"ModuleInitializationLevel"},
@@ -107,10 +134,6 @@ namespace GodotObjectCompiler
         inline Assumption ADD_SUBGROUP{
             AssumeType<Define>{"ADD_SUBGROUP"},
             "Assume that a define of name \"ADD_SUBGROUP\" exists in the TypeDB."};
-
-        inline Assumption Variant{
-            AssumeType<Class>{"Variant"},
-            "Assume that a class named \"Variant\" exists in the TypeDB"};
 
         inline Assumption VariantTypeEnum{
             AssumeType<Enum>{"Variant::Type"},
@@ -180,35 +203,17 @@ namespace GodotObjectCompiler
             AssumeType<Enum>{"MultiplayerPeer::TransferMode"},
             "Assume that an enum of name \"MultiplayerPeer::TransferMode\" exists in the TypeDB"};
 
-        inline Assumption MultiplayerAPI{
-            AssumeType<Class>{"MultiplayerAPI"},
-            "Assume that an class of name \"MultiplayerAPI\" exists in the TypeDB"};
-
-        inline Assumption MultiplayerPeer{
-            AssumeType<Class>{"MultiplayerPeer"},
-            "Assume that an class of name \"MultiplayerPeer\" exists in the TypeDB"};
-
         inline Assumption MultiplayerAPIRPCMode{
             AssumeType<Enum>{"MultiplayerAPI::RPCMode"},
             "Assume that an enum of name \"MultiplayerAPI::RPCMode\" exists in the TypeDB"};
 
-        inline Assumption StringName{
-            AssumeType<Class>{"StringName"},
-            "Assume that a class of name \"StringName\" exists in the TypeDB"};
-
-        inline Assumption Callable{
-            AssumeType<Class>{"Callable"},
-            "Assume that a class of name \"Callable\" exists in the TypeDB"};
-
-        inline Assumption List{
-            AssumeType<Class>{"List", 2},
-            "Assume that a class of name \"List\" exists in the TypeDB"};
-
-        inline Assumption PropertyInfo{
-            AssumeType<Class>{"PropertyInfo"},
-            "Assume that a class of name \"PropertyInfo\" exists in the TypeDB"};
-
         bool validate_assumptions();
+
+        Vector<Assumption<AssumeType<Class>>*> get_required_classes();
+
+        Vector<Assumption<AssumeType<Enum>>*> get_required_enums();
+
+        Vector<Assumption<AssumeType<Define>>*> get_required_defines();
 
     } // namespace AssumedGodotTypes
 

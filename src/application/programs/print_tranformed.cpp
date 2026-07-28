@@ -68,8 +68,7 @@ namespace GodotObjectCompiler
             PROG_ERR_COND(
                 !(AssumedGodotTypes::validate_assumptions() &&
                   AssumedParameterValues::validate_assumptions()),
-                "Failed to validate some assumptions on available Godot types and macros. Supplied "
-                "extension api files or godot-cpp include paths might be invalid.");
+                "Failed to validate some assumptions on available Godot types and macros. The supplied extension-api file or TypeDB includes might be invalid or incomplete.");
 
             Ref<IParser> parser =
                 LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
