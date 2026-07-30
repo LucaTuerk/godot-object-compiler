@@ -97,6 +97,9 @@ namespace GodotObjectCompiler
     class GDExtensionProjectArguments : public ICommandLineArgumentList
     {
       public:
+        Ref<CommandLineArgument> extension_name = CommandLineArgument::required(
+            CommandLineArgumentParsers::String, "extension_name", "N", "The GDExtensions name.");
+
         Ref<CommandLineArgument> godot_cpp = CommandLineArgument::required(
             CommandLineArgumentParsers::PathList, "godot_cpp", "GPP",
             "The used godot-cpp submodules include paths.");
@@ -114,6 +117,9 @@ namespace GodotObjectCompiler
     class ModuleProjectArguments : public ICommandLineArgumentList
     {
       public:
+        Ref<CommandLineArgument> module_name = CommandLineArgument::required(
+            CommandLineArgumentParsers::String, "module_name", "N", "The modules name.");
+
         Ref<CommandLineArgument> godot_root = CommandLineArgument::required(
             CommandLineArgumentParsers::Path, "godot_root", "GR",
             "The root path of the godot editor source.");
@@ -124,7 +130,7 @@ namespace GodotObjectCompiler
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {
-            return {godot_root, type_db_includes};
+            return {module_name, godot_root, type_db_includes};
         }
     };
 } // namespace GodotObjectCompiler

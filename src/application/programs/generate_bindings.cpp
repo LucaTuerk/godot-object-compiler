@@ -211,9 +211,27 @@ namespace GodotObjectCompiler
         Ref<Context> register_types_source = node_new<Context>();
         Ref<Context> register_class_includes = node_new<Context>();
 
-        String register_method_name = "generated_register_module";
-        String unregister_method_name = "generated_unregister_module";
+        String register_method_name;
+        String unregister_method_name;
         String register_file_name = "generated_register_types";
+
+        switch (generator_args->project_type->get<ProjectType>()) {
+        case GD_EXTENSION: {
+            const auto& extension_args = p_context.get_argument_list<GDExtensionProjectArguments>();
+            const auto name = extension_args->extension_name->get<String>();
+            register_method_name = format("generated_initialize_%s_extension", name.c_str());
+            unregister_method_name = format("generated_uninitialize_%s_extension", name.c_str());
+        } break;
+        case MODULE: {
+            const auto& module_args = p_context.get_argument_list<ModuleProjectArguments>();
+            const auto name = module_args->module_name->get<String>();
+            register_method_name = format("generated_initialize_%s_module", name.c_str());
+            unregister_method_name = format("generated_uninitialize_%s_module", name.c_str());
+        } break;
+        default:
+            PANIC("Invalid enum value");
+        }
+
         Vector<String> registered_classes_headers;
 
         register_types_header->add_child(Output::PragmaOnce());
@@ -268,6 +286,18 @@ namespace GodotObjectCompiler
         HashSet<Path> processed;
         HashSet<String> register_includes;
 
+        Path generated_path_relative;
+        Path include_root_path;
+        if (generator_args->project_type->get<ProjectType>() == GD_EXTENSION) {
+            generated_path_relative = Path();
+            include_root_path = generator_args->root_path->get<Path>();
+        } else {
+            const auto& module_args = p_context.get_argument_list<ModuleProjectArguments>();
+            generated_path_relative = path_relative(
+                generator_args->root_path->get<Path>(), module_args->godot_root->get<Path>());
+            include_root_path = module_args->godot_root->get<Path>();
+        }
+
         for (Path input_file : p_sources) {
             if (!path_is_descendant(generator_args->root_path->get<Path>(), input_file)) {
                 PRINT_INFO(
@@ -305,13 +335,6 @@ namespace GodotObjectCompiler
             }
 
             processed.insert(input_file);
-            Path relative_path;
-            if (generator_args->project_type->get<ProjectType>() == GD_EXTENSION) {
-                relative_path = path_relative(input_file, generator_args->root_path->get<Path>());
-            } else {
-                const auto& module_args = p_context.get_argument_list<ModuleProjectArguments>();
-                relative_path = path_relative(input_file, module_args->godot_root->get<Path>());
-            }
 
             Ref<Namespace> global_namespace = nullptr;
             Path cached_path = cache_path(application_args->goc_path->get<Path>(), input_file);
@@ -348,14 +371,14 @@ namespace GodotObjectCompiler
                 reader_writer.write_to_file(global_namespace, cached_path);
             }
 
-            Path in_generated_path = generator_args->generated_path->get<Path>() / relative_path;
+            Path in_generated_path = generator_args->generated_path->get<Path>() /
+                                     generated_path_relative / input_file.stem();
             Path in_generated_base = in_generated_path.parent_path();
-            String in_generated_stem = in_generated_path.stem().string();
 
             Path gen_source_path =
-                in_generated_base / Path(format("%s.generated.cpp", in_generated_stem.c_str()));
+                in_generated_base / Path(format("%s.generated.cpp", input_file.stem().c_str()));
             Path gen_header_path =
-                in_generated_base / Path(format("%s.generated.h", in_generated_stem.c_str()));
+                in_generated_base / Path(format("%s.generated.h", input_file.stem().c_str()));
             String gen_header_include_path =
                 header_path(generator_args->generated_path->get<Path>(), gen_header_path);
 
@@ -456,8 +479,7 @@ namespace GodotObjectCompiler
 
                 if (result.initialize->get_child_count() > 0 ||
                     result.uninitialize->get_child_count() > 0) {
-                    result.add_register_include(
-                        header_path(generator_args->root_path->get<Path>(), input_file));
+                    result.add_register_include(header_path(include_root_path, input_file));
                 }
 
                 if (!LibraryContext::instance()->file_modified(input_file)) {
@@ -510,7 +532,7 @@ namespace GodotObjectCompiler
             FileWriter source_writer = FileWriter::generated(gen_source_path, input_file);
             FileWriter header_writer = FileWriter::generated(gen_header_path, input_file);
 
-            auto target_header = header_path(generator_args->root_path->get<Path>(), input_file);
+            auto target_header = header_path(include_root_path, input_file);
             Output::Lines({Output::PragmaOnce(), Output::Text("#undef GOC_FILE_ID"),
                            Output::Define("GOC_FILE_ID", {}, file_id(Path(target_header))),
                            Output::Include("godot_object_compiler/macros.h"), Output::NewLine()})
@@ -561,9 +583,13 @@ namespace GodotObjectCompiler
             transformator.transform(register_types_source);
 
         FileWriter register_header_writer = FileWriter::generated(
-            generator_args->generated_path->get<Path>() / "generated_register_types.h", "");
+            generator_args->generated_path->get<Path>() / generated_path_relative /
+                "generated_register_types.h",
+            "");
         FileWriter register_source_writer = FileWriter::generated(
-            generator_args->generated_path->get<Path>() / "generated_register_types.cpp", "");
+            generator_args->generated_path->get<Path>() / generated_path_relative /
+                "generated_register_types.cpp",
+            "");
 
         register_header_output->get_output(&register_header_writer);
         register_source_output->get_output(&register_source_writer);

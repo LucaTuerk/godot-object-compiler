@@ -53,6 +53,7 @@
 #include "programs/clear.h"
 #include "programs/help.h"
 #include "programs/program.h"
+#include <thread>
 
 namespace GodotObjectCompiler
 {
@@ -60,13 +61,20 @@ namespace GodotObjectCompiler
     {
         auto arguments = context.get_argument_list<ApplicationArguments>();
 
-        const Path lock_path = arguments->goc_path->get<Path>() / ".goc_graceful_lock";
-        if (file_exists(lock_path)) {
+        const Path lock_path = arguments->goc_path->get<Path>() / ".lock";
+        while (file_exists(lock_path)) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+        write_initial_file_content(lock_path, "");
+
+        const Path graceful_path = arguments->goc_path->get<Path>() / ".goc_graceful_lock";
+        if (file_exists(graceful_path)) {
             return false;
         }
         write_initial_file_content(
-            lock_path,
+            graceful_path,
             "This file is used by the godot object compiler to check if the last program exit was graceful.\nRemoving this file may lead to unexpected behaviour.");
+
         return true;
     }
 
@@ -78,7 +86,12 @@ namespace GodotObjectCompiler
         }
 
         auto arguments = context.get_argument_list<ApplicationArguments>();
-        if (const Path lock_path = arguments->goc_path->get<Path>() / ".goc_graceful_lock";
+        if (const Path graceful_path = arguments->goc_path->get<Path>() / ".goc_graceful_lock";
+            file_exists(graceful_path) && !remove_file(graceful_path)) {
+            APP_ERR("Failed to remove graceful lock.");
+        }
+
+        if (const Path lock_path = arguments->goc_path->get<Path>() / ".lock";
             file_exists(lock_path) && remove_file(lock_path)) {
             PRINT_VERBOSE("Graceful exit.");
             return p_return_code;
