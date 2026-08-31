@@ -122,7 +122,37 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool GodotMacroIncludeGenerator::generate_core_include(const Ref<Context>& p_write_to)
+    bool GodotMacroIncludeGenerator::generate_extension_core_include(
+        const Vector<Path>& p_godot_cpp_includes, const Ref<Context>& p_write_to)
+    {
+        p_write_to->add_child(Output::PragmaOnce());
+        bool found_any_path = false;
+        for (const Path& godot_cpp_include : p_godot_cpp_includes) {
+            Path include_path = godot_cpp_include / "godot_cpp" / "core";
+            if (!directory_exits(include_path)) {
+                continue;
+            }
+            found_any_path = true;
+
+            Vector<Path> includes = directory_files_recursive(include_path);
+            Vector<String> header_paths(includes.size());
+            std::transform(
+                includes.cbegin(), includes.cend(), header_paths.begin(),
+                [&godot_cpp_include](const Path& p_path) {
+                    return header_path(godot_cpp_include, p_path);
+                });
+            std::sort(header_paths.begin(), header_paths.end());
+            for (const String& header : header_paths) {
+                if (string_suffix(header, ".compat.inc")) {
+                    continue;
+                }
+                p_write_to->add_child(Output::Include(header));
+            }
+        }
+        return found_any_path;
+    }
+
+    bool GodotMacroIncludeGenerator::generate_module_core_includes(const Ref<Context>& p_write_to)
     {
         HashSet<String> headers;
         for (const auto required_class : AssumedGodotTypes::get_required_classes()) {

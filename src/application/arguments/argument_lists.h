@@ -110,7 +110,7 @@ namespace GodotObjectCompiler
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {
-            return {godot_cpp, extension_api};
+            return {extension_name, godot_cpp, extension_api};
         }
     };
 

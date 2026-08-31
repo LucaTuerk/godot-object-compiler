@@ -57,49 +57,18 @@
 
 namespace GodotObjectCompiler
 {
-    bool Application::was_last_exit_graceful() const
-    {
-        auto arguments = context.get_argument_list<ApplicationArguments>();
-
-        const Path lock_path = arguments->goc_path->get<Path>() / ".lock";
-        while (file_exists(lock_path)) {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-        write_initial_file_content(lock_path, "");
-
-        const Path graceful_path = arguments->goc_path->get<Path>() / ".goc_graceful_lock";
-        if (file_exists(graceful_path)) {
-            return false;
-        }
-        write_initial_file_content(
-            graceful_path,
-            "This file is used by the godot object compiler to check if the last program exit was graceful.\nRemoving this file may lead to unexpected behaviour.");
-
-        return true;
-    }
+    static LockFile lock;
 
     int Application::exit_gracefully(int p_return_code) const
     {
-
         if (context.program == nullptr || context.program->is_readonly()) {
             return p_return_code;
         }
 
-        auto arguments = context.get_argument_list<ApplicationArguments>();
-        if (const Path graceful_path = arguments->goc_path->get<Path>() / ".goc_graceful_lock";
-            file_exists(graceful_path) && !remove_file(graceful_path)) {
-            APP_ERR("Failed to remove graceful lock.");
-        }
+        lock.unlock();
+        graceful_lock.unlock();
 
-        if (const Path lock_path = arguments->goc_path->get<Path>() / ".lock";
-            file_exists(lock_path) && remove_file(lock_path)) {
-            PRINT_VERBOSE("Graceful exit.");
-            return p_return_code;
-        }
-
-        APP_ERR(
-            "Tried to exit gracefully but the lock file no longer exists. This indicates a corrupted cache directory.\nPlease delete the \"%s\" directory to ensure proper operations.",
-            arguments->goc_path->get<Path>().c_str());
+        return 0;
     }
 
     bool Application::init_local_resources() const
@@ -119,17 +88,100 @@ namespace GodotObjectCompiler
     int Application::run(const Vector<String>& p_arguments)
     {
         PRINT_VERBOSE("Application: %s", string_vector_combine(p_arguments, " ").c_str());
+
+        CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
+        const auto application_arguments = context.get_argument_list<ApplicationArguments>();
+
+        auto goc_path = application_arguments->goc_path->get<Path>();
+        Permissions::instance()->add_write_path(goc_path);
+
+        const Path lock_path = goc_path / ".lock";
+        lock = LockFile(lock_path, "");
+        lock.lock();
+
+        const Path graceful_path = goc_path / ".goc_graceful_lock";
+        graceful_lock = LockFile(
+            graceful_path,
+            "This file is used by the godot object compiler to check if the last program exit was graceful.\nRemoving this file may lead to unexpected behaviour.");
+        last_exit_graceful = graceful_lock.try_lock();
+
         APP_TOP_LEVEL_ERR_COND(
             setup_context(p_arguments) != 0, "Failed to setup application context.");
         APP_TOP_LEVEL_ERR_COND(
             run_program(context.program) != 0, "Failed to run the %s program.",
             context.program->program_name().c_str());
+
         return cleanup();
     }
 
     ApplicationContext& Application::get_context()
     {
         return context;
+    }
+
+    LockFile::LockFile()
+    {
+    }
+
+    LockFile::LockFile(const Path& p_path, const String& p_description)
+    {
+        path = p_path;
+        description = p_description;
+    }
+
+    LockFile::~LockFile()
+    {
+        unlock();
+    }
+
+    void LockFile::lock() const
+    {
+        PANIC_COND(path.empty(), "Uninitialized lock file used.");
+
+        while (file_exists(path)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        {
+            FileWriter writer(path);
+            writer.write(description);
+        }
+        PANIC_COND(!file_exists(path), "Failed to create lock file.");
+    }
+
+    void LockFile::unlock() const
+    {
+        if (file_exists(path)) {
+            remove_file(path);
+        }
+    }
+
+    bool LockFile::try_unlock() const
+    {
+        if (!file_exists(path)) {
+            std::cout << "File does not exist " << path << std::endl;
+            return false;
+        }
+
+        if (!remove_file(path)) {
+            std::cout << "Failed to remove file " << path << std::endl;
+            return false;
+        }
+        return true;
+    }
+
+    bool LockFile::try_lock() const
+    {
+        PANIC_COND(path.empty(), "Uninitialized lock file used.");
+
+        if (file_exists(path)) {
+            return false;
+        }
+        {
+            FileWriter writer(path);
+            writer.write(description);
+        }
+
+        return file_exists(path);
     }
 
     Application::Application()
@@ -146,7 +198,7 @@ namespace GodotObjectCompiler
         has_application = false;
     }
 
-    int Application::setup_context(Vector<String> p_arguments)
+    int Application::setup_context(const Vector<String>& p_arguments)
     {
         Resources::instance()->load_pack(&GOC_Resources::Pack);
 
@@ -154,7 +206,6 @@ namespace GodotObjectCompiler
         context.program = Programs::instance()->find_program(p_arguments, program_arguments);
         context.arguments = program_arguments;
 
-        CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
         const auto application_arguments = context.get_argument_list<ApplicationArguments>();
 
         Permissions::instance()->add_write_path(application_arguments->goc_path->get<Path>());
@@ -185,7 +236,7 @@ namespace GodotObjectCompiler
 
             Clear clear;
 
-            if (!was_last_exit_graceful()) {
+            if (!last_exit_graceful) {
                 PRINT_INFO("GOC: Last exit was ungraceful. Clearing context and files.");
                 APP_ERR_COND(
                     clear.run(context) != ProgramError::OK,
@@ -253,7 +304,7 @@ namespace GodotObjectCompiler
 
     int Application::cleanup()
     {
-        auto arguments = context.get_argument_list<ApplicationArguments>();
+        const auto arguments = context.get_argument_list<ApplicationArguments>();
 
         if (!context.program->is_readonly()) {
             LibraryContext::instance()->save_last_modified_times_file(

@@ -55,6 +55,8 @@ namespace GodotObjectCompiler
 
         void config(Config p_config) override;
 
+        static Vector<Path> get_included_files(const Path& p_path);
+
       private:
         static CXChildVisitResult
         visitor(CXCursor p_cursor, CXCursor p_parent, CXClientData p_data);

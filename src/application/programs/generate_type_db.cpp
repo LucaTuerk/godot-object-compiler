@@ -209,6 +209,9 @@ namespace GodotObjectCompiler
             IParser::SOURCE_PARSER | IParser::SUPPORT_MACRO_EXPANSION);
         parser->config(IParser::CONFIG_SKIP_ATTRIBUTES);
 
+        auto sources = program_args->sources->get<Vector<Path>>();
+        HashSet<Path> handled;
+
         auto type_db_includes = project_args->type_db_includes->get<Vector<Path>>();
 
         for (const Path& path : type_db_includes) {
@@ -221,6 +224,30 @@ namespace GodotObjectCompiler
                 generate_from_file(
                     {path_absolute(file), project_args->godot_root->get<Path>().string()},
                     p_context, parser.get());
+
+                handled.insert(file);
+            }
+        }
+
+        for (const Path& path : sources) {
+            auto included = ClangParser::get_included_files(path);
+
+            for (const Path& include : included) {
+                if (handled.find(include) != handled.end()) {
+                    continue;
+                }
+
+                if (!path_is_descendant(project_args->godot_root->get<Path>(), include)) {
+                    continue;
+                }
+
+                print_ln(include.c_str());
+
+                generate_from_file(
+                    {path_absolute(include), project_args->godot_root->get<Path>().string()},
+                    p_context, parser.get());
+
+                handled.insert(include);
             }
         }
 

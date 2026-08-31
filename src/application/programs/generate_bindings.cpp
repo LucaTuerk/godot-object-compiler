@@ -121,7 +121,8 @@ namespace GodotObjectCompiler
             Ref<Context> core_include_content = node_new<Context>();
 
             macro_include_generator.generate(nullptr, macro_include_content);
-            macro_include_generator.generate_core_include(core_include_content);
+            macro_include_generator.generate_extension_core_include(
+                project_args->godot_cpp->get<Vector<Path>>(), core_include_content);
 
             FileWriter marco_writer = FileWriter::generated(
 
@@ -169,7 +170,7 @@ namespace GodotObjectCompiler
             Ref<Context> core_include_content = node_new<Context>();
 
             macro_include_generator.generate(nullptr, macro_include_content);
-            macro_include_generator.generate_core_include(core_include_content);
+            macro_include_generator.generate_module_core_includes(core_include_content);
 
             FileWriter marco_writer = FileWriter::generated(
                 generator_args->generated_path->get<Path>() / "godot_object_compiler" / "macros.h",
@@ -286,15 +287,11 @@ namespace GodotObjectCompiler
         HashSet<Path> processed;
         HashSet<String> register_includes;
 
-        Path generated_path_relative;
         Path include_root_path;
         if (generator_args->project_type->get<ProjectType>() == GD_EXTENSION) {
-            generated_path_relative = Path();
             include_root_path = generator_args->root_path->get<Path>();
         } else {
             const auto& module_args = p_context.get_argument_list<ModuleProjectArguments>();
-            generated_path_relative = path_relative(
-                generator_args->root_path->get<Path>(), module_args->godot_root->get<Path>());
             include_root_path = module_args->godot_root->get<Path>();
         }
 
@@ -303,6 +300,16 @@ namespace GodotObjectCompiler
                 PRINT_INFO(
                     "Input file \"%s\" is not in the root path. Skipping.", input_file.c_str())
                 continue;
+            }
+
+            Path generated_path_relative;
+            if (generator_args->project_type->get<ProjectType>() == GD_EXTENSION) {
+                generated_path_relative =
+                    path_relative(input_file.parent_path(), generator_args->root_path->get<Path>());
+            } else {
+                const auto& module_args = p_context.get_argument_list<ModuleProjectArguments>();
+                generated_path_relative =
+                    path_relative(input_file.parent_path(), module_args->godot_root->get<Path>());
             }
 
             if (input_file.extension() == ".cpp") {
@@ -581,6 +588,15 @@ namespace GodotObjectCompiler
             transformator.transform(register_types_header);
         Ref<Output::OutputNode> register_source_output =
             transformator.transform(register_types_source);
+
+        Path generated_path_relative;
+        if (generator_args->project_type->get<ProjectType>() == GD_EXTENSION) {
+            generated_path_relative = Path();
+        } else {
+            const auto& module_args = p_context.get_argument_list<ModuleProjectArguments>();
+            generated_path_relative = path_relative(
+                generator_args->root_path->get<Path>(), module_args->godot_root->get<Path>());
+        }
 
         FileWriter register_header_writer = FileWriter::generated(
             generator_args->generated_path->get<Path>() / generated_path_relative /

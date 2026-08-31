@@ -490,7 +490,9 @@ namespace GodotObjectCompiler
 
 #define CLI_PARS_ERR_V(result, value)                                                              \
     do {                                                                                           \
-        if (!result.succeeded()) {                                                                 \
+        auto result_var = result;                                                                  \
+        if (!result_var.succeeded()) {                                                             \
+            print_err(result_var.get_error_message());                                             \
             return value;                                                                          \
         }                                                                                          \
     } while (false)
