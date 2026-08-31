@@ -206,7 +206,8 @@ namespace GodotObjectCompiler
         type_count = 0;
 
         const Ref<IParser> parser = LibraryContext::instance()->get_default_parser(
-            IParser::SOURCE_PARSER | IParser::SUPPORT_MACRO_EXPANSION);
+            IParser::SOURCE_PARSER | IParser::SUPPORT_MACRO_EXPANSION |
+            IParser::SUPPORT_PARSE_INCLUDES);
         parser->config(IParser::CONFIG_SKIP_ATTRIBUTES);
 
         auto sources = program_args->sources->get<Vector<Path>>();
@@ -229,8 +230,13 @@ namespace GodotObjectCompiler
             }
         }
 
+        const auto parse_includes = std::dynamic_pointer_cast<IParserCapabilityParseIncludes>(parser);
+        PROG_ERR_COND(
+            parse_includes == nullptr,
+            "Provided parser does not support parsing includes even though this is declared as a capability.");
+
         for (const Path& path : sources) {
-            auto included = ClangParser::get_included_files(path);
+            auto included = parse_includes->get_included_files(path);
 
             for (const Path& include : included) {
                 if (handled.find(include) != handled.end()) {

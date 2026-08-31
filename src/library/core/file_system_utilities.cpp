@@ -100,7 +100,7 @@ namespace GodotObjectCompiler
         const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Deleting file \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
-        return std::filesystem::remove(absolute.c_str());
+        return std::filesystem::remove(absolute.path());
     }
 
     bool remove_directory(const Path& p_path)
@@ -108,15 +108,16 @@ namespace GodotObjectCompiler
         const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Deleting \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
-        return std::filesystem::remove_all(absolute.c_str()) > 0;
+        return std::filesystem::remove_all(absolute.path()) > 0;
     }
 
     bool remove_entry(const Path& p_path)
     {
-        if (is_regular_file(p_path.path())) {
-            return remove_file(p_path);
+        const Path absolute = path_absolute(p_path);
+        if (is_regular_file(absolute.path())) {
+            return remove_file(absolute);
         }
-        return remove_directory(p_path);
+        return remove_directory(absolute);
     }
 
     void write_initial_file_content(const Path& p_path, const String& p_initial_content)

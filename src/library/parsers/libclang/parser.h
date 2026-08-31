@@ -41,10 +41,10 @@
 namespace GodotObjectCompiler
 {
 
-    class ClangParser : public IParser
+    class ClangParser : public IParser, public IParserCapabilityParseIncludes
     {
         PARSER(ClangParser);
-        CAPABILITIES(SOURCE_PARSER | SUPPORT_MACRO_EXPANSION);
+        CAPABILITIES(SOURCE_PARSER | SUPPORT_MACRO_EXPANSION | SUPPORT_PARSE_INCLUDES);
 
       public:
         Ref<ParserError> parse(const String& p_input, Ref<Context> r_target) override;
@@ -55,7 +55,7 @@ namespace GodotObjectCompiler
 
         void config(Config p_config) override;
 
-        static Vector<Path> get_included_files(const Path& p_path);
+        Vector<Path> get_included_files(const Path& p_path) override;
 
       private:
         static CXChildVisitResult
