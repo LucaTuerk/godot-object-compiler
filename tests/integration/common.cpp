@@ -69,22 +69,22 @@ namespace GodotObjectCompiler
         const Path register_source_path =
             TestRegistry::instance()->get_generated_path() / "generated_register_types.cpp";
 
-        if (!file_exists(generated_header_path)) {
+        if (!filesystem_exists(generated_header_path)) {
             print_err("Failed to generate header.");
             return false;
         }
 
-        if (!file_exists(generated_source_path)) {
+        if (!filesystem_exists(generated_source_path)) {
             print_err("Failed to generate source.");
             return false;
         }
 
-        if (!file_exists(register_header_path)) {
+        if (!filesystem_exists(register_header_path)) {
             print_err("Failed to generate register types header.");
             return false;
         }
 
-        if (!file_exists(register_source_path)) {
+        if (!filesystem_exists(register_source_path)) {
             print_err("Failed to generate register types source.");
             return false;
         }

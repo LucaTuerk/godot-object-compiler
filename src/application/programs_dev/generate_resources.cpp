@@ -165,7 +165,7 @@ namespace GodotObjectCompiler
         for (const auto& [path, program] : programs) {
             String file_stem = string_vector_combine(path, "_");
             Path file_path = Path("resources") / "help" / Path(format("%s.txt", file_stem.c_str()));
-            if (!file_exists(file_path)) {
+            if (!filesystem_exists(file_path)) {
                 FileWriter writer(file_path);
                 writer.write("No description available");
             }
@@ -196,7 +196,7 @@ namespace GodotObjectCompiler
             description_writer.write(description);
         }
 
-        if (file_exists("resources/help/args.txt")) {
+        if (filesystem_exists("resources/help/args.txt")) {
             FileWriter writer("docs/cli/args.rst");
             writer.write(read_file("resources/help/args.txt"));
         }

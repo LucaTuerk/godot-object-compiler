@@ -51,7 +51,8 @@ namespace GodotObjectCompiler
         const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Reading file \"%s\"", absolute.c_str());
         PANIC_COND(
-            !file_exists(absolute), "Trying to read non-existing file \"%s\"", absolute.c_str());
+            !filesystem_exists(absolute), "Trying to read non-existing file \"%s\"",
+            absolute.c_str());
         std::ifstream ifs;
         ifs.open(absolute.path());
         PANIC_COND(
@@ -78,7 +79,7 @@ namespace GodotObjectCompiler
         ofs.write(p_content.c_str(), static_cast<long>(p_content.size()));
     }
 
-    bool file_exists(const Path& p_path)
+    bool filesystem_exists(const Path& p_path)
     {
         if (p_path.empty()) {
             return false;
@@ -100,7 +101,15 @@ namespace GodotObjectCompiler
         const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Deleting file \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
-        return std::filesystem::remove(absolute.path());
+        if (!is_regular_file(absolute.path())) {
+            return false;
+        }
+
+        try {
+            return std::filesystem::remove(absolute.path());
+        } catch (const std::filesystem::filesystem_error& e) {
+            return false;
+        }
     }
 
     bool remove_directory(const Path& p_path)
@@ -108,22 +117,36 @@ namespace GodotObjectCompiler
         const Path absolute = path_absolute(p_path);
         PRINT_VERBOSE("Deleting \"%s\"", absolute.c_str());
         Permissions::instance()->ensure_is_allowed_write_path(absolute);
-        return std::filesystem::remove_all(absolute.path()) > 0;
+        if (!is_directory(absolute.path())) {
+            return false;
+        }
+
+        try {
+            return std::filesystem::remove_all(absolute.path()) > 0;
+        } catch (const std::filesystem::filesystem_error& e) {
+            return false;
+        }
     }
 
     bool remove_entry(const Path& p_path)
     {
         const Path absolute = path_absolute(p_path);
+
+        if (!filesystem_exists(absolute)) {
+            return false;
+        }
+
         if (is_regular_file(absolute.path())) {
             return remove_file(absolute);
         }
+
         return remove_directory(absolute);
     }
 
     void write_initial_file_content(const Path& p_path, const String& p_initial_content)
     {
         const Path absolute = path_absolute(p_path);
-        if (file_exists(absolute)) {
+        if (filesystem_exists(absolute)) {
             return;
         }
         FileWriter writer(absolute);
@@ -141,7 +164,7 @@ namespace GodotObjectCompiler
     Size file_write_time(const Path& p_path)
     {
         const Path absolute = path_absolute(p_path);
-        if (!file_exists(absolute)) {
+        if (!filesystem_exists(absolute)) {
             return 0;
         }
 

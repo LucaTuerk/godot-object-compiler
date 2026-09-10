@@ -48,7 +48,7 @@ namespace GodotObjectCompiler
 
     Ref<ParserError> TreeSitterParser::parse_file(const Path& p_path, Ref<Context> r_target)
     {
-        PARS_ERR_COND(!file_exists(p_path), "Input file \"%s\" not found.", p_path.c_str());
+        PARS_ERR_COND(!filesystem_exists(p_path), "Input file \"%s\" not found.", p_path.c_str());
         input_path = path_absolute(p_path);
         return parse(read_file(input_path), std::move(r_target));
     }

@@ -319,8 +319,8 @@ namespace GodotObjectCompiler
                 Path hpp_file = input_file;
                 hpp_file.replace_extension(".hpp");
 
-                bool h_exists = file_exists(h_file);
-                bool hpp_exists = file_exists(hpp_file);
+                bool h_exists = filesystem_exists(h_file);
+                bool hpp_exists = filesystem_exists(hpp_file);
                 if (!h_exists && !hpp_exists) {
                     PRINT_VERBOSE(
                         "No header found for input file \"%s\". Skipping", input_file.c_str());
@@ -348,7 +348,7 @@ namespace GodotObjectCompiler
 
             ConfigNodeReaderWriter reader_writer;
             if (!LibraryContext::instance()->file_modified(input_file) &&
-                file_exists(cached_path)) {
+                filesystem_exists(cached_path)) {
                 if (Result<Node> parsed = reader_writer.read_from_file(cached_path);
                     parsed.has_error()) {
                     parsed.get_error()->set_handled();

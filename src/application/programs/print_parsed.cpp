@@ -55,7 +55,8 @@ namespace GodotObjectCompiler
 
         for (const auto& path : arguments->input_files->get_vector<Path>()) {
             PROG_ERR_COND(
-                !file_exists(path), "Invalid path argument for program %s. File does not exist.",
+                !filesystem_exists(path),
+                "Invalid path argument for program %s. File does not exist.",
                 get_type_static().c_str());
 
             ParserContext parser_context(read_file(path));

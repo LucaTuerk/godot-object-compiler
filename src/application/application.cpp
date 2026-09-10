@@ -138,26 +138,26 @@ namespace GodotObjectCompiler
     {
         PANIC_COND(path.empty(), "Uninitialized lock file used.");
 
-        while (file_exists(path)) {
+        while (filesystem_exists(path)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         {
             FileWriter writer(path);
             writer.write(description);
         }
-        PANIC_COND(!file_exists(path), "Failed to create lock file.");
+        PANIC_COND(!filesystem_exists(path), "Failed to create lock file.");
     }
 
     void LockFile::unlock() const
     {
-        if (file_exists(path)) {
+        if (filesystem_exists(path)) {
             remove_file(path);
         }
     }
 
     bool LockFile::try_unlock() const
     {
-        if (!file_exists(path)) {
+        if (!filesystem_exists(path)) {
             std::cout << "File does not exist " << path << std::endl;
             return false;
         }
@@ -173,7 +173,7 @@ namespace GodotObjectCompiler
     {
         PANIC_COND(path.empty(), "Uninitialized lock file used.");
 
-        if (file_exists(path)) {
+        if (filesystem_exists(path)) {
             return false;
         }
         {
@@ -181,7 +181,7 @@ namespace GodotObjectCompiler
             writer.write(description);
         }
 
-        return file_exists(path);
+        return filesystem_exists(path);
     }
 
     Application::Application()
@@ -275,7 +275,7 @@ namespace GodotObjectCompiler
 
             auto build_num_file = goc_path / "last_goc_build_number.txt";
             String build_num = BuildInfo::commit_hash;
-            if (file_exists(build_num_file)) {
+            if (filesystem_exists(build_num_file)) {
                 if (String last_build_num = read_file(build_num_file);
                     last_build_num != build_num) {
                     APP_ERR_COND(

@@ -304,7 +304,7 @@ namespace GodotObjectCompiler
 
             if (auto itr = generated_from.find(path); itr != generated_from.end()) {
                 for (const Path& generated_file : itr->second) {
-                    if (file_exists(generated_file)) {
+                    if (filesystem_exists(generated_file)) {
                         read_file(path);
                     }
                 }
@@ -331,12 +331,12 @@ namespace GodotObjectCompiler
         while (itr != generated_from.end()) {
             const auto& [path, generated_files] = *itr;
 
-            if (!path.empty() && !file_exists(path)) {
+            if (!path.empty() && !filesystem_exists(path)) {
                 for (const Path& generated_file : generated_files) {
                     PRINT_VERBOSE(
                         "Removing orphan \"%s\", generated from \"%s\"", generated_file.c_str(),
                         path.c_str());
-                    if (file_exists(generated_file)) {
+                    if (filesystem_exists(generated_file)) {
                         remove_file(generated_file);
                     }
                 }
@@ -345,7 +345,7 @@ namespace GodotObjectCompiler
             }
 
             for (const Path& generated_file : generated_files) {
-                if (!file_exists(generated_file)) {
+                if (!filesystem_exists(generated_file)) {
                     regenerate_file(path);
                     break;
                 }
@@ -365,7 +365,7 @@ namespace GodotObjectCompiler
         }
 
         for (const Path& generated : itr->second) {
-            if (file_exists(generated)) {
+            if (filesystem_exists(generated)) {
                 PRINT_VERBOSE(
                     "Removing orphan \"%s\", generated from \"%s\"", generated.c_str(),
                     p_path.c_str());

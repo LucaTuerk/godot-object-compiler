@@ -230,7 +230,8 @@ namespace GodotObjectCompiler
             }
         }
 
-        const auto parse_includes = std::dynamic_pointer_cast<IParserCapabilityParseIncludes>(parser);
+        const auto parse_includes =
+            std::dynamic_pointer_cast<IParserCapabilityParseIncludes>(parser);
         PROG_ERR_COND(
             parse_includes == nullptr,
             "Provided parser does not support parsing includes even though this is declared as a capability.");
@@ -246,8 +247,6 @@ namespace GodotObjectCompiler
                 if (!path_is_descendant(project_args->godot_root->get<Path>(), include)) {
                     continue;
                 }
-
-                print_ln(include.c_str());
 
                 generate_from_file(
                     {path_absolute(include), project_args->godot_root->get<Path>().string()},
