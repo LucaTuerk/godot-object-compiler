@@ -44,11 +44,11 @@ namespace GodotObjectCompiler
       public:
         Ref<CommandLineArgument> log_level = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::ErrorLevel, "log_level", "L", "The log level to use.",
-            INFO);
+            ERROR);
 
         Ref<CommandLineArgument> log_detail = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::ErrorDetail, "log_detail", "D", "The log detail to use.",
-            FULL);
+            CONDENSED);
 
         Ref<CommandLineArgument> source_parser = CommandLineArgument::optional(
             CommandLineArgumentParsers::SourceParser, "source_parser", "SP",
@@ -97,8 +97,9 @@ namespace GodotObjectCompiler
     class GDExtensionProjectArguments : public ICommandLineArgumentList
     {
       public:
-        Ref<CommandLineArgument> extension_name = CommandLineArgument::required(
-            CommandLineArgumentParsers::String, "extension_name", "N", "The GDExtensions name.");
+        Ref<CommandLineArgument> extension_name = CommandLineArgument::defaulted(
+            CommandLineArgumentParsers::String, "extension_name", "N", "The GDExtensions name.",
+            "");
 
         Ref<CommandLineArgument> godot_cpp = CommandLineArgument::required(
             CommandLineArgumentParsers::PathList, "godot_cpp", "GPP",

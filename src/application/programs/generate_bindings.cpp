@@ -220,8 +220,15 @@ namespace GodotObjectCompiler
         case GD_EXTENSION: {
             const auto& extension_args = p_context.get_argument_list<GDExtensionProjectArguments>();
             const auto name = extension_args->extension_name->get<String>();
-            register_method_name = format("generated_initialize_%s_extension", name.c_str());
-            unregister_method_name = format("generated_uninitialize_%s_extension", name.c_str());
+
+            if (name.empty()) {
+                register_method_name = "generated_initialize_extension";
+                unregister_method_name = "generated_uninitialize_extension";
+            } else {
+                register_method_name = format("generated_initialize_%s_extension", name.c_str());
+                unregister_method_name =
+                    format("generated_uninitialize_%s_extension", name.c_str());
+            }
         } break;
         case MODULE: {
             const auto& module_args = p_context.get_argument_list<ModuleProjectArguments>();

@@ -46,6 +46,7 @@ function(target_autogoc TARGET ROOT_DIR)
                 SOURCES ${SOURCES}
                 BYPRODUCTS ${GOC_GENERATED_FILES}
                 COMMAND ${GOC_EXECUTABLE} generate
+                -PT=GDExtension
                 -R=${ROOT_DIR}
                 -P=.goc
                 -C=.goc/cache

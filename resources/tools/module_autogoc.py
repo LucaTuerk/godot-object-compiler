@@ -1,9 +1,21 @@
-from autogoc_common import *
+from os import environ
+
 from SCons.Action import Action
 from SCons.Environment import Environment
 
 
-def module_autogoc(env : Environment, module_env : Environment) :
+def find_goc(env: Environment):
+    environment_var = environ.get("GOC_EXECUTABLE")
+    if environment_var is not None:
+        print(f"Using GOC executable: {environment_var}")
+        return environment_var
+
+    raise Exception(
+        "GOC executable not found. Set the GOC_EXECUTABLE environment variable to the path of the goc executable."
+    )
+
+
+def autogoc(env: Environment, module_env: Environment):
     goc_path = find_goc(env)
     godot_root = module_env.Dir("#").abspath
     root = module_env.Dir(".").abspath
@@ -12,20 +24,17 @@ def module_autogoc(env : Environment, module_env : Environment) :
 
     include_dirs = [
         module_env.Dir("#core").abspath,
-        module_env.Dir("#editor").abspath,
-        module_env.Dir("#scene").abspath,
-        module_env.Dir("#servers").abspath,
-        module_env.Dir("#modules").abspath
+        module_env.Dir("#scene/main").abspath,
     ]
 
-    sources = [ s.abspath for s in module_env.FindSourceFiles(".") if str(s).endswith(".cpp")]
+    sources = [s.abspath for s in module_env.FindSourceFiles(".") if str(s).endswith(".cpp")]
 
     generated_sources = [
-        str(generated_dir) + str(s).replace(root, "").replace(".cpp", ".generated.cpp")
+        str(generated_dir) + str(s).replace(godot_root, "").replace(".cpp", ".generated.cpp")
         for s in sources
         if str(s).endswith(".cpp")
     ]
-    generated_sources.append(str(generated_dir) + "/generated_register_types.cpp")
+    generated_sources.append(str(generated_dir) + "/" + root.replace(godot_root, "") + "/generated_register_types.cpp")
 
     includes = [module_env.Dir(p).abspath for p in env.Dictionary("CPPPATH")]
 
@@ -35,6 +44,7 @@ def module_autogoc(env : Environment, module_env : Environment) :
     run_action = Action(
         f"{goc_path} generate \
             -PT=Module\
+            -N={module_name}\
             -R={root}\
             -GR={godot_root}\
             -S={','.join(str(s) for s in sources)}\

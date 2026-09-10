@@ -46,6 +46,7 @@ def create_goc_shared_library(env: Environment, lib_name: str, source, root_path
 
     run_action = Action(
         f"{goc_path} generate \
+            -PT=GDExtension \
             -P={goc_dir} \
             -T={cache_dir} \
             -G={generated_dir} \

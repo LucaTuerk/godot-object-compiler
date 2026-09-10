@@ -326,10 +326,16 @@ namespace GodotObjectCompiler
         transformator.transform(global_namespace)->get_output(&writer);
 
         GenerateBindings generate_example;
-        p_context.arguments = {
-            format("--root=%s", path_absolute("docs/files").c_str()),
-            format("--include_paths=%s", path_absolute("docs/files").c_str()),
-            format("--generated_path=%s", path_absolute("docs/generated_files").c_str())};
+
+        for (auto& argument : p_context.arguments) {
+            if (string_contains(argument, "--root")) {
+                argument = format("--root=%s", path_absolute("docs/files").c_str());
+            } else if (string_contains(argument, "--include_paths")) {
+                format("--include_paths=%s", path_absolute("docs/files").c_str());
+            } else if (string_contains(argument, "--generated_path")) {
+                format("--generated_path=%s", path_absolute("docs/generated_files").c_str());
+            }
+        }
         PROG_ERR_PASS_ON(generate_example.run(p_context));
 
         return ProgramError::OK;

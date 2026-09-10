@@ -15,6 +15,10 @@ Here are some common arguments you might need:
  -E=<Path>                     The path to the extension api json file to be used with your extension.
                                                                                                      
 
+--extension_name=<String>      Default:                                                              
+ -N=<String>                   The GDExtensions name.                                                
+                                                                                                     
+
 --generated_path=<Path>        Default: .goc/generated                                               
  -G=<Path>                     The directory that will be used by godot-object-compiler for generated
                                files.                                                                
@@ -25,6 +29,10 @@ Here are some common arguments you might need:
 
 --godot_cpp=<PathList>         A comma separated list of paths.                                      
  -GPP=<PathList>               The used godot-cpp submodules include paths.                          
+                                                                                                     
+
+--godot_root=<Path>                                                                                  
+ -GR=<Path>                    The root path of the godot editor source.                             
                                                                                                      
 
 --include_paths=<PathList>     Default: [], A comma separated list of paths.                         
@@ -39,6 +47,14 @@ Here are some common arguments you might need:
  -L=<Flag>                     The log level to use.                                                 
                                                                                                      
 
+--module_name=<String>                                                                               
+ -N=<String>                   The modules name.                                                     
+                                                                                                     
+
+--project_type=<Flag>          Possible Values: GDExtension, Module                                  
+ -PT=<Flag>                    The type of project the generator targets.                            
+                                                                                                     
+
 --root_path=<Path>                                                                                   
  -R=<Path>                     The projects root path.                                               
                                                                                                      
@@ -47,11 +63,11 @@ Here are some common arguments you might need:
  -SP=<Flag>                    The name of the source parser to be used by godot-object-compiler.    
                                                                                                      
 
---sources=<PathList>           Default: [], A comma separated list of paths.                         
- -S=<PathList>                 The generators target source file paths.                              
+--type_db_includes=<PathList>  A comma separated list of paths.                                      
+ -TI=<PathList>                The directories to include for parsing when generating the TypeDB     
                                                                                                      
 
---type_db_path=<Path>          Default: .goc/cache                                                   
+--type_db_path=<Path>          Default: .goc/type_db                                                 
  -T=<Path>                     The directory that will be used by godot-object-compiler for TypeDB caching.
                                                                                                      
 

@@ -35,8 +35,6 @@
 
 #include "application.h"
 
-#include <utility>
-
 #include "application_context.h"
 #include "arguments/argument_lists.h"
 #include "build_info.h"
@@ -53,7 +51,6 @@
 #include "programs/clear.h"
 #include "programs/help.h"
 #include "programs/program.h"
-#include <thread>
 
 namespace GodotObjectCompiler
 {
@@ -131,7 +128,9 @@ namespace GodotObjectCompiler
 
     LockFile::~LockFile()
     {
-        unlock();
+        if (filesystem_exists(path)) {
+            unlock();
+        }
     }
 
     void LockFile::lock() const
@@ -150,22 +149,27 @@ namespace GodotObjectCompiler
 
     void LockFile::unlock() const
     {
-        if (filesystem_exists(path)) {
-            remove_file(path);
+        if (!filesystem_exists(path)) {
+            PRINT_WARNING(
+                "Failed to remove lock file \"%s\" because it does not exist.", path.c_str());
+            return;
         }
+        std::filesystem::remove(path.path());
     }
 
     bool LockFile::try_unlock() const
     {
         if (!filesystem_exists(path)) {
-            std::cout << "File does not exist " << path << std::endl;
+            PRINT_WARNING(
+                "Failed to remove lock file \"%s\" because it does not exist.", path.c_str());
             return false;
         }
 
         if (!remove_file(path)) {
-            std::cout << "Failed to remove file " << path << std::endl;
+            PRINT_WARNING("Failed to remove lock file \"%s\"", path.c_str());
             return false;
         }
+
         return true;
     }
 
