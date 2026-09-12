@@ -39,11 +39,11 @@ Here are some common arguments you might need:
  -I=<PathList>                 The generators include paths.                                         
                                                                                                      
 
---log_detail=<Flag>            Default: Full, Possible Values: Condensed, Full                       
+--log_detail=<Flag>            Default: Condensed, Possible Values: Condensed, Full                  
  -D=<Flag>                     The log detail to use.                                                
                                                                                                      
 
---log_level=<Flag>             Default: Info, Possible Values: Error, Info, Verbose, Warning         
+--log_level=<Flag>             Default: Error, Possible Values: Error, Info, Verbose, Warning        
  -L=<Flag>                     The log level to use.                                                 
                                                                                                      
 
