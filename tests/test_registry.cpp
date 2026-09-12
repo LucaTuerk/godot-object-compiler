@@ -88,6 +88,7 @@ namespace GodotObjectCompiler
     Vector<String> TestRegistry::get_test_application_arguments(const ProgramPath& p_program_path)
     {
         Vector<String> result = p_program_path;
+        result.emplace_back("-PT=GDExtension");
         result.emplace_back(format("-R=%s", get_test_root_dir().c_str()));
         result.emplace_back(format("-P=%s", get_goc_path().c_str()));
         result.emplace_back(format("-G=%s", get_generated_path().c_str()));
