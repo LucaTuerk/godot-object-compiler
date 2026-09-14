@@ -294,9 +294,16 @@ namespace GodotObjectCompiler
 
     bool path_is_descendant(const Path& p_possible_ancestor, const Path& p_possible_child)
     {
-        const Path ancestor_absolute = path_absolute(p_possible_ancestor);
-        const Path child_absolute = path_absolute(p_possible_child);
-        return string_prefix(child_absolute.string(), ancestor_absolute.string());
+        const auto ancestor = path_absolute(p_possible_ancestor).path();
+        const auto child = path_absolute(p_possible_child).path();
+
+        if (ancestor.empty() || std::distance(ancestor.begin(), ancestor.end()) >
+                                    std::distance(child.begin(), child.end())) {
+            return false;
+        }
+
+        const auto mismatch = std::mismatch(ancestor.begin(), ancestor.end(), child.begin()).first;
+        return mismatch == ancestor.end();
     }
 
     bool could_be_path(const Path& p_path)

@@ -59,7 +59,8 @@ namespace GodotObjectCompiler
     }
 
     void GenerateTypeDB::generate_from_file(
-        const File& p_file, const ApplicationContext& p_context, IParser* p_parser)
+        const File& p_file, const ApplicationContext& p_context, IParser* p_parser,
+        bool p_is_source)
     {
         const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
 
@@ -70,12 +71,7 @@ namespace GodotObjectCompiler
             return;
         }
 
-        bool is_input_file = false;
-        if (generator_args) {
-            is_input_file = path_is_descendant(generator_args->root_path->get<Path>(), path);
-        }
-
-        if (!is_input_file && !LibraryContext::instance()->file_modified(path)) {
+        if (!p_is_source && !LibraryContext::instance()->file_modified(path)) {
             PRINT_VERBOSE("Skipping \"%s\". Not modified.", path.c_str());
             return;
         }
@@ -147,6 +143,8 @@ namespace GodotObjectCompiler
         const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
         const auto program_args = p_context.get_argument_list<GenerateArguments>();
 
+        auto sources = program_args->sources->get<Vector<Path>>();
+
         LibraryContext::instance()->add_include_paths(project_args->godot_cpp->get<Vector<Path>>());
 
         file_count = 0;
@@ -163,7 +161,7 @@ namespace GodotObjectCompiler
 
         generate_from_file(
             {project_args->extension_api->get<Path>(), std::nullopt}, p_context,
-            &extension_api_parser);
+            &extension_api_parser, false);
 
         auto includes = generator_args->include_paths->get<Vector<Path>>();
         includes.push_back(generator_args->root_path->get<Path>());
@@ -176,7 +174,8 @@ namespace GodotObjectCompiler
                 }
 
                 generate_from_file(
-                    {path_absolute(file), include_path.string()}, p_context, parser.get());
+                    {path_absolute(file), include_path.string()}, p_context, parser.get(),
+                    std::find(sources.begin(), sources.end(), path) != sources.end());
             }
         }
 
@@ -198,6 +197,8 @@ namespace GodotObjectCompiler
         const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
         const auto application_args = p_context.get_argument_list<ApplicationArguments>();
 
+        auto sources = program_args->sources->get<Vector<Path>>();
+
         LibraryContext::instance()->add_include_paths({project_args->godot_root->get<Path>()});
         LibraryContext::instance()->add_include_paths(
             generator_args->include_paths->get<Vector<Path>>());
@@ -210,7 +211,6 @@ namespace GodotObjectCompiler
             IParser::SUPPORT_PARSE_INCLUDES);
         parser->config(IParser::CONFIG_SKIP_ATTRIBUTES);
 
-        auto sources = program_args->sources->get<Vector<Path>>();
         HashSet<Path> handled;
 
         auto type_db_includes = project_args->type_db_includes->get<Vector<Path>>();
@@ -224,7 +224,8 @@ namespace GodotObjectCompiler
 
                 generate_from_file(
                     {path_absolute(file), project_args->godot_root->get<Path>().string()},
-                    p_context, parser.get());
+                    p_context, parser.get(),
+                    std::find(sources.begin(), sources.end(), path) != sources.end());
 
                 handled.insert(file);
             }
@@ -250,7 +251,7 @@ namespace GodotObjectCompiler
 
                 generate_from_file(
                     {path_absolute(include), project_args->godot_root->get<Path>().string()},
-                    p_context, parser.get());
+                    p_context, parser.get(), true);
 
                 handled.insert(include);
             }

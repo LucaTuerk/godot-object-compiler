@@ -64,7 +64,8 @@ namespace GodotObjectCompiler
         Ref<ProgramError> execute_module(ApplicationContext& p_context);
 
         void generate_from_file(
-            const File& p_file, const ApplicationContext& p_context, IParser* p_parser);
+            const File& p_file, const ApplicationContext& p_context, IParser* p_parser,
+            bool p_is_source);
 
         Size file_count = 0;
         Size type_count = 0;

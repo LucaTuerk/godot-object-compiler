@@ -182,9 +182,8 @@ namespace GodotObjectCompiler
     }
 
     bool virtual_function_bound(
-        const char* p_function_name, const char* p_type,
-        const GodotObjectCompiler::String& p_generated_header,
-        const GodotObjectCompiler::String& p_generated_source)
+        const char* p_function_name, const char* p_type, const String& p_generated_header,
+        const String& p_generated_source)
     {
         String virtual_name = format("_%s", p_function_name);
         if (get_line_that_contains(p_generated_source, {"GDVIRTUAL_BIND", virtual_name}).empty()) {

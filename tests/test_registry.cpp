@@ -82,7 +82,7 @@ namespace GodotObjectCompiler
 
     Path TestRegistry::get_type_db_path()
     {
-        return ".goc_tests/.goc/cache";
+        return ".goc_tests/.goc/type_db";
     }
 
     Vector<String> TestRegistry::get_test_application_arguments(const ProgramPath& p_program_path)
@@ -95,6 +95,8 @@ namespace GodotObjectCompiler
         result.emplace_back(format("-T=%s", get_type_db_path().c_str()));
         result.emplace_back(format("-E=%s", extension_api.c_str()));
         result.emplace_back(format("-SP=%s", source_parser.c_str()));
+        result.emplace_back("-L=Info");
+        result.emplace_back("-D=Full");
 
         Vector<Path> paths;
         for (const auto& path : get_integration_tests_godot_cpp_include_paths()) {

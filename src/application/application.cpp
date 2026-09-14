@@ -85,6 +85,7 @@ namespace GodotObjectCompiler
     int Application::run(const Vector<String>& p_arguments)
     {
         PRINT_VERBOSE("Application: %s", string_vector_combine(p_arguments, " ").c_str());
+        context.arguments = p_arguments;
 
         CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
         const auto application_arguments = context.get_argument_list<ApplicationArguments>();
@@ -210,6 +211,7 @@ namespace GodotObjectCompiler
         context.program = Programs::instance()->find_program(p_arguments, program_arguments);
         context.arguments = program_arguments;
 
+        CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
         const auto application_arguments = context.get_argument_list<ApplicationArguments>();
 
         Permissions::instance()->add_write_path(application_arguments->goc_path->get<Path>());
@@ -308,6 +310,7 @@ namespace GodotObjectCompiler
 
     int Application::cleanup()
     {
+        CLI_PARS_ERR_V(context.register_argument_lists<ApplicationArguments>(), 1);
         const auto arguments = context.get_argument_list<ApplicationArguments>();
 
         if (!context.program->is_readonly()) {

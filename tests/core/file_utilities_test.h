@@ -66,6 +66,15 @@ GOC_TEST(FileReadWriteTest)
     return TEST_RESULT_SUCCESS;
 };
 
+GOC_TEST(PathIsDecendantTest)
+{
+    GOC_TEST_ASSERT(!path_is_descendant("test", Path("testy") / "test"), "Invalid decendent.");
+    GOC_TEST_ASSERT(
+        path_is_descendant("test", Path("test") / "testy" / "testi"), "Invalid decendent.");
+
+    return TEST_RESULT_SUCCESS;
+};
+
 GOC_TEST(EnsurePermission)
 {
     Vector<Path> paths = {".goc_tests", "/home", "/bin"};
