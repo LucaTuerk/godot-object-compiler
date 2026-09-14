@@ -51,7 +51,10 @@ namespace GodotObjectCompiler::ClangASTHandlers
     ClassHandler::handle(const CXCursor& p_cursor, Ref<Context>& p_target, Ref<Context>& p_root)
     {
         if (!clang_isCursorDefinition(p_cursor)) {
-            // Cursor is a forward declaration, Skip
+            return Step::Over();
+        }
+
+        if (clang_Cursor_isAnonymous(p_cursor)) {
             return Step::Over();
         }
 

@@ -327,12 +327,15 @@ namespace GodotObjectCompiler
 
         for (const auto& argument : p_arguments) {
             if (has_correct_name(argument)) {
+                PRINT_VERBOSE("Parsing argument %s", argument.c_str());
                 Opt<T> opt_value = parser->parse_argument(get_argument_part(argument));
                 if (opt_value.has_value()) {
+                    PRINT_VERBOSE("Value parsed.")
                     value_available = true;
                     values.clear();
                     values.push_back(*opt_value);
                 } else {
+                    PRINT_VERBOSE("Failed to parse value.")
                     value_available = false;
                     values.clear();
                 }
@@ -490,7 +493,9 @@ namespace GodotObjectCompiler
 
 #define CLI_PARS_ERR_V(result, value)                                                              \
     do {                                                                                           \
-        if (!result.succeeded()) {                                                                 \
+        auto result_var = result;                                                                  \
+        if (!result_var.succeeded()) {                                                             \
+            print_err(result_var.get_error_message());                                             \
             return value;                                                                          \
         }                                                                                          \
     } while (false)

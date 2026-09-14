@@ -90,7 +90,7 @@ namespace GodotObjectCompiler
     bool
     Resources::copy_resource_to_file(const Path& p_resource_path, const Path& p_target_file) const
     {
-        if (!file_exists(p_target_file)) {
+        if (!filesystem_exists(p_target_file)) {
             if (Path folder_path = p_target_file.parent_path();
                 !directory_exits(folder_path) && !create_dir_recursive(folder_path)) {
                 return false;
@@ -110,7 +110,7 @@ namespace GodotObjectCompiler
                 Path relative = path_relative(res_path, copy_resources);
                 Path file_path = p_target_folder / res_relative / relative;
 
-                if (file_exists(file_path)) {
+                if (filesystem_exists(file_path)) {
                     continue;
                 }
 

@@ -88,7 +88,7 @@ namespace GodotObjectCompiler
 
     bool JsonConfig::read_from_file(const Path& p_path)
     {
-        if (!file_exists(p_path)) {
+        if (!filesystem_exists(p_path)) {
             return false;
         }
 

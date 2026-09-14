@@ -67,7 +67,6 @@ namespace GodotObjectCompiler
                 success &= LevelServers.validate(validator.get()) == STATE_VALID;
                 success &= LevelScene.validate(validator.get()) == STATE_VALID;
                 success &= LevelEditor.validate(validator.get()) == STATE_VALID;
-                success &= LevelMax.validate(validator.get()) == STATE_VALID;
             }
 
             {

@@ -53,6 +53,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>

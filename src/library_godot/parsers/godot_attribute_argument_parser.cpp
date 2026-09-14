@@ -160,8 +160,7 @@ namespace GodotObjectCompiler
                 Size diff = parameters.size() - arguments.size();
                 PARS_ERR_COND(
                     diff > optional_count,
-                    "Invalid inner argument count %d for \"%s\", expected %d parameters with %d "
-                    "being optional.",
+                    "Invalid inner argument count %d for \"%s\", expected %d parameters with %d being optional.",
                     arguments.size(), p_content.c_str(), parameters.size(), optional_count);
             }
 

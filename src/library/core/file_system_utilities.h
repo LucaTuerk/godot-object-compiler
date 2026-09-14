@@ -56,7 +56,7 @@ namespace GodotObjectCompiler
 
     bool create_dir_recursive(const Path& p_path);
 
-    bool file_exists(const Path& p_path);
+    bool filesystem_exists(const Path& p_path);
 
     bool remove_file(const Path& p_path);
 

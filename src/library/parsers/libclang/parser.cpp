@@ -204,8 +204,7 @@ namespace GodotObjectCompiler
         for (const auto& macro : macros) {
             added_section_writer.write(format("#undef %s\n", macro.c_str()));
             added_section_writer.write(format(
-                "#define %s(...) const char* MERGE(__GOC_MACRO__%s__, __LINE__) = "
-                "#__VA_ARGS__;\n",
+                "#define %s(...) const char* MERGE(__GOC_MACRO__%s__, __LINE__) = #__VA_ARGS__;\n",
                 macro.c_str(), macro.c_str()));
         }
 
@@ -272,7 +271,8 @@ namespace GodotObjectCompiler
                 CXSourceLocation location = clang_getDiagnosticLocation(diagnostic);
                 clang_getFileLocation(location, &file, &line, nullptr, nullptr);
 
-                if (Path(ClangString(clang_getFileName(file))) != temp_file.get_path()) {
+                if (file == nullptr ||
+                    Path(ClangString(clang_getFileName(file))) != temp_file.get_path()) {
                     // Skip errors in included files.
                     continue;
                 }
@@ -308,6 +308,9 @@ namespace GodotObjectCompiler
     Ref<ParserError> ClangParser::parse_file(const Path& p_path, const Ref<Context> r_target)
     {
         current_file = path_absolute(p_path);
+        PARS_ERR_COND(
+            !std::filesystem::is_regular_file(current_file->path()),
+            "Target \"%s\" is not a regular file", current_file->c_str());
         return parse(read_file(p_path), r_target);
     }
 
@@ -321,6 +324,44 @@ namespace GodotObjectCompiler
             parse_attributes = false;
             break;
         }
+    }
+
+    void get_included_files_visitor(
+        CXFile included_file, CXSourceLocation* inclusion_stack, unsigned include_len,
+        CXClientData client_data)
+    {
+        UNUSED(inclusion_stack);
+        UNUSED(include_len);
+
+        auto* paths = static_cast<HashSet<Path>*>(client_data);
+        const String path = ClangString(clang_getFileName(included_file));
+        paths->insert(Path(path));
+    }
+
+    Vector<Path> ClangParser::get_included_files(const Path& p_path)
+    {
+        static CXIndex index = clang_createIndex(0, 0);
+
+        Vector<const char*> args = {"-x", "c++", "-std=c++17"};
+        Vector<String> include_args;
+        Vector<Path> includes = LibraryContext::instance()->get_include_paths();
+
+        for (const auto& include_path : includes) {
+            include_args.emplace_back(format("-I%s", include_path.c_str()));
+            args.push_back(include_args.back().c_str());
+        }
+
+        ClangTranslationUnit unit = clang_parseTranslationUnit(
+            index, p_path.c_str(), args.data(), static_cast<int>(args.size()), nullptr, 0,
+            CXTranslationUnit_SkipFunctionBodies |
+                CXTranslationUnit_IgnoreNonErrorsFromIncludedFiles);
+
+        HashSet<Path> included_files;
+        clang_getInclusions(unit, &get_included_files_visitor, &included_files);
+
+        Vector<Path> result;
+        result.insert(result.end(), included_files.begin(), included_files.end());
+        return result;
     }
 
 #define VISITOR_ERROR_BREAK(context, err)                                                          \

@@ -5,6 +5,7 @@ PointerAlignment: Left
 AlignAfterOpenBracket: AlwaysBreak
 BreakArrays: true
 BreakBeforeBraces: Linux
+BreakStringLiterals: false
 NamespaceIndentation: All
 IndentWidth: 4
 ColumnLimit: 100

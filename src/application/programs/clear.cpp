@@ -80,7 +80,7 @@ namespace GodotObjectCompiler
 
         if (directory_exits(arguments->generated_path->get<Path>())) {
             for (const Path& entry : directory_entries(arguments->generated_path->get<Path>())) {
-                PROG_ERR_COND(!remove_entry(entry), "Failed to remove \"%s\"", entry.c_str())
+                remove_entry(entry);
             }
         }
         return ProgramError::OK;
@@ -98,7 +98,7 @@ namespace GodotObjectCompiler
 
         if (directory_exits(arguments->type_db_path->get<Path>())) {
             for (const Path& entry : directory_entries(arguments->type_db_path->get<Path>())) {
-                PROG_ERR_COND(!remove_entry(entry), "Failed to remove \"%s\"", entry.c_str())
+                remove_entry(entry);
             }
         }
         return ProgramError::OK;

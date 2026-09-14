@@ -50,7 +50,8 @@ GOC_TEST(FileReadWriteTest)
         String content = generate_random_string(size);
         write_file(filename, content);
         GOC_TEST_ASSERT(
-            file_exists(filename), "File \"%s\" does not exist after write", filename.c_str());
+            filesystem_exists(filename), "File \"%s\" does not exist after write",
+            filename.c_str());
 
         String read_content = read_file(filename);
         GOC_TEST_EQ(content, read_content, "Invalid read content from \"%s\"", filename.c_str());
@@ -58,9 +59,18 @@ GOC_TEST(FileReadWriteTest)
 
         GOC_TEST_ASSERT(remove_file(filename), "Failed to remove file \"%s\"", filename.c_str());
         GOC_TEST_ASSERT(
-            !file_exists(filename), "File \"%s\" still exists after sucessfull remove call",
+            !filesystem_exists(filename), "File \"%s\" still exists after sucessfull remove call",
             filename.c_str());
     }
+
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(PathIsDecendantTest)
+{
+    GOC_TEST_ASSERT(!path_is_descendant("test", Path("testy") / "test"), "Invalid decendent.");
+    GOC_TEST_ASSERT(
+        path_is_descendant("test", Path("test") / "testy" / "testi"), "Invalid decendent.");
 
     return TEST_RESULT_SUCCESS;
 };

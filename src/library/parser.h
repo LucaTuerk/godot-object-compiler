@@ -44,6 +44,7 @@ namespace GodotObjectCompiler
             CAPABILITIES_NONE = 0,
             SOURCE_PARSER = 1,
             SUPPORT_MACRO_EXPANSION = 1 << 1,
+            SUPPORT_PARSE_INCLUDES = 1 << 2,
             JSON_CONFIG_PARSER = 1 << 15,
         };
 
@@ -60,6 +61,12 @@ namespace GodotObjectCompiler
         virtual void config(Config p_config);
 
         virtual int get_capabilities();
+    };
+
+    class IParserCapabilityParseIncludes
+    {
+      public:
+        virtual Vector<Path> get_included_files(const Path& p_path) = 0;
     };
 } // namespace GodotObjectCompiler
 

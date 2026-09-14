@@ -47,19 +47,45 @@ namespace GodotObjectCompiler
     CommandLineArgumentParseResult
     Generate::register_required_arguments(ApplicationContext& p_context) const
     {
-        return p_context.register_argument_lists<GDExtensionProjectArguments, GenerateArguments>();
+        return register_generate_required_argument(p_context);
+    }
+
+    CommandLineArgumentParseResult
+    Generate::register_generate_required_argument(ApplicationContext& p_context)
+    {
+        const auto base_result = p_context.register_argument_lists<
+            ApplicationArguments, GeneratorArguments, GenerateArguments>();
+
+        auto generator_args = p_context.get_argument_list<GeneratorArguments>();
+        Opt<ProjectType> type = std::nullopt;
+        if (generator_args && generator_args->project_type->has_value()) {
+            type = generator_args->project_type->get<ProjectType>();
+        }
+
+        if (!type.has_value()) {
+            return base_result + p_context.register_argument_lists<
+                                     GDExtensionProjectArguments, ModuleProjectArguments>();
+        }
+
+        switch (*type) {
+        case GD_EXTENSION:
+            return base_result + p_context.register_argument_lists<GDExtensionProjectArguments>();
+        case MODULE:
+            return base_result + p_context.register_argument_lists<ModuleProjectArguments>();
+        default:
+            PANIC("Unhandled enum value");
+        }
     }
 
     Ref<ProgramError> Generate::execute(ApplicationContext& p_context)
     {
-        const auto project_arguments = p_context.get_argument_list<GDExtensionProjectArguments>();
         const auto generate_arguments = p_context.get_argument_list<GenerateArguments>();
 
         GenerateTypeDB generate_type_db;
         GenerateBindings generate_bindings;
 
         if (generate_arguments->flags->value_equals(REGENERATE_BINDINGS)) {
-            for (const Path& input_file : project_arguments->sources->get<Vector<Path>>()) {
+            for (const Path& input_file : generate_arguments->sources->get<Vector<Path>>()) {
                 LibraryContext::instance()->force_regenerate(input_file);
             }
         }

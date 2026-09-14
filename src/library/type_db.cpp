@@ -252,7 +252,7 @@ namespace GodotObjectCompiler
                 return itr->second->clone();
             }
 
-            if (file_exists(cache_file_path)) {
+            if (filesystem_exists(cache_file_path)) {
                 if (Result<Node> root_result = reader.read_from_file(cache_file_path);
                     root_result.has_result()) {
                     _cache[cache_file_path] = root_result.get_result()->clone();
@@ -264,7 +264,7 @@ namespace GodotObjectCompiler
             for (const String& using_ : LibraryContext::instance()->get_usings()) {
                 if (Path using_path = _get_cache_file_path(
                         format("%s::%s", using_.c_str(), name.c_str()), p_template_argument_count);
-                    file_exists(using_path)) {
+                    filesystem_exists(using_path)) {
                     Result<Node> root_result = reader.read_from_file(using_path);
                     if (root_result.has_result()) {
                         _cache[cache_file_path] = root_result.get_result()->clone();
@@ -295,7 +295,7 @@ namespace GodotObjectCompiler
                 return itr->second->as<Attribute>();
             }
 
-            if (file_exists(cache_file_path)) {
+            if (filesystem_exists(cache_file_path)) {
                 const Result<Node> root_result = reader.read_from_file(cache_file_path);
                 if (root_result.has_result()) {
                     _cache[cache_file_path] = root_result.get_result()->clone();
@@ -307,7 +307,7 @@ namespace GodotObjectCompiler
             for (const String& using_ : LibraryContext::instance()->get_usings()) {
                 if (Path using_path = _get_attribute_cache_file_path(
                         format("%s::%s", using_.c_str(), name.c_str()), p_attribute_name);
-                    file_exists(using_path)) {
+                    filesystem_exists(using_path)) {
                     const Result<Node> root_result = reader.read_from_file(using_path);
                     if (root_result.has_result()) {
                         _cache[cache_file_path] = root_result.get_result()->clone();

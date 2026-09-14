@@ -44,9 +44,18 @@ jobs:
           platform: "linux.x86_64"
           version: "4.6.3-stable"
 
-      - name: Build Project
+      - name: Build godot-object-compiler
         run: |
           mkdir -p build
+          cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
+          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN) -t goc
+
+      - name: Init tools
+        run: |
+          ./build/godot-object-compiler/goc init tools tools
+
+      - name: Build Project
+        run: |
           cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
           cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
 
@@ -96,9 +105,18 @@ jobs:
           platform: "win64"
           version: "4.6.3-stable"
 
-      - name: Build Project
+      - name: Build godot-object-compiler
         run: |
           mkdir -p build
+          cmake -Bbuild -S. -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
+          cmake --build build --parallel $(Get-CimInstance -ClassName Win32_ComputerSystem).NumberOfLogicalProcessors --config Release -t goc
+
+      - name: Init tools
+        run: |
+          .\build\goc.exe init tools tools
+
+      - name: Build Project
+        run: |
           cmake -Bbuild -S. -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
           cmake --build build --parallel $(Get-CimInstance -ClassName Win32_ComputerSystem).NumberOfLogicalProcessors --config Release
 
@@ -148,9 +166,18 @@ jobs:
           platform: "macos.universal"
           version: "4.6.3-stable"
 
-      - name: Build Project
+      - name: Build godot-object-compiler
         run: |
           mkdir -p build
+          cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
+          cmake --build build --parallel $(getconf _NPROCESSORS_ONLN) -t goc
+
+      - name: Init tools
+        run: |
+          ./build/godot-object-compiler/goc init tools tools
+
+      - name: Build Project
+        run: |
           cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release -DClang_DIR=${{github.workspace}}/libclang/lib/cmake/clang/
           cmake --build build --parallel $(getconf _NPROCESSORS_ONLN)
 

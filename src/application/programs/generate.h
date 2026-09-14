@@ -44,6 +44,10 @@ namespace GodotObjectCompiler
     class GenerateArguments : public ICommandLineArgumentList
     {
       public:
+        Ref<CommandLineArgument> sources = CommandLineArgument::defaulted(
+            CommandLineArgumentParsers::PathList, "sources", "S",
+            "The generators target source file paths.", {});
+
         Ref<CommandLineArgument> flags = CommandLineArgument::optional(
             make_ref<FlagCommandLineArgumentParser<GenerateFlags>>(
                 FlagCommandLineArgumentParser<GenerateFlags>::InitList{
@@ -52,7 +56,7 @@ namespace GodotObjectCompiler
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {
-            return {flags};
+            return {sources, flags};
         }
     };
 
@@ -63,6 +67,10 @@ namespace GodotObjectCompiler
       public:
         [[nodiscard]] CommandLineArgumentParseResult
         register_required_arguments(ApplicationContext& p_context) const override;
+
+        [[nodiscard]]
+        static CommandLineArgumentParseResult
+        register_generate_required_argument(ApplicationContext& p_context);
 
         Ref<ProgramError> execute(ApplicationContext& p_context) override;
 
