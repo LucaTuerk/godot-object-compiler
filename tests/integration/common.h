@@ -33,14 +33,17 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 #pragma once
+#include "application/arguments/argument_parsers.h"
 #include "library/core/core.h"
 #include "library/core/path.h"
 
 namespace GodotObjectCompiler
 {
+
     bool generate_files(
         const Path& p_path, String& r_generated_header, String& r_generated_source,
-        String& r_register_header, String& r_register_source);
+        String& r_register_header, String& r_register_source,
+        ProjectType p_project_type = GD_EXTENSION);
 
     String get_line_that_contains(const String& p_content, const Vector<String>& p_search);
 
@@ -78,6 +81,12 @@ namespace GodotObjectCompiler
     String generated_header, generated_source, register_header, register_source;                   \
     bool success = generate_files(                                                                 \
         file, generated_header, generated_source, register_header, register_source);               \
+    GOC_TEST_ASSERT(success, "Failed to generate files from \"%s\"", file)
+
+#define GOC_MODULE_TEST_GEN_FILE(file)                                                             \
+    String generated_header, generated_source, register_header, register_source;                   \
+    bool success = generate_files(                                                                 \
+        file, generated_header, generated_source, register_header, register_source, MODULE);       \
     GOC_TEST_ASSERT(success, "Failed to generate files from \"%s\"", file)
 
 #define GOC_INTEGRATION_TEST_GEN_INVALID_FILE(file)                                                \

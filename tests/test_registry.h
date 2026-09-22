@@ -53,7 +53,7 @@ namespace GodotObjectCompiler
     {
       public:
         TestTimer();
-        Size elapsed_nanoseconds();
+        Size elapsed_nanoseconds() const;
 
       private:
         std::chrono::time_point<std::chrono::high_resolution_clock> start;
@@ -72,7 +72,7 @@ namespace GodotObjectCompiler
 
         bool register_integration_test(const String& name, TestFunctor functor);
 
-        static Path get_generated_path();
+        bool register_module_test(const String& name, TestFunctor functor);
 
         static Path get_test_root_dir();
 
@@ -80,15 +80,30 @@ namespace GodotObjectCompiler
 
         static Path get_type_db_path();
 
-        Vector<String> get_test_application_arguments(const ProgramPath& p_program_path);
+        static Path get_generated_path();
 
-        Vector<Path> get_integration_tests_godot_cpp_include_paths();
+        static Path get_module_goc_path();
 
-        void set_integration_tests_godot_cpp_include_paths(const Vector<Path>& p_paths);
+        static Path get_module_type_db_path();
+
+        static Path get_module_generated_path();
+
+        Vector<String>
+        get_integration_test_application_arguments(const ProgramPath& p_program_path);
+
+        Vector<String> get_module_test_application_arguments(const ProgramPath& p_program_path);
+
+        Vector<Path> get_include_paths();
+
+        void set_include_paths(const Vector<Path>& p_paths);
 
         void set_extension_api(const Path& p_extension_api);
 
         void set_source_parser(const String& p_source_parser);
+
+        void set_godot_root(const Path& p_godot_root);
+
+        Path get_godot_root();
 
         Path get_extension_api();
 
@@ -96,12 +111,16 @@ namespace GodotObjectCompiler
 
         const Dictionary<String, TestFunctor>& get_integration_tests();
 
+        const Dictionary<String, TestFunctor>& get_module_tests();
+
       private:
         String source_parser;
         Path extension_api;
+        Path godot_root;
         Vector<Path> include_paths;
         Dictionary<String, TestFunctor> tests;
         Dictionary<String, TestFunctor> integration_tests;
+        Dictionary<String, TestFunctor> module_tests;
     };
 
     class TestRegister
@@ -128,6 +147,18 @@ namespace GodotObjectCompiler
         bool operator<<(TestFunctor functor) const;
     };
 
+    class ModuleTestRegister
+    {
+        String name;
+
+      public:
+        explicit ModuleTestRegister(String name) : name(std::move(name))
+        {
+        }
+
+        bool operator<<(TestFunctor functor) const;
+    };
+
 } // namespace GodotObjectCompiler
 
 // clang-format off
@@ -139,6 +170,11 @@ namespace GodotObjectCompiler
 #define GOC_INTEGRATION_TEST(name)                        \
   static inline bool __## name## __test_registered__ =      \
       GodotObjectCompiler::IntegrationTestRegister(#name) \
+      << []() -> GodotObjectCompiler::TestResult
+
+#define GOC_MODULE_TEST(name)                        \
+  static inline bool __## name## __test_registered__ =      \
+      GodotObjectCompiler::ModuleTestRegister(#name) \
       << []() -> GodotObjectCompiler::TestResult
 // clang-format on
 

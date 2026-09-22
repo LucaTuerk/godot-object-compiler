@@ -36,7 +36,6 @@
 #include "test_registry.h"
 
 #include "library/core/file_system_utilities.h"
-#include "library/core/string_utilities.h"
 
 namespace GodotObjectCompiler
 {
@@ -46,7 +45,7 @@ namespace GodotObjectCompiler
         start = std::chrono::high_resolution_clock::now();
     }
 
-    Size TestTimer::elapsed_nanoseconds()
+    Size TestTimer::elapsed_nanoseconds() const
     {
         using namespace std::chrono;
         time_point<high_resolution_clock> now = high_resolution_clock::now();
@@ -62,6 +61,12 @@ namespace GodotObjectCompiler
     bool TestRegistry::register_integration_test(const String& name, TestFunctor functor)
     {
         auto [_, success] = integration_tests.emplace(name, functor);
+        return success;
+    }
+
+    bool TestRegistry::register_module_test(const String& name, TestFunctor functor)
+    {
+        auto [_, success] = module_tests.emplace(name, functor);
         return success;
     }
 
@@ -85,7 +90,23 @@ namespace GodotObjectCompiler
         return ".goc_tests/.goc/type_db";
     }
 
-    Vector<String> TestRegistry::get_test_application_arguments(const ProgramPath& p_program_path)
+    Path TestRegistry::get_module_goc_path()
+    {
+        return ".goc_tests/.goc_modules";
+    }
+
+    Path TestRegistry::get_module_type_db_path()
+    {
+        return ".goc_tests/.goc_modules/type_db";
+    }
+
+    Path TestRegistry::get_module_generated_path()
+    {
+        return ".goc_tests/.goc_modules/generated";
+    }
+
+    Vector<String>
+    TestRegistry::get_integration_test_application_arguments(const ProgramPath& p_program_path)
     {
         Vector<String> result = p_program_path;
         result.emplace_back("-PT=GDExtension");
@@ -99,7 +120,7 @@ namespace GodotObjectCompiler
         result.emplace_back("-D=Full");
 
         Vector<Path> paths;
-        for (const auto& path : get_integration_tests_godot_cpp_include_paths()) {
+        for (const auto& path : get_include_paths()) {
             paths.push_back(path);
         }
 
@@ -107,12 +128,36 @@ namespace GodotObjectCompiler
         return result;
     }
 
-    Vector<Path> TestRegistry::get_integration_tests_godot_cpp_include_paths()
+    Vector<String>
+    TestRegistry::get_module_test_application_arguments(const ProgramPath& p_program_path)
+    {
+        Vector<String> result = p_program_path;
+        result.emplace_back("-PT=Module");
+        result.emplace_back("-N=test_module");
+        result.emplace_back(format("-R=%s", (godot_root / "modules" / "test_module").c_str()));
+        result.emplace_back(format("-P=%s", get_module_goc_path().c_str()));
+        result.emplace_back(format("-G=%s", get_module_generated_path().c_str()));
+        result.emplace_back(format("-T=%s", get_module_type_db_path().c_str()));
+        result.emplace_back(format("-GR=%s", godot_root.c_str()));
+        result.emplace_back("-L=Info");
+        result.emplace_back("-D=Full");
+
+        Vector<Path> paths;
+        for (const auto& path : get_include_paths()) {
+            paths.push_back(path);
+        }
+        paths.push_back(godot_root / "modules" / "test_module");
+
+        result.emplace_back(format("-TI=%s", path_vector_combine(paths, ",").c_str()));
+        return result;
+    }
+
+    Vector<Path> TestRegistry::get_include_paths()
     {
         return include_paths;
     }
 
-    void TestRegistry::set_integration_tests_godot_cpp_include_paths(const Vector<Path>& p_paths)
+    void TestRegistry::set_include_paths(const Vector<Path>& p_paths)
     {
         include_paths = p_paths;
     }
@@ -120,6 +165,16 @@ namespace GodotObjectCompiler
     void TestRegistry::set_source_parser(const String& p_source_parser)
     {
         source_parser = p_source_parser;
+    }
+
+    void TestRegistry::set_godot_root(const Path& p_godot_root)
+    {
+        godot_root = p_godot_root;
+    }
+
+    Path TestRegistry::get_godot_root()
+    {
+        return godot_root;
     }
 
     void TestRegistry::set_extension_api(const Path& p_extension_api)
@@ -136,6 +191,10 @@ namespace GodotObjectCompiler
     {
         return integration_tests;
     }
+    const Dictionary<String, TestFunctor>& TestRegistry::get_module_tests()
+    {
+        return module_tests;
+    }
 
     const Dictionary<String, TestFunctor>& TestRegistry::get_tests()
     {
@@ -150,6 +209,11 @@ namespace GodotObjectCompiler
     bool IntegrationTestRegister::operator<<(TestFunctor functor) const
     {
         return TestRegistry::instance()->register_integration_test(name, std::move(functor));
+    }
+
+    bool ModuleTestRegister::operator<<(TestFunctor functor) const
+    {
+        return TestRegistry::instance()->register_module_test(name, std::move(functor));
     }
 
 } // namespace GodotObjectCompiler

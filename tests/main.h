@@ -34,6 +34,45 @@
 /**************************************************************************/
 #pragma once
 #define GOC_TEST_CONTEXT
+#include "application/arguments/argument.h"
+#include "application/arguments/argument_parsers.h"
 #include "library/library_context.h"
+
+using namespace GodotObjectCompiler;
+
+class IntegrationTestsArgumentList : public ICommandLineArgumentList
+{
+
+  public:
+    Ref<CommandLineArgument> extension_api = CommandLineArgument::required(
+        CommandLineArgumentParsers::Path, "extension_api", "E",
+        "The path to the extension api json to run test against.");
+
+    Ref<CommandLineArgument> godot_cpp_includes = CommandLineArgument::required(
+        CommandLineArgumentParsers::PathList, "godot_cpp_includes", "GPP",
+        "The godot_cpp include paths.");
+
+    [[nodiscard]] Vector<std::shared_ptr<CommandLineArgument>> get_arguments() const override
+    {
+        return {extension_api, godot_cpp_includes};
+    }
+};
+
+class ModuleTestsArguments : public ICommandLineArgumentList
+{
+  public:
+    Ref<CommandLineArgument> godot_root = CommandLineArgument::required(
+        CommandLineArgumentParsers::Path, "godot_root", "GR",
+        "The path to the godot repositories root.");
+
+    Ref<CommandLineArgument> type_db_includes = CommandLineArgument::required(
+        CommandLineArgumentParsers::PathList, "type_db_includes", "TI",
+        "The include paths to use for generating the TypeDB.");
+
+    [[nodiscard]] Vector<std::shared_ptr<CommandLineArgument>> get_arguments() const override
+    {
+        return {godot_root, type_db_includes};
+    }
+};
 
 int main(int argc, char* argv[]);

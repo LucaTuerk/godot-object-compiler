@@ -36,7 +36,10 @@
 #include "common.h"
 
 #include "application/application.h"
+#include "application/arguments/argument_parsers.h"
+#include "library/core/core.h"
 #include "library/core/file_system_utilities.h"
+#include "library/core/permissions.h"
 #include "library/core/string_utilities.h"
 #include "test_registry.h"
 
@@ -44,48 +47,74 @@ namespace GodotObjectCompiler
 {
     bool generate_files(
         const Path& p_path, String& r_generated_header, String& r_generated_source,
-        String& r_register_header, String& r_register_source)
+        String& r_register_header, String& r_register_source, ProjectType p_project_type)
     {
         Application application;
-        const Vector<String> args = TestRegistry::instance()->get_test_application_arguments(
+        Vector<String> args = TestRegistry::instance()->get_integration_test_application_arguments(
             {"generate", "--generate_flags=regenerate_bindings",
              format("--sources=%s", path_absolute(p_path).c_str())});
+
+        Path test_module_path =
+            TestRegistry::instance()->get_godot_root() / "modules" / "test_module";
+        if (p_project_type == MODULE) {
+            Permissions::instance()->add_write_path(test_module_path);
+            create_dir_recursive(test_module_path);
+
+            Path in_module_path = test_module_path / p_path.filename();
+            FileWriter writer(in_module_path);
+            writer.write(read_file(p_path));
+
+            args = TestRegistry::instance()->get_module_test_application_arguments(
+                {"generate", "--generate_flags=regenerate_bindings",
+                 format("--sources=%s", path_absolute(in_module_path).c_str())});
+        }
+
         if (application.run(args) != 0) {
             print_err("Failed to generated files.");
             return false;
         }
 
+        if (p_project_type == MODULE) {
+            remove_directory(test_module_path);
+        }
+
         const Path base = p_path.parent_path();
-        const Path relative = path_relative(p_path, TestRegistry::instance()->get_test_root_dir());
+        const Path relative = p_project_type == GD_EXTENSION
+                                  ? path_relative(p_path, TestRegistry::get_test_root_dir())
+                                  : p_path.filename();
+
+        const Path generated_base =
+            p_project_type == GD_EXTENSION
+                ? path_absolute(TestRegistry::get_generated_path())
+                : path_absolute(
+                      TestRegistry::get_module_generated_path() / "modules" / "test_module");
 
         const Path generated_header_path =
-            TestRegistry::instance()->get_generated_path() /
-            Path(string_replace(relative.string(), ".h", ".generated.h"));
+            generated_base / Path(string_replace(relative.string(), ".h", ".generated.h"));
         const Path generated_source_path =
-            TestRegistry::instance()->get_generated_path() /
-            Path(string_replace(relative.string(), ".h", ".generated.cpp"));
-        const Path register_header_path =
-            TestRegistry::instance()->get_generated_path() / "generated_register_types.h";
-        const Path register_source_path =
-            TestRegistry::instance()->get_generated_path() / "generated_register_types.cpp";
+            generated_base / Path(string_replace(relative.string(), ".h", ".generated.cpp"));
+        const Path register_header_path = generated_base / "generated_register_types.h";
+        const Path register_source_path = generated_base / "generated_register_types.cpp";
 
         if (!filesystem_exists(generated_header_path)) {
-            print_err("Failed to generate header.");
+            fmt_print_err("Failed to generate header %s", generated_header_path.c_str());
             return false;
         }
 
         if (!filesystem_exists(generated_source_path)) {
-            print_err("Failed to generate source.");
+            fmt_print_err("Failed to generate source %s", generated_source_path.c_str());
             return false;
         }
 
         if (!filesystem_exists(register_header_path)) {
-            print_err("Failed to generate register types header.");
+            fmt_print_err(
+                "Failed to generate register types header %s", register_header_path.c_str());
             return false;
         }
 
         if (!filesystem_exists(register_source_path)) {
-            print_err("Failed to generate register types source.");
+            fmt_print_err(
+                "Failed to generate register types source %s", register_source_path.c_str());
             return false;
         }
 
@@ -149,9 +178,8 @@ namespace GodotObjectCompiler
     }
 
     bool signal_bound(
-        const char* p_signal_name, const char* p_variant_type,
-        const GodotObjectCompiler::String& p_generated_header,
-        const GodotObjectCompiler::String& p_generated_source, bool p_no_args)
+        const char* p_signal_name, const char* p_variant_type, const String& p_generated_header,
+        const String& p_generated_source, bool p_no_args)
     {
         UNUSED(p_generated_header);
         String line = get_line_that_contains(
@@ -170,8 +198,8 @@ namespace GodotObjectCompiler
     }
 
     bool function_bound(
-        const char* p_function_name, const GodotObjectCompiler::String& p_generated_header,
-        const GodotObjectCompiler::String& p_generated_source)
+        const char* p_function_name, const String& p_generated_header,
+        const String& p_generated_source)
     {
         UNUSED(p_generated_header);
         if (get_line_that_contains(p_generated_source, {"bind_method", p_function_name}).empty()) {
@@ -206,8 +234,7 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool
-    class_included(const char* p_class_name, const GodotObjectCompiler::String& p_generated_source)
+    bool class_included(const char* p_class_name, const String& p_generated_source)
     {
         return !get_line_that_contains(
                     p_generated_source, {"#include", pascal_to_snake_case(p_class_name)})

@@ -33,3 +33,7 @@ cmake*
 build
 .vscode
 docs/_build
+
+# Ignore godot_cpp and godot for tests
+godot_cpp
+godot

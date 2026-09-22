@@ -48,14 +48,21 @@ constexpr Size NANO_TO_MILLIS = 1'000'000;
 
 int main(int argc, char* argv[])
 {
-
     Vector<String> failed_tests;
+    ApplicationContext args_context;
+    for (int i = 1; i < argc; i++) {
+        args_context.arguments.emplace_back(argv[i]);
+    }
 
     bool run_integration_tests = false;
+    bool run_module_tests = false;
     for (int i = 1; i < argc; i++) {
-        print_ln(argv[i]);
         if (String(argv[i]) == "run_integration_tests") {
             run_integration_tests = true;
+            CLI_PARS_ERR_V(args_context.register_argument_lists<IntegrationTestsArgumentList>(), 1);
+        } else if (String(argv[i]) == "run_module_tests") {
+            run_module_tests = true;
+            CLI_PARS_ERR_V(args_context.register_argument_lists<ModuleTestsArguments>(), 1);
         }
     }
 
@@ -74,7 +81,7 @@ int main(int argc, char* argv[])
         {
             Application application;
             const Vector<String> args =
-                TestRegistry::instance()->get_test_application_arguments({"clear"});
+                TestRegistry::instance()->get_integration_test_application_arguments({"clear"});
             PANIC_COND(
                 application.run(args),
                 "Failed to clear the cache before running tests with parser %s",
@@ -125,15 +132,16 @@ int main(int argc, char* argv[])
         }
 
         if (run_integration_tests) {
-            Vector<Path> include_paths;
-            for (int i = 2; i < argc; i++) {
-                if (i == 2) {
-                    TestRegistry::instance()->set_extension_api(argv[i]);
-                } else {
-                    include_paths.emplace_back(argv[i]);
-                }
-            }
-            TestRegistry::instance()->set_integration_tests_godot_cpp_include_paths(include_paths);
+            auto integration_tests_arguments =
+                args_context.get_argument_list<IntegrationTestsArgumentList>();
+            PANIC_COND(
+                integration_tests_arguments == nullptr,
+                "Failed to get integration tests arguments.");
+
+            TestRegistry::instance()->set_extension_api(
+                integration_tests_arguments->extension_api->get<Path>());
+            TestRegistry::instance()->set_include_paths(
+                integration_tests_arguments->godot_cpp_includes->get<Vector<Path>>());
 
             for (const auto& [test_name, test_functor] :
                  TestRegistry::instance()->get_integration_tests()) {
@@ -143,7 +151,7 @@ int main(int argc, char* argv[])
                 {
                     Application application;
                     const Vector<String> args =
-                        TestRegistry::instance()->get_test_application_arguments(
+                        TestRegistry::instance()->get_integration_test_application_arguments(
                             {"generate", "type_db"});
                     PANIC_COND(
                         application.run(args) != 0, "Failed to setup type db during test run.");
@@ -151,6 +159,68 @@ int main(int argc, char* argv[])
 
                 Ref<IParser> source_parser =
                     LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
+                PANIC_COND(source_parser == nullptr, "Could not get source parser.");
+                source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
+
+                TestResult result = TEST_RESULT_FAILURE;
+                Permissions::instance()->add_write_path(".goc_tests");
+                TestTimer timer;
+                try {
+                    result = test_functor();
+                } catch (const std::exception& e) {
+                    print_err(e.what());
+                }
+                timer_sum += timer.elapsed_nanoseconds();
+
+                switch (result) {
+                case TEST_RESULT_SUCCESS:
+                    PRINT_INFO(
+                        "%s (Parser: %s)\tSuccess! %dms", test_name.c_str(),
+                        parser->get_type().c_str(), timer.elapsed_nanoseconds() / NANO_TO_MILLIS);
+                    success_count++;
+                    break;
+                case TEST_RESULT_FAILURE:
+                    failed_tests.push_back(
+                        format("%s (Parser: %s)", test_name.c_str(), parser->get_type().c_str()));
+                    PRINT_INFO(
+                        "%s (Parser: %s)\tFailed!", test_name.c_str(), parser->get_type().c_str());
+                    failed_count++;
+                    break;
+                case TEST_RESULT_IGNORED:
+                    PRINT_INFO(
+                        "%s (Parser: %s)\tIgnored!", test_name.c_str(), parser->get_type().c_str());
+                    ignore_count++;
+                    break;
+                }
+            }
+        }
+
+        if (run_module_tests && parser->get_capabilities() & IParser::SUPPORT_MACRO_EXPANSION) {
+            auto module_test_arguments = args_context.get_argument_list<ModuleTestsArguments>();
+            PANIC_COND(
+                module_test_arguments == nullptr, "Failed to get integration tests arguments.");
+
+            TestRegistry::instance()->set_godot_root(
+                module_test_arguments->godot_root->get<Path>());
+            TestRegistry::instance()->set_include_paths(
+                module_test_arguments->type_db_includes->get<Vector<Path>>());
+
+            for (const auto& [test_name, test_functor] :
+                 TestRegistry::instance()->get_module_tests()) {
+                all_count++;
+                PRINT_INFO("Running test case \"%s\"", test_name.c_str());
+                {
+                    Application application;
+                    const Vector<String> args =
+                        TestRegistry::instance()->get_module_test_application_arguments(
+                            {"generate", "type_db"});
+                    PANIC_COND(
+                        application.run(args) != 0, "Failed to setup type db during test run.");
+                }
+
+                Ref<IParser> source_parser = LibraryContext::instance()->get_default_parser(
+                    IParser::SOURCE_PARSER | IParser::SUPPORT_MACRO_EXPANSION |
+                    IParser::SUPPORT_PARSE_INCLUDES);
                 PANIC_COND(source_parser == nullptr, "Could not get source parser.");
                 source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
 
