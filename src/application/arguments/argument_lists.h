@@ -43,11 +43,12 @@ namespace GodotObjectCompiler
     {
       public:
         Ref<CommandLineArgument> log_level = CommandLineArgument::defaulted(
-            CommandLineArgumentParsers::LogLevel, "log_level", "L", "The log level to use.", INFO);
+            CommandLineArgumentParsers::ErrorLevel, "log_level", "L", "The log level to use.",
+            ERROR);
 
         Ref<CommandLineArgument> log_detail = CommandLineArgument::defaulted(
-            CommandLineArgumentParsers::LogDetail, "log_detail", "D", "The log detail to use.",
-            FULL);
+            CommandLineArgumentParsers::ErrorDetail, "log_detail", "D", "The log detail to use.",
+            CONDENSED);
 
         Ref<CommandLineArgument> source_parser = CommandLineArgument::optional(
             CommandLineArgumentParsers::SourceParser, "source_parser", "SP",
@@ -66,35 +67,39 @@ namespace GodotObjectCompiler
     class GeneratorArguments : public ICommandLineArgumentList
     {
       public:
+        Ref<CommandLineArgument> project_type = CommandLineArgument::required(
+            CommandLineArgumentParsers::ProjectType, "project_type", "PT",
+            "The type of project the generator targets.");
+
+        Ref<CommandLineArgument> root_path = CommandLineArgument::required(
+            CommandLineArgumentParsers::Path, "root_path", "R", "The projects root path.");
+
+        Ref<CommandLineArgument> include_paths = CommandLineArgument::defaulted(
+            CommandLineArgumentParsers::PathList, "include_paths", "I",
+            "The generators include paths.", {});
+
         Ref<CommandLineArgument> type_db_path = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::Path, "type_db_path", "T",
             "The directory that will be used by godot-object-compiler for TypeDB caching.",
-            ".goc/cache");
+            ".goc/type_db");
 
         Ref<CommandLineArgument> generated_path = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::Path, "generated_path", "G",
             "The directory that will be used by godot-object-compiler for generated files.",
             ".goc/generated");
 
-        Ref<CommandLineArgument> include_paths = CommandLineArgument::defaulted(
-            CommandLineArgumentParsers::PathList, "include_paths", "I",
-            "The generators include paths.", {});
-
-        Ref<CommandLineArgument> root_path = CommandLineArgument::required(
-            CommandLineArgumentParsers::Path, "root_path", "R", "The projects root path.");
-
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {
-            return {type_db_path, generated_path, include_paths, root_path};
+            return {project_type, root_path, include_paths, type_db_path, generated_path};
         }
     };
 
     class GDExtensionProjectArguments : public ICommandLineArgumentList
     {
       public:
-        Ref<CommandLineArgument> sources = CommandLineArgument::defaulted(
-            CommandLineArgumentParsers::PathList, "sources", "S",
-            "The generators target source file paths.", {});
+        Ref<CommandLineArgument> extension_name = CommandLineArgument::defaulted(
+            CommandLineArgumentParsers::String, "extension_name", "N", "The GDExtensions name.",
+            "");
 
         Ref<CommandLineArgument> godot_cpp = CommandLineArgument::required(
             CommandLineArgumentParsers::PathList, "godot_cpp", "GPP",
@@ -106,7 +111,27 @@ namespace GodotObjectCompiler
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {
-            return {sources, godot_cpp, extension_api};
+            return {extension_name, godot_cpp, extension_api};
+        }
+    };
+
+    class ModuleProjectArguments : public ICommandLineArgumentList
+    {
+      public:
+        Ref<CommandLineArgument> module_name = CommandLineArgument::required(
+            CommandLineArgumentParsers::String, "module_name", "N", "The modules name.");
+
+        Ref<CommandLineArgument> godot_root = CommandLineArgument::required(
+            CommandLineArgumentParsers::Path, "godot_root", "GR",
+            "The root path of the godot editor source.");
+
+        Ref<CommandLineArgument> type_db_includes = CommandLineArgument::required(
+            CommandLineArgumentParsers::PathList, "type_db_includes", "TI",
+            "The directories to include for parsing when generating the TypeDB");
+
+        [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
+        {
+            return {module_name, godot_root, type_db_includes};
         }
     };
 } // namespace GodotObjectCompiler

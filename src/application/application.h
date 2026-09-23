@@ -47,6 +47,29 @@ namespace GodotObjectCompiler
         Ref<IProgram> program;
     };
 
+    class LockFile
+    {
+      public:
+        LockFile() = default;
+
+        LockFile(const Path& p_path, const String& p_description)
+            : path(p_path), description(p_description)
+        {
+        }
+
+        ~LockFile();
+
+        void lock() const;
+
+        void unlock() const;
+
+        bool try_lock() const;
+
+      private:
+        Path path;
+        String description;
+    };
+
     class Application
     {
       public:
@@ -58,13 +81,11 @@ namespace GodotObjectCompiler
         ApplicationContext& get_context();
 
       private:
-        int setup_context(Vector<String> p_arguments);
+        int setup_context(const Vector<String>& p_arguments);
 
         int run_program(const Ref<IProgram>& p_program);
 
         int cleanup();
-
-        bool was_last_exit_graceful() const;
 
         int exit_gracefully(int p_return_code) const;
 
@@ -73,6 +94,10 @@ namespace GodotObjectCompiler
         ApplicationContext context;
 
         static inline bool has_application = false;
+
+        bool last_exit_graceful = false;
+
+        LockFile graceful_lock;
     };
 
 } // namespace GodotObjectCompiler

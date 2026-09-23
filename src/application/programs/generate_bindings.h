@@ -44,6 +44,8 @@ namespace GodotObjectCompiler
         PROGRAM(GenerateBindings, "generate/bindings")
 
       public:
+        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+
         [[nodiscard]] CommandLineArgumentParseResult
         register_required_arguments(ApplicationContext& p_context) const override;
 
@@ -53,7 +55,14 @@ namespace GodotObjectCompiler
 
         static String generated_macro_name(const String& p_header, Size p_line);
 
-        Ref<ProgramError> execute(ApplicationContext& p_context) override;
+      private:
+        static Ref<ProgramError> execute_extension(const ApplicationContext& p_context);
+
+        static Ref<ProgramError> execute_module(const ApplicationContext& p_context);
+
+        static Ref<ProgramError> generate_bindings(
+            const ApplicationContext& p_context, const Vector<Path>& p_sources,
+            const Vector<Path>& p_additional_includes);
     };
 
 } // namespace GodotObjectCompiler

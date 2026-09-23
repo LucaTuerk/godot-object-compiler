@@ -43,73 +43,83 @@ namespace GodotObjectCompiler
         {
             bool success = true;
 
-            success &= ClassDB.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= Object.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                RefCounted.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= Resource.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= Node.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= GodotRef.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= ModuleInitializationLevel.validate(
-                           LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                PropertyHintEnum.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= PropertyUsageFlagsEnum.validate(LibraryContext::instance()->get_type_db()) ==
-                       STATE_VALID;
-            success &=
-                ADD_PROPERTY.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= ADD_GROUP.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                ADD_SUBGROUP.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= Variant.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                VariantTypeEnum.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= Array.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                TypedArray.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                Dictionary.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                TypedDictionary.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= GDCLASS.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                GDREGISTER_CLASS.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= GDREGISTER_VIRTUAL_CLASS.validate(
-                           LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= GDREGISTER_ABSTRACT_CLASS.validate(
-                           LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= GDREGISTER_INTERNAL_CLASS.validate(
-                           LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= GDREGISTER_RUNTIME_CLASS.validate(
-                           LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                GDVIRTUAL_CALL.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                GDVIRTUAL_BIND.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= BIND_ENUM_CONSTANT.validate(LibraryContext::instance()->get_type_db()) ==
-                       STATE_VALID;
-            success &= BIND_BITFIELD_FLAG.validate(LibraryContext::instance()->get_type_db()) ==
-                       STATE_VALID;
-            success &= VARIANT_ENUM_CAST.validate(LibraryContext::instance()->get_type_db()) ==
-                       STATE_VALID;
-            success &= VARIANT_BITFIELD_CAST.validate(LibraryContext::instance()->get_type_db()) ==
-                       STATE_VALID;
-            success &=
-                MultiplayerAPI.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                MultiplayerPeer.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= MultiplayerAPIRPCMode.validate(LibraryContext::instance()->get_type_db()) ==
-                       STATE_VALID;
-            success &= MultiplayerPeerTransferMode.validate(
-                           LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                StringName.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= Callable.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &= List.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
-            success &=
-                PropertyInfo.validate(LibraryContext::instance()->get_type_db()) == STATE_VALID;
+            const auto db = LibraryContext::instance()->get_type_db();
+
+            success &= ClassDB.validate(db) == STATE_VALID;
+            success &= Object.validate(db) == STATE_VALID;
+            success &= RefCounted.validate(db) == STATE_VALID;
+            success &= Resource.validate(db) == STATE_VALID;
+            success &= Node.validate(db) == STATE_VALID;
+            success &= GodotRef.validate(db) == STATE_VALID;
+            success &= ModuleInitializationLevel.validate(db) == STATE_VALID;
+            success &= PropertyHintEnum.validate(db) == STATE_VALID;
+            success &= PropertyUsageFlagsEnum.validate(db) == STATE_VALID;
+            success &= ADD_PROPERTY.validate(db) == STATE_VALID;
+            success &= ADD_GROUP.validate(db) == STATE_VALID;
+            success &= ADD_SUBGROUP.validate(db) == STATE_VALID;
+            success &= Variant.validate(db) == STATE_VALID;
+            success &= VariantTypeEnum.validate(db) == STATE_VALID;
+            success &= Array.validate(db) == STATE_VALID;
+            success &= TypedArray.validate(db) == STATE_VALID;
+            success &= Dictionary.validate(db) == STATE_VALID;
+            success &= TypedDictionary.validate(db) == STATE_VALID;
+            success &= GDCLASS.validate(db) == STATE_VALID;
+            success &= GDREGISTER_CLASS.validate(db) == STATE_VALID;
+            success &= GDREGISTER_VIRTUAL_CLASS.validate(db) == STATE_VALID;
+            success &= GDREGISTER_ABSTRACT_CLASS.validate(db) == STATE_VALID;
+            success &= GDREGISTER_INTERNAL_CLASS.validate(db) == STATE_VALID;
+            success &= GDREGISTER_RUNTIME_CLASS.validate(db) == STATE_VALID;
+            success &= GDVIRTUAL_CALL.validate(db) == STATE_VALID;
+            success &= GDVIRTUAL_BIND.validate(db) == STATE_VALID;
+            success &= BIND_ENUM_CONSTANT.validate(db) == STATE_VALID;
+            success &= BIND_BITFIELD_FLAG.validate(db) == STATE_VALID;
+            success &= VARIANT_ENUM_CAST.validate(db) == STATE_VALID;
+            success &= VARIANT_BITFIELD_CAST.validate(db) == STATE_VALID;
+            success &= MultiplayerAPI.validate(db) == STATE_VALID;
+            success &= MultiplayerPeer.validate(db) == STATE_VALID;
+            success &= MultiplayerAPIRPCMode.validate(db) == STATE_VALID;
+            success &= MultiplayerPeerTransferMode.validate(db) == STATE_VALID;
+            success &= StringName.validate(db) == STATE_VALID;
+            success &= Callable.validate(db) == STATE_VALID;
+            success &= List.validate(db) == STATE_VALID;
+            success &= PropertyInfo.validate(db) == STATE_VALID;
 
             return success;
+        }
+
+        Vector<Assumption<AssumeType<Class>>*> get_required_classes()
+        {
+            return {
+                &ClassDB,  &Variant, &Object,       &RefCounted,     &Resource,        &Node,
+                &GodotRef, &Array,   &TypedArray,   &Dictionary,     &TypedDictionary, &StringName,
+                &Callable, &List,    &PropertyInfo, &MultiplayerAPI, &MultiplayerPeer,
+            };
+        }
+
+        Vector<Assumption<AssumeType<Enum>>*> get_required_enums()
+        {
+            return {&ModuleInitializationLevel,   &PropertyHintEnum,
+                    &PropertyUsageFlagsEnum,      &VariantTypeEnum,
+                    &MultiplayerPeerTransferMode, &MultiplayerAPIRPCMode};
+        }
+
+        Vector<Assumption<AssumeType<Define>>*> get_required_defines()
+        {
+            return {
+                &ADD_PROPERTY,
+                &ADD_GROUP,
+                &ADD_SUBGROUP,
+                &GDCLASS,
+                &GDREGISTER_CLASS,
+                &GDREGISTER_ABSTRACT_CLASS,
+                &GDREGISTER_INTERNAL_CLASS,
+                &GDREGISTER_RUNTIME_CLASS,
+                &GDVIRTUAL_CALL,
+                &GDVIRTUAL_BIND,
+                &BIND_ENUM_CONSTANT,
+                &BIND_BITFIELD_FLAG,
+                &VARIANT_ENUM_CAST,
+                &VARIANT_BITFIELD_CAST};
         }
 
     } // namespace AssumedGodotTypes

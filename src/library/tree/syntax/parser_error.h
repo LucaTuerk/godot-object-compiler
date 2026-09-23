@@ -147,8 +147,7 @@ namespace GodotObjectCompiler
         Ref<T> node = result.get_result()->as<T>();
         if (node == nullptr) {
             ERROR(
-                "Node read from file has invalid type. Expected %s "
-                "but got %s",
+                "Node read from file has invalid type. Expected %s but got %s",
                 T::get_type_static().c_str(), result.get_result()->get_type().c_str());
         }
         return node;

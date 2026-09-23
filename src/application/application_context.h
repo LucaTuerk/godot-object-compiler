@@ -73,10 +73,6 @@ namespace GodotObjectCompiler
     CommandLineArgumentParseResult
     ApplicationContext::register_argument_list(const Ref<T>& p_argument_list)
     {
-        if (argument_lists.find(typeid(T)) != argument_lists.end()) {
-            return {};
-        }
-
         Ref<ICommandLineArgumentList> argument_list =
             std::dynamic_pointer_cast<ICommandLineArgumentList>(p_argument_list);
         const auto result = CommandLineArgument::parse(argument_list->get_arguments(), arguments);
@@ -106,11 +102,9 @@ namespace GodotObjectCompiler
     template <typename T> Ref<T> ApplicationContext::get_argument_list() const
     {
         auto itr = argument_lists.find(typeid(T));
-
-        if (itr == argument_lists.end()) {
-            return nullptr;
-        }
-
+        PANIC_COND(
+            itr == argument_lists.end(),
+            "Failed to get argument list. It has not been registered.");
         return std::dynamic_pointer_cast<T>(itr->second);
     }
 } // namespace GodotObjectCompiler

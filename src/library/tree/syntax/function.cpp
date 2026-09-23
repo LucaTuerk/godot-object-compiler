@@ -77,6 +77,15 @@ namespace GodotObjectCompiler
         p_writer->write("parameter_count", parameter_count);
         p_writer->write("optional_parameter_count", optional_parameter_count);
     }
+
+    bool TemplateParameters::copy_to(const Ref<Node>& p_other) const
+    {
+        COPY_GUARD(TemplateParameters, Context);
+        target->parameter_count = parameter_count;
+        target->optional_parameter_count = optional_parameter_count;
+        return true;
+    }
+
     String TemplateParameters::to_string() const
     {
         return format("%s: %d/%d", get_type().c_str(), parameter_count, optional_parameter_count);

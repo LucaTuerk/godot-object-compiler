@@ -25,6 +25,18 @@ jobs:
           sudo apt update
           sudo apt install cmake -y
 
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v7
+        with:
+          python-version: 3.9
+
+      - name: Setup SCons
+        shell: bash
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install scons==4.4
+          scons --version
+
       - name: Setup libclang
         uses: ./.github/actions/setup_libclang
         with:
@@ -52,9 +64,22 @@ jobs:
           cmake ..
           cmake --build . --target generate_bindings
 
+      - name: Checkout godot
+        uses: actions/checkout@v7
+        with:
+          repository: "godotengine/godot"
+          path: "godot"
+
+      - name: Generate godot generated files
+        env:
+          SCONS_CACHE: ${{ github.workspace }}/godot/.scons-cache/
+        run: |
+          cd godot
+          timeout 20s scons | true
+
       - name: Run Tests
         run: |
-          ./build/goc_tests run_integration_tests godot-cpp/gdextension/extension_api.json godot-cpp/include godot-cpp/build/gen/include godot-cpp/gdextension
+          ./build/goc_tests run_integration_tests -E=godot-cpp/gdextension/extension_api.json -GPP=godot-cpp/include,godot-cpp/build/gen/include,godot-cpp/gdextension run_module_tests -GR=godot -TI=godot/core,godot/scene
           pip install gcovr
           cd ./build/CMakeFiles/goc_tests.dir/src
           gcovr -f . -e "/usr/include/.*" -e "/.*thirdparty/.*" -e "/.*tests/.*"\

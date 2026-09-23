@@ -63,7 +63,9 @@ namespace GodotObjectCompiler
         [[nodiscard]] CommandLineArgumentParseResult
         register_required_arguments(ApplicationContext& p_context) const override;
 
-        static bool get_help(IStringWriter* p_writer, const Vector<String>& p_args);
+        static bool get_help(
+            IStringWriter* p_writer, const Vector<String>& p_args,
+            const ApplicationContext& p_context);
 
       private:
         static void write_title(IStringWriter* p_writer, const String& p_title, Size width);
@@ -74,7 +76,7 @@ namespace GodotObjectCompiler
 
         static void write_program_info(
             IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& p_program,
-            bool p_detailed);
+            bool p_detailed, const ApplicationContext& p_context);
 
         static String get_help_text(const ProgramPath& p_path);
 

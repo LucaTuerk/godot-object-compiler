@@ -105,6 +105,7 @@ namespace GodotObjectCompiler
         argument_context.register_argument_lists<ApplicationArguments>();
         argument_context.register_argument_lists<GeneratorArguments>();
         argument_context.register_argument_lists<GDExtensionProjectArguments>();
+        argument_context.register_argument_lists<ModuleProjectArguments>();
 
         auto arguments = argument_context.get_command_line_arguments();
 
@@ -146,7 +147,7 @@ namespace GodotObjectCompiler
 
     void Help::write_program_info(
         IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& p_program,
-        bool p_detailed)
+        bool p_detailed, const ApplicationContext& p_context)
     {
         StreamWriter identifier_writer;
 
@@ -181,12 +182,11 @@ namespace GodotObjectCompiler
             p_writer->write("\n");
 
             ApplicationContext program_context;
+            program_context.arguments = p_context.arguments;
             if (!p_program->is_readonly()) {
                 program_context.register_argument_lists<ApplicationArguments>();
                 program_context.register_argument_lists<GeneratorArguments>();
-                program_context.register_argument_lists<GDExtensionProjectArguments>();
             }
-
             std::ignore = p_program->register_required_arguments(program_context);
             auto arguments = program_context.get_command_line_arguments();
 
@@ -238,7 +238,7 @@ namespace GodotObjectCompiler
 
         StreamWriter writer;
         PROG_ERR_COND(
-            !get_help(&writer, arguments->program_path->get_vector<String>()),
+            !get_help(&writer, arguments->program_path->get_vector<String>(), p_context),
             "Failed to get help content.");
         print(writer.get_string());
         return ProgramError::OK;
@@ -250,7 +250,8 @@ namespace GodotObjectCompiler
         return p_context.register_argument_lists<HelpArguments>();
     }
 
-    bool Help::get_help(IStringWriter* p_writer, const Vector<String>& p_args)
+    bool Help::get_help(
+        IStringWriter* p_writer, const Vector<String>& p_args, const ApplicationContext& p_context)
     {
         written = {};
 
@@ -274,7 +275,7 @@ namespace GodotObjectCompiler
         if (p_args.empty()) {
             for (const auto& [path, program] : programs_sorted) {
                 StreamWriter writer;
-                write_program_info(p_writer, path, program, false);
+                write_program_info(p_writer, path, program, false, p_context);
             }
             p_writer->write("\n");
             write_parser_info(p_writer);
@@ -289,7 +290,7 @@ namespace GodotObjectCompiler
             if (itr != programs_sorted.end()) {
                 const auto& [path, program] = *itr;
                 StreamWriter writer;
-                write_program_info(&writer, path, program, true);
+                write_program_info(&writer, path, program, true, p_context);
                 p_writer->write(writer.get_string());
             }
         }

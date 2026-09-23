@@ -41,6 +41,7 @@
 #include "library/core/string_utilities.h"
 #include "library/tree/output/output.h"
 #include "library/type_db.h"
+#include "library_godot/assumptions.h"
 
 namespace GodotObjectCompiler
 {
@@ -121,7 +122,7 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool GodotMacroIncludeGenerator::generate_core_include(
+    bool GodotMacroIncludeGenerator::generate_extension_core_include(
         const Vector<Path>& p_godot_cpp_includes, const Ref<Context>& p_write_to)
     {
         p_write_to->add_child(Output::PragmaOnce());
@@ -148,6 +149,35 @@ namespace GodotObjectCompiler
                 p_write_to->add_child(Output::Include(header));
             }
         }
+        return found_any_path;
+    }
+
+    bool GodotMacroIncludeGenerator::generate_module_core_includes(const Ref<Context>& p_write_to)
+    {
+        HashSet<String> headers;
+        for (const auto required_class : AssumedGodotTypes::get_required_classes()) {
+            headers.insert((*required_class)().type->header);
+        }
+
+        for (const auto required_enum : AssumedGodotTypes::get_required_enums()) {
+            headers.insert((*required_enum)().type->header);
+        }
+
+        for (const auto required_define : AssumedGodotTypes::get_required_defines()) {
+            headers.insert((*required_define)().type->header);
+        }
+
+        p_write_to->add_child(Output::PragmaOnce());
+        bool found_any_path = false;
+
+        for (const auto& header : headers) {
+            if (header.empty()) {
+                continue;
+            }
+            found_any_path = true;
+            p_write_to->add_child(Output::Include(header));
+        }
+
         return found_any_path;
     }
 
@@ -292,10 +322,7 @@ namespace GodotObjectCompiler
             for (Size curr = 0; curr < size - 1; ++curr) {
                 for (Size cmp = curr + 1; cmp < size; ++cmp) {
                     body->add_child(Output::FmtText(
-                        "static_assert(!std::is_same<T%d,T%d>::value, \"Duplicate argument types "
-                        "%d "
-                        "and "
-                        "%d\");",
+                        "static_assert(!std::is_same<T%d,T%d>::value, \"Duplicate argument types %d and %d\");",
                         curr + 1, cmp + 1, curr + 1, cmp + 1));
                 }
             }

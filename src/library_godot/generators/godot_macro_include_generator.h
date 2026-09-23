@@ -45,7 +45,10 @@ namespace GodotObjectCompiler
 
       public:
         Ref<Context> generate(Ref<Context> p_tree, Ref<Node> p_entry_point) override;
-        bool generate_core_include(
+
+        static bool generate_module_core_includes(const Ref<Context>& p_write_to);
+
+        static bool generate_extension_core_include(
             const Vector<Path>& p_godot_cpp_includes, const Ref<Context>& p_write_to);
 
       private:

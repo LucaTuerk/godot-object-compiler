@@ -51,6 +51,10 @@ namespace GodotObjectCompiler::ClangASTHandlers
     {
         switch (p_cursor.kind) {
         case CXCursor_EnumDecl: {
+            if (clang_Cursor_isAnonymous(p_cursor)) {
+                return Step::Over();
+            }
+
             const ClangString name = clang_getCursorDisplayName(p_cursor);
 
             Ref<EnumValues> values;

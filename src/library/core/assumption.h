@@ -117,9 +117,8 @@ namespace GodotObjectCompiler
 
         if (state == STATE_INVALID) {
             fmt_print_err(format(
-                "Assumption did not hold and was accessed %d "
-                "times: %s",
-                value_access_count, message.c_str()));
+                "Assumption did not hold and was accessed %d times: %s", value_access_count,
+                message.c_str()));
         }
     }
 

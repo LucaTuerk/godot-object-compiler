@@ -45,8 +45,14 @@
 #include "library/parsers/tree-sitter/parser.h"
 #endif
 
+namespace GodotObjectCompiler
+{
+    enum ProjectType { GD_EXTENSION, MODULE };
+}
+
 namespace GodotObjectCompiler::CommandLineArgumentParsers
 {
+
     static const inline Ref<PathCommandLineArgumentParser> Path =
         make_ref<PathCommandLineArgumentParser>();
 
@@ -59,19 +65,24 @@ namespace GodotObjectCompiler::CommandLineArgumentParsers
     static const inline Ref<StringListCommandLineArgumentParser> StringList =
         make_ref<StringListCommandLineArgumentParser>();
 
-    static const inline Ref<FlagCommandLineArgumentParser<ErrorLevel>> LogLevel =
-        make_ref<FlagCommandLineArgumentParser<ErrorLevel>>(
-            FlagCommandLineArgumentParser<ErrorLevel>::InitList({
+    static const inline Ref<FlagCommandLineArgumentParser<ErrorLevel>> ErrorLevel =
+        make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::ErrorLevel>>(
+            FlagCommandLineArgumentParser<GodotObjectCompiler::ErrorLevel>::InitList({
                 {"Error", ERROR},
                 {"Warning", WARNING},
                 {"Info", INFO},
                 {"Verbose", VERBOSE},
             }));
 
-    static const inline Ref<FlagCommandLineArgumentParser<ErrorDetail>> LogDetail =
-        make_ref<FlagCommandLineArgumentParser<ErrorDetail>>(
-            FlagCommandLineArgumentParser<ErrorDetail>::InitList(
+    static const inline Ref<FlagCommandLineArgumentParser<ErrorDetail>> ErrorDetail =
+        make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::ErrorDetail>>(
+            FlagCommandLineArgumentParser<GodotObjectCompiler::ErrorDetail>::InitList(
                 {{"Condensed", ErrorDetail::CONDENSED}, {"Full", ErrorDetail::FULL}}));
+
+    static const inline Ref<FlagCommandLineArgumentParser<ProjectType>> ProjectType =
+        make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::ProjectType>>(
+            FlagCommandLineArgumentParser<GodotObjectCompiler::ProjectType>::InitList(
+                {{"GDExtension", GD_EXTENSION}, {"Module", MODULE}}));
 
     static const inline Ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>
         SourceParser = make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>(

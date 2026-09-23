@@ -154,7 +154,7 @@ void GodotObjectCompiler::fmt_print_ln(const String& format_str, Args&&... args)
 #ifndef DEV_BUILD
 #define PANIC(...)                                                                                 \
     print_err(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__));                 \
-    abort()
+    exit(1)
 #else
 #define PANIC(...)                                                                                 \
     throw std::runtime_error(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__))

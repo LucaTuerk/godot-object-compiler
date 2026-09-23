@@ -72,9 +72,7 @@ namespace GodotObjectCompiler
                 B<Argument>()[Output::StringLiteral("")]}]}][Output::Semicolon()];
 
         ONCE(PRINT_WARNING(
-            "Trying to add property category. Categories can not be bound correctly due to "
-            "issue https://github.com/godotengine/godot-proposals/issues/14274. Binding a property "
-            "group instead."));
+            "Trying to add property category. Categories can not be bound correctly due to issue https://github.com/godotengine/godot-proposals/issues/14274. Binding a property group instead."));
         return GeneratorError::OK;
     }
 

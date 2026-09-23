@@ -15,6 +15,10 @@ Here are some common arguments you might need:
  -E=<Path>                     The path to the extension api json file to be used with your extension.
                                                                                                      
 
+--extension_name=<String>      Default:                                                              
+ -N=<String>                   The GDExtensions name.                                                
+                                                                                                     
+
 --generated_path=<Path>        Default: .goc/generated                                               
  -G=<Path>                     The directory that will be used by godot-object-compiler for generated
                                files.                                                                
@@ -27,16 +31,28 @@ Here are some common arguments you might need:
  -GPP=<PathList>               The used godot-cpp submodules include paths.                          
                                                                                                      
 
+--godot_root=<Path>                                                                                  
+ -GR=<Path>                    The root path of the godot editor source.                             
+                                                                                                     
+
 --include_paths=<PathList>     Default: [], A comma separated list of paths.                         
  -I=<PathList>                 The generators include paths.                                         
                                                                                                      
 
---log_detail=<Flag>            Default: Full, Possible Values: Condensed, Full                       
+--log_detail=<Flag>            Default: Condensed, Possible Values: Condensed, Full                  
  -D=<Flag>                     The log detail to use.                                                
                                                                                                      
 
---log_level=<Flag>             Default: Info, Possible Values: Error, Info, Verbose, Warning         
+--log_level=<Flag>             Default: Error, Possible Values: Error, Info, Verbose, Warning        
  -L=<Flag>                     The log level to use.                                                 
+                                                                                                     
+
+--module_name=<String>                                                                               
+ -N=<String>                   The modules name.                                                     
+                                                                                                     
+
+--project_type=<Flag>          Possible Values: GDExtension, Module                                  
+ -PT=<Flag>                    The type of project the generator targets.                            
                                                                                                      
 
 --root_path=<Path>                                                                                   
@@ -47,11 +63,11 @@ Here are some common arguments you might need:
  -SP=<Flag>                    The name of the source parser to be used by godot-object-compiler.    
                                                                                                      
 
---sources=<PathList>           Default: [], A comma separated list of paths.                         
- -S=<PathList>                 The generators target source file paths.                              
+--type_db_includes=<PathList>  A comma separated list of paths.                                      
+ -TI=<PathList>                The directories to include for parsing when generating the TypeDB     
                                                                                                      
 
---type_db_path=<Path>          Default: .goc/cache                                                   
+--type_db_path=<Path>          Default: .goc/type_db                                                 
  -T=<Path>                     The directory that will be used by godot-object-compiler for TypeDB caching.
                                                                                                      
 
