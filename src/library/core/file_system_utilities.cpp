@@ -108,6 +108,7 @@ namespace GodotObjectCompiler
         try {
             return std::filesystem::remove(absolute.path());
         } catch (const std::filesystem::filesystem_error& e) {
+            UNUSED(e);
             return false;
         }
     }
@@ -124,6 +125,7 @@ namespace GodotObjectCompiler
         try {
             return std::filesystem::remove_all(absolute.path()) > 0;
         } catch (const std::filesystem::filesystem_error& e) {
+            UNUSED(e);
             return false;
         }
     }

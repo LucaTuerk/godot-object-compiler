@@ -106,7 +106,7 @@ namespace GodotObjectCompiler
         }
     }
 
-    Ref<ProgramError> GenerateBindings::execute_extension(ApplicationContext& p_context)
+    Ref<ProgramError> GenerateBindings::execute_extension(const ApplicationContext& p_context)
     {
         const auto application_args = p_context.get_argument_list<ApplicationArguments>();
         const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
@@ -121,7 +121,7 @@ namespace GodotObjectCompiler
             Ref<Context> core_include_content = node_new<Context>();
 
             macro_include_generator.generate(nullptr, macro_include_content);
-            macro_include_generator.generate_extension_core_include(
+            GodotMacroIncludeGenerator::generate_extension_core_include(
                 project_args->godot_cpp->get<Vector<Path>>(), core_include_content);
 
             FileWriter marco_writer = FileWriter::generated(
@@ -145,7 +145,7 @@ namespace GodotObjectCompiler
             project_args->godot_cpp->get<Vector<Path>>());
     }
 
-    Ref<ProgramError> GenerateBindings::execute_module(ApplicationContext& p_context)
+    Ref<ProgramError> GenerateBindings::execute_module(const ApplicationContext& p_context)
     {
         const auto application_args = p_context.get_argument_list<ApplicationArguments>();
         const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
@@ -170,7 +170,7 @@ namespace GodotObjectCompiler
             Ref<Context> core_include_content = node_new<Context>();
 
             macro_include_generator.generate(nullptr, macro_include_content);
-            macro_include_generator.generate_module_core_includes(core_include_content);
+            GodotMacroIncludeGenerator::generate_module_core_includes(core_include_content);
 
             FileWriter marco_writer = FileWriter::generated(
                 generator_args->generated_path->get<Path>() / "godot_object_compiler" / "macros.h",
@@ -193,7 +193,7 @@ namespace GodotObjectCompiler
     }
 
     Ref<ProgramError> GenerateBindings::generate_bindings(
-        ApplicationContext& p_context, const Vector<Path>& p_sources,
+        const ApplicationContext& p_context, const Vector<Path>& p_sources,
         const Vector<Path>& p_additional_includes)
     {
         const auto application_args = p_context.get_argument_list<ApplicationArguments>();

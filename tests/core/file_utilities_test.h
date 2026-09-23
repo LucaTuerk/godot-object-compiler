@@ -63,6 +63,31 @@ GOC_TEST(FileReadWriteTest)
             filename.c_str());
     }
 
+    for (Size i = 0; i < 100; ++i) {
+        Path filename = base / Path(format("%s.txt", generate_random_string(10).c_str()));
+
+        GOC_TEST_ASSERT(
+            !remove_file(filename), "Successfully removed noexistant file \"%s\"",
+            filename.c_str());
+    }
+
+    for (Size i = 0; i < 100; ++i) {
+        Path dirname = base / Path(format("%s", generate_random_string(10).c_str()));
+        GOC_TEST_ASSERT(
+            create_dir_recursive(dirname), "Failed to create directory \"%s\"", dirname.c_str());
+        GOC_TEST_ASSERT(
+            directory_exits(dirname), "Directory \"%s\" does not exist", dirname.c_str());
+        GOC_TEST_ASSERT(
+            remove_directory(dirname), "Failed to remove directory \"%s\"", dirname.c_str());
+    }
+
+    for (Size i = 0; i < 100; ++i) {
+        Path dirname = base / Path(format("%s", generate_random_string(10).c_str()));
+        GOC_TEST_ASSERT(
+            !remove_directory(dirname), "Successfully removed noexistant directory \"%s\"",
+            dirname.c_str());
+    }
+
     return TEST_RESULT_SUCCESS;
 };
 

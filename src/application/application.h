@@ -50,17 +50,18 @@ namespace GodotObjectCompiler
     class LockFile
     {
       public:
-        LockFile();
+        LockFile() = default;
 
-        LockFile(const Path& p_path, const String& p_description);
+        LockFile(const Path& p_path, const String& p_description)
+            : path(p_path), description(p_description)
+        {
+        }
 
         ~LockFile();
 
         void lock() const;
 
         void unlock() const;
-
-        bool try_unlock() const;
 
         bool try_lock() const;
 

@@ -137,7 +137,7 @@ namespace GodotObjectCompiler
         }
     }
 
-    Ref<ProgramError> GenerateTypeDB::execute_extension(ApplicationContext& p_context)
+    Ref<ProgramError> GenerateTypeDB::execute_extension(const ApplicationContext& p_context)
     {
         const auto project_args = p_context.get_argument_list<GDExtensionProjectArguments>();
         const auto generator_args = p_context.get_argument_list<GeneratorArguments>();
@@ -190,7 +190,7 @@ namespace GodotObjectCompiler
         return ProgramError::OK;
     }
 
-    Ref<ProgramError> GenerateTypeDB::execute_module(ApplicationContext& p_context)
+    Ref<ProgramError> GenerateTypeDB::execute_module(const ApplicationContext& p_context)
     {
         const auto project_args = p_context.get_argument_list<ModuleProjectArguments>();
         const auto program_args = p_context.get_argument_list<GenerateArguments>();

@@ -1,4 +1,4 @@
-/**************************************************************************/
+
 /* application.cpp                                                        */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
@@ -58,12 +58,12 @@ namespace GodotObjectCompiler
 
     int Application::exit_gracefully(int p_return_code) const
     {
+        lock.unlock();
+        graceful_lock.unlock();
+
         if (context.program == nullptr || context.program->is_readonly()) {
             return p_return_code;
         }
-
-        lock.unlock();
-        graceful_lock.unlock();
 
         return 0;
     }
@@ -117,16 +117,6 @@ namespace GodotObjectCompiler
         return context;
     }
 
-    LockFile::LockFile()
-    {
-    }
-
-    LockFile::LockFile(const Path& p_path, const String& p_description)
-    {
-        path = p_path;
-        description = p_description;
-    }
-
     LockFile::~LockFile()
     {
         if (filesystem_exists(path)) {
@@ -155,23 +145,8 @@ namespace GodotObjectCompiler
                 "Failed to remove lock file \"%s\" because it does not exist.", path.c_str());
             return;
         }
-        std::filesystem::remove(path.path());
-    }
-
-    bool LockFile::try_unlock() const
-    {
-        if (!filesystem_exists(path)) {
-            PRINT_WARNING(
-                "Failed to remove lock file \"%s\" because it does not exist.", path.c_str());
-            return false;
-        }
-
-        if (!remove_file(path)) {
-            PRINT_WARNING("Failed to remove lock file \"%s\"", path.c_str());
-            return false;
-        }
-
-        return true;
+        PANIC_COND(
+            !std::filesystem::remove(path.path()), "Failed to remove lock file %s", path.c_str());
     }
 
     bool LockFile::try_lock() const

@@ -59,9 +59,9 @@ namespace GodotObjectCompiler
             Opt<String> include_path;
         };
 
-        Ref<ProgramError> execute_extension(ApplicationContext& p_context);
+        Ref<ProgramError> execute_extension(const ApplicationContext& p_context);
 
-        Ref<ProgramError> execute_module(ApplicationContext& p_context);
+        Ref<ProgramError> execute_module(const ApplicationContext& p_context);
 
         void generate_from_file(
             const File& p_file, const ApplicationContext& p_context, IParser* p_parser,

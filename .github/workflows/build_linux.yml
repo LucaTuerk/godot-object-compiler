@@ -70,24 +70,12 @@ jobs:
           repository: "godotengine/godot"
           path: "godot"
 
-      - name: Restore godot scons cache
-        uses: actions/cache/restore@v6
-        with:
-          path: ${{ github.workspace }}/godot/.scons-cache/
-          key: godot-scons-cache
-
-      - name: Generate godot
+      - name: Generate godot generated files
         env:
           SCONS_CACHE: ${{ github.workspace }}/godot/.scons-cache/
         run: |
           cd godot
-          scons
-
-      - name: Save godot scons cache
-        uses: actions/cache/save@v6
-        with:
-          path: ${{ github.workspace }}/godot/.scons-cache/
-          key: godot-scons-cache
+          timeout 20s scons | true
 
       - name: Run Tests
         run: |

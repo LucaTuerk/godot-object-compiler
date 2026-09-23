@@ -56,12 +56,12 @@ namespace GodotObjectCompiler
         static String generated_macro_name(const String& p_header, Size p_line);
 
       private:
-        static Ref<ProgramError> execute_extension(ApplicationContext& p_context);
+        static Ref<ProgramError> execute_extension(const ApplicationContext& p_context);
 
-        static Ref<ProgramError> execute_module(ApplicationContext& p_context);
+        static Ref<ProgramError> execute_module(const ApplicationContext& p_context);
 
         static Ref<ProgramError> generate_bindings(
-            ApplicationContext& p_context, const Vector<Path>& p_sources,
+            const ApplicationContext& p_context, const Vector<Path>& p_sources,
             const Vector<Path>& p_additional_includes);
     };
 

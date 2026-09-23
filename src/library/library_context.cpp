@@ -77,31 +77,31 @@ namespace GodotObjectCompiler
     Ref<IParser>
     LibraryContext::get_default_parser(const int p_capabilities, bool p_get_most_capable)
     {
-        if (p_get_most_capable) {
-            int max = 0;
-            Ref<IParser> result = nullptr;
-            for (const auto& [capabilities, parser] : default_parsers) {
+        if (!p_get_most_capable) {
+            auto itr = default_parsers.find(p_capabilities);
+            return itr == default_parsers.end() ? nullptr : itr->second;
+        }
+
+        int max = 0;
+        Ref<IParser> result = nullptr;
+        for (const auto& [capabilities, parser] : default_parsers) {
+            if ((capabilities & p_capabilities) == p_capabilities && capabilities > max) {
+                max = capabilities;
+                result = parser;
+            }
+        }
+
+        if (result == nullptr) {
+            for (const auto& parser : parsers) {
+                auto capabilities = parser->get_capabilities();
                 if ((capabilities & p_capabilities) == p_capabilities && capabilities > max) {
                     max = capabilities;
                     result = parser;
                 }
             }
-
-            if (result == nullptr) {
-                for (const auto& parser : parsers) {
-                    auto capabilities = parser->get_capabilities();
-                    if ((capabilities & p_capabilities) == p_capabilities && capabilities > max) {
-                        max = capabilities;
-                        result = parser;
-                    }
-                }
-            }
-
-            return result;
         }
 
-        auto itr = default_parsers.find(p_capabilities);
-        return itr == default_parsers.end() ? nullptr : itr->second;
+        return result;
     }
 
     void LibraryContext::set_temporary_path(const Path& p_path)
@@ -301,14 +301,6 @@ namespace GodotObjectCompiler
         for (const Path& path : regenerate_files) {
             last_modified_times.erase(path);
             out_last_modified_times.erase(path);
-
-            if (auto itr = generated_from.find(path); itr != generated_from.end()) {
-                for (const Path& generated_file : itr->second) {
-                    if (filesystem_exists(generated_file)) {
-                        read_file(path);
-                    }
-                }
-            }
             generated_from.erase(path);
         }
         regenerate_files.clear();
