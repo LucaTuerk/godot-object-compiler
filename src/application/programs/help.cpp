@@ -60,7 +60,10 @@ namespace GodotObjectCompiler
             if (!argument->is_unnamed()) {
                 StreamWriter desc_writer;
                 if (argument->has_value()) {
-                    desc_writer.write(format("Default: %s", argument->get_as_string().c_str()));
+                    desc_writer.write(format(
+                        "Default: %s", argument->get_argument_type() == "Path"
+                                           ? argument->get<Path>().cwd_relative_string().c_str()
+                                           : argument->get_as_string().c_str()));
                 }
 
                 if (String info = argument->get_info_string(); !info.empty()) {

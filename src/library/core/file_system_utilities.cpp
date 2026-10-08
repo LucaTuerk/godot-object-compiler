@@ -200,7 +200,7 @@ namespace GodotObjectCompiler
 
     Path path_absolute(const Path& p_path)
     {
-        if (p_path.empty()) {
+        if (p_path.empty() || p_path.string() == ".") {
             return path_cwd();
         }
         return Path(std::filesystem::absolute(p_path.path()));

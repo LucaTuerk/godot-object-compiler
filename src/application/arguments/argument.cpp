@@ -94,10 +94,23 @@ namespace GodotObjectCompiler
     {
         CommandLineArgumentParseResult result;
 
+        int added;
+        do {
+            added = 0;
+            for (auto& argument : p_arguments) {
+                PANIC_COND(argument == nullptr, "Invalid argument.");
+                const bool before = argument->has_value();
+
+                argument->parse_arguments(p_string_arguments);
+
+                if (!before && argument->has_value()) {
+                    added++;
+                }
+            }
+        } while (added > 0);
+
         for (auto& argument : p_arguments) {
             PANIC_COND(argument == nullptr, "Invalid argument.");
-            argument->parse_arguments(p_string_arguments);
-
             if (argument->is_required() && !argument->has_value()) {
                 result.missing_required.push_back(argument);
             }

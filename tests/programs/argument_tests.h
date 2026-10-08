@@ -84,7 +84,8 @@ GOC_TEST(PathArgument)
         argument->has_value() && argument->get<Path>() == path_absolute("test_path2"),
         "Failed to get path argument");
 
-    Vector<String> unnamed_paths = {"--some_names=hello", "test_path1", "test_path2", "test_path3"};
+    const Vector<String> unnamed_paths = {
+        "--some_names=hello", "test_path1", "test_path2", "test_path3"};
     Ref<CommandLineArgument> unnamed_arg = CommandLineArgument::unnamed(parser, "");
     unnamed_arg->parse_arguments(unnamed_paths);
 
@@ -103,6 +104,70 @@ GOC_TEST(PathArgument)
         unnamed_arg->get<Path>(1) == path_absolute("another_test_path2"), "Invalid argument.");
     GOC_TEST_ASSERT(
         unnamed_arg->get<Path>(2) == path_absolute("another_test_path3"), "Invalid argument.");
+
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(PathArgumentAliased)
+{
+    const Ref<CommandLineArgument> argument =
+        CommandLineArgument::required(CommandLineArgumentParsers::Path, "test1", "t1", "d1");
+    const Ref<CommandLineArgument> argument2 =
+        CommandLineArgument::optional(CommandLineArgumentParsers::Path, "test2", "t2", "d2");
+    const Ref<CommandLineArgument> argument3 = CommandLineArgument::defaulted(
+        CommandLineArgumentParsers::Path, "test3", "t3", "", "{alias:test1}/test3");
+    const Ref<CommandLineArgument> argument4 = CommandLineArgument::defaulted(
+        CommandLineArgumentParsers::Path, "test4", "t4", "", "{alias:test1/test4");
+
+    const Vector<String> arguments = {"--test1=.", "--test2={alias:test1}/test2"};
+
+    argument2->parse_arguments(arguments);
+    GOC_TEST_ASSERT(
+        !argument2->has_value(),
+        "Test path 2 has value when alias Test path 1 in not yet available.");
+
+    argument->parse_arguments(arguments);
+    argument2->parse_arguments(arguments);
+    argument3->parse_arguments(arguments);
+    argument4->parse_arguments(arguments);
+
+    GOC_TEST_ASSERT(
+        argument->has_value() && argument->get<Path>() == path_cwd(),
+        "Test path 1 was not parsed or is incorrect");
+    GOC_TEST_ASSERT(
+        argument2->has_value() && argument2->get<Path>() == (path_cwd() / "test2"),
+        "Test path 2 was not parsed or is incorrect")
+    GOC_TEST_ASSERT(
+        argument3->has_value() && argument3->get<Path>() == (path_cwd() / "test3"),
+        "Test path 3 was not parsed or is incorrect")
+    GOC_TEST_ASSERT(
+        argument4->has_value() && argument4->get<Path>() == (path_cwd() / "{alias:test1/test4"),
+        "Invalid alias path has value.");
+
+    const Ref<CommandLineArgument> list_base =
+        CommandLineArgument::required(CommandLineArgumentParsers::Path, "list1", "l1", "d1");
+    const Ref<CommandLineArgument> list =
+        CommandLineArgument::required(CommandLineArgumentParsers::PathList, "list2", "l2", "d2");
+
+    const Vector<String> list_arguments = {
+        "--list1=.", "--list2={alias:list1}/test1,{alias:list1}/test2"};
+
+    list->parse_arguments(list_arguments);
+    GOC_TEST_ASSERT(
+        !list->has_value(),
+        "Path list argument has value when alias list base path is not yet available");
+
+    list_base->parse_arguments(list_arguments);
+    list->parse_arguments(list_arguments);
+
+    GOC_TEST_ASSERT(
+        list_base->has_value() && list_base->get<Path>() == path_cwd(),
+        "Invalid list base path parsed.");
+    GOC_TEST_ASSERT(
+        list->has_value() && list->get<Vector<Path>>().size() == 2 &&
+            list->get<Vector<Path>>()[0] == path_cwd() / "test1" &&
+            list->get<Vector<Path>>()[1] == path_cwd() / "test2",
+        "Invalid list paths parsed.");
 
     return TEST_RESULT_SUCCESS;
 };

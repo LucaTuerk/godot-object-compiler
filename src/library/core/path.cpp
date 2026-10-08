@@ -35,6 +35,9 @@
 
 #include "path.h"
 
+#include "file_system_utilities.h"
+#include "string_utilities.h"
+
 namespace GodotObjectCompiler
 {
     Path::Path(const char* p_path) : data(std::filesystem::u8path(p_path))
@@ -81,6 +84,14 @@ namespace GodotObjectCompiler
     String Path::string() const
     {
         return data.u8string();
+    }
+
+    String Path::cwd_relative_string() const
+    {
+        if (!path_is_descendant(path_cwd(), *this)) {
+            return string();
+        }
+        return string_replace(string(), path_cwd().string(), ".");
     }
 
     const char* Path::c_str() const

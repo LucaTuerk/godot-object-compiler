@@ -324,6 +324,7 @@ namespace GodotObjectCompiler
         auto is_named_arg = [](const String& p_argument) { return string_prefix(p_argument, "-"); };
 
         Index unnamed_i = 0;
+        const bool is_defaulted = has_value();
 
         for (const auto& argument : p_arguments) {
             if (has_correct_name(argument)) {
@@ -340,8 +341,10 @@ namespace GodotObjectCompiler
                     values.clear();
                 }
             } else if (unnamed_arg && !is_named_arg(argument)) {
+                PRINT_VERBOSE("Parsing unnamed argument of type %s", get_argument_type().c_str());
                 Opt<T> opt_value = parser->parse_argument(argument);
                 if (opt_value.has_value()) {
+                    PRINT_VERBOSE("Value %d parsed.", unnamed_i)
                     value_available = true;
                     if (values.size() >= unnamed_i) {
                         values.resize(unnamed_i + 1);
@@ -349,9 +352,31 @@ namespace GodotObjectCompiler
 
                     values[unnamed_i++] = *opt_value;
                 } else {
+                    PRINT_VERBOSE("Failed to parse value.")
                     value_available = false;
                     values.clear();
                 }
+            }
+        }
+
+        if constexpr (std::is_base_of_v<Path, T>) {
+            if (is_unnamed()) {
+                return;
+            }
+
+            if (is_defaulted && has_value()) {
+                // If the argument is a path default it need to be reevaluated to resolve
+                // aliases
+                Opt<T> opt_value = parser->parse_argument(get_as_string());
+                if (opt_value.has_value()) {
+                    value_available = true;
+                    values.clear();
+                    values.push_back(*opt_value);
+                }
+            }
+
+            if (has_value()) {
+                LibraryContext::instance()->add_path_alias(get_name(), get());
             }
         }
     }

@@ -61,6 +61,8 @@ namespace GodotObjectCompiler
 
         String string() const;
 
+        String cwd_relative_string() const;
+
         const char* c_str() const;
 
         Path parent_path() const;
