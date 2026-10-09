@@ -145,6 +145,10 @@ namespace GodotObjectCompiler
 
         Path get_temporary_path() const;
 
+        void add_path_alias(const String& p_name, const Path& p_path);
+
+        Opt<Path> get_path_alias(const String& p_name) const;
+
       private:
         LibraryContext() = default;
         void init();
@@ -169,6 +173,7 @@ namespace GodotObjectCompiler
         Dictionary<Path, Vector<Path>> generated_from{};
         Dictionary<Path, Size> last_modified_times{};
         Dictionary<Path, Size> out_last_modified_times{};
+        Dictionary<String, Path> path_aliases{};
 
         ErrorLevel error_level = ERROR;
         ErrorDetail error_detail = FULL;

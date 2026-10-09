@@ -81,12 +81,12 @@ namespace GodotObjectCompiler
         Ref<CommandLineArgument> type_db_path = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::Path, "type_db_path", "T",
             "The directory that will be used by godot-object-compiler for TypeDB caching.",
-            ".goc/type_db");
+            "{alias:goc_path}/type_db");
 
         Ref<CommandLineArgument> generated_path = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::Path, "generated_path", "G",
             "The directory that will be used by godot-object-compiler for generated files.",
-            ".goc/generated");
+            "{alias:goc_path}/generated");
 
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {

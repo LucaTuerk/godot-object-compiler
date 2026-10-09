@@ -34,15 +34,71 @@
 /**************************************************************************/
 
 #include "path_argument.h"
-
 #include "library/core/file_system_utilities.h"
 #include "library/core/string_utilities.h"
+
 namespace GodotObjectCompiler
 {
+    struct CheckAliasResult {
+        bool has_alias = false;
+        Opt<Path> alias;
+        String rest;
+
+        static CheckAliasResult no_alias()
+        {
+            return {false, std::nullopt, ""};
+        }
+
+        static CheckAliasResult aliased(Opt<Path> p_resolved, String rest)
+        {
+            return {true, std::move(p_resolved), std::move(rest)};
+        }
+    };
+
+    CheckAliasResult check_alias(const String& p_path)
+    {
+        if (p_path.find("{alias:") != 0) {
+            return CheckAliasResult::no_alias();
+        }
+
+        const size_t close = p_path.find('}');
+
+        if (close == String::npos) {
+            return CheckAliasResult::no_alias();
+        }
+
+        StreamWriter alias_writer;
+        bool started = false;
+        for (auto c : p_path.substr(7, close - 7)) {
+            const bool whitespace = is_whitespace(c);
+            if (started && whitespace) {
+                break;
+            }
+
+            if (!started && !whitespace) {
+                started = true;
+            }
+
+            if (started) {
+                alias_writer.write_generic(c);
+            }
+        }
+
+        const String rest = p_path.substr(close + 2);
+        const Opt<Path> resolved =
+            LibraryContext::instance()->get_path_alias(alias_writer.get_string());
+
+        return CheckAliasResult::aliased(resolved, rest);
+    }
 
     Opt<Path> PathCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
-        Path argument = path_absolute(Path(p_argument));
+        const auto [has_alias, alias, rest] = check_alias(p_argument);
+        if (has_alias && !alias.has_value()) {
+            return std::nullopt;
+        }
+
+        Path argument = has_alias ? alias.value() / Path(rest) : path_absolute(Path(p_argument));
 
         if (!could_be_path(argument)) {
             return std::nullopt;
@@ -58,16 +114,23 @@ namespace GodotObjectCompiler
 
     Opt<Vector<Path>> PathListCommandLineArgumentParser::parse_argument(const String& p_argument)
     {
-        const String argument = p_argument;
-        Vector<String> paths = string_split(argument, ",");
+        const String& argument = p_argument;
+        const Vector<String> paths = string_split(argument, ",");
         Vector<Path> results;
 
         for (const String& path : paths) {
-            if (!could_be_path(Path(path))) {
+            const auto [has_alias, alias, rest] = check_alias(path);
+            if (has_alias && !alias.has_value()) {
                 return std::nullopt;
             }
 
-            results.push_back(path_absolute(Path(path)));
+            Path result_path = has_alias ? alias.value() / Path(rest) : path_absolute(Path(path));
+
+            if (!could_be_path(result_path)) {
+                return std::nullopt;
+            }
+
+            results.push_back(path_absolute(result_path));
         }
 
         return results;

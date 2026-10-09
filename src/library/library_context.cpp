@@ -114,6 +114,20 @@ namespace GodotObjectCompiler
         return temp_path;
     }
 
+    void LibraryContext::add_path_alias(const String& p_name, const Path& p_path)
+    {
+        path_aliases[p_name] = p_path;
+    }
+
+    Opt<Path> LibraryContext::get_path_alias(const String& p_name) const
+    {
+        const auto itr = path_aliases.find(p_name);
+        if (itr == path_aliases.end()) {
+            return std::nullopt;
+        }
+        return itr->second;
+    }
+
     String error_level_to_string(ErrorLevel level)
     {
         switch (level) {
@@ -153,6 +167,7 @@ namespace GodotObjectCompiler
         out_last_modified_times = {};
         generic_singletons = {};
         parsers = {};
+        path_aliases = {};
         error_level = INFO;
         error_detail = FULL;
         initialized = true;

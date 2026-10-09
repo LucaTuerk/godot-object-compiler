@@ -147,30 +147,31 @@ int main(int argc, char* argv[])
                  TestRegistry::instance()->get_integration_tests()) {
 
                 all_count++;
-                PRINT_INFO("Running test case \"%s\"", test_name.c_str());
-                {
-                    Application application;
-                    const Vector<String> args =
-                        TestRegistry::instance()->get_integration_test_application_arguments(
-                            {"generate", "type_db"});
-                    PANIC_COND(
-                        application.run(args) != 0, "Failed to setup type db during test run.");
-                }
-
-                Ref<IParser> source_parser =
-                    LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
-                PANIC_COND(source_parser == nullptr, "Could not get source parser.");
-                source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
-
-                TestResult result = TEST_RESULT_FAILURE;
-                Permissions::instance()->add_write_path(".goc_tests");
                 TestTimer timer;
+                TestResult result = TEST_RESULT_FAILURE;
+                PRINT_INFO("Running test case \"%s\"", test_name.c_str());
+
                 try {
+                    {
+                        Application application;
+                        const Vector<String> args =
+                            TestRegistry::instance()->get_integration_test_application_arguments(
+                                {"generate", "type_db"});
+                        PANIC_COND(
+                            application.run(args) != 0, "Failed to setup type db during test run.");
+                    }
+
+                    Ref<IParser> source_parser =
+                        LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER);
+                    PANIC_COND(source_parser == nullptr, "Could not get source parser.");
+                    source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
+
+                    Permissions::instance()->add_write_path(".goc_tests");
                     result = test_functor();
+                    timer_sum += timer.elapsed_nanoseconds();
                 } catch (const std::exception& e) {
                     print_err(e.what());
                 }
-                timer_sum += timer.elapsed_nanoseconds();
 
                 switch (result) {
                 case TEST_RESULT_SUCCESS:
@@ -208,31 +209,32 @@ int main(int argc, char* argv[])
             for (const auto& [test_name, test_functor] :
                  TestRegistry::instance()->get_module_tests()) {
                 all_count++;
-                PRINT_INFO("Running test case \"%s\"", test_name.c_str());
-                {
-                    Application application;
-                    const Vector<String> args =
-                        TestRegistry::instance()->get_module_test_application_arguments(
-                            {"generate", "type_db"});
-                    PANIC_COND(
-                        application.run(args) != 0, "Failed to setup type db during test run.");
-                }
-
-                Ref<IParser> source_parser = LibraryContext::instance()->get_default_parser(
-                    IParser::SOURCE_PARSER | IParser::SUPPORT_MACRO_EXPANSION |
-                    IParser::SUPPORT_PARSE_INCLUDES);
-                PANIC_COND(source_parser == nullptr, "Could not get source parser.");
-                source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
-
-                TestResult result = TEST_RESULT_FAILURE;
-                Permissions::instance()->add_write_path(".goc_tests");
                 TestTimer timer;
+                TestResult result = TEST_RESULT_FAILURE;
+                PRINT_INFO("Running test case \"%s\"", test_name.c_str());
+
                 try {
+                    {
+                        Application application;
+                        const Vector<String> args =
+                            TestRegistry::instance()->get_module_test_application_arguments(
+                                {"generate", "type_db"});
+                        PANIC_COND(
+                            application.run(args) != 0, "Failed to setup type db during test run.");
+                    }
+
+                    Ref<IParser> source_parser = LibraryContext::instance()->get_default_parser(
+                        IParser::SOURCE_PARSER | IParser::SUPPORT_MACRO_EXPANSION |
+                        IParser::SUPPORT_PARSE_INCLUDES);
+                    PANIC_COND(source_parser == nullptr, "Could not get source parser.");
+                    source_parser->config(IParser::CONFIG_PARSE_ATTRIBUTES);
+
+                    Permissions::instance()->add_write_path(".goc_tests");
                     result = test_functor();
+                    timer_sum += timer.elapsed_nanoseconds();
                 } catch (const std::exception& e) {
                     print_err(e.what());
                 }
-                timer_sum += timer.elapsed_nanoseconds();
 
                 switch (result) {
                 case TEST_RESULT_SUCCESS:
