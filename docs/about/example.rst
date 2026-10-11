@@ -1,7 +1,7 @@
 Example
 =======
 
-GOC provides macros that guide the code generator and allows you to expose Godot Object derived classes and their properties, methods and signals to the engine.
+godot-object-compiler provides macros that guide the code generator and allows you to expose Godot Object derived classes and their properties, methods and signals to the engine.
 
 Classes
 ~~~~~~~
@@ -16,7 +16,7 @@ Classes
         GODOT_GENERATED_BODY();ş
     };
     
-A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated body macro. This hook is used by the GOC to inject definitions into the class, such as getters and setters and other additional methods.
+A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated body macro. This hook is used by the godot-object-compiler to inject definitions into the class, such as getters and setters and other additional methods.
 
 Check out :doc:`../macros/GODOT_CLASS` and :doc:`../macros/GODOT_GENERATED_BODY` for more information.
 
@@ -35,7 +35,7 @@ Next we might want to expose a bunch of properties. If needed we can always prov
 
 .. NOTE::
     
-    GOC provides convenience functions for all possible hint and usage values parsed directly from the godot-cpp library your linking to.
+    godot-object-compiler provides convenience functions for all possible hint and usage values parsed directly from the godot-cpp library your linking to.
 
 While properties are always public within the engine, we can modify the access specifier of the generated getters and setters for access within our extension.
 
@@ -74,7 +74,7 @@ If we want to add a signal we add a void method definition and mark it as a sign
 Functions
 ~~~~~~~~~
 
-GOC can also expose regular functions to the engine, and script virtual functions can be bound with a simple tag.
+godot-object-compiler can also expose regular functions to the engine, and script virtual functions can be bound with a simple tag.
 
 .. code-block:: C++
 
@@ -103,7 +103,7 @@ Lets say we want to add a flags property to our node. We can add a marked enum t
         FLAG_C = 1 << 2,
     };
 
-Next we add the property. The GOC queries the enum type and generates appropriate code to expose this property with the property hint to bind the enum names and values.
+Next we add the property. The godot-object-compiler queries the enum type and generates appropriate code to expose this property with the property hint to bind the enum names and values.
 
 .. code-block:: C++
 
@@ -111,7 +111,7 @@ Next we add the property. The GOC queries the enum type and generates appropriat
 	ExampleFlags flags = FLAG_A;
 
 
-Last but not least we add a generated global macro outside the class body. GOC uses this hook to generate code that needs to be added in the global namespace such as the enum variant cast macros.
+Last but not least we add a generated global macro outside the class body. godot-object-compiler uses this hook to generate code that needs to be added in the global namespace such as the enum variant cast macros.
 
 .. code-block:: C++
 
@@ -122,7 +122,7 @@ Check out :doc:`../macros/GODOT_ENUM` and :doc:`../macros/GODOT_GENERATED_GLOBAL
 Usage
 ~~~~~
 
-GOC currently ships with integrations for CMake. The tools can be dumped into a local folder by calling the GOC executables init_tools program with a local path argument.
+godot-object-compiler currently ships with integrations for CMake. The tools can be dumped into a local folder by calling the godot-object-compiler executables init_tools program with a local path argument.
 
 .. code-block:: sh
 
@@ -131,7 +131,7 @@ GOC currently ships with integrations for CMake. The tools can be dumped into a 
 CMake Integration
 ^^^^^^^^^^^^^^^^^
 
-Include the tools file in your CMakeLists.txt and activate the GOC generator for your GDExtension target by specifying the target name the and sources root directory. GOC will then generate the bindings code for your targets source files.
+Include the tools file in your CMakeLists.txt and activate the godot-object-compiler generator for your GDExtension target by specifying the target name the and sources root directory. godot-object-compiler will then generate the bindings code for your targets source files.
 
 .. code-block:: CMake
 
@@ -151,7 +151,7 @@ Check out :doc:`../integrations/SConstruct` for more information.
 Command Line Usage
 ^^^^^^^^^^^^^^^^^^
 
-You can also use the GOC as a CLI tool to manually generate the sources or build your own integrations. Execute
+You can also use the godot-object-compiler as a CLI tool to manually generate the sources or build your own integrations. Execute
 
 .. code-block:: sh
 
