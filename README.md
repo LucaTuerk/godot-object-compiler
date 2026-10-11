@@ -28,7 +28,7 @@ The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It 
 
 # Example
 
-GOC provides macros that guide the code generator and allows you to expose Godot Object derived classes and their
+godot-object-compiler provides macros that guide the code generator and allows you to expose Godot Object derived classes and their
 properties, methods and signals to the engine.
 
 ### Classes
@@ -46,7 +46,7 @@ class ExampleNode : public Node3D {
 ```
 
 A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated
-body macro. This hook is used by the GOC to inject definitions into the class, such as getters and setters and other
+body macro. This hook is used by the godot-object-compiler to inject definitions into the class, such as getters and setters and other
 additional methods.
 
 ### Properties
@@ -65,7 +65,7 @@ usages within the macro parameters.
 ```
 
 > [!NOTE]
-> GOC provides convenience functions for all possible hint and usage values parsed directly from the godot-cpp library
+> godot-object-compiler provides convenience functions for all possible hint and usage values parsed directly from the godot-cpp library
 > your linking to.
 
 While properties are always public within the engine, we can modify the access specifier of the generated getters and
@@ -105,7 +105,7 @@ the appropriate method signature and generate an implementation for this method 
 
 ### Functions
 
-GOC can also expose regular functions to the engine, and script virtual functions can be bound with a simple tag.
+godot-object-compiler can also expose regular functions to the engine, and script virtual functions can be bound with a simple tag.
 
 ```cpp
 
@@ -136,7 +136,7 @@ would like this enum to be treated as flags in the macro parameters.
 
 ```
 
-Next we add the property. The GOC queries the enum type and generates appropriate code to expose this property with the
+Next we add the property. The godot-object-compiler queries the enum type and generates appropriate code to expose this property with the
 property hint to bind the enum names and values.
 
 ```cpp
@@ -146,7 +146,7 @@ property hint to bind the enum names and values.
 
 ```
 
-Last but not least we add a generated global macro outside the class body. GOC uses this hook to generate code that
+Last but not least we add a generated global macro outside the class body. godot-object-compiler uses this hook to generate code that
 needs to be added in the global namespace such as the enum variant cast macros.
 
 ```cpp
@@ -157,9 +157,9 @@ GODOT_GENERATED_GLOBAL();
 
 # Usage
 
-GOC ships with integrations for [CMake](https://godot-object-compiler.readthedocs.io/latest/integrations/CMake.html)
+godot-object-compiler ships with integrations for [CMake](https://godot-object-compiler.readthedocs.io/latest/integrations/CMake.html)
 and [SCons](https://godot-object-compiler.readthedocs.io/latest/integrations/SConstruct.html). The tools can be dumped
-into a local folder by calling the GOC executable's `init tools` program with a local path argument.
+into a local folder by calling the godot-object-compiler executable's `init tools` program with a local path argument.
 
 ```cmd
 goc init tools tools
@@ -167,7 +167,7 @@ goc init tools tools
 
 ## Command Line Usage
 
-You can also use the GOC as a CLI tool to manually generate the sources or build your own integrations. Execute
+You can also use the godot-object-compiler as a CLI tool to manually generate the sources or build your own integrations. Execute
 
 ```cmd
 goc help

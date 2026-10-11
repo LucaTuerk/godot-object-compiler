@@ -42,6 +42,10 @@
         Liberation Mono, Courier New, Courier, monospace;
 }
 
+.wy-side-nav-search {
+    background-color: #343131;
+}
+
 h1 {
     font-size: 20pt;
 }
