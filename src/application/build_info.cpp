@@ -38,7 +38,7 @@
 namespace GodotObjectCompiler
 {
     const int BuildInfo::major_version = 0;
-    const int BuildInfo::minor_version = 2;
+    const int BuildInfo::minor_version = 3;
     const int BuildInfo::patch_version = 0;
-    const char* BuildInfo::version_name = "Binary Bresenham";
+    const char* BuildInfo::version_name = "Catastrophic Catmull";
 } // namespace GodotObjectCompiler
