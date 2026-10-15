@@ -75,6 +75,8 @@ namespace GodotObjectCompiler
 
         bool empty() const;
 
+        bool is_regular_file() const;
+
         void replace_extension(const String& p_extension);
 
         friend Path operator/(const Path& p_left, const Path& p_right)

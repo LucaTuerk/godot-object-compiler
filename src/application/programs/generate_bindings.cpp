@@ -135,8 +135,10 @@ namespace GodotObjectCompiler
                 generator_args->generated_path->get<Path>() / "godot_object_compiler" /
                     "core_includes.h",
                 "");
+
             Ref<Output::OutputNode> core_include_output =
                 transformator.transform(core_include_content);
+
             core_include_output->get_output(&core_include_writer);
         }
 
@@ -189,7 +191,8 @@ namespace GodotObjectCompiler
 
         return generate_bindings(
             p_context, program_args->sources->get<Vector<Path>>(),
-            {project_args->godot_root->get<Path>()});
+            {project_args->godot_root->get<Path>(),
+             Generate::get_platform_include_path(project_args->godot_root->get<Path>())});
     }
 
     Ref<ProgramError> GenerateBindings::generate_bindings(

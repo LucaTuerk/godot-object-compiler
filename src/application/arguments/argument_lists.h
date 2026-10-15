@@ -54,9 +54,13 @@ namespace GodotObjectCompiler
             CommandLineArgumentParsers::Path, "goc_path", "P",
             "The directory that will be used by godot-object-compiler for caching.", ".goc");
 
+        Ref<CommandLineArgument> cxx_compiler = CommandLineArgument::optional(
+            CommandLineArgumentParsers::Path, "cxx_compiler", "CXX",
+            "The C++ compiler executable used to compile the GDExtension or module");
+
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {
-            return {log_level, log_detail, goc_path};
+            return {log_level, log_detail, goc_path, cxx_compiler};
         }
     };
 

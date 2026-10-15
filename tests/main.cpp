@@ -54,6 +54,14 @@ int main(int argc, char* argv[])
         args_context.arguments.emplace_back(argv[i]);
     }
 
+    CLI_PARS_ERR_V(args_context.register_argument_lists<TestArguments>(), 1);
+
+    if (auto test_arguments = args_context.get_argument_list<TestArguments>();
+        test_arguments->cxx_compiler->has_value()) {
+        TestRegistry::instance()->set_cxx_compiler(test_arguments->cxx_compiler->get<Path>());
+        LibraryContext::instance()->set_cxx_compiler(test_arguments->cxx_compiler->get<Path>());
+    }
+
     bool run_integration_tests = false;
     bool run_module_tests = false;
     for (int i = 1; i < argc; i++) {

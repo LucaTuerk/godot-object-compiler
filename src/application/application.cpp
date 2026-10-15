@@ -97,6 +97,15 @@ namespace GodotObjectCompiler
         lock = LockFile(lock_path, "");
         lock.lock();
 
+        if (application_arguments->cxx_compiler->has_value()) {
+            auto cxx = application_arguments->cxx_compiler->get<Path>();
+            PRINT_VERBOSE("Using compiler %s", cxx.c_str());
+            LibraryContext::instance()->set_cxx_compiler(cxx);
+        } else {
+            PRINT_VERBOSE(
+                "Undefined cxx compiler, system includes might not be found during parsing.");
+        }
+
         const Path graceful_path = goc_path / ".goc_graceful_lock";
         graceful_lock = LockFile(
             graceful_path,

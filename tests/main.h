@@ -40,9 +40,21 @@
 
 using namespace GodotObjectCompiler;
 
+class TestArguments : public ICommandLineArgumentList
+{
+  public:
+    Ref<CommandLineArgument> cxx_compiler = CommandLineArgument::optional(
+        CommandLineArgumentParsers::Path, "cxx_compiler", "CXX",
+        "The C++ compiler executable used to compile the GDExtension or module");
+
+    [[nodiscard]] Vector<std::shared_ptr<CommandLineArgument>> get_arguments() const override
+    {
+        return {cxx_compiler};
+    }
+};
+
 class IntegrationTestsArgumentList : public ICommandLineArgumentList
 {
-
   public:
     Ref<CommandLineArgument> extension_api = CommandLineArgument::required(
         CommandLineArgumentParsers::Path, "extension_api", "E",

@@ -50,7 +50,8 @@ def autogoc(env: Environment, module_env: Environment):
             -S={','.join(str(s) for s in sources)}\
             -G={generated_dir}\
             -I={','.join(p for p in includes)}\
-            -TI={','.join(str(i) for i in include_dirs)}",
+            -TI={','.join(str(i) for i in include_dirs)} \
+            -CXX={env["CXX"]}",
         cmdstr=f'Godot Object Compiler: Generating bindings for module {module_name}',
     )
     run_goc = env.Command(generated_sources, [], run_action)

@@ -149,6 +149,10 @@ namespace GodotObjectCompiler
 
         Opt<Path> get_path_alias(const String& p_name) const;
 
+        void set_cxx_compiler(const Opt<Path>& p_cxx_compiler);
+
+        Opt<Path> get_cxx_compiler() const;
+
       private:
         LibraryContext() = default;
         void init();
@@ -174,6 +178,7 @@ namespace GodotObjectCompiler
         Dictionary<Path, Size> last_modified_times{};
         Dictionary<Path, Size> out_last_modified_times{};
         Dictionary<String, Path> path_aliases{};
+        Opt<Path> cxx_compiler = std::nullopt;
 
         ErrorLevel error_level = ERROR;
         ErrorDetail error_detail = FULL;

@@ -41,6 +41,7 @@
 #include "library/attribute_db.h"
 #include "library/core/file_system_utilities.h"
 #include "library/core/permissions.h"
+#include "library/core/process.h"
 #include "library/core/string_utilities.h"
 #include "library/core/string_writer.h"
 #include "library/core/temp_file.h"
@@ -51,8 +52,79 @@
 #include "library/tree/syntax/namespace.h"
 #include "parser_context.h"
 
+#include <string>
+
 namespace GodotObjectCompiler
 {
+
+    Vector<Path> get_paths(const String& p_input)
+    {
+        std::stringstream input(p_input);
+        bool read = false;
+        Vector<Path> paths;
+
+        for (std::string line; std::getline(input, line);) {
+            if (string_prefix(line, "#include <...> search starts here:")) {
+                read = true;
+                continue;
+            }
+
+            if (read) {
+                if (string_prefix(line, "End of search list.")) {
+                    break;
+                }
+                if (Path path{string_trim(line)}; directory_exits(path)) {
+                    paths.emplace_back(path);
+                }
+            }
+        }
+
+        return paths;
+    }
+
+#if defined(__linux__) || defined(__APPLE__)
+    Vector<Path> get_standard_include_paths(const Opt<Path>& p_compiler)
+    {
+        static Vector<Path> includes;
+        static bool initialized = false;
+
+        if (initialized) {
+            return includes;
+        }
+        initialized = true;
+
+        Vector<String> compilers = {
+            "clang",
+            "gcc",
+        };
+
+        if (p_compiler.has_value() && p_compiler->is_regular_file()) {
+            compilers = {p_compiler.value().c_str()};
+        }
+
+        for (const auto& compiler : compilers) {
+            String output;
+
+            if (const auto result =
+                    run_subprocess(format("echo | %s -xc++ -E -v -", compiler.c_str()), output);
+                result != 0) {
+                continue;
+            }
+
+            includes = get_paths(output);
+        }
+        return includes;
+    }
+#endif
+
+#ifdef _WIN32
+    Vector<Path> get_standard_include_paths(const Opt<Path>& p_compiler)
+    {
+        // TODO : Release Blocker
+        return {};
+    }
+#endif
+
     Pair<String, String> split_lines_include(const String& p_input)
     {
         const Size last_include = p_input.rfind("#include");
@@ -219,12 +291,20 @@ namespace GodotObjectCompiler
         // TODO: Allow setting C++ standard as application argument
         Vector<const char*> args = {"-x", "c++", "-std=c++17"};
         Vector<String> include_args;
-        Vector<Path> includes = LibraryContext::instance()->get_include_paths();
 
-        for (const auto& include_path : includes) {
-            include_args.emplace_back(format("-I%s", include_path.c_str()));
-            args.push_back(include_args.back().c_str());
-        }
+        auto append_includes = [&args, &include_args](const Vector<Path>& p_paths) {
+            for (const auto& include_path : p_paths) {
+                include_args.emplace_back(format("-I%s", include_path.c_str()));
+                args.push_back(include_args.back().c_str());
+            }
+        };
+
+        Vector<Path> includes = LibraryContext::instance()->get_include_paths();
+        append_includes(includes);
+
+        auto cxx = LibraryContext::instance()->get_cxx_compiler();
+        Vector<Path> system_includes = get_standard_include_paths(cxx);
+        append_includes(system_includes);
 
         TempFile temp_file("h", contents);
         Path file_path;

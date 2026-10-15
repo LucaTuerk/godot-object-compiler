@@ -125,6 +125,11 @@ namespace GodotObjectCompiler
         return data.empty();
     }
 
+    bool Path::is_regular_file() const
+    {
+        return std::filesystem::is_regular_file(data);
+    }
+
     void Path::replace_extension(const String& p_extension)
     {
         data.replace_extension(p_extension);

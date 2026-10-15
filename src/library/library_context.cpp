@@ -128,6 +128,16 @@ namespace GodotObjectCompiler
         return itr->second;
     }
 
+    void LibraryContext::set_cxx_compiler(const Opt<Path>& p_cxx_compiler)
+    {
+        cxx_compiler = p_cxx_compiler;
+    }
+
+    Opt<Path> LibraryContext::get_cxx_compiler() const
+    {
+        return cxx_compiler;
+    }
+
     String error_level_to_string(ErrorLevel level)
     {
         switch (level) {

@@ -75,6 +75,8 @@ namespace GodotObjectCompiler
         Ref<ProgramError> execute(ApplicationContext& p_context) override;
 
         static HashSet<String> flags;
+
+        static Path get_platform_include_path(const Path& p_godot_root);
     };
 
 } // namespace GodotObjectCompiler
