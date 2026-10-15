@@ -24,18 +24,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install cmake -y
-
-      - name: Set up Python 3.x
-        uses: actions/setup-python@v7
-        with:
-          python-version: 3.9
-
-      - name: Setup SCons
-        shell: bash
-        run: |
-          python -c "import sys; print(sys.version)"
-          python -m pip install scons==4.4
-          scons --version
+          python -m pip install scons zstandard
 
       - name: Setup libclang
         uses: ./.github/actions/setup_libclang
