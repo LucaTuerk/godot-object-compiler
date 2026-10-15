@@ -5,7 +5,6 @@
 #include "generate_type_db.h"
 #include "help.h"
 #include "init_tools.h"
-#include "print_parsed.h"
 #include "print_tranformed.h"
 #include "print_type.h"
 #include "program.h"

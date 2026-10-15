@@ -196,12 +196,6 @@ namespace GodotObjectCompiler
         LibraryContext::instance()->set_default_parser<ExtensionAPIParser>(
             IParser::Capabilities::JSON_CONFIG_PARSER);
 
-        if (application_arguments->source_parser->has_value()) {
-            LibraryContext::instance()->set_default_parser(
-                application_arguments->source_parser->get<String>(),
-                IParser::Capabilities::SOURCE_PARSER);
-        }
-
         if (!context.program) {
             Help help;
             ApplicationContext help_context = context;

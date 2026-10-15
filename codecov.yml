@@ -25,7 +25,3 @@ component_management:
       name: ClangParser
       paths:
         - src/library/parsers/libclang/**
-    - component_id: parser_treesitter
-      name: TreeSitterParser
-      paths:
-        - src/library/parsers/tree-sitter/**

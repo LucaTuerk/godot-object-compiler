@@ -81,19 +81,6 @@ GOC_TEST(Help)
     return TEST_RESULT_SUCCESS;
 };
 
-#if GOC_TREE_SITTER_PARSER_ENABLED
-GOC_TEST(PrintParsed)
-{
-    Application application;
-    String test_file = "tests/files/class_tests/simple_class.h";
-    const int result =
-        application.run(TestRegistry::instance()->get_integration_test_application_arguments(
-            {"print", "parsed", test_file}));
-    GOC_TEST_ASSERT(result == 0, "Failed to run program");
-    return TEST_RESULT_SUCCESS;
-};
-#endif
-
 GOC_INTEGRATION_TEST(PrintTransformed)
 {
     Application application;

@@ -17,10 +17,6 @@ jobs:
         with:
           submodules: "true"
 
-      - name: Install Packages
-        run: |
-          brew install tree-sitter-cli
-
       - name: Setup libclang
         uses: ./.github/actions/setup_libclang
         with:

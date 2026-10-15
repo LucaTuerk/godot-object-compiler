@@ -37,13 +37,7 @@
 #include "path_argument.h"
 #include "string_argument.h"
 
-#if GOC_LIBCLANG_PARSER_ENABLED
 #include "library/parsers/libclang/parser.h"
-#endif
-
-#if GOC_TREE_SITTER_PARSER_ENABLED
-#include "library/parsers/tree-sitter/parser.h"
-#endif
 
 namespace GodotObjectCompiler
 {
@@ -83,16 +77,5 @@ namespace GodotObjectCompiler::CommandLineArgumentParsers
         make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::ProjectType>>(
             FlagCommandLineArgumentParser<GodotObjectCompiler::ProjectType>::InitList(
                 {{"GDExtension", GD_EXTENSION}, {"Module", MODULE}}));
-
-    static const inline Ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>
-        SourceParser = make_ref<FlagCommandLineArgumentParser<GodotObjectCompiler::String>>(
-            FlagCommandLineArgumentParser<GodotObjectCompiler::String>::InitList({
-#if GOC_LIBCLANG_PARSER_ENABLED
-                {ClangParser::get_type_static(), ClangParser::get_type_static()},
-#endif
-#if GOC_TREE_SITTER_PARSER_ENABLED
-                {TreeSitterParser::get_type_static(), TreeSitterParser::get_type_static()},
-#endif
-            }));
 
 } // namespace GodotObjectCompiler::CommandLineArgumentParsers

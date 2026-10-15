@@ -91,7 +91,6 @@ jobs:
 
       - name: Install Packages
         run: |
-          choco install tree-sitter
           python -m pip install scons
 
       - name: Setup libclang
@@ -152,7 +151,6 @@ jobs:
 
       - name: Install Packages
         run: |
-          brew install tree-sitter-cli
           brew install scons
 
       - name: Setup libclang

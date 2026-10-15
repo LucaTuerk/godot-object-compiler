@@ -117,37 +117,6 @@ namespace GodotObjectCompiler
         write_named_arguments(p_writer, arguments);
     }
 
-    void Help::write_parser_info(IStringWriter* p_writer)
-    {
-        write_title(p_writer, "SOURCE PARSERS", 100);
-        for (const auto& parser : LibraryContext::instance()->get_parsers()) {
-            if ((parser->get_capabilities() & IParser::SOURCE_PARSER) == 0) {
-                continue;
-            }
-
-            bool is_default =
-                LibraryContext::instance()->get_default_parser(IParser::SOURCE_PARSER) == parser;
-
-            Path help_path =
-                Path("res:") / "help" / Path(format("%s.txt", parser->get_type().c_str()));
-
-            String help_text = "No description available";
-            if (Resources::instance()->has_resource(help_path)) {
-                String content = Resources::instance()->load_text_resource(help_path);
-                if (!content.empty()) {
-                    help_text = content;
-                }
-            }
-
-            p_writer->write("\n");
-            write_columns(
-                p_writer,
-                {30, is_default ? format("%s (Default)", parser->get_type().c_str())
-                                : parser->get_type()},
-                {70, help_text});
-        }
-    }
-
     void Help::write_program_info(
         IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& p_program,
         bool p_detailed, const ApplicationContext& p_context)
@@ -280,8 +249,6 @@ namespace GodotObjectCompiler
                 StreamWriter writer;
                 write_program_info(p_writer, path, program, false, p_context);
             }
-            p_writer->write("\n");
-            write_parser_info(p_writer);
         } else {
             auto itr = std::find_if(
                 programs_sorted.begin(), programs_sorted.end(), [&p_args](const auto& pair) {
