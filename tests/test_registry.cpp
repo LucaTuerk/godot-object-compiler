@@ -116,9 +116,6 @@ namespace GodotObjectCompiler
         result.emplace_back(format("-T=%s", get_type_db_path().c_str()));
         result.emplace_back(format("-E=%s", extension_api.c_str()));
         result.emplace_back(format("-SP=%s", source_parser.c_str()));
-        if (cxx_compiler.has_value()) {
-            result.emplace_back(format("-CXX=%s", cxx_compiler->c_str()));
-        }
         result.emplace_back("-L=Info");
         result.emplace_back("-D=Full");
 
@@ -142,9 +139,6 @@ namespace GodotObjectCompiler
         result.emplace_back(format("-G=%s", get_module_generated_path().c_str()));
         result.emplace_back(format("-T=%s", get_module_type_db_path().c_str()));
         result.emplace_back(format("-GR=%s", godot_root.c_str()));
-        if (cxx_compiler.has_value()) {
-            result.emplace_back(format("-CXX=%s", cxx_compiler->c_str()));
-        }
         result.emplace_back("-L=Info");
         result.emplace_back("-D=Full");
 
@@ -191,16 +185,6 @@ namespace GodotObjectCompiler
     Path TestRegistry::get_extension_api()
     {
         return extension_api;
-    }
-
-    Opt<Path> TestRegistry::get_cxx_compiler() const
-    {
-        return cxx_compiler;
-    }
-
-    void TestRegistry::set_cxx_compiler(const Opt<Path>& p_cxx_compiler)
-    {
-        cxx_compiler = p_cxx_compiler;
     }
 
     const Dictionary<String, TestFunctor>& TestRegistry::get_integration_tests()

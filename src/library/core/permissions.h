@@ -48,8 +48,6 @@ namespace GodotObjectCompiler
             return &instance;
         }
 
-        void clear();
-
         void add_write_path(const Path& p_path);
 
         bool is_allowed_write_path(const Path& p_path) const;

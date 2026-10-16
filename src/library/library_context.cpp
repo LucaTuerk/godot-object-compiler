@@ -206,12 +206,6 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    Hash LibraryContext::get_path_hash(const String& p_absolute_path)
-    {
-        Hasher<String> hasher;
-        return hasher(p_absolute_path);
-    }
-
     NodeDB* LibraryContext::get_node_db() const
     {
         return node_db.get();
@@ -268,13 +262,6 @@ namespace GodotObjectCompiler
     ErrorDetail LibraryContext::get_error_detail() const
     {
         return error_detail;
-    }
-
-    void LibraryContext::print(ErrorLevel p_level, const String& p_message) const
-    {
-        if (p_level >= error_level) {
-            print_ln(p_message);
-        }
     }
 
     void LibraryContext::register_generated_file(
@@ -450,11 +437,6 @@ namespace GodotObjectCompiler
         return modified;
     }
 
-    void LibraryContext::set_usings(const Vector<String>& p_value)
-    {
-        usings = p_value;
-    }
-
     const Vector<String>& LibraryContext::get_usings()
     {
         return usings;
@@ -463,19 +445,6 @@ namespace GodotObjectCompiler
     void LibraryContext::add_using(const String& p_value)
     {
         usings.push_back(p_value);
-    }
-
-    void LibraryContext::remove_using(const String& p_value)
-    {
-        if (const auto itr = std::find(usings.begin(), usings.end(), p_value);
-            itr != usings.end()) {
-            usings.erase(itr);
-        }
-    }
-
-    void LibraryContext::clear_usings()
-    {
-        usings.clear();
     }
 
 } // namespace GodotObjectCompiler

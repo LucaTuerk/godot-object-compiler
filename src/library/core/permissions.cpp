@@ -41,11 +41,6 @@
 namespace GodotObjectCompiler
 {
 
-    void Permissions::clear()
-    {
-        allowed_write_paths.clear();
-    }
-
     void Permissions::add_write_path(const Path& p_path)
     {
         const Path absolute = path_absolute(p_path);

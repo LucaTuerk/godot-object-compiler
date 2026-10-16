@@ -50,15 +50,16 @@ namespace GodotObjectCompiler
     Ref<GeneratorError> GodotPropertyGenerator::check_for_property_type_errors(
         const Ref<Node>& p_target, const Ref<Type>& p_type, const Ref<Namespace>& p_from_namespace)
     {
-        bool is_object_type = GodotGeneratorUtils::type_is_object_type(p_type, p_from_namespace);
-        bool is_ptr = p_type->find_child<Pointer>() != nullptr;
+        const bool is_object_type =
+            GodotGeneratorUtils::type_is_object_type(p_type, p_from_namespace);
+        const bool is_ptr = p_type->find_child<Pointer>() != nullptr;
 
         Ref<Type> inner;
-        bool is_refcounted_type =
+        const bool is_refcounted_type =
             GodotGeneratorUtils::type_is_ref_counted_type(p_type, p_from_namespace);
-        bool is_ref_type =
+        const bool is_ref_type =
             GodotGeneratorUtils::type_is_godot_ref_type(p_type, inner, p_from_namespace);
-        bool is_inner_refcounted_type =
+        const bool is_inner_refcounted_type =
             is_ref_type ? GodotGeneratorUtils::type_is_ref_counted_type(inner, p_from_namespace)
                         : false;
 
@@ -90,15 +91,17 @@ namespace GodotObjectCompiler
         GEN_ERR_COND(!type, p_field, "Failed to get field type.");
         GEN_ERR_PASS_ON(check_for_property_type_errors(p_field, type, p_from_namespace));
 
-        Ref<Literal> literal = p_field->find_descendant<Literal>();
-        bool is_object_type = GodotGeneratorUtils::type_is_object_type(type, p_from_namespace);
+        const Ref<Literal> literal = p_field->find_descendant<Literal>();
+        const bool is_object_type =
+            GodotGeneratorUtils::type_is_object_type(type, p_from_namespace);
 
         Ref<Enum> enum_;
         Ref<Type> inner;
-        bool is_ref_type =
+        const bool is_ref_type =
             GodotGeneratorUtils::type_is_godot_ref_type(type, inner, p_from_namespace);
-        bool is_enum_type = GodotGeneratorUtils::type_is_enum_type(type, enum_, p_from_namespace);
-        bool is_primitive_type = GodotGeneratorUtils::type_is_primitive_type(type);
+        const bool is_enum_type =
+            GodotGeneratorUtils::type_is_enum_type(type, enum_, p_from_namespace);
+        const bool is_primitive_type = GodotGeneratorUtils::type_is_primitive_type(type);
 
         GEN_ERR_COND(
             is_object_type && !is_ref_type && literal == nullptr, p_field,
@@ -109,6 +112,7 @@ namespace GodotObjectCompiler
         GEN_ERR_COND(
             is_enum_type && literal == nullptr, p_field,
             "Enum type property backing field must be initialized.");
+
         return GeneratorError::OK;
     }
 
@@ -128,10 +132,10 @@ namespace GodotObjectCompiler
             "Could not find setter function \"%s\" for custom bound property.",
             custom_bind.setter_name.c_str());
 
-        Ref<Type> getter_type = custom_bind.getter->type();
+        const Ref<Type> getter_type = custom_bind.getter->type();
         GEN_ERR_COND(!getter_type, custom_bind.getter, "Failed to get getter function type.");
 
-        Ref<Type> setter_type = custom_bind.setter->type();
+        const Ref<Type> setter_type = custom_bind.setter->type();
         GEN_ERR_COND(!setter_type, custom_bind.setter, "Failed to get setter function type.");
 
         GEN_ERR_COND(
@@ -143,7 +147,8 @@ namespace GodotObjectCompiler
                 custom_bind.setter->parameters()->get_child_count() != 1,
             custom_bind.setter, "Invalid parameter count on property setter, expected to be 1");
 
-        Ref<Type> setter_param_type = custom_bind.setter->find_chain<Type, Parameters, Parameter>();
+        const Ref<Type> setter_param_type =
+            custom_bind.setter->find_chain<Type, Parameters, Parameter>();
         GEN_ERR_COND(
             !setter_param_type, custom_bind.setter, "Failed to get setter parameter type.");
         GEN_ERR_COND(
@@ -153,6 +158,7 @@ namespace GodotObjectCompiler
             setter_param_type->type_name_unmodified() != getter_type->type_name_unmodified(),
             p_attribute, "Invalid non matching types on getter / setter pair");
         GEN_ERR_PASS_ON(check_for_property_type_errors(p_attribute, getter_type, p_from_namespace));
+
         return GeneratorError::OK;
     }
 

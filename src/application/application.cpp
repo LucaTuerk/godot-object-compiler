@@ -121,11 +121,6 @@ namespace GodotObjectCompiler
         return cleanup();
     }
 
-    ApplicationContext& Application::get_context()
-    {
-        return context;
-    }
-
     LockFile::~LockFile()
     {
         if (filesystem_exists(path)) {

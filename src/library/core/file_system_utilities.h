@@ -80,8 +80,6 @@ namespace GodotObjectCompiler
 
     Path path_cwd();
 
-    char path_seperator();
-
     bool path_is_descendant(const Path& p_possible_ancestor, const Path& p_possible_child);
 
     bool could_be_path(const Path& p_path);

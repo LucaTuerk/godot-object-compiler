@@ -110,8 +110,6 @@ namespace GodotObjectCompiler
         void replace_child(
             const Ref<Node>& p_child, const Ref<Node>& p_new_child, bool take_children = false);
 
-        bool empty() const;
-
         Size get_child_count() const;
 
         Size get_descendant_count() const;
@@ -137,8 +135,6 @@ namespace GodotObjectCompiler
         ChildIterator remove_child(ChildIterator p_itr);
 
         ChildIterator reparent_child(ChildIterator p_itr, const Ref<Context>& p_new_parent);
-
-        void remove_all_children();
 
         template <typename T>
         Ref<T> find_chain(Predicate<T> p_predicate = default_node_predicate<T>) const;

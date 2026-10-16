@@ -520,17 +520,6 @@ namespace GodotObjectCompiler
         return string_prefix(p_content, p_enclosing) && string_suffix(p_content, p_enclosing);
     }
 
-    bool string_only_contains(const String& p_content, char p_char)
-    {
-        if (p_content.empty()) {
-            return false;
-        }
-
-        return std::all_of(
-            p_content.begin(), p_content.end(), [p_char](char c) { return c == p_char; });
-        ;
-    }
-
     String string_vector_combine(const Vector<String>& p_vector, String p_delimiter)
     {
         StreamWriter writer;
@@ -546,22 +535,6 @@ namespace GodotObjectCompiler
     bool is_whitespace(char p_char)
     {
         return std::isspace(static_cast<unsigned char>(p_char));
-    }
-
-    String input(const String& p_prompt, const String& p_default_value)
-    {
-        String result;
-        if (p_default_value.empty()) {
-            std::cout << p_prompt;
-        } else {
-            std::cout << format(p_prompt, p_default_value.c_str());
-        }
-        getline(std::cin, result);
-
-        if (result.empty()) {
-            return p_default_value;
-        }
-        return result;
     }
 
     Vector<String> read_lines(const Path& p_path)

@@ -117,17 +117,9 @@ namespace GodotObjectCompiler
 
         void set_error_level(ErrorLevel p_level, ErrorDetail p_error_detail);
 
-        void set_usings(const Vector<String>& p_value);
-
         const Vector<String>& get_usings();
 
         void add_using(const String& p_value);
-
-        void remove_using(const String& p_value);
-
-        void clear_usings();
-
-        void print(ErrorLevel p_level, const String& p_message) const;
 
         void force_regenerate(const Path& p_path);
 
@@ -158,8 +150,6 @@ namespace GodotObjectCompiler
         void init();
 
         void ensure_unique_include_paths();
-
-        static Hash get_path_hash(const String& p_absolute_path);
 
         Ref<NodeDB> node_db = nullptr;
         Ref<AttributeDB> attribute_db = nullptr;

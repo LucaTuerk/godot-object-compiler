@@ -89,10 +89,6 @@ namespace GodotObjectCompiler
         virtual void write_to(IStructuredWriter* p_writer);
         virtual void read_from(IStructuredReader* p_reader);
 
-        bool has_parent() const;
-        bool has_next_sibling() const;
-        bool has_previous_sibling() const;
-
         void set_tag(const String& p_tag);
         String get_tag() const;
         String pretty_print() const;
@@ -102,7 +98,6 @@ namespace GodotObjectCompiler
         Index get_index() const;
         Index get_depth() const;
         Ref<Context> get_parent() const;
-        Ref<Node> get_root();
 
         void reparent(const Ref<Context>& p_new_parent);
 

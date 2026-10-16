@@ -78,8 +78,6 @@ namespace GodotObjectCompiler
 
         int run(const Vector<String>& p_arguments);
 
-        ApplicationContext& get_context();
-
       private:
         int setup_context(const Vector<String>& p_arguments);
 

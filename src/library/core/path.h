@@ -100,8 +100,6 @@ namespace GodotObjectCompiler
 
         bool operator<(const Path& p_other) const;
 
-        bool operator>(const Path& p_other) const;
-
         bool operator==(const Path& p_other) const;
 
         bool operator!=(const Path& p_other) const;

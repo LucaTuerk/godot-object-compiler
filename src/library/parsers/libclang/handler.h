@@ -59,8 +59,6 @@ namespace GodotObjectCompiler::ClangASTHandlers
             }
 
             [[nodiscard]] bool is_into() const;
-            [[nodiscard]] bool is_over() const;
-            [[nodiscard]] bool is_error() const;
             Ref<ParserError> get_error();
 
           private:

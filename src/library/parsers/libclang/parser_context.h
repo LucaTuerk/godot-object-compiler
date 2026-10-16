@@ -60,7 +60,6 @@ namespace GodotObjectCompiler
         Size line_temp_to_original(Size temp_line) const;
         Size offset_temp_to_original(Size temp_offset) const;
         Size cursor_start_line(const CXCursor& cursor) const;
-        Size cursor_end_line(const CXCursor& cursor) const;
         Size cursor_start_offset(const CXCursor& cursor) const;
         Size cursor_end_offset(const CXCursor& cursor) const;
         Size cursor_column(const CXCursor& cursor) const;

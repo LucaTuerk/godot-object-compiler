@@ -58,7 +58,6 @@ int main(int argc, char* argv[])
 
     if (auto test_arguments = args_context.get_argument_list<TestArguments>();
         test_arguments->cxx_compiler->has_value()) {
-        TestRegistry::instance()->set_cxx_compiler(test_arguments->cxx_compiler->get<Path>());
         LibraryContext::instance()->set_cxx_compiler(test_arguments->cxx_compiler->get<Path>());
     }
 

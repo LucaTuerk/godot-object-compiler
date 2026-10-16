@@ -100,17 +100,11 @@ namespace GodotObjectCompiler
         Ref<Body> get_signal_names_body(
             const Ref<Class>& p_target_class, const Ref<Context>& p_generated_body);
 
-        Ref<Context> get_include_section(const Ref<Context>& p_target);
-
         Ref<Body> get_if_body(const Ref<Context>& p_target, const String& condition);
 
         Ref<GeneratorError> unzip_generated_body(
             const Ref<Context>& p_generated_body, Ref<Context>& r_public_members,
             Ref<Context>& r_protected_members, Ref<Context>& r_private_members);
-
-        bool check_is_valid_named_argument(const Ref<Node>& p_node, String& p_name);
-
-        bool get_name(const Ref<Node>& p_node, String& p_name);
 
         bool tree_has_error(const Ref<Node>& p_tree);
 
@@ -118,8 +112,6 @@ namespace GodotObjectCompiler
             const Ref<Class>& p_target_class, const String& p_base_class_qualified);
 
         bool class_is_node_type(const Ref<Class>& p_target_class);
-
-        bool class_is_resource_type(const Ref<Class>& p_target_class);
 
         bool class_is_ref_counted_type(const Ref<Class>& p_target_class);
 
@@ -157,9 +149,6 @@ namespace GodotObjectCompiler
         bool type_is_object_type(
             const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace = nullptr);
 
-        bool type_is_godot_collection_type(
-            const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace = nullptr);
-
         bool type_is_node_type(
             const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace = nullptr);
 
@@ -167,14 +156,9 @@ namespace GodotObjectCompiler
             const Ref<Type>& p_target_type, Ref<Enum>& p_enum_object,
             const Ref<Namespace>& p_from_namespace = nullptr);
 
-        bool type_is_variant_type(
-            const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace = nullptr);
-
         bool type_is_primitive_type(const Ref<Type>& p_target_type);
 
         bool get_variant_type_from_type(const Ref<Type>& p_target_type, String& p_variant_type);
-
-        Ref<GodotVariantTypeArgument> build_variant_type_argument(const Ref<Type>& p_type);
 
         Ref<GodotVariantTypeArgument> build_variant_type_argument(const String& p_variant_type);
 
@@ -190,10 +174,6 @@ namespace GodotObjectCompiler
             const Ref<GodotPropertyHintArgument>& p_hint,
             const Vector<Ref<GodotPropertyUsageFlagsArgument>>& p_usages,
             const String& p_property_name);
-
-        Ref<Node> build_property_info(
-            const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name,
-            ClassGeneratorResult& r_result);
 
         Result<Node> build_property_info_defaults(
             const Ref<Type>& p_type, const String& p_property_name,

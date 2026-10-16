@@ -51,8 +51,6 @@ namespace GodotObjectCompiler
 
         bool has_config_value(const String& p_key);
 
-        String dump();
-
         bool write_to_file(const Path& p_path) override;
 
         bool read_from_file(const Path& p_path) override;
