@@ -77,6 +77,12 @@ if (NOT WIN32)
             $<$<CONFIG:Release>:-O3>)
 endif ()
 
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_link_options(${EXEC_NAME} PRIVATE
+            -Wl,--gc-sections
+    )
+endif ()
+
 target_precompile_headers(${EXEC_NAME} PRIVATE
         src/library/core/system_includes.h
 )
