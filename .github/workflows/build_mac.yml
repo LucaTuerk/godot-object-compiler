@@ -45,7 +45,11 @@ jobs:
 
       - name: Run Tests
         run: |
-          ./build/goc_tests run_integration_tests -E=godot-cpp/gdextension/extension_api.json -GPP=godot-cpp/include,godot-cpp/build/gen/include,godot-cpp/gdextension
+          ./build/goc_tests\
+            run_integration_tests\
+            -E=godot-cpp/gdextension/extension_api.json\
+            -GPP=godot-cpp/include,godot-cpp/build/gen/include,godot-cpp/gdextension\
+            -CXX=clang
 
       - name: Upload Binary
         if: ${{inputs.create_artifact == true}}
