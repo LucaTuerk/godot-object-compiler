@@ -234,11 +234,6 @@ namespace GodotObjectCompiler
         return Path(std::filesystem::current_path());
     }
 
-    char path_seperator()
-    {
-        return std::filesystem::path::preferred_separator;
-    }
-
     Vector<Path> directory_files(const Path& p_path)
     {
         const Path absolute = path_absolute(p_path);

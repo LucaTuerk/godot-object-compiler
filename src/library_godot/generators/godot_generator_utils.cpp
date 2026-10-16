@@ -429,17 +429,6 @@ namespace GodotObjectCompiler
         return signal_names_body;
     }
 
-    Ref<Context> GodotGeneratorUtils::get_include_section(const Ref<Context>& p_target)
-    {
-        Ref<Context> include_section =
-            p_target->find_descendant(BFS, NodePredicates::tag<Context>("includes"));
-        if (!include_section) {
-            include_section = Output::Lines({});
-            p_target->add_child(include_section);
-        }
-        return include_section;
-    }
-
     Ref<Body>
     GodotGeneratorUtils::get_if_body(const Ref<Context>& p_target, const String& condition)
     {
@@ -471,40 +460,6 @@ namespace GodotObjectCompiler
             r_private_members == nullptr, p_generated_body, "Failed to get private members group");
 
         return GeneratorError::OK;
-    }
-
-    bool GodotGeneratorUtils::check_is_valid_named_argument(const Ref<Node>& p_node, String& p_name)
-    {
-        if (p_node == nullptr) {
-            return false;
-        }
-
-        p_name = "";
-        return !tree_has_error(p_node) && get_name(p_node, p_name);
-    }
-
-    bool GodotGeneratorUtils::get_name(const Ref<Node>& p_node, String& p_name)
-    {
-        p_name = "";
-        if (p_node == nullptr) {
-            return false;
-        }
-
-        if (const Ref<Identifier> id = p_node->as<Identifier>()) {
-            p_name = id->name;
-            return true;
-        }
-
-        if (const Ref<Context> context = p_node->as<Context>()) {
-            for (const Ref<Node>& child : context->get_children()) {
-                if (const Ref<Identifier> id = child->as<Identifier>()) {
-                    p_name = id->name;
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     bool GodotGeneratorUtils::tree_has_error(const Ref<Node>& p_tree)
@@ -558,12 +513,6 @@ namespace GodotObjectCompiler
     {
         return class_has_base_class(
             p_target_class, AssumedGodotTypes::Node().type->qualified_name());
-    }
-
-    bool GodotGeneratorUtils::class_is_resource_type(const Ref<Class>& p_target_class)
-    {
-        return class_has_base_class(
-            p_target_class, AssumedGodotTypes::Resource().type->qualified_name());
     }
 
     bool GodotGeneratorUtils::class_is_ref_counted_type(const Ref<Class>& p_target_class)
@@ -620,7 +569,7 @@ namespace GodotObjectCompiler
                     value->literal()->content.c_str()));
             }
 
-            Result<GodotEnumAttribute> attribute_result =
+            const Result<GodotEnumAttribute> attribute_result =
                 LibraryContext::instance()->get_type_db()->get_type_attribute<GodotEnumAttribute>(
                     p_target_type, p_from_namespace);
 
@@ -806,21 +755,6 @@ namespace GodotObjectCompiler
         return class_is_godot_object_type(class_result.get_result());
     }
 
-    bool GodotGeneratorUtils::type_is_godot_collection_type(
-        const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace)
-    {
-        UNUSED(p_from_namespace);
-        Vector<Ref<Type>> inner_types;
-        return p_target_type->type_name_unmodified() ==
-                   AssumedGodotTypes::Array().type->qualified_name() ||
-               p_target_type->type_name_unmodified() ==
-                   AssumedGodotTypes::Dictionary().type->qualified_name() ||
-               type_is_assumed_template_type(
-                   p_target_type, AssumedGodotTypes::TypedArray(), inner_types) ||
-               type_is_assumed_template_type(
-                   p_target_type, AssumedGodotTypes::TypedDictionary(), inner_types);
-    }
-
     bool GodotGeneratorUtils::type_is_node_type(
         const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace)
     {
@@ -851,16 +785,6 @@ namespace GodotObjectCompiler
         return true;
     }
 
-    bool GodotGeneratorUtils::type_is_variant_type(
-        const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace)
-    {
-        UNUSED(p_from_namespace);
-
-        ensure_type_dicts_initialized();
-        String type_name = type_name_remove_usings(p_target_type->type_name_unmodified());
-        return _type_to_variant_type.find(type_name) != _type_to_variant_type.end();
-    }
-
     bool GodotGeneratorUtils::type_is_primitive_type(const Ref<Type>& p_target_type)
     {
         if (String variant_type; get_variant_type_from_type(p_target_type, variant_type)) {
@@ -885,21 +809,6 @@ namespace GodotObjectCompiler
         }
         p_variant_type = "";
         return false;
-    }
-
-    Ref<GodotVariantTypeArgument>
-    GodotGeneratorUtils::build_variant_type_argument(const Ref<Type>& p_type)
-    {
-        if (Ref<Type> inner_type;
-            type_is_object_type(p_type) || type_is_godot_ref_type(p_type, inner_type)) {
-            return build_variant_type_argument(AssumedParameterValues::VariantTypeObject());
-        }
-
-        if (String variant_type; get_variant_type_from_type(p_type, variant_type)) {
-            return build_variant_type_argument(variant_type);
-        }
-
-        return build_variant_type_argument(AssumedParameterValues::VariantTypeNil());
     }
 
     Ref<GodotVariantTypeArgument>
@@ -948,22 +857,6 @@ namespace GodotObjectCompiler
         }
 
         return result;
-    }
-
-    Ref<Node> GodotGeneratorUtils::build_property_info(
-        const Ref<GodotVariantTypeArgument>& p_variant_type, const String& p_property_name,
-        ClassGeneratorResult& r_result)
-    {
-        r_result.add_source_include(AssumedGodotTypes::Variant().type->header);
-        r_result.add_source_include(AssumedGodotTypes::PropertyInfo().type->header);
-        return B<Function>()[{
-            B<Identifier>(AssumedGodotTypes::PropertyInfo().type->qualified_name()),
-            B<Arguments>()[{
-                B<Argument>()[B<Literal>(format(
-                    "%s::%s", AssumedGodotTypes::Variant().type->qualified_name().c_str(),
-                    p_variant_type->godot_variant_type().c_str()))],
-                B<Argument>()[Literal::StringLiteral(p_property_name)],
-            }]}];
     }
 
     Result<Node> GodotGeneratorUtils::build_property_info_defaults(

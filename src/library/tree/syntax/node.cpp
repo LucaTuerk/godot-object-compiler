@@ -70,21 +70,6 @@ namespace GodotObjectCompiler
         }
     }
 
-    bool Node::has_parent() const
-    {
-        return _parent.lock() != nullptr;
-    }
-
-    bool Node::has_next_sibling() const
-    {
-        return has_parent() && _index != get_parent()->get_child_count() - 1;
-    }
-
-    bool Node::has_previous_sibling() const
-    {
-        return has_parent() && _index > 0;
-    }
-
     void Node::set_tag(const String& p_tag)
     {
         _tag = p_tag;
@@ -179,19 +164,6 @@ namespace GodotObjectCompiler
     Ref<Context> Node::get_parent() const
     {
         return _parent.lock();
-    }
-
-    Ref<Node> Node::get_root()
-    {
-        if (!_root) {
-            Ref<Node> current = shared_from_this();
-            while (current) {
-                _root = current;
-                current = current->get_parent();
-            }
-        }
-
-        return _root ? _root : shared_from_this();
     }
 
     void Node::reparent(const Ref<Context>& p_new_parent)

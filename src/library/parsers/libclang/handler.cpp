@@ -64,16 +64,6 @@ namespace GodotObjectCompiler::ClangASTHandlers
         return type == StepInto;
     }
 
-    bool IClangASTHandler::Step::is_over() const
-    {
-        return type == StepOver;
-    }
-
-    bool IClangASTHandler::Step::is_error() const
-    {
-        return type == Error;
-    }
-
     Ref<ParserError> IClangASTHandler::Step::get_error()
     {
         return error;

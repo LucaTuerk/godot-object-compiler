@@ -107,10 +107,6 @@ namespace GodotObjectCompiler
 
         Path get_extension_api();
 
-        Opt<Path> get_cxx_compiler() const;
-
-        void set_cxx_compiler(const Opt<Path>& p_cxx_compiler);
-
         const Dictionary<String, TestFunctor>& get_tests();
 
         const Dictionary<String, TestFunctor>& get_integration_tests();
@@ -121,7 +117,6 @@ namespace GodotObjectCompiler
         String source_parser;
         Path extension_api;
         Path godot_root;
-        Opt<Path> cxx_compiler;
 
       private:
         Vector<Path> include_paths;

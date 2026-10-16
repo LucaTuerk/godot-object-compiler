@@ -54,8 +54,6 @@ namespace GodotObjectCompiler
 
     bool string_enclosed_by(const String& p_content, const String& p_prefix);
 
-    bool string_only_contains(const String& p_content, char p_char);
-
     String string_vector_combine(const Vector<String>& p_vector, String p_delimiter);
 
     String string_replace(

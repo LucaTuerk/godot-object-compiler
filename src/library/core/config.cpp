@@ -64,11 +64,6 @@ namespace GodotObjectCompiler
         return json[current_section].contains(p_key);
     }
 
-    String JsonConfig::dump()
-    {
-        return json.dump(1);
-    }
-
     bool JsonConfig::write_to_file(const Path& p_path)
     {
         try {

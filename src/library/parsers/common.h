@@ -57,6 +57,4 @@ namespace GodotObjectCompiler::ParserUtilities
 
     String strip_excluded_sections(const String& p_input);
 
-    String
-    strip_known_macro_contents(const String& p_input, Dictionary<Size, String>& r_parameters);
 }; // namespace GodotObjectCompiler::ParserUtilities

@@ -58,15 +58,6 @@ namespace GodotObjectCompiler
         return line_temp_to_original(line);
     }
 
-    Size ClangParserContext::cursor_end_line(const CXCursor& cursor) const
-    {
-        const CXSourceRange extent = clang_getCursorExtent(cursor);
-        CXSourceLocation location = clang_getRangeEnd(extent);
-        unsigned line;
-        clang_getFileLocation(location, nullptr, &line, nullptr, nullptr);
-        return line_temp_to_original(line);
-    }
-
     Size ClangParserContext::cursor_start_offset(const CXCursor& cursor) const
     {
         const CXSourceRange extent = clang_getCursorExtent(cursor);

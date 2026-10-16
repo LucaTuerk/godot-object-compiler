@@ -140,11 +140,6 @@ namespace GodotObjectCompiler
         return data < p_other.data;
     }
 
-    bool Path::operator>(const Path& p_other) const
-    {
-        return data > p_other.data;
-    }
-
     bool Path::operator==(const Path& p_other) const
     {
         return data == p_other.data;
