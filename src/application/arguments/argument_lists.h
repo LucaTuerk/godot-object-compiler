@@ -44,23 +44,23 @@ namespace GodotObjectCompiler
       public:
         Ref<CommandLineArgument> log_level = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::ErrorLevel, "log_level", "L", "The log level to use.",
-            ERROR);
+            VERBOSE);
 
         Ref<CommandLineArgument> log_detail = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::ErrorDetail, "log_detail", "D", "The log detail to use.",
-            CONDENSED);
-
-        Ref<CommandLineArgument> source_parser = CommandLineArgument::optional(
-            CommandLineArgumentParsers::SourceParser, "source_parser", "SP",
-            "The name of the source parser to be used by godot-object-compiler.");
+            FULL);
 
         Ref<CommandLineArgument> goc_path = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::Path, "goc_path", "P",
             "The directory that will be used by godot-object-compiler for caching.", ".goc");
 
+        Ref<CommandLineArgument> cxx_compiler = CommandLineArgument::optional(
+            CommandLineArgumentParsers::Path, "cxx_compiler", "CXX",
+            "The C++ compiler executable used to compile the GDExtension or module");
+
         [[nodiscard]] Vector<Ref<CommandLineArgument>> get_arguments() const override
         {
-            return {log_level, log_detail, source_parser, goc_path};
+            return {log_level, log_detail, goc_path, cxx_compiler};
         }
     };
 

@@ -72,8 +72,6 @@ namespace GodotObjectCompiler
 
         static void write_header(IStringWriter* p_writer);
 
-        static void write_parser_info(IStringWriter* p_writer);
-
         static void write_program_info(
             IStringWriter* p_writer, const ProgramPath& p_path, const Ref<IProgram>& p_program,
             bool p_detailed, const ApplicationContext& p_context);

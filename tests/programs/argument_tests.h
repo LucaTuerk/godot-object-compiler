@@ -35,7 +35,6 @@
 #pragma once
 #include "application/arguments/flag_argument.h"
 #include "application/arguments/path_argument.h"
-#include "tests/test_registry.h"
 
 using namespace GodotObjectCompiler;
 

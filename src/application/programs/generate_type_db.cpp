@@ -199,7 +199,9 @@ namespace GodotObjectCompiler
 
         auto sources = program_args->sources->get<Vector<Path>>();
 
-        LibraryContext::instance()->add_include_paths({project_args->godot_root->get<Path>()});
+        LibraryContext::instance()->add_include_paths(
+            {project_args->godot_root->get<Path>(),
+             Generate::get_platform_include_path(project_args->godot_root->get<Path>())});
         LibraryContext::instance()->add_include_paths(
             generator_args->include_paths->get<Vector<Path>>());
 

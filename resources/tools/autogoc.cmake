@@ -55,6 +55,7 @@ function(target_autogoc TARGET ROOT_DIR)
                 -S=${SOURCES_JOINED}
                 -GPP=${GODOT_CPP_INCLUDE_DIRECTORIES_JOINED}
                 -E=${GDEXTENSION_API_FILE}
+                -CXX=${CMAKE_CXX_COMPILER}
                 WORKING_DIRECTORY ${BINARY_DIR}
                 DEPENDS ${GOC_EXECUTABLE} godot-cpp generate_bindings ${SOURCES}
                 COMMENT "GOC: Generating Bindings"

@@ -103,4 +103,17 @@ namespace GodotObjectCompiler
         return ProgramError::OK;
     }
 
+    Path Generate::get_platform_include_path(const Path& p_godot)
+    {
+#ifdef __linux__
+        return p_godot / "platform" / "linuxbsd";
+#elif __APPLE__
+        return p_godot / "platform" / "macos";
+#elif _WIN32
+        return p_godot / "platform" / "windows";
+#elif
+#error Unknown plaform
+#endif
+    }
+
 } // namespace GodotObjectCompiler

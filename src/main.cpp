@@ -46,20 +46,14 @@
 
 using namespace GodotObjectCompiler;
 
+auto const DEFAULT_SOURCE_PARSER = ClangParser::get_type_static();
+
 int main(int argc, char* argv[])
 {
     Vector<String> args;
     for (int i = 1; i < argc; i++) {
         args.emplace_back(argv[i]);
     }
-
-#ifdef GOC_TREE_SITTER_PARSER_ENABLED
-    auto DEFAULT_SOURCE_PARSER = TreeSitterParser::get_type_static();
-#elif
-#ifdef GOC_LIBCLANG_PARSER_ENABLED
-    auto DEFAULT_SOURCE_PARSER = ClangParser::get_type_static();
-#endif
-#endif
 
     LibraryContext::instance()->set_default_parser(
         DEFAULT_SOURCE_PARSER, IParser::Capabilities::SOURCE_PARSER);

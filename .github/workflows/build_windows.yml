@@ -16,10 +16,6 @@ jobs:
         with:
           submodules: "true"
 
-      - name: Install Packages
-        run: |
-          choco install tree-sitter
-
       - name: Setup libclang
         uses: ./.github/actions/setup_libclang
         with:

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* access_specifier_handler.cpp                                           */
+/* process.cpp                                                            */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -33,40 +33,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "access_specifier_handler.h"
-
-#include "library/parsers/tree-sitter/tree_sitter_node.h"
-#include "library/tree/syntax/access_specifier.h"
-#include "library/tree/syntax/class.h"
+#include "process.h"
+#include "string_writer.h"
 
 namespace GodotObjectCompiler
 {
 
-    bool AccessSpecifierHandler::handles_node(const Ref<TreeSitterNode>& p_current_src)
+#if defined(__linux__) || defined(__APPLE__)
+    int run_subprocess(const String& p_command, String& r_output)
     {
-        return p_current_src->type == "access_specifier";
-    }
+        r_output = "";
 
-    ParserStep AccessSpecifierHandler::handle(
-        const Ref<TreeSitterNode>& p_current_src, Ref<Context>& r_current_target)
-    {
-        if (r_current_target->is<BaseClasses>()) {
-            // We don't care about base class access specifiers for
-            // now, so keep it clean and skip here.
-            return ParserStep::StepOver();
+        std::array<char, 128> buffer;
+
+        const auto command = format("%s 2>&1", p_command.c_str());
+
+        FILE* pipe = popen(command.c_str(), "r");
+
+        if (!pipe) {
+            return 1;
         }
 
-        const String content = p_current_src->content();
-
-        if (content == "public") {
-            r_current_target->B<AccessSpecifier>(AccessSpecifier::PUBLIC);
-        } else if (content == "private") {
-            r_current_target->B<AccessSpecifier>(AccessSpecifier::PRIVATE);
-        } else if (content == "protected") {
-            r_current_target->B<AccessSpecifier>(AccessSpecifier::PROTECTED);
+        StreamWriter writer;
+        while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+            writer.write_generic(buffer.data());
         }
 
-        return ParserStep::StepOver();
+        r_output = writer.get_string();
+        return pclose(pipe);
     }
+#endif
 
+#ifdef _WIN32
+    int run_subprocess(const String& p_command, String& r_output)
+    {
+        UNUSED(p_command);
+        r_output = "";
+        return 1;
+    }
+#endif
 } // namespace GodotObjectCompiler
