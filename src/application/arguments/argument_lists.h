@@ -44,7 +44,7 @@ namespace GodotObjectCompiler
       public:
         Ref<CommandLineArgument> log_level = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::ErrorLevel, "log_level", "L", "The log level to use.",
-            VERBOSE);
+            ERROR);
 
         Ref<CommandLineArgument> log_detail = CommandLineArgument::defaulted(
             CommandLineArgumentParsers::ErrorDetail, "log_detail", "D", "The log detail to use.",
