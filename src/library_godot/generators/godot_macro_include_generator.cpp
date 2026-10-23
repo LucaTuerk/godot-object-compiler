@@ -237,7 +237,7 @@ namespace GodotObjectCompiler
             if (arguments.empty()) {
                 p_write_to->B<Field>()[{
                     B<ConstExpression>(), B<Type>()[B<Identifier>(type_name)],
-                    B<Identifier>(value_name), B<Literal>("= {}")}][Output::Semicolon()];
+                    B<Identifier>(value_name), B<Literal>("{}")}];
             } else {
                 Ref<Parameters> parameters;
                 p_write_to->B<Function>()[{

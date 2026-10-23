@@ -47,7 +47,7 @@ Here are some common arguments you might need:
  -D=<Flag>                     The log detail to use.                                                
                                                                                                      
 
---log_level=<Flag>             Default: Verbose, Possible Values: Error, Info, Verbose, Warning      
+--log_level=<Flag>             Default: Error, Possible Values: Error, Info, Verbose, Warning        
  -L=<Flag>                     The log level to use.                                                 
                                                                                                      
 

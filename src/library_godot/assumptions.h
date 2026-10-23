@@ -107,6 +107,10 @@ namespace GodotObjectCompiler
             AssumeType<Class>{"MultiplayerAPI"},
             "Assume that an class of name \"MultiplayerAPI\" exists in the TypeDB"};
 
+        inline Assumption Engine{
+            AssumeType<Class>{"Engine"},
+            "Assume that a class of name \"Engine\" exists in the TypeDB"};
+
         inline Assumption MultiplayerPeer{
             AssumeType<Class>{"MultiplayerPeer"},
             "Assume that an class of name \"MultiplayerPeer\" exists in the TypeDB"};

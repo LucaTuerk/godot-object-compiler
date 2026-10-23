@@ -181,8 +181,8 @@ namespace GodotObjectCompiler
         }
 
         if (Ref<Identifier> identifier = p_tree->as<Identifier>()) {
-            Ref<Node> next = identifier->get_next_sibling();
-            if (next && (next->is<Parameter>() || next->is<Argument>())) {
+            if (Ref<Node> next = identifier->get_next_sibling();
+                next && (next->is<Parameter>() || next->is<Argument>())) {
                 return Output::NoSep({Output::Text(identifier->name), transform(next)});
             } else {
                 return Output::Text(identifier->name);
@@ -203,9 +203,16 @@ namespace GodotObjectCompiler
             return Output::Text(literal->content);
         }
 
-        if (Ref<Field> arguments = p_tree->as<Field>()) {
+        if (Ref<Field> field = p_tree->as<Field>()) {
             Ref<Output::ListNode> into = Output::Spaces({});
-            ADD_TRANSFORM_CHILDREN(arguments, into)
+            for (const Ref<Node>& child : *field) {
+                if (Ref<Literal> literal = child->as<Literal>()) {
+                    into->add_child(Output::Text(" = "));
+                }
+                Ref<Output::OutputNode> transformed = transform(child);
+                into->add_child(transformed);
+            }
+            into->add_child(Output::Semicolon());
             return into;
         }
 

@@ -1,0 +1,1 @@
+This property can be set from scripts. This is the default value.
