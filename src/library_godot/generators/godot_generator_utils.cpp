@@ -485,8 +485,7 @@ namespace GodotObjectCompiler
     bool GodotGeneratorUtils::class_has_base_class(
         const Ref<Class>& p_target_class, const String& p_base_class_qualified)
     {
-        if (p_target_class->qualified_name() == p_base_class_qualified ||
-            p_target_class->qualified_name() == "godot::" + p_base_class_qualified) {
+        if (p_target_class->qualified_name() == p_base_class_qualified) {
             return true;
         }
 
@@ -683,6 +682,22 @@ namespace GodotObjectCompiler
         return false;
     }
 
+    bool GodotGeneratorUtils::type_is_assumed_class(
+        const Ref<Type>& p_target_type, const AssumeType<Class>& p_class,
+        const Ref<Namespace>& p_from_namespace)
+    {
+        const Result<Class> class_result =
+            LibraryContext::instance()->get_type_db()->get_type_data<Class>(
+                p_target_type->type_name_unmodified(), 0, p_from_namespace);
+        if (class_result.has_error()) {
+            class_result.get_error()->set_handled();
+            return false;
+        }
+
+        const Ref<Class> target_clas = class_result.get_result();
+        return p_class.type->qualified_name() == target_clas->qualified_name();
+    }
+
     bool GodotGeneratorUtils::type_is_godot_ref_type(
         const Ref<Type>& p_target_type, Ref<Type>& p_inner_type,
         const Ref<Namespace>& p_from_namespace)
@@ -695,6 +710,18 @@ namespace GodotObjectCompiler
         }
         p_inner_type = nullptr;
         return false;
+    }
+
+    bool GodotGeneratorUtils::type_is_godot_collection_type(
+        const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace)
+    {
+        Ref<Type> inner;
+        Ref<Type> inner2;
+        return type_is_assumed_class(p_target_type, AssumedGodotTypes::Array(), p_from_namespace) ||
+               type_is_assumed_class(
+                   p_target_type, AssumedGodotTypes::Dictionary(), p_from_namespace) ||
+               type_is_godot_typed_array_type(p_target_type, inner, p_from_namespace) ||
+               type_is_godot_typed_dictionary_type(p_target_type, inner, inner2, p_from_namespace);
     }
 
     bool GodotGeneratorUtils::type_is_godot_typed_array_type(

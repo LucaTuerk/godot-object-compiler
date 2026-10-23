@@ -1,0 +1,1 @@
+This parameter type is used to specify if godot collection types are duplicated before being returned in the generated getter.

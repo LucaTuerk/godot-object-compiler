@@ -1,0 +1,1 @@
+Duplicate the godot collection property backing field deep before returning it in the generated getter.

@@ -32,7 +32,7 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#include "property_readability.h"
+#include "property_setability.h"
 #include "library/tree/syntax/context.h"
 #include "library/tree/syntax/identifier.h"
 
