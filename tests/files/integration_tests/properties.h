@@ -208,6 +208,30 @@ namespace Tests
         GODOT_PROPERTY();
         Ref<Resource> resource_property;
 
+        GODOT_PROPERTY(GetDuplicated);
+        Array array_cuplicated;
+
+        GODOT_PROPERTY(GetDuplicatedDeep);
+        Array array_duplicated_deep;
+
+        GODOT_PROPERTY(GetDuplicated);
+        Dictionary dict_cuplicated;
+
+        GODOT_PROPERTY(GetDuplicatedDeep);
+        Dictionary dict_duplicated_deep;
+
+        GODOT_PROPERTY(GetDuplicated);
+        TypedArray<Node> typed_array_cuplicated;
+
+        GODOT_PROPERTY(GetDuplicatedDeep);
+        TypedArray<Resource> typed_array_duplicated_deep;
+
+        GODOT_PROPERTY(GetDuplicated);
+        TypedDictionary<int, Node> typed_dict_cuplicated;
+
+        GODOT_PROPERTY(GetDuplicatedDeep);
+        TypedDictionary<String, Object> typed_dict_duplicated_deep;
+
         GODOT_ENUM();
 
         enum Enum { ENUM_VALUE };

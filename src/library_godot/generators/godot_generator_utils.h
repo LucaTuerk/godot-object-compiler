@@ -131,9 +131,16 @@ namespace GodotObjectCompiler
             const Ref<Namespace>& p_from_namespace = nullptr,
             DefaultsUsage p_defaults_usage = DEFAULTS_PROPERTY_BINDING);
 
+        bool type_is_assumed_class(
+            const Ref<Type>& p_target_type, const AssumeType<Class>& p_class,
+            const Ref<Namespace>& p_from_namespace);
+
         bool type_is_godot_ref_type(
             const Ref<Type>& p_target_type, Ref<Type>& p_inner_type,
             const Ref<Namespace>& p_from_namespace = nullptr);
+
+        bool type_is_godot_collection_type(
+            const Ref<Type>& p_target_type, const Ref<Namespace>& p_from_namespace = nullptr);
 
         bool type_is_godot_typed_array_type(
             const Ref<Type>& p_target_type, Ref<Type>& p_inner_type,

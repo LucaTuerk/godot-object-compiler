@@ -50,6 +50,8 @@ Available Parameter Types
 .. include:: parameters/GOC_CustomPropertyGetSet.rst
 .. include:: parameters/GOC_PropertyGetAccessSpecifier.rst
 .. include:: parameters/GOC_PropertySetAccessSpecifier.rst
+.. include:: parameters/GOC_PropertySetability.rst
+.. include:: parameters/GOC_PropertyCollectionDuplication.rst
 .. include:: parameters/GOC_PropertyGeneratorOptions.rst
 .. include:: parameters/GOC_VariantType.rst
 .. include:: parameters/GOC_PropertyHint.rst

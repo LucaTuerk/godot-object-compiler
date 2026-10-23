@@ -175,6 +175,11 @@ namespace GodotObjectCompiler
             node_new<PropertySetabilityArgument>();
         property_readability->B<Identifier>(PropertySetabilityArgument::SetAnywhere);
 
+        Ref<PropertyCollectionDuplicationArgument> property_collection_duplication =
+            node_new<PropertyCollectionDuplicationArgument>();
+        property_collection_duplication->B<Identifier>(
+            PropertyCollectionDuplicationArgument::GetOriginal);
+
         Ref<PropertyGetAccessSpecifierArgument> property_get_access_specifier =
             node_new<PropertyGetAccessSpecifierArgument>();
         Ref<PropertySetAccessSpecifierArgument> property_set_access_specifier =
@@ -242,7 +247,7 @@ namespace GodotObjectCompiler
         p_default_values->add_children(
             {custom_bind_argument, string_literal_argument, custom_bind_argument, variant_type,
              property_hint, property_usage_flags, property_get_access_specifier,
-             property_readability, property_set_access_specifier,
+             property_set_access_specifier, property_readability, property_collection_duplication,
              property_generator_options_argument});
 
         return GeneratorError::OK;
@@ -365,10 +370,40 @@ namespace GodotObjectCompiler
                 get_type->clone(), B<Identifier>(getter_name), B<Parameters>(), B<Const>()}]
                                                  [Output::Semicolon()];
 
+            Ref<PropertyCollectionDuplicationArgument> collection_duplication_argument =
+                p_attribute->arguments()->find_child<PropertyCollectionDuplicationArgument>();
+            GEN_ERR_COND(
+                !collection_duplication_argument, p_attribute,
+                "Failed to get property duplication argument.");
+
+            PropertyCollectionDuplicationArgument::CollectionDuplication collection_duplication;
+            GEN_ERR_COND(
+                !collection_duplication_argument->get_duplication(collection_duplication),
+                p_attribute, "Failed to parser collection duplication.");
+
+            String get_return = backing_field_name;
+            if (collection_duplication != PropertyCollectionDuplicationArgument::GET_ORIGINAL) {
+                GEN_ERR_COND(
+                    !type_is_godot_collection_type(property_type), p_attribute,
+                    "Collection duplication argument set for property which is not a godot collection type. This is not possible.");
+
+                switch (collection_duplication) {
+                case PropertyCollectionDuplicationArgument::GET_DUPLICATED: {
+                    get_return = format("%s.duplicate()", backing_field_name.c_str());
+                } break;
+                case PropertyCollectionDuplicationArgument::GET_DUPLICATED_DEEP: {
+                    get_return = format("%s.duplicate_deep()", backing_field_name.c_str());
+                } break;
+                default: {
+                    PANIC("Unhandled enum value");
+                }
+                }
+            }
+
             Ref<Function> get_impl = B<Function>()[{
                 get_type->clone(),
                 B<Identifier>(p_target_class->qualified_name() + "::" + getter_name),
-                B<Parameters>(), B<Const>(), B<Body>()[Output::Return(backing_field_name)]}];
+                B<Parameters>(), B<Const>(), B<Body>()[Output::Return(get_return)]}];
 
             Ref<Function> set_def = B<Function>().with_children(
                 {B<Type>()[B<Identifier>("void")], B<Identifier>(setter_name),

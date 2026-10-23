@@ -1,5 +1,5 @@
 /**************************************************************************/
-/* property_readability.cpp                                               */
+/* uninitialized_node.h                                                   */
 /*                        ___  ___  ___   ___ _____                       */
 /*                       / __|/ _ \|   \ / _ \_   _|                      */
 /*                      | (_ | (_) | |) | (_) || |                        */
@@ -32,46 +32,21 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-#include "property_readability.h"
-#include "library/tree/syntax/context.h"
-#include "library/tree/syntax/identifier.h"
+#pragma once
 
-namespace GodotObjectCompiler
+#include "godot_cpp/classes/node.hpp"
+#include "invalid_properties/non_collection_dupl.generated.h"
+
+using namespace godot;
+
+GODOT_CLASS();
+
+class Invalid : Node
 {
-    bool PropertySetabilityArgument::get_readability(Setability& r_readability) const
-    {
-        const Ref<Identifier> identifier = find_child<Identifier>();
-        if (!identifier) {
-            ERR("Failed to find identifer.");
-            return false;
-        }
+    GODOT_GENERATED_BODY();
 
-        if (identifier->name == SetAnywhere) {
-            r_readability = SET_ANYWHERE;
-            return true;
-        }
+    GODOT_PROPERTY(Duplicate);
+    Node* no_collection;
+};
 
-        if (identifier->name == Readonly) {
-            r_readability = READONLY;
-            return true;
-        }
-
-        return false;
-    }
-
-    String PropertySetabilityParameterType::get_return_type()
-    {
-        return "GOC_PropertySetability";
-    }
-
-    Vector<String> PropertySetabilityParameterType::get_value_names()
-    {
-        return {PropertySetabilityArgument::SetAnywhere, PropertySetabilityArgument::Readonly};
-    }
-
-    Vector<IAttributeParameterType::Argument> PropertySetabilityParameterType::get_arguments()
-    {
-        return {};
-    }
-
-} // namespace GodotObjectCompiler
+GODOT_GENERATED_GLOBAL();

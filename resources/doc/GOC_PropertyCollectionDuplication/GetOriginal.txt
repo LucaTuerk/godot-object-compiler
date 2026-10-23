@@ -1,0 +1,1 @@
+Return the original godot collection instance in the getter. This is the default value.

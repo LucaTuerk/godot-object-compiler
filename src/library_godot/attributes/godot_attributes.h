@@ -48,8 +48,9 @@
 #include "library/tree/syntax/attributes.h"
 #include "library/tree/syntax/enum.h"
 #include "property_access_specifier.h"
+#include "property_collection_duplication.h"
 #include "property_generator_options.h"
-#include "property_readability.h"
+#include "property_setability.h"
 #include "string_literal_parameter_type.h"
 
 namespace GodotObjectCompiler
@@ -112,6 +113,7 @@ namespace GodotObjectCompiler
         ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyHint)
         ATTRIBUTE_REGISTER_PARAMETERS(GodotPropertyUsageFlags)
         ATTRIBUTE_REGISTER_PARAMETERS(PropertySetability)
+        ATTRIBUTE_REGISTER_PARAMETERS(PropertyCollectionDuplication)
         ATTRIBUTE_REGISTER_PARAMETERS(PropertyGetAccessSpecifier)
         ATTRIBUTE_REGISTER_PARAMETERS(PropertySetAccessSpecifier)
         ATTRIBUTE_REGISTER_PARAMETERS(PropertyGeneratorOptions)
