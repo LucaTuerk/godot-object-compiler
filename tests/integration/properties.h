@@ -90,6 +90,14 @@ GOC_INTEGRATION_TEST(GeneratePropertyBinds)
     GOC_ASSERT_PROP_BOUND("node_property", "OBJECT");
     GOC_ASSERT_PROP_BOUND("resource_property", "OBJECT");
     GOC_ASSERT_PROP_BOUND("enum_property", "INT");
+    GOC_ASSERT_PROP_BOUND("array_duplicated", "ARRAY");
+    GOC_ASSERT_PROP_BOUND("array_duplicated_deep", "ARRAY");
+    GOC_ASSERT_PROP_BOUND("dict_duplicated", "DICTIONARY");
+    GOC_ASSERT_PROP_BOUND("dict_duplicated_deep", "DICTIONARY");
+    GOC_ASSERT_PROP_BOUND("array_duplicated", "ARRAY");
+    GOC_ASSERT_PROP_BOUND("typed_array_duplicated_deep", "ARRAY");
+    GOC_ASSERT_PROP_BOUND("typed_dict_duplicated", "DICTIONARY");
+    GOC_ASSERT_PROP_BOUND("typed_dict_duplicated_deep", "DICTIONARY");
 
     return TEST_RESULT_SUCCESS;
 };
