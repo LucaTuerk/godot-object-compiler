@@ -79,6 +79,7 @@ namespace GodotObjectCompiler
             success &= MultiplayerPeer.validate(db) == STATE_VALID;
             success &= MultiplayerAPIRPCMode.validate(db) == STATE_VALID;
             success &= MultiplayerPeerTransferMode.validate(db) == STATE_VALID;
+            success &= Engine.validate(db) == STATE_VALID;
             success &= StringName.validate(db) == STATE_VALID;
             success &= Callable.validate(db) == STATE_VALID;
             success &= List.validate(db) == STATE_VALID;
@@ -92,8 +93,7 @@ namespace GodotObjectCompiler
             return {
                 &ClassDB,  &Variant, &Object,       &RefCounted,     &Resource,        &Node,
                 &GodotRef, &Array,   &TypedArray,   &Dictionary,     &TypedDictionary, &StringName,
-                &Callable, &List,    &PropertyInfo, &MultiplayerAPI, &MultiplayerPeer,
-            };
+                &Callable, &List,    &PropertyInfo, &MultiplayerAPI, &MultiplayerPeer, &Engine};
         }
 
         Vector<Assumption<AssumeType<Enum>>*> get_required_enums()

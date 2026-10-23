@@ -34,7 +34,6 @@
 /**************************************************************************/
 
 #include "property_access_specifier.h"
-
 #include "library/tree/syntax/identifier.h"
 
 namespace GodotObjectCompiler

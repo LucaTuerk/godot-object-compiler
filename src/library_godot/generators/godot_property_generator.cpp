@@ -171,6 +171,10 @@ namespace GodotObjectCompiler
 
         Ref<Type> property_type;
 
+        Ref<PropertySetabilityArgument> property_readability =
+            node_new<PropertySetabilityArgument>();
+        property_readability->B<Identifier>(PropertySetabilityArgument::SetAnywhere);
+
         Ref<PropertyGetAccessSpecifierArgument> property_get_access_specifier =
             node_new<PropertyGetAccessSpecifierArgument>();
         Ref<PropertySetAccessSpecifierArgument> property_set_access_specifier =
@@ -238,7 +242,8 @@ namespace GodotObjectCompiler
         p_default_values->add_children(
             {custom_bind_argument, string_literal_argument, custom_bind_argument, variant_type,
              property_hint, property_usage_flags, property_get_access_specifier,
-             property_set_access_specifier, property_generator_options_argument});
+             property_readability, property_set_access_specifier,
+             property_generator_options_argument});
 
         return GeneratorError::OK;
     }
@@ -373,6 +378,39 @@ namespace GodotObjectCompiler
                  }]]})[Output::Semicolon()];
 
             Ref<Body> set_body = node_new<Body>();
+
+            Ref<PropertySetabilityArgument> readability_argument =
+                p_attribute->arguments()->find_child<PropertySetabilityArgument>();
+
+            GEN_ERR_COND(!readability_argument, p_attribute, "Failed to get readability argument.");
+
+            PropertySetabilityArgument::Setability readability;
+            GEN_ERR_COND(
+                !readability_argument->get_readability(readability), p_attribute,
+                "Failed to parse readability argument.");
+
+            if (readability == PropertySetabilityArgument::READONLY) {
+                String initialized_name = format("__%s__initialized", property_name.c_str());
+
+                generated_private_members->B<Field>()[{
+                    B<Type>()[B<Identifier>("bool")], B<Identifier>(initialized_name),
+                    B<Literal>("false")}];
+
+                r_result.add_source_include(AssumedGodotTypes::Engine().type->header);
+
+                set_body->add_child(Output::If(
+                    Output::FmtText(
+                        "%s && !%s::get_singleton()->is_editor_hint()", initialized_name.c_str(),
+                        AssumedGodotTypes::Engine().type->qualified_name().c_str()),
+                    {Output::FmtText(
+                        "ERR_FAIL_MSG(\"%s: Property %s is readonly.\");",
+                        p_target_class->name().c_str(), property_name.c_str())})
+
+                );
+
+                set_body->add_child(Output::FmtText("%s = true;", initialized_name.c_str()));
+            }
+
             Ref<Node> assign =
                 is_enum_type
                     ? Output::Assign(

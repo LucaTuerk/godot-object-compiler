@@ -1,0 +1,1 @@
+This property is readonly and cannot be set in scripts, initialization values set in the editor will be applied.
