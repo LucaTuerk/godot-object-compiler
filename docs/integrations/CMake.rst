@@ -1,7 +1,7 @@
 CMake
 =====
 
-The godot-object-compiler currently comes with CMake integration, which allows you to
+godot-object-compiler currently comes with CMake integration, which allows you to
 mark a target, i.e. your GDExtension, for code generation.
 
 Get the tools
@@ -36,7 +36,7 @@ the hirarchy of the generated files. The actual parsed files are parsed from the
 variable of the target.
 
 Finally ensure that the autogoc script can find a prebuild *goc* executable by setting the
-**GOC_EXECUTABLE** environment variable, or alternatively clone the godot-object-compiler
+**GOC_EXECUTABLE** environment variable, or alternatively clone godot-object-compiler
 repository into your project and add it to your *CMakeLists.txt* using:
 
 .. code-block:: CMake
@@ -47,7 +47,7 @@ The script will then use the locally checked out version and build the executabl
 
 .. WARNING::
 
-    The godot-object-compiler currently requires absolute paths.
+    godot-object-compiler currently requires absolute paths.
     Ensure that your targets sources and include directories are absolute,
     f.e. by prefacing *${CMAKE_CURRENT_LIST_DIR}*
 

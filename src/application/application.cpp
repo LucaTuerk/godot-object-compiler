@@ -109,7 +109,7 @@ namespace GodotObjectCompiler
         const Path graceful_path = goc_path / ".goc_graceful_lock";
         graceful_lock = LockFile(
             graceful_path,
-            "This file is used by the godot-object-compiler to check if the last program exit was graceful.\nRemoving this file may lead to unexpected behaviour.");
+            "This file is used by godot-object-compiler to check if the last program exit was graceful.\nRemoving this file may lead to unexpected behaviour.");
         last_exit_graceful = graceful_lock.try_lock();
 
         APP_TOP_LEVEL_ERR_COND(

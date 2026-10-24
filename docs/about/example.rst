@@ -16,7 +16,7 @@ Classes
         GODOT_GENERATED_BODY();ş
     };
     
-A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated body macro. This hook is used by the godot-object-compiler to inject definitions into the class, such as getters and setters and other additional methods.
+A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated body macro. This hook is used by godot-object-compiler to inject definitions into the class, such as getters and setters and other additional methods.
 
 Check out :doc:`../macros/GODOT_CLASS` and :doc:`../macros/GODOT_GENERATED_BODY` for more information.
 
@@ -103,7 +103,7 @@ Lets say we want to add a flags property to our node. We can add a marked enum t
         FLAG_C = 1 << 2,
     };
 
-Next we add the property. The godot-object-compiler queries the enum type and generates appropriate code to expose this property with the property hint to bind the enum names and values.
+Next we add the property. godot-object-compiler queries the enum type and generates appropriate code to expose this property with the property hint to bind the enum names and values.
 
 .. code-block:: C++
 
@@ -122,7 +122,7 @@ Check out :doc:`../macros/GODOT_ENUM` and :doc:`../macros/GODOT_GENERATED_GLOBAL
 Usage
 ~~~~~
 
-godot-object-compiler currently ships with integrations for CMake. The tools can be dumped into a local folder by calling the godot-object-compiler executables init_tools program with a local path argument.
+godot-object-compiler currently ships with integrations for CMake. The tools can be dumped into a local folder by calling godot-object-compilers init_tools program with a local path argument.
 
 .. code-block:: sh
 
@@ -131,7 +131,7 @@ godot-object-compiler currently ships with integrations for CMake. The tools can
 CMake Integration
 ^^^^^^^^^^^^^^^^^
 
-Include the tools file in your CMakeLists.txt and activate the godot-object-compiler generator for your GDExtension target by specifying the target name the and sources root directory. godot-object-compiler will then generate the bindings code for your targets source files.
+Include the tools file in your CMakeLists.txt and activate godot-object-compiler generator for your GDExtension target by specifying the target name the and sources root directory. godot-object-compiler will then generate the bindings code for your targets source files.
 
 .. code-block:: CMake
 
@@ -151,7 +151,7 @@ Check out :doc:`../integrations/SConstruct` for more information.
 Command Line Usage
 ^^^^^^^^^^^^^^^^^^
 
-You can also use the godot-object-compiler as a CLI tool to manually generate the sources or build your own integrations. Execute
+You can also use godot-object-compiler as a CLI tool to manually generate the sources or build your own integrations. Execute
 
 .. code-block:: sh
 

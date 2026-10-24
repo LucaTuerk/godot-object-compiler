@@ -1,7 +1,7 @@
 print type
 ==========
 
-Print the godot-object-compiler internal AST for the types identified by their fully qualified name as they are
+Print godot-object-compiler internal AST for the types identified by their fully qualified name as they are
 represented in the TypeDB cache.
 
 .. include:: project.rst

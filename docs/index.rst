@@ -1,7 +1,7 @@
 godot-object-compiler Documentation
 ===================================
 
-The godot-object-compiler is a **code generation tool for GDExtensions**.
+godot-object-compiler is a **code generation tool for GDExtensions**.
 It generates bindings and other builderplate code for **efficent development in C++** while maintaining full configurability via
 **expressive macros** generated directly from the godot-cpp source used to build your extension.
 
