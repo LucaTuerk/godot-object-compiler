@@ -55,9 +55,8 @@ int main(int argc, char* argv[])
     }
 
     CLI_PARS_ERR_V(args_context.register_argument_lists<TestArguments>(), 1);
-
-    if (auto test_arguments = args_context.get_argument_list<TestArguments>();
-        test_arguments->cxx_compiler->has_value()) {
+    auto test_arguments = args_context.get_argument_list<TestArguments>();
+    if (test_arguments->cxx_compiler->has_value()) {
         LibraryContext::instance()->set_cxx_compiler(test_arguments->cxx_compiler->get<Path>());
     }
 
@@ -72,6 +71,11 @@ int main(int argc, char* argv[])
             CLI_PARS_ERR_V(args_context.register_argument_lists<ModuleTestsArguments>(), 1);
         }
     }
+
+    Opt<Vector<String>> tests_list =
+        test_arguments->tests->has_value()
+            ? Opt<Vector<String>>{test_arguments->tests->get<Vector<String>>()}
+            : std::nullopt;
 
     using namespace GodotObjectCompiler;
     LibraryContext::instance()->set_error_level(VERBOSE, FULL);
@@ -103,6 +107,11 @@ int main(int argc, char* argv[])
         PRINT_INFO("Running tests against parser: %s", parser->get_type().c_str());
 
         for (const auto& [test_name, test_functor] : TestRegistry::instance()->get_tests()) {
+            if (tests_list.has_value() &&
+                std::find(tests_list->begin(), tests_list->end(), test_name) == tests_list->end()) {
+                continue;
+            }
+
             PRINT_INFO("Running test case \"%s\"", test_name.c_str());
             all_count++;
 
@@ -152,6 +161,11 @@ int main(int argc, char* argv[])
 
             for (const auto& [test_name, test_functor] :
                  TestRegistry::instance()->get_integration_tests()) {
+                if (tests_list.has_value() &&
+                    std::find(tests_list->begin(), tests_list->end(), test_name) ==
+                        tests_list->end()) {
+                    continue;
+                }
 
                 all_count++;
                 TestTimer timer;
@@ -215,6 +229,12 @@ int main(int argc, char* argv[])
 
             for (const auto& [test_name, test_functor] :
                  TestRegistry::instance()->get_module_tests()) {
+                if (tests_list.has_value() &&
+                    std::find(tests_list->begin(), tests_list->end(), test_name) ==
+                        tests_list->end()) {
+                    continue;
+                }
+
                 all_count++;
                 TestTimer timer;
                 TestResult result = TEST_RESULT_FAILURE;
