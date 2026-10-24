@@ -16,7 +16,7 @@ def add_licence_headers(path: pathlib.Path):
 
         with open(file, 'r') as current:
             content = current.read()
-            if "This file is part of Godot Object Compiler" in content:
+            if "This file is part of godot-object-compiler" in content:
                 continue
 
             write += header_template.replace("FILENAME                                                              ",

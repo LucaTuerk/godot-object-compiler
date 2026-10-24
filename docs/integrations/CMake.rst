@@ -1,7 +1,7 @@
 CMake
 =====
 
-The Godot Object Compiler currently comes with CMake integration, which allows you to
+The godot-object-compiler currently comes with CMake integration, which allows you to
 mark a target, i.e. your GDExtension, for code generation.
 
 Get the tools
@@ -47,7 +47,7 @@ The script will then use the locally checked out version and build the executabl
 
 .. WARNING::
 
-    The Godot Object Compiler currently requires absolute paths.
+    The godot-object-compiler currently requires absolute paths.
     Ensure that your targets sources and include directories are absolute,
     f.e. by prefacing *${CMAKE_CURRENT_LIST_DIR}*
 
