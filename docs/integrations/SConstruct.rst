@@ -1,7 +1,7 @@
 SConstruct
 ==========
 
-The Godot Object Compiler currently comes with SConstruct integration, which allows you to
+godot-object-compiler currently comes with SConstruct integration, which allows you to
 mark a target, i.e. your GDExtension, for code generation.
 
 Get the tools
@@ -48,8 +48,8 @@ with the following:
 
 
 Finally ensure that the autogoc script can find a prebuild *goc* executable by setting the
-**GOC_EXECUTABLE** environment variable, or alternatively clone the godot-object-compiler
-repository into the root of your project. The Godot Object Compiler will then be built
+**GOC_EXECUTABLE** environment variable, or alternatively clone godot-object-compiler
+repository into the root of your project. godot-object-compiler will then be built
 locally and used.
 
 Run
@@ -58,4 +58,4 @@ Run
 
     scons
 
-with your preferred flags and the Godot Object Compiler should now generate your files.
+with your preferred flags and godot-object-compiler should now generate your files.

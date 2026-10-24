@@ -21,7 +21,7 @@
 
 
 <p align='center'>
-The Godot Object Compiler is a <b>code generation tool for GDExtensions</b>. It generates bindings and other builderplate code for <b>efficent development in C++</b> while maintaining full configurability via <b>expressive macros</b> generated directly from the godot-cpp source used to build your extension.
+godot-object-compiler is a <b>code generation tool for GDExtensions</b>. It generates bindings and other builderplate code for <b>efficent development in C++</b> while maintaining full configurability via <b>expressive macros</b> generated directly from the godot-cpp source used to build your extension.
 </p>
 
 # Example
@@ -44,7 +44,7 @@ class ExampleNode : public Node3D {
 ```
 
 A class can be marked as a godot class so it is considered by the generators. Within the class body we add a generated
-body macro. This hook is used by the godot-object-compiler to inject definitions into the class, such as getters and setters and other
+body macro. This hook is used by godot-object-compiler to inject definitions into the class, such as getters and setters and other
 additional methods.
 
 ### Properties
@@ -134,7 +134,7 @@ would like this enum to be treated as flags in the macro parameters.
 
 ```
 
-Next we add the property. The godot-object-compiler queries the enum type and generates appropriate code to expose this property with the
+Next we add the property. godot-object-compiler queries the enum type and generates appropriate code to expose this property with the
 property hint to bind the enum names and values.
 
 ```cpp
@@ -157,7 +157,7 @@ GODOT_GENERATED_GLOBAL();
 
 godot-object-compiler ships with integrations for [CMake](https://godot-object-compiler.readthedocs.io/latest/integrations/CMake.html)
 and [SCons](https://godot-object-compiler.readthedocs.io/latest/integrations/SConstruct.html). The tools can be dumped
-into a local folder by calling the godot-object-compiler executable's `init tools` program with a local path argument.
+into a local folder by calling godot-object-compilers `init tools` program with a local path argument.
 
 ```cmd
 goc init tools tools
@@ -165,7 +165,7 @@ goc init tools tools
 
 ## Command Line Usage
 
-You can also use the godot-object-compiler as a CLI tool to manually generate the sources or build your own integrations. Execute
+You can also use godot-object-compiler as a CLI tool to manually generate the sources or build your own integrations. Execute
 
 ```cmd
 goc help

@@ -2,13 +2,13 @@
     The projects root path, including the generator target files
 
 --goc_path=, -P=
-    The folder the godot-object-compiler can place files in
+    The folder godot-object-compiler can place files in
 
 --generated_path=, -G=
-    The folder the godot-object-compiler should place generated files in
+    The folder godot-object-compiler should place generated files in
 
 --cache_path=, -C=
-    The godot-object-compiler cache folder, including the type database
+    godot-object-compiler cache folder, including the type database
 
 --include_paths=, -I=
     The generators include paths, comma seperated. Must include the godot-cpp

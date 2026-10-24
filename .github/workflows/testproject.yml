@@ -13,7 +13,7 @@ jobs:
           repository: "LucaTuerk/godot-object-compiler-test"
           submodules: "false"
 
-      - name: Checkout Godot Object Compiler
+      - name: Checkout godot-object-compiler
         uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler"
@@ -74,7 +74,7 @@ jobs:
           repository: "LucaTuerk/godot-object-compiler-test"
           submodules: "false"
 
-      - name: Checkout Godot Object Compiler
+      - name: Checkout godot-object-compiler
         uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler"
@@ -134,7 +134,7 @@ jobs:
           repository: "LucaTuerk/godot-object-compiler-test"
           submodules: "false"
 
-      - name: Checkout Godot Object Compiler
+      - name: Checkout godot-object-compiler
         uses: actions/checkout@v7
         with:
           repository: "LucaTuerk/godot-object-compiler"

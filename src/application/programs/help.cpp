@@ -9,7 +9,7 @@
 /* | (_) | _ \ || | _| (__  | |   | (_| (_) | |\/| |  _/| || |__| _||   / */
 /*  \___/|___/\__/|___\___| |_|    \___\___/|_|  |_|_| |___|____|___|_|_\ */
 /*                                                                        */
-/*              This file is part of Godot Object Compiler                */
+/*              This file is part of godot-object-compiler                */
 /*                  Copyright (c) 2026 Luca Ian Tuerk                     */
 /**************************************************************************/
 /*                            MIT LICENCE                                 */
@@ -93,7 +93,7 @@ namespace GodotObjectCompiler
         write_title(
             p_writer,
             format(
-                "Godot Object Compiler v%d.%d.%d \"%s\"", BuildInfo::major_version,
+                "godot-object-compiler v%d.%d.%d \"%s\"", BuildInfo::major_version,
                 BuildInfo::minor_version, BuildInfo::patch_version, BuildInfo::version_name),
             100);
         p_writer->write("\n");

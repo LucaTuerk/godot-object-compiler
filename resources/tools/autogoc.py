@@ -56,7 +56,7 @@ def create_goc_shared_library(env: Environment, lib_name: str, source, root_path
             -E={godot_cpp_path}/gdextension/extension_api.json \
             -GPP={comma.join(str(f) for f in godot_cpp_include_dirs)}\
             -CXX={env["CXX"]}",
-        cmdstr="Godot Object Compiler: Generating bindings",
+        cmdstr="godot-object-compiler: Generating bindings",
     )
 
     run_goc = env.Command(generated_source, source=[], action=run_action)

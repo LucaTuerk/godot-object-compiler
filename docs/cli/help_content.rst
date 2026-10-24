@@ -1,4 +1,4 @@
-======================[ Godot Object Compiler v0.3.0 "Catastrophic Catmull" ]=======================
+======================[ godot-object-compiler v0.3.0 "Catastrophic Catmull" ]=======================
 
 Usage: goc [PROGRAM PATH...] [ARGUMENTS...]
 

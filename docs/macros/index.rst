@@ -1,7 +1,7 @@
 Macros
 ======
 
-The Godot Object Compiler uses attribute-like macros to guide the code generator.
+godot-object-compiler uses attribute-like macros to guide the code generator.
 
 .. toctree::
     :name: sec-macros-inner
