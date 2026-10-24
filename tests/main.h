@@ -47,9 +47,13 @@ class TestArguments : public ICommandLineArgumentList
         CommandLineArgumentParsers::Path, "cxx_compiler", "CXX",
         "The C++ compiler executable used to compile the GDExtension or module");
 
+    Ref<CommandLineArgument> tests = CommandLineArgument::optional(
+        CommandLineArgumentParsers::StringList, "tests", "T",
+        "A comma separated list of test names to run.");
+
     [[nodiscard]] Vector<std::shared_ptr<CommandLineArgument>> get_arguments() const override
     {
-        return {cxx_compiler};
+        return {cxx_compiler, tests};
     }
 };
 
