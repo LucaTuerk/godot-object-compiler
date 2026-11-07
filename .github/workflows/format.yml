@@ -12,6 +12,11 @@ jobs:
         with:
           submodules: "false"
 
+      - name: Install clang-format
+        run: |
+          sudo apt update
+          sudo apt install clang-format-18 -y
+
       - name: Create all.h
         run: |
           python ./tools/create_all_h.py
