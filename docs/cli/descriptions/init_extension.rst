@@ -1,0 +1,1 @@
+Initialize a new GDExtension using CMake and godot-object-compiler at the provided path.

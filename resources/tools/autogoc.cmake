@@ -18,11 +18,23 @@ function(target_autogoc TARGET ROOT_DIR)
     endforeach ()
 
     if (TARGET godot-cpp)
-        get_target_property(GODOT_CPP_FOLDER godot-cpp SOURCE_DIR)
-        set(GDEXTENSION_API_FILE ${GODOT_CPP_FOLDER}/gdextension/extension_api.json)
         get_target_property(GODOT_CPP_INCLUDE_DIRECTORIES godot-cpp INCLUDE_DIRECTORIES)
     else ()
         message(FATAL_ERROR "AUTOGOC: target godot-cpp not found.")
+    endif ()
+
+    if (NOT DEFINED GODOTCPP_GDEXTENSION_API_FILE)
+        get_target_property(GODOT_CPP_SOURCE_DIR godot-cpp SOURCE_DIR)
+        if (GODOTCPP_API_VERSION)
+            string(REPLACE "." "-" GODOTCPP_API_VERSION_DASHED "${GODOTCPP_API_VERSION}")
+            set(GODOTCPP_GDEXTENSION_API_FILE ${GODOT_CPP_SOURCE_DIR}/gdextension/extension_api-${GODOTCPP_API_VERSION_DASHED}.json)
+        else ()
+            set(GODOTCPP_GDEXTENSION_API_FILE ${GODOT_CPP_SOURCE_DIR}/gdextension/extension_api.json)
+        endif ()
+    endif ()
+
+    if (NOT DEFINED GODOTCPP_GDEXTENSION_API_FILE)
+        message(FATAL_ERROR "AUTOGOC: Failed to determine the extension api file to use. Set either GODOTCPP_GDEXTENSION_API_FILE or GODOTCPP_API_VERSION")
     endif ()
 
     list(JOIN INCLUDE_DIRECTORIES "," INCLUDE_JOINED)
@@ -54,7 +66,7 @@ function(target_autogoc TARGET ROOT_DIR)
                 -I=${INCLUDE_JOINED}
                 -S=${SOURCES_JOINED}
                 -GPP=${GODOT_CPP_INCLUDE_DIRECTORIES_JOINED}
-                -E=${GDEXTENSION_API_FILE}
+                -E=${GODOTCPP_GDEXTENSION_API_FILE}
                 -CXX=${CMAKE_CXX_COMPILER}
                 WORKING_DIRECTORY ${BINARY_DIR}
                 DEPENDS ${GOC_EXECUTABLE} godot-cpp generate_bindings ${SOURCES}

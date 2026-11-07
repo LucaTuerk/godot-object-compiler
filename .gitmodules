@@ -1,3 +1,6 @@
 [submodule "thirdparty/json"]
 	path = thirdparty/json
 	url = https://github.com/nlohmann/json.git
+[submodule "/home/luca/Repositories/godot-object-compiler/test/godot-cpp"]
+	path = /home/luca/Repositories/godot-object-compiler/test/godot-cpp
+	url = https://github.com/godotengine/godot-cpp.git
