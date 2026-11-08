@@ -35,6 +35,7 @@
 
 #include "generate.h"
 
+#include "../../library/core/platform_info.h"
 #include "application/arguments/argument_lists.h"
 #include "application/arguments/argument_parsers.h"
 #include "application/arguments/flag_argument.h"
@@ -105,11 +106,11 @@ namespace GodotObjectCompiler
 
     Path Generate::get_platform_include_path(const Path& p_godot)
     {
-#ifdef __linux__
+#if GOC_PLATFORM_LINUX
         return p_godot / "platform" / "linuxbsd";
-#elif __APPLE__
+#elif GOC_PLATFORM_MACOS
         return p_godot / "platform" / "macos";
-#elif _WIN32
+#elif GOC_PLATFORM_WINDOWS
         return p_godot / "platform" / "windows";
 #elif
 #error Unknown plaform

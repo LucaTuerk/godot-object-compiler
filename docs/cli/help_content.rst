@@ -107,6 +107,9 @@ Here are some common arguments you might need:
 init                                                                                                 
                                                                                                      
 
+    extension                  Initialize a new GDExtension using CMake and godot-object-compiler at 
+                               the provided path.                                                    
+
     tools                      Initialize included tool script such as build tools.                  
                                                                                                      
 

@@ -36,13 +36,14 @@
 #include "resources.h"
 
 #include "file_system_utilities.h"
+#include "platform_info.h"
 #include "string_utilities.h"
 
 namespace GodotObjectCompiler
 {
     String resource_id(const Path& p_path)
     {
-#ifdef _WIN32
+#if GOC_PLATFORM_WINDOWS
         return string_replace(p_path.string(), "\\", "/");
 #else
         return p_path.string();

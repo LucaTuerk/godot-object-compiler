@@ -121,6 +121,7 @@ if (GOC_TESTS_ENABLED)
 
     target_compile_definitions(${EXEC_NAME_TEST} PRIVATE
             DEV_BUILD=1
+            TESTS_ENABLED=1
     )
 
     if (NOT WIN32)

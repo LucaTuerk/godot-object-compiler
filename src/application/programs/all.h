@@ -4,6 +4,7 @@
 #include "generate_bindings.h"
 #include "generate_type_db.h"
 #include "help.h"
+#include "init_extension.h"
 #include "init_tools.h"
 #include "print_tranformed.h"
 #include "print_type.h"

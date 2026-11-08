@@ -35,6 +35,7 @@
 
 #include "parser.h"
 
+#include "../../core/platform_info.h"
 #include "application/application_context.h"
 #include "handler.h"
 #include "handlers/all.h"
@@ -82,7 +83,7 @@ namespace GodotObjectCompiler
         return paths;
     }
 
-#if defined(__linux__) || defined(__APPLE__)
+#if GOC_PLATFORM_LINUX || GOC_PLATFORM_MACOS
     Vector<Path> get_standard_include_paths(const Opt<Path>& p_compiler)
     {
         static Vector<Path> includes;
@@ -117,7 +118,7 @@ namespace GodotObjectCompiler
     }
 #endif
 
-#ifdef _WIN32
+#if GOC_PLATFORM_WINDOWS
     Vector<Path> get_standard_include_paths(const Opt<Path>& p_compiler)
     {
         // TODO : Release Blocker
