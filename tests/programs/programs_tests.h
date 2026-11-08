@@ -35,6 +35,7 @@
 #pragma once
 #include "application/application.h"
 #include "library/core/file_system_utilities.h"
+#include "library/core/platform_info.h"
 #include "test_registry.h"
 
 using namespace GodotObjectCompiler;
@@ -107,6 +108,20 @@ GOC_TEST(Version)
     Application application;
     const int result = application.run(
         TestRegistry::instance()->get_integration_test_application_arguments({"version"}));
+    GOC_TEST_ASSERT(result == 0, "Failed to run program");
+    return TEST_RESULT_SUCCESS;
+};
+
+GOC_TEST(InitExtension)
+{
+    const auto EXT_DIR = "init_extension_test_extension";
+
+    Application application;
+    const int result =
+        application.run(TestRegistry::instance()->get_integration_test_application_arguments(
+            {"init", "extension", EXT_DIR}));
+    GOC_TEST_ASSERT(directory_exits(EXT_DIR), "Failed to initialize extension");
+    remove_directory(EXT_DIR);
     GOC_TEST_ASSERT(result == 0, "Failed to run program");
     return TEST_RESULT_SUCCESS;
 };

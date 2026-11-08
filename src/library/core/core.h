@@ -34,6 +34,7 @@
 /**************************************************************************/
 #pragma once
 
+#include "library/core/platform_info.h"
 #include "library/core/system_includes.h"
 
 namespace GodotObjectCompiler
@@ -151,7 +152,7 @@ void GodotObjectCompiler::fmt_print_ln(const String& format_str, Args&&... args)
 
 #define UNUSED(param) (void)param
 
-#ifndef DEV_BUILD
+#ifndef TESTS_ENABLED
 #define PANIC(...)                                                                                 \
     print_err(format("PANIC!! %s:%d ", __FILE__, __LINE__) + format(__VA_ARGS__));                 \
     exit(1)

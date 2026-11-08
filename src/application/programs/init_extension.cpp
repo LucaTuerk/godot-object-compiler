@@ -48,6 +48,7 @@ namespace GodotObjectCompiler
     const auto extension_name_replace_key = "EXTENSION_NAME";
     const auto api_version_replace_key = "GOC_GODOTCPP_API_VERSION";
 
+#ifndef TESTS_ENABLED
     bool git_exists()
     {
         String _;
@@ -72,6 +73,7 @@ namespace GodotObjectCompiler
         print_err(output);
         return false;
     }
+#endif
 
     CommandLineArgumentParseResult
     InitExtension::register_required_arguments(ApplicationContext& p_context) const
@@ -90,6 +92,7 @@ namespace GodotObjectCompiler
         const auto api_version = arguments->godot_api_version->get<String>();
         Permissions::instance()->add_write_path(path);
 
+#ifndef TESTS_ENABLED
         if (const auto godot_cpp_git = arguments->godot_cpp_git->get<String>();
             !godot_cpp_git.empty()) {
             PROG_ERR_COND(!git_exists(), "Tried to checkout godot-cpp but git was not found.");
@@ -101,6 +104,7 @@ namespace GodotObjectCompiler
                 !git_submodule_add(godot_cpp_git, path / "godot-cpp"),
                 "Failed to checkout godot-cpp submodule.");
         }
+#endif
 
         auto apply_replacement = [name, api_version](String& p_content) {
             string_reinplace(p_content, extension_name_replace_key, name);

@@ -34,12 +34,13 @@
 /**************************************************************************/
 
 #include "process.h"
+#include "platform_info.h"
 #include "string_writer.h"
 
 namespace GodotObjectCompiler
 {
 
-#if defined(__linux__) || defined(__APPLE__)
+#if GOC_PLATFORM_LINUX || GOC_PLATFORM_MACOS
     int run_subprocess(const String& p_command, String& r_output)
     {
         r_output = "";
@@ -64,7 +65,7 @@ namespace GodotObjectCompiler
     }
 #endif
 
-#ifdef _WIN32
+#if GOC_PLATFORM_WINDOWS
     int run_subprocess(const String& p_command, String& r_output)
     {
         UNUSED(p_command);
